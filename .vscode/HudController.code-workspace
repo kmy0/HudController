@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"emeraldwalk.runonsave": {
+			"commands": [
+				{
+					"match": "\\.lua$",
+					"notMatch": "\\typedef/.*$",
+					"cmd": "powershell -Command \"$rel = '${relativeFile}'.Replace('reframework\\autorun\\', ''); $dest = 'C:\\SteamLibrary\\steamapps\\common\\MonsterHunterWilds\\reframework\\autorun\\' + $rel; New-Item -ItemType Directory -Path (Split-Path $dest) -Force; Copy-Item '${file}' -Destination $dest -Force\""
+				}
+			]
+		},
+		"stylua.targetReleaseVersion": "latest",
+	}
+}

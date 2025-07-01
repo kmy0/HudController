@@ -1,0 +1,45 @@
+---@meta
+
+---@class via.gui.Segment : System.Enum
+---@class via.gui.RegionFitType : System.Enum
+---@class via.gui.Material.ParamType : System.Enum
+---@class via.Language : System.Enum
+---@class via.gui.ControlPoint : System.Enum
+---@class via.gui.BlendType : System.Enum
+---@class via.gui.AlphaChannelType : System.Enum
+
+---@class app.GUIDefApp.DRAW_SEGMENT : via.gui.Segment
+---@class app.GUIHudDef.TYPE : System.Enum
+---@class app.GUIID.ID : System.Enum
+---@class app.WeaponDef.TYPE : System.Enum
+---@class app.Option.ID : System.Enum
+---@class app.DialogueType.TYPE : System.Enum
+---@class app.ItemDef.ID : System.Enum
+---@class app.HunterDef.CONTINUE_FLAG : System.Enum
+---@class app.HunterDef.SLINGER_AMMO_TYPE : System.Enum
+---@class app.GUIFunc.TYPE : System.Enum
+---@class app.PlayerDef.ButtonMask.USER : System.Enum
+---@class app.ChatDef.SYSTEM_MSG_TYPE : System.Enum
+---@class app.ChatDef.SEND_TARGET : System.Enum
+---@class app.ItemUtil.STOCK_TYPE : System.Enum
+---@class app.GUIAccessIconControl.OBJECT_CATEGORY : System.Enum
+---@class app.PorterDef.CONTINUE_FLAG : System.Enum
+---@class app.NpcDef.ID : System.Enum
+---@class app.NpcDef.CHARA_CONTINUE_FLAG : System.Enum
+---@class app.GUI020201.TYPE : System.Enum
+---@class app.cGUIMemberPartsDef.MemberType : System.Enum
+---@class app.GUI020007.BulletSliderStatus : System.Enum
+---@class app.HunterDef.BTABLE_COMMAND_FLAG : System.Enum
+---@class app.GUI020018.GUIDE_PANEL_TYPE : System.Enum
+---@class app.GUIHudDef.DISPLAY : System.Enum
+---@class app.PorterDef.COMMUNICATOR_COMMAND : System.Enum
+---@class app.EnemyDef.CONTINUE_FLAG : System.Enum
+---@class app.cGUIQuestResultInfo.MODE : System.Enum
+---@class app.GUIManager.APP_CONTINUE_FLAG : System.Enum
+---@class app.NpcDef.ID_Fixed : System.Enum
+
+---@class ace.GUIDef.BUTTON_SLOT : System.Enum
+---@class ace.GUIDef.INPUT_DEVICE : System.Enum
+---@class ace.ACE_MKB_KEY.INDEX : System.Enum
+---@class ace.ACE_PAD_KEY.BITS : System.Enum
+---@class ace.ActionDef.UPDATE_RESULT : System.Enum
