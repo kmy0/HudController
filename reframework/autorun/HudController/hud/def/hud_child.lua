@@ -92,7 +92,10 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
         ::continue::
     end
 
-    self._getter_cache = ret
+    if not util_table.empty(ret) then
+        self._getter_cache = ret
+    end
+
     return ret
 end
 
