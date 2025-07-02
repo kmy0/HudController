@@ -1,12 +1,22 @@
 ---@class (exact) Control : HudBase
 ---@field get_config fun(): ControlConfig
----@field children {music_left: HudChild, music_right: HudChild, notes: HudChild}
+---@field children {
+--- music_left: HudChild,
+--- music_right: HudChild,
+--- notes: HudChild,
+--- control_guide1: HudChild,
+--- control_guide2: HudChild,
+--- skill_name: HudChild,
+--- }
 
 ---@class (exact) ControlConfig : HudBaseConfig
 ---@field children {
 --- music_left: HudChildConfig,
 --- music_right: HudChildConfig,
 --- notes: HudChildConfig,
+--- control_guide1: HudChildConfig,
+--- control_guide2: HudChildConfig,
+--- skill_name: HudChildConfig,
 --- }
 
 local data = require("HudController.data")
@@ -51,6 +61,30 @@ local ctrl_args = {
             },
         },
     },
+    control_guide1 = {
+        {
+            {
+                "PNL_Pat00",
+                "PNL_ControlGuide00",
+            },
+        },
+    },
+    control_guide2 = {
+        {
+            {
+                "PNL_Pat00",
+                "PNL_ControlGuide01",
+            },
+        },
+    },
+    skill_name = {
+        {
+            {
+                "PNL_Pat01",
+                "PNL_SkillName",
+            },
+        },
+    },
 }
 
 ---@param args ControlConfig
@@ -69,6 +103,15 @@ function this:new(args)
     o.children.notes = hud_child:new(args.children.notes, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.notes)
     end)
+    o.children.control_guide1 = hud_child:new(args.children.control_guide1, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide1)
+    end)
+    o.children.control_guide2 = hud_child:new(args.children.control_guide2, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide2)
+    end)
+    o.children.skill_name = hud_child:new(args.children.skill_name, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_name)
+    end)
 
     return o
 end
@@ -83,6 +126,9 @@ function this.get_config()
     children.music_left = hud_child.get_config("music_left")
     children.music_right = hud_child.get_config("music_right")
     children.notes = hud_child.get_config("notes")
+    children.control_guide1 = hud_child.get_config("control_guide1")
+    children.control_guide2 = hud_child.get_config("control_guide2")
+    children.skill_name = hud_child.get_config("skill_name")
 
     return base
 end

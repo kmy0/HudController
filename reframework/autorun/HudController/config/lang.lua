@@ -255,6 +255,9 @@ this.default = {
         phial = "Phial",
         bow_icon = "Bow Icon",
         rank = "Rank",
+        control_guide1 = "Control Guide 1",
+        control_guide2 = "Control Guide 2",
+        skill_name = "Skill Name",
     },
 }
 
