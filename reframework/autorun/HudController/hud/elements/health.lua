@@ -285,6 +285,10 @@ function this:reset(key)
         end
 
         local health_man = health:get_HealthMgr()
+        if not health_man then
+            return
+        end
+
         local current_health = health_man:get_Health()
         health_man:set_Health(current_health - 0.0001)
     end
