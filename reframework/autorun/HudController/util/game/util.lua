@@ -54,9 +54,10 @@ function this.get_all_components(type)
     return this.get_scene():call("findComponents(System.Type)", sdk.typeof(type))
 end
 
+---@generic T
 ---@param game_object via.GameObject
----@param type_name string
----@return REManagedObject?
+---@param type_name `T`
+---@return T?
 function this.get_component(game_object, type_name)
     local t = sdk.typeof(type_name)
 

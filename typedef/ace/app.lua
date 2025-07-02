@@ -50,6 +50,7 @@
 ---@field getHudSetting fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.user_data.GUIHudData.cSetting
 ---@field applySetting fun(self: app.cGUIHudDisplayManager, ctrl: app.cGUIHudDisplayControl)
 ---@field setHudDisplay fun(self: app.cGUIHudDisplayManager, hud_id: app.GUIHudDef.TYPE, hud_display: app.GUIHudDef.DISPLAY)
+---@field getHudDisplay fun(self: app.cGUIHudDisplayManager, hud_id: app.GUIHudDef.TYPE): app.GUIHudDef.DISPLAY
 ---@field _HudData app.user_data.GUIHudData
 ---@field _DisplayControls System.Array<app.cGUIHudDisplayControl>
 

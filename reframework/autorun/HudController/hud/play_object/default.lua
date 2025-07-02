@@ -1,6 +1,12 @@
+local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config")
+local data = require("HudController.data")
 local m = require("HudController.util.ref.methods")
+local util_game = require("HudController.util.game")
 local util_misc = require("HudController.util.misc")
+
+local ace_map = data.ace.map
+local ace_enum = data.ace.enum
 
 local this = {
     ---@type table<string, HudBaseDefault>
@@ -60,6 +66,18 @@ function this.create_default(obj)
     end
 
     ---@cast obj via.gui.Control
+    ---@type string?
+    local display
+    local gui = obj:get_Component()
+    local game_object = gui:get_GameObject()
+    local base_app = util_game.get_component(game_object, "app.GUIBaseApp") --[[@as app.GUIBaseApp]]
+    local guiid = base_app:get_ID()
+    local hudid = ace_map.guiid_to_hudid[guiid]
+
+    if hudid and ace_map.hudid_to_can_hide[hudid] then
+        display = ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(hudid)]
+    end
+
     local scale = obj:get_Scale()
     local color = obj:get_ColorScale()
     local ret = {
@@ -70,6 +88,7 @@ function this.create_default(obj)
         scale = { x = scale.x, y = scale.y },
         play_state = obj:get_PlayState(),
         color_scale = { x = color.x, y = color.y, z = color.z },
+        display = display,
     }
 
     return ret

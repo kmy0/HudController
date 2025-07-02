@@ -51,6 +51,7 @@
 ---@field hide boolean
 ---@field play_state string
 ---@field color_scale {x:number, y:number, z:number}
+---@field display string?
 
 ---@class (exact) HudBaseDefaultOverwrite
 ---@field scale {x:number, y:number}?
@@ -60,6 +61,7 @@
 ---@field hide boolean?
 ---@field play_state string?
 ---@field color_scale {x:number, y:number, z:number}?
+---@field display string?
 
 ---@class (exact) HudBaseProperties : {[HudBaseProperty]: boolean}
 ---@field scale boolean
@@ -327,12 +329,17 @@ end
 
 ---@param ctrl via.gui.Control
 ---@param visible boolean
-function this:change_visibility(ctrl, visible)
+---@param hud_display string?
+function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
-        ace_misc.get_hud_manager():setHudDisplay(
-            self.hud_id,
-            visible and rl(ace_enum.hud_display, "DEFAULT") or rl(ace_enum.hud_display, "HIDDEN")
-        )
+        if not visible then
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
+        elseif visible and hud_display then
+            hud_display = hud_display ~= "HIDDEN" and hud_display or "DEFAULT"
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, hud_display))
+        else
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "DEFAULT"))
+        end
     else
         ctrl:set_ForceInvisible(not visible)
     end
@@ -436,7 +443,7 @@ function this:reset_ctrl(ctrl, key)
     end
 
     if self.hide and (not key or key == "hide") and default.hide ~= nil then
-        self:change_visibility(ctrl, not default.hide)
+        self:change_visibility(ctrl, not default.hide, default.display)
     end
 
     if self.scale and (not key or key == "scale") and default.scale then
