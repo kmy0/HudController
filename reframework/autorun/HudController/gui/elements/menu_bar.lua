@@ -70,6 +70,7 @@ local function draw_lang_menu()
             config.current.gui.lang.file = menu_item
             config.lang.change()
             state.tr_combo()
+            config.save()
         end
     end
 

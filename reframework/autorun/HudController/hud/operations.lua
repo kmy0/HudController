@@ -26,7 +26,6 @@ end
 function this.new(new_hud)
     table.insert(config.current.mod.hud, new_hud or this._new())
     state.combo.hud:swap(config.current.mod.hud)
-    config.save()
 end
 
 ---@param hud_config HudProfileConfig
