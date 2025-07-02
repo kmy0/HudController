@@ -14,6 +14,7 @@ function this.draw_hud()
     if set.combo(gui_util.tr("hud.combo"), "mod.combo_hud", state.combo.hud.values) then
         state.input_action = nil
         hud.request_hud(config.current.mod.hud[config.current.mod.combo_hud])
+        config.save()
     end
 
     imgui.pop_item_width()
@@ -24,6 +25,7 @@ function this.draw_hud()
         hud.operations.new()
         config.current.mod.combo_hud = #config.current.mod.hud
         hud.request_hud(config.current.mod.hud[config.current.mod.combo_hud])
+        config.save()
     end
 
     imgui.same_line()
@@ -41,6 +43,8 @@ function this.draw_hud()
         if not util_table.empty(config.current.mod.hud) then
             hud.request_hud(config.current.mod.hud[config.current.mod.combo_hud])
         end
+
+        config.save()
     end
 
     imgui.same_line()
@@ -58,6 +62,7 @@ function this.draw_hud()
     util_imgui.tooltip(config.lang.tr("hud.button_import_tooltip"))
     if button then
         hud.operations.import()
+        config.save()
     end
 
     imgui.same_line()
@@ -73,6 +78,7 @@ function this.draw_hud()
         if changed then
             hud.operations.rename(config.current.mod.hud[config.current.mod.combo_hud], state.input_action)
             state.input_action = nil
+            config.save()
         end
     end
 end

@@ -72,7 +72,6 @@ function this.remove(hud_config)
 
     config.current.mod.combo_hud_key_bind = 1
     config.current.mod.bind.key.hud = bind_manager.hud_manager:get_base_binds()
-    config.save()
 end
 
 ---@param name string
@@ -104,7 +103,6 @@ function this.rename(hud_config, new_name)
 
     hud_config.name = this.get_name(new_name)
     state.combo.hud:swap(config.current.mod.hud)
-    config.save()
 end
 
 ---@param name_key string
@@ -126,7 +124,6 @@ function this.add_element(name_key)
 
     _hud.elements[name_key] = hud_elem
     hud_manager.update_elements(_hud.elements)
-    config.save()
 end
 
 ---@param hud_config HudProfileConfig

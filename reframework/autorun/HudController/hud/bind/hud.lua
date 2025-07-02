@@ -39,6 +39,7 @@ local function action(bind)
     config.current.mod.combo_hud = util_table.index(config.current.mod.hud, function(o)
         return o.key == bind.key
     end) --[[@as integer]]
+    config.save()
 end
 
 ---@param hud_ref HudManager
