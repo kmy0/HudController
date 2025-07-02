@@ -107,7 +107,10 @@ function this.request_hud(new_hud)
     this.notify = true
     this.requested_hud = new_hud
 
-    if config.current.mod.enable_fade then
+    if
+        config.current.mod.enable_fade
+        and (new_hud.fade_in > 0 or (this.current_hud and this.current_hud.fade_out > 0))
+    then
         if fade_manager.is_active(fade_manager.type.fade_out) and fade_manager.current_fade.hud_key == new_hud.key then
             this.notify = false
             fade_manager.fade_in(this.current_hud, fade_callbacks.finish)
