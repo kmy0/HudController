@@ -21,6 +21,7 @@
 ---@class app.cQuestFlowPartsBase : via.clr.ManagedObject
 ---@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
+---@class app.GUI020401 : app.GUIBaseApp
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -360,3 +361,4 @@
 
 ---@class app.cDialogueSubtitleManager : via.clr.ManagedObject
 ---@field _SubtitlesGUI app.GUI020400
+---@field _ChoiceGUI app.GUI020401

@@ -127,6 +127,7 @@ this.default = {
             GUN_RETICLE = "Gun Reticle",
             BOW_RETICLE = "Bow Reticle",
             SUBTITLES = "Subtitles",
+            SUBTITLES_CHOICE = "Subtitles Choice",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

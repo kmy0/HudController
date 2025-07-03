@@ -54,6 +54,7 @@ this.enum.hud_type = {
     GUN_RETICLE = 21,
     BOW_RETICLE = 22,
     SUBTITLES = 23,
+    SUBTITLES_CHOICE = 24,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = {

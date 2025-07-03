@@ -840,7 +840,11 @@ function this.update_subtitles_pre(args)
     end
 
     local subtitles_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["SUBTITLES"])
+    local subtitles_choice_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["SUBTITLES_CHOICE"])
+
     call_queue.consume(subtitles_guiid)
+    call_queue.consume(subtitles_choice_guiid)
+
     local subtitles = get_elem_t("Subtitles")
     if subtitles then
         local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
@@ -850,12 +854,21 @@ function this.update_subtitles_pre(args)
             return
         end
 
-        local guiid = GUI020400:get_ID()
-
-        call_queue.consume(guiid)
-
         ---@diagnostic disable-next-line: param-type-mismatch
         subtitles:write(GUI020400, subtitles_guiid, subtitles:get_scale_panel(GUI020400))
+    end
+
+    local subtitles_choice = get_elem_t("SubtitlesChoice")
+    if subtitles_choice then
+        local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
+        local GUI020401 = subman._ChoiceGUI
+
+        if not GUI020401 then
+            return
+        end
+
+        ---@diagnostic disable-next-line: param-type-mismatch
+        subtitles_choice:write(GUI020401, subtitles_guiid, subtitles_choice:get_scale_panel(GUI020401))
     end
 end
 
