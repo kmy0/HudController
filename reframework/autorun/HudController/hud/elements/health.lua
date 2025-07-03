@@ -215,7 +215,6 @@ function this:new(args)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.light_start)
     end)
     o.children.skill_list = hud_child:new(args.children.skill_list, o, function(s, hudbase, gui_id, ctrl)
-        -- hudbase._GaugeHudRatioCalc:calcRatio()
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_list)
     end) --[[@as SkillList]]
     o.children.skill_list.children.icon = hud_child:new(
