@@ -10,6 +10,7 @@
 ---@field color_scale via.Float4?
 ---@field hide boolean?
 ---@field play_state string?
+---@field segment app.GUIDefApp.DRAW_SEGMENT?
 ---@field default_overwrite HudBaseDefaultOverwrite?
 ---@field parent HudBase
 ---@field root HudBase
@@ -29,6 +30,7 @@
 ---@field hud_sub_type HudSubType
 ---@field scale {x:number, y:number}
 ---@field offset {x:number, y:number}
+---@field segment string
 ---@field rot number
 ---@field opacity number
 ---@field hide boolean
@@ -38,6 +40,7 @@
 ---@field enabled_offset boolean
 ---@field enabled_rot boolean
 ---@field enabled_opacity boolean
+---@field enabled_segment boolean
 ---@field enabled_play_state boolean?
 ---@field enabled_color_scale boolean?
 ---@field options table<string, integer>?
@@ -51,6 +54,7 @@
 ---@field hide boolean
 ---@field play_state string
 ---@field color_scale {x:number, y:number, z:number}
+---@field segment string
 ---@field display string?
 
 ---@class (exact) HudBaseDefaultOverwrite
@@ -62,6 +66,7 @@
 ---@field play_state string?
 ---@field color_scale {x:number, y:number, z:number}?
 ---@field display string?
+---@field segment string?
 
 ---@class (exact) HudBaseProperties : {[HudBaseProperty]: boolean}
 ---@field scale boolean
@@ -71,6 +76,7 @@
 ---@field color_scale boolean
 ---@field hide boolean
 ---@field play_state boolean
+---@field segment boolean
 
 ---@class (exact) HudBaseChangedProperties : {[HudBaseProperty]: any}
 ---@field scale Vector3f?
@@ -80,8 +86,9 @@
 ---@field color_scale via.Float4?
 ---@field hide boolean?
 ---@field play_state string?
+---@field segment app.GUIDefApp.DRAW_SEGMENT?
 
----@alias HudBaseProperty "scale" | "offset" | "rot" | "opacity" | "hide" | "play_state" | "color_scale"
+---@alias HudBaseProperty "scale" | "offset" | "rot" | "opacity" | "hide" | "play_state" | "color_scale" | "segment"
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
 local ace_misc = require("HudController.util.ace.misc")
@@ -159,6 +166,10 @@ function this:new(args, parent, default_overwrite)
         o:set_color_scale(args.color_scale)
     end
 
+    if args.enabled_segment then
+        o:set_segment(args.segment)
+    end
+
     for option, value in pairs(args.options or {}) do
         o:set_option(option, value)
     end
@@ -197,6 +208,18 @@ function this:set_scale(scale)
     else
         self:reset("scale")
         self.scale = scale
+        self:mark_idle()
+    end
+end
+
+---@param segment string?
+function this:set_segment(segment)
+    if segment then
+        self.segment = rl(ace_enum.draw_segment, segment)
+        self:mark_write()
+    else
+        self:reset("segment")
+        self.segment = segment
         self:mark_idle()
     end
 end
@@ -474,6 +497,10 @@ function this:reset_ctrl(ctrl, key)
         ctrl:set_ColorScale(color_scale)
     end
 
+    if self.segment and (not key or key == "segment") and default.segment then
+        ctrl:set_Segment(rl(ace_enum.draw_segment, default.segment))
+    end
+
     if not key then
         self:reset_options()
     end
@@ -564,6 +591,10 @@ function this:_write(ctrl)
         ctrl:set_ColorScale(self.color_scale)
     end
 
+    if self.segment then
+        ctrl:set_Segment(self.segment)
+    end
+
     return true
 end
 
@@ -585,6 +616,8 @@ function this.get_config(hud_id, name_key)
         enabled_rot = false,
         enabled_scale = false,
         enabled_opacity = false,
+        enabled_segment = false,
+        segment = "HUD",
         hide = false,
         scale = { x = 1, y = 1 },
         offset = { x = 0, y = 0 },

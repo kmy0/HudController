@@ -165,6 +165,7 @@ this.default = {
             box_enable_size_x = "Enable Size X",
             box_enable_size_y = "Enable Size Y",
             box_enable_color = "Enable Color",
+            box_enable_segment = "Enable Layer",
             box_enable_material_width_scale = "Enable Width Scale",
             box_enable_material_anim_speed_scale = "Enable Animation Speed Scale",
             box_enable_material_size_x_scale = "Enable Size X Scale",

@@ -2,6 +2,7 @@ local config = require("HudController.config")
 local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 
 local ace_map = data.ace.map
 
@@ -15,6 +16,7 @@ local separator = gui_util.separator:new({
     "enabled_color",
     "enabled_size_x",
     "enabled_size_y",
+    "enabled_segment",
 })
 
 ---@param option_keys string[]
@@ -195,6 +197,37 @@ function this.draw(elem, elem_config, config_key)
             elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
             config.save()
         end
+
+        separator:draw()
+    end
+
+    if elem_config.enabled_segment ~= nil then
+        local checkbox_key = config_key .. ".enabled_segment"
+        changed = set.checkbox(
+            string.format("%s##%s", gui_util.tr("hud_element.entry.box_enable_segment"), checkbox_key),
+            checkbox_key
+        )
+
+        imgui.begin_disabled(not config.get(checkbox_key))
+
+        local item_config_key = config_key .. ".segment"
+        if not config.get(item_config_key .. "_combo") then
+            config.set(item_config_key .. "_combo", state.combo.segment:get_index(nil, config.get(item_config_key)))
+        end
+
+        changed = set.combo(
+            "##" .. item_config_key .. "_combo",
+            item_config_key .. "_combo",
+            state.combo.segment.values
+        ) or changed
+
+        if changed then
+            config.set(item_config_key, state.combo.segment:get_value(config.get(item_config_key .. "_combo")))
+            elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
+            config.save()
+        end
+
+        imgui.end_disabled()
 
         separator:draw()
     end

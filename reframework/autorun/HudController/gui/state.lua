@@ -13,6 +13,7 @@
 ---@field blend Combo
 ---@field alpha_channel Combo
 ---@field option_bind Combo
+---@field segment Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -73,6 +74,9 @@ local this = {
                 return config.lang.tr("hud." .. mod.map.hud_options[key])
             end
         ),
+        segment = combo:new(nil, function(a, b)
+            return a.key < b.key
+        end),
     },
     grid_ratio = {
         "1",
@@ -136,6 +140,7 @@ function this.init()
     this.combo.blend:swap(ace_enum.blend)
     this.combo.alpha_channel:swap(ace_enum.alpha_channel)
     this.combo.item_decide:swap(this.item_decide)
+    this.combo.segment:swap(ace_enum.draw_segment)
     this.tr_combo()
 end
 

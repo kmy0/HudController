@@ -14,11 +14,13 @@
 ---@field offset {x:number, y:number}?
 ---@field rot number?
 ---@field opacity number?
+---@field segment string?
 ---@field hide boolean?
 ---@field enabled_scale boolean?
 ---@field enabled_offset boolean?
 ---@field enabled_rot boolean?
 ---@field enabled_opacity boolean?
+---@field enabled_segment boolean?
 ---@field key nil
 ---@field hud_id nil
 ---@field hud_type nil

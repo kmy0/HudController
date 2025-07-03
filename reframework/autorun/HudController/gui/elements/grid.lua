@@ -43,8 +43,7 @@ function this.draw()
     util_ace.scene_fade.set(
         config.current.mod.grid.fade_alpha,
         config.current.mod.grid.color_fade,
-        --FIXME: both of those have the same enum and i cba to cover this edge case :)
-        rl(ace_enum.draw_segment, "LOWEST") or rl(ace_enum.draw_segment, "HUD_WORLD")
+        rl(ace_enum.draw_segment, "HUD_WORLD")
     )
 end
 

@@ -28,6 +28,7 @@ local all_bools = {
     "enabled_var4",
     "enabled_size_x",
     "enabled_size_y",
+    "enabled_segment",
 }
 
 ---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config

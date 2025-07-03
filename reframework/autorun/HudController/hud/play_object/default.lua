@@ -89,6 +89,7 @@ function this.create_default(obj)
         play_state = obj:get_PlayState(),
         color_scale = { x = color.x, y = color.y, z = color.z },
         display = display,
+        segment = ace_enum.draw_segment[obj:get_Segment()],
     }
 
     return ret
