@@ -262,6 +262,8 @@ this.default = {
         reticle_main = "Main Reticle",
         reticle_lockon = "Lock-On Reticle",
         lockon = "Lock-On",
+        max_fall = "Max Health Fall",
+        point = "Point",
     },
 }
 

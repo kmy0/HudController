@@ -9,6 +9,19 @@
 --- gauge: HealthGauge,
 --- skill_line: HudChild,
 --- light_start: HudChild,
+--- max_fall: HudChild,
+--- }
+
+---@class (exact) MaxFall : HudChild
+---@field children {
+--- timer: HudChild,
+--- point: HudChild,
+--- }
+
+---@class (exact) MaxFallConfig : HudChildConfig
+---@field children {
+--- timer: HudChildConfig,
+--- point: HudChildConfig,
 --- }
 
 ---@class (exact) SkillList : HudChild
@@ -39,6 +52,7 @@
 --- gauge: VitalGaugeConfig,
 --- skill_line: HudChildConfig,
 --- light_start: HudChildConfig,
+--- max_fall: MaxFallConfig,
 --- }
 
 local data = require("HudController.data")
@@ -204,6 +218,29 @@ local ctrl_args = {
             },
         },
     },
+    max_fall = {
+        {
+            {
+                "PNL_Pat00",
+                "PNL_StepMAX",
+                "PNL_MaxFall",
+            },
+        },
+    },
+    ["max_fall.timer"] = {
+        {
+            {
+                "PNL_MaxFallTextAnim",
+            },
+        },
+    },
+    ["max_fall.point"] = {
+        {
+            {
+                "PNL_stepMaxFallPoint",
+            },
+        },
+    },
 }
 
 ---@class Health
@@ -235,6 +272,10 @@ function this:new(args)
             )
         end
     )
+
+    o.children.skill_line = hud_child:new(args.children.skill_line, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_line)
+    end)
     o.children.anim_low_health = hud_child:new(args.children.anim_low_health, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.anim_low_health)
     end)
@@ -244,6 +285,25 @@ function this:new(args)
     o.children.incoming_health = hud_child:new(args.children.incoming_health, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.incoming_health)
     end)
+
+    o.children.max_fall = hud_child:new(args.children.max_fall, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.max_fall)
+    end)
+    o.children.max_fall.children.timer = hud_child:new(
+        args.children.max_fall.children.timer,
+        o.children.max_fall,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["max_fall.timer"])
+        end
+    )
+    o.children.max_fall.children.point = hud_child:new(
+        args.children.max_fall.children.point,
+        o.children.max_fall,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["max_fall.point"])
+        end
+    )
+
     o.children.gauge = hud_child:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.gauge)
     end) --[[@as HealthGauge]]
@@ -275,9 +335,7 @@ function this:new(args)
             return play_object.iter_args(play_object.child.get, ctrl, ctrl_args["gauge.line2_shadow"])
         end
     )
-    o.children.skill_line = hud_child:new(args.children.skill_line, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_line)
-    end)
+
     return o
 end
 
@@ -311,6 +369,15 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.HEALTH
     base.options.AUTO_SCALING_FITNESS = -1
     base.options.ALERT_EFFECT = -1
+
+    children.max_fall = hud_child.get_config("max_fall") --[[@as MaxFallConfig]]
+    children.max_fall.children = {
+        timer = hud_child.get_config("timer"),
+        point = {
+            name_key = "point",
+            hide = false,
+        },
+    }
 
     children.skill_list = hud_child.get_config("skill_list") --[[@as SkillListConfig]]
     children.skill_list.children = {
