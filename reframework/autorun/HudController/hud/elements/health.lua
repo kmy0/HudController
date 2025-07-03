@@ -47,6 +47,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object")
 local util_player = require("HudController.util.ace.player")
+local util_table = require("HudController.util.misc.table")
 local vital_base = require("HudController.hud.def.vital_base")
 
 local ace_enum = data.ace.enum
@@ -68,6 +69,13 @@ local ctrl_args = {
         {
             {},
             "PNL_STIcon",
+        },
+    },
+    ["skill_list.virus"] = {
+        {
+            {
+                "PNL_Virus",
+            },
         },
     },
     anim_low_health = {
@@ -221,7 +229,10 @@ function this:new(args)
         args.children.skill_list.children.icon,
         o.children.skill_list,
         function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"])
+            return util_table.array_merge_t(
+                play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"]),
+                play_object.iter_args(play_object.control.get, ctrl, ctrl_args["skill_list.virus"])
+            )
         end
     )
     o.children.anim_low_health = hud_child:new(args.children.anim_low_health, o, function(s, hudbase, gui_id, ctrl)
