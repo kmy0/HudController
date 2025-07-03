@@ -34,6 +34,7 @@
 ---@field quest_result_mode table<app.cGUIQuestResultInfo.MODE, string>
 ---@field gui_continue_flag table<app.GUIManager.APP_CONTINUE_FLAG, string>
 ---@field gui_id table<app.GUIID.ID, string>
+---@field subtitles_category table<app.GUI020400.SUBTITLES_CATEGORY, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -46,6 +47,7 @@
 ---@field additional_hud_to_guiid_name table<string, string>
 ---@field hud_tr_flag string
 ---@field additional_hud_index integer
+---@field no_lang_key table<string, boolean>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -90,6 +92,7 @@ local this = {
         quest_result_mode = {},
         gui_continue_flag = {},
         gui_id = {},
+        subtitles_category = {},
     },
     map = {
         hudid_to_guiid = {},
@@ -104,12 +107,15 @@ local this = {
             "SLINGER_RETICLE",
             "GUN_RETICLE",
             "BOW_RETICLE",
+            "SUBTITLES",
         },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
             GUN_RETICLE = "UI020019",
             BOW_RETICLE = "UI020031",
+            SUBTITLES = "UI020400",
         },
+        no_lang_key = {},
     },
 }
 

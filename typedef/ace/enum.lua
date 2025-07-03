@@ -37,6 +37,7 @@
 ---@class app.cGUIQuestResultInfo.MODE : System.Enum
 ---@class app.GUIManager.APP_CONTINUE_FLAG : System.Enum
 ---@class app.NpcDef.ID_Fixed : System.Enum
+---@class app.GUI020400.SUBTITLES_CATEGORY : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

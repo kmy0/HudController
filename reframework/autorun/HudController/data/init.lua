@@ -180,6 +180,7 @@ function this.init()
     game_data.get_enum("app.cGUIQuestResultInfo.MODE", ace_enum.quest_result_mode)
     game_data.get_enum("app.GUIManager.APP_CONTINUE_FLAG", ace_enum.gui_continue_flag)
     game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
+    game_data.get_enum("app.GUI020400.SUBTITLES_CATEGORY", ace_enum.subtitles_category)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)
@@ -193,6 +194,12 @@ function this.init()
     set_additional_hud()
     get_weapon_map()
     get_option_map()
+
+    util_table.do_something({ ace_enum.subtitles_category }, function(t, key, value)
+        util_table.do_something(value, function(_, _, name)
+            ace_map.no_lang_key[name] = true
+        end)
+    end)
 
     return true
 end

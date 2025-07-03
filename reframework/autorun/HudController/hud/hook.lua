@@ -18,6 +18,7 @@ local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
+local ace_map = data.ace.map
 local mod = data.mod
 local rl = game_data.reverse_lookup
 
@@ -830,6 +831,31 @@ function this.stop_hide_gui_post(retval)
             local flags = guiman:get_AppContinueFlag()
             flags:off(rl(ace_enum.gui_continue_flag, "HIDE_GUI"))
         end
+    end
+end
+
+function this.update_subtitles_pre(args)
+    if not is_ok() then
+        return
+    end
+
+    local subtitles_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["SUBTITLES"])
+    call_queue.consume(subtitles_guiid)
+    local subtitles = get_elem_t("Subtitles")
+    if subtitles then
+        local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
+        local GUI020400 = subman._SubtitlesGUI
+
+        if not GUI020400 then
+            return
+        end
+
+        local guiid = GUI020400:get_ID()
+
+        call_queue.consume(guiid)
+
+        ---@diagnostic disable-next-line: param-type-mismatch
+        subtitles:write(GUI020400, subtitles_guiid, subtitles:get_scale_panel(GUI020400))
     end
 end
 

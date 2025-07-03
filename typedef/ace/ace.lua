@@ -18,6 +18,7 @@
 ---@class ace.cGUIFlowBase : ace.cStateBase
 ---@class ace.cStateBase : ace.cNonCycleTypeObject
 ---@class ace.cGUIFlowContextBase : via.clr.ManagedObject
+---@class ace.DialogueManagerBase : ace.GAElement
 
 ---@class ace.GUIFade : via.Behavior
 ---@field setFadeAlpha fun(self: ace.GUIFade, alpha: System.Single)

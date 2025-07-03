@@ -351,3 +351,12 @@
 
 ---@class app.cGUI060000Recommend.cRecommendNoticeSign : via.clr.ManagedObject
 ---@field IsActive System.Boolean
+
+---@class app.GUI020400 : app.GUIBaseApp
+---@field _SubtitlesCategory app.GUI020400.SUBTITLES_CATEGORY
+
+---@class app.DialogueManager : ace.DialogueManagerBase
+---@field get_SubtitleManager fun(self: app.DialogueManager): app.cDialogueSubtitleManager
+
+---@class app.cDialogueSubtitleManager : via.clr.ManagedObject
+---@field _SubtitlesGUI app.GUI020400

@@ -22,6 +22,7 @@ local this = {
     name_other = require("HudController.hud.elements.name_other"),
     gun_reticle = require("HudController.hud.elements.gun_reticle"),
     bow_reticle = require("HudController.hud.elements.bow_reticle"),
+    subtitles = require("HudController.hud.elements.subtitles"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.VITAL] = require("HudController.hud.def.vital_base"),
@@ -44,6 +45,7 @@ local this = {
     [hud_enum.NAME_OTHER] = require("HudController.hud.elements.name_other"),
     [hud_enum.GUN_RETICLE] = require("HudController.hud.elements.gun_reticle"),
     [hud_enum.BOW_RETICLE] = require("HudController.hud.elements.bow_reticle"),
+    [hud_enum.SUBTITLES] = require("HudController.hud.elements.subtitles"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -64,6 +66,7 @@ local this = {
     NameOther = "NAME_OTHER",
     GunReticle = "GUN_RETICLE",
     BowReticle = "BOW_RETICLE",
+    Subtitles = "SUBTITLES",
     --
     HEALTH = require("HudController.hud.elements.health"),
     WEAPON = require("HudController.hud.elements.weapon"),
@@ -84,6 +87,7 @@ local this = {
     NAME_OTHER = require("HudController.hud.elements.name_other"),
     GUN_RETICLE = require("HudController.hud.elements.gun_reticle"),
     BOW_RETICLE = require("HudController.hud.elements.bow_reticle"),
+    SUBTITLES = require("HudController.hud.elements.subtitles"),
 }
 
 return this

@@ -118,6 +118,7 @@ m.hook(
     hook.skip_gui_open_pre
 )
 m.hook("app.cQuestDirector.update()", util.ref.capture_this, hook.stop_hide_gui_post)
+m.hook("app.cDialogueSubtitleManager.updateDisp()", hook.update_subtitles_pre)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

@@ -126,6 +126,7 @@ this.default = {
             SLINGER_RETICLE = "Slinger Reticle",
             GUN_RETICLE = "Gun Reticle",
             BOW_RETICLE = "Bow Reticle",
+            SUBTITLES = "Subtitles",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
