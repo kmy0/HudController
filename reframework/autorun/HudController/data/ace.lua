@@ -43,7 +43,7 @@
 ---@field option table<string, AceOption>
 ---@field hudid_to_can_hide table<app.GUIHudDef.TYPE, boolean>
 ---@field additional_hud string[]
----@field additional_hud_to_guiid table<string, app.GUIID.ID>
+---@field additional_hud_to_guiid_name table<string, string>
 ---@field hud_tr_flag string
 ---@field additional_hud_index integer
 
@@ -103,10 +103,12 @@ local this = {
         additional_hud = {
             "SLINGER_RETICLE",
             "GUN_RETICLE",
+            "BOW_RETICLE",
         },
-        additional_hud_to_guiid = {
-            SLINGER_RETICLE = 46,
-            GUN_RETICLE = 64,
+        additional_hud_to_guiid_name = {
+            SLINGER_RETICLE = "UI020000",
+            GUN_RETICLE = "UI020019",
+            BOW_RETICLE = "UI020031",
         },
     },
 }

@@ -14,6 +14,7 @@ local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map
 local ace_enum = this.ace.enum
+local rl = util_game.data.reverse_lookup
 
 ---@return boolean
 local function get_hud_setting()
@@ -60,7 +61,8 @@ end
 local function set_additional_hud()
     for i = 1, #ace_map.additional_hud do
         local name = ace_map.additional_hud[i]
-        local guiid = ace_map.additional_hud_to_guiid[name]
+        local guiid_name = ace_map.additional_hud_to_guiid_name[name]
+        local guiid = rl(ace_enum.gui_id, guiid_name)
         local enum = ace_map.additional_hud_index + i
 
         ace_enum.hud[enum] = name

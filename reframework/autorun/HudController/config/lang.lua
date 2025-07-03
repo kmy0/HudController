@@ -125,6 +125,7 @@ this.default = {
         name = {
             SLINGER_RETICLE = "Slinger Reticle",
             GUN_RETICLE = "Gun Reticle",
+            BOW_RETICLE = "Bow Reticle",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -258,6 +259,9 @@ this.default = {
         control_guide1 = "Control Guide 1",
         control_guide2 = "Control Guide 2",
         skill_name = "Skill Name",
+        reticle_main = "Main Reticle",
+        reticle_lockon = "Lock-On Reticle",
+        lockon = "Lock-On",
     },
 }
 
