@@ -30,6 +30,9 @@ function this.create_default(obj)
         if type:is_a("via.gui.Text") then
             ---@cast obj via.gui.Text
             size = obj:get_FontSize()
+        elseif type:is_a("via.gui.TextureSet") then
+            ---@cast obj via.gui.TextureSet
+            size = obj:get_RegionSize()
         else
             ---@cast obj via.gui.Rect | via.gui.Material
             size = obj:get_Size()

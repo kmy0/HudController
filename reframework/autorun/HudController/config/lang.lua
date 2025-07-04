@@ -144,6 +144,8 @@ this.default = {
             category_mantle_behavior = "Mantle Behavior",
             category_nameplate_type = "Nameplate Type",
             category_parts_behavior = "Parts Behavior",
+            category_radial_behavior = "Radial Behavior",
+            category_pallet_behavior = "Pallet Behavior",
             box_no_hide = "Do Not Hide",
             box_hide = "Hide",
             box_itembar_disable_right_stick = "Disable Right Stick / Enable Camera Control",
@@ -152,6 +154,7 @@ this.default = {
             box_itembar_enable_mouse_control = "Enable Mouse Control",
             box_always_visible = "Always Visible",
             box_appear_open = "Appear Open",
+            box_always_expanded = "Always Expanded",
             box_itembar_hide_slider = "Hide Slider",
             combo_expanded_itembar_decide_key = "Item Confirm Key",
             slider_expanded_itembar_control = "Navigation",
@@ -267,6 +270,11 @@ this.default = {
         lockon = "Lock-On",
         max_fall = "Max Health Fall",
         point = "Point",
+        craft = "Craft Panel",
+        center = "Center",
+        select = "Select",
+        select_base = "Select Base",
+        select_arrow = "Select Arrow",
     },
 }
 

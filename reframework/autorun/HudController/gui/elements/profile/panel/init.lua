@@ -161,7 +161,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                     child:set_hide(child_config.hide)
                 end
 
-                if node_pos then
+                if node_pos and i == 1 then
                     table.insert(node_positions, cursor_pos)
                 end
                 ::continue::

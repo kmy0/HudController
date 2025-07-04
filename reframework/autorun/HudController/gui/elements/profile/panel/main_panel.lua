@@ -261,6 +261,28 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_radial(elem, elem_config, config_key)
+    ---@cast elem_config RadialConfig
+    ---@cast elem Radial
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_radial_behavior"))
+    local item_config_key = config_key .. ".expanded"
+    if set.checkbox(gui_util.tr("hud_element.entry.box_always_expanded", item_config_key), item_config_key) then
+        elem:set_expanded(elem_config.expanded)
+        config.save()
+    end
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_pallet_behavior"))
+    item_config_key = config_key .. ".children.pallet.expanded"
+    if set.checkbox(gui_util.tr("hud_element.entry.box_always_expanded", item_config_key), item_config_key) then
+        elem.children.pallet:set_expanded(elem_config.children.pallet.expanded)
+        config.save()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -277,5 +299,6 @@ this.funcs[mod.enum.hud_type.PROGRESS] = draw_progress
 this.funcs[mod.enum.hud_type.NAME_ACCESS] = draw_name_access
 this.funcs[mod.enum.hud_type.NAME_OTHER] = draw_name_other
 this.funcs[mod.enum.hud_type.AMMO] = draw_ammo
+this.funcs[mod.enum.hud_type.RADIAL] = draw_radial
 
 return this

@@ -173,3 +173,12 @@
 ---@field set_IgnoreAlpha fun(self: via.gui.Scale9Grid, ignore_alpha: System.Boolean)
 ---@field set_AlphaChannelType fun(self: via.gui.Scale9Grid, type: via.gui.AlphaChannelType)
 ---@field get_AlphaChannelType fun(self: via.gui.Scale9Grid): via.gui.AlphaChannelType
+
+---@class via.gui.TextureSet : via.gui.MaskableElement
+---@field get_RegionSize fun(self: via.gui.TextureSet): via.Size
+---@field set_Rotation fun(self: via.gui.TextureSet, rot: Vector3f)
+---@field get_Rotation fun(self: via.gui.TextureSet): via.vec3
+---@field set_Position fun(self: via.gui.TextureSet, offset: Vector3f)
+---@field get_Position fun(self: via.gui.TextureSet): via.vec3
+---@field get_Color fun(self: via.gui.TextureSet): via.Color
+---@field set_Color fun(self: via.gui.TextureSet, color: via.Color)
