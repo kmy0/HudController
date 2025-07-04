@@ -29,12 +29,12 @@
 ---@field quest_gui_type table<app.GUI020201.TYPE, string>
 ---@field nameplate_type table<app.cGUIMemberPartsDef.MemberType, string>
 ---@field bullet_slider_status table<app.GUI020007.BulletSliderStatus, string>
----@field enemy_continue_flag table<app.EnemyDef.CONTINUE_FLAG, string>
 ---@field draw_segment table<table<app.GUIDefApp.DRAW_SEGMENT, string>, string>
 ---@field quest_result_mode table<app.cGUIQuestResultInfo.MODE, string>
 ---@field gui_continue_flag table<app.GUIManager.APP_CONTINUE_FLAG, string>
 ---@field gui_id table<app.GUIID.ID, string>
 ---@field subtitles_category table<app.GUI020400.SUBTITLES_CATEGORY, string>
+---@field icon_move_pattern table<app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -87,12 +87,12 @@ local this = {
         quest_gui_type = {},
         nameplate_type = {},
         bullet_slider_status = {},
-        enemy_continue_flag = {},
         draw_segment = {},
         quest_result_mode = {},
         gui_continue_flag = {},
         gui_id = {},
         subtitles_category = {},
+        icon_move_pattern = {},
     },
     map = {
         hudid_to_guiid = {},

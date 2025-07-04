@@ -94,12 +94,13 @@ m.hook("app.GUI020016PartsBase.checkIsVisible()", util.ref.capture_this, hook.hi
 m.hook("app.GUI020007.controlSliderStatus()", hook.no_hide_ammo_slider_parts_pre)
 m.hook("app.GUI020007.setReloadState(System.String)", hook.no_hide_ammo_slider_reload_pre)
 m.hook("app.cQuestDirector.canPlayHuntCompleteCamera()", nil, hook.disable_quest_end_camera_post)
-m.hook("app.GUIMapBeaconManager.update()", hook.hide_monster_icon_pre)
-m.hook("app.cGUI060000Recommend.onLateUpdate()", util.ref.capture_this, hook.hide_recommend_post)
 m.hook(
     "app.cGUI060000Recommend.cRecommendNoticeSign.playRecommendSign(app.cGUIBeaconBase, app.cGUI060000Recommend.cRecommendNoticeSign.TYPE)",
     hook.hide_recommend_pre
 )
+m.hook("app.cGUI060000Recommend.onLateUpdate()", util.ref.capture_this, hook.hide_recommend_post)
+m.hook("app.cGUIMapEmBossIconDrawUpdater.isTemporaryInvisible", hook.hide_monster_icon_pre, hook.hide_monster_icon_post)
+m.hook("app.cGUIPaintBallController.update()", hook.get_paitballs_pre)
 m.hook("app.cGUIPaintBallController.cPaintBallTarget.isValid()", nil, hook.reveal_monster_icon_post)
 m.hook("app.GUI060008.requestSummaryEnemy(app.cEnemyContextHolder)", hook.skip_monster_select_pre)
 m.hook("app.cQuestSuccessFreePlayTime.enter()", hook.skip_quest_end_timer_pre)

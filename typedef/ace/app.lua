@@ -362,3 +362,9 @@
 ---@class app.cDialogueSubtitleManager : via.clr.ManagedObject
 ---@field _SubtitlesGUI app.GUI020400
 ---@field _ChoiceGUI app.GUI020401
+
+---@class app.cGUIMapIconDrawUpdaterBase : via.clr.ManagedObject
+---@field isTemporaryInvisible fun(self: app.cGUIMapIconDrawUpdaterBase, beacon: app.cGUIBeaconEM): System.Boolean
+
+---@class app.cGUIMapEmBossIconDrawUpdater : app.cGUIMapIconDrawUpdaterBase
+---@field setMovePanel fun(self: app.cGUIMapEmBossIconDrawUpdater, beacon: app.cGUIBeaconEM, pattern: app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN)

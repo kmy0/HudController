@@ -48,6 +48,8 @@ local ammo_slider = {
     open = false,
     item_slider_open = false,
 }
+---@type table<app.cGameContext, boolean>
+local paintballs = {}
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -673,22 +675,41 @@ end
 function this.hide_monster_icon_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("hide_monster_icon") then
-        local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
-        local beacons = beacon_man:get_EmBossBeaconContainer()
-        local paintball_controller = beacon_man.PaintBallController
-        ---@type table<app.cGameContext, boolean>
-        local paintballs = {}
+        ---@diagnostic disable-next-line: no-unknown
+        thread.get_hook_storage()["this"] = sdk.to_managed_object(args[2])
+        ---@diagnostic disable-next-line: no-unknown
+        thread.get_hook_storage()["beacon"] = sdk.to_managed_object(args[3])
+    end
+end
 
+function this.hide_monster_icon_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local updater = thread.get_hook_storage()["this"] --[[@as app.cGUIMapIconDrawUpdaterBase]]
+        if not util_ref.is_a(updater, "app.cGUIMapEmBossIconDrawUpdater") then
+            return
+        end
+
+        ---@cast updater app.cGUIMapEmBossIconDrawUpdater
+        local beacon = thread.get_hook_storage()["beacon"] --[[@as app.cGUIBeaconEM?]]
+        if not beacon then
+            return
+        end
+
+        if not paintballs[beacon:getGameContext()] then
+            updater:setMovePanel(beacon, rl(ace_enum.icon_move_pattern, "NONE"))
+            return true
+        end
+    end
+end
+
+function this.get_paitballs_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        paintballs = {}
+        local paintball_controller = sdk.to_managed_object(args[2]) --[[@as app.cGUIPaintBallController]]
         util_game.do_something(paintball_controller:getPaintBallBeaconListAll(), function(system_array, index, value)
             paintballs[value:getGameContext()] = true
-        end)
-
-        util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
-            local ctx = value:getGameContext()
-            if not paintballs[ctx] then
-                local flags = ctx:get_ContinueFlag()
-                flags:on(rl(ace_enum.enemy_continue_flag, "HIDE_MAP_WITH_DISABLE_PIN"))
-            end
         end)
     end
 end
@@ -722,9 +743,8 @@ function this.skip_monster_select_pre(args)
     if hud_config and hud.get_hud_option("hide_monster_icon") then
         local ctx_holder = sdk.to_managed_object(args[3]) --[[@as app.cEnemyContextHolder]]
         local ctx = ctx_holder:get_Em()
-        local flags = ctx:get_ContinueFlag()
 
-        if flags:check(rl(ace_enum.enemy_continue_flag, "HIDE_MAP_WITH_DISABLE_PIN")) then
+        if not paintballs[ctx] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

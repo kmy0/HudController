@@ -175,12 +175,12 @@ function this.init()
     game_data.get_enum("app.GUI020201.TYPE", ace_enum.quest_gui_type)
     game_data.get_enum("app.cGUIMemberPartsDef.MemberType", ace_enum.nameplate_type)
     game_data.get_enum("app.GUI020007.BulletSliderStatus", ace_enum.bullet_slider_status)
-    game_data.get_enum("app.EnemyDef.CONTINUE_FLAG", ace_enum.enemy_continue_flag)
     game_data.get_enum("app.GUIDefApp.DRAW_SEGMENT", ace_enum.draw_segment, nil, { "LOWEST", "HIGHEST" })
     game_data.get_enum("app.cGUIQuestResultInfo.MODE", ace_enum.quest_result_mode)
     game_data.get_enum("app.GUIManager.APP_CONTINUE_FLAG", ace_enum.gui_continue_flag)
     game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
     game_data.get_enum("app.GUI020400.SUBTITLES_CATEGORY", ace_enum.subtitles_category)
+    game_data.get_enum("app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN", ace_enum.icon_move_pattern)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)
