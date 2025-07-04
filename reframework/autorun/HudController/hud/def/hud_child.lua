@@ -172,6 +172,8 @@ function this.get_config(name_key)
         enabled_rot = false,
         enabled_scale = false,
         enabled_opacity = false,
+        enabled_segment = false,
+        segment = "HUD",
         hide = false,
         scale = { x = 1, y = 1 },
         offset = { x = 0, y = 0 },
