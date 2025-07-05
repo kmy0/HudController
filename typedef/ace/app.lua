@@ -362,6 +362,7 @@
 
 ---@class ace.cGUIParamFloat : ace.cGUIParameterBase
 ---@field setValue fun(self: ace.cGUIParamFloat, val: System.Single)
+---@field getValue fun(self: ace.cGUIParamFloat): System.Single
 
 ---@class app.GUI020004 : app.GUIGaugeHudBase
 ---@field _CurrentGaugeAmountValue System.Single

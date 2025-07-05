@@ -350,7 +350,8 @@ function this:reset(key)
         local hudbase = self:get_GUI020003()
         local amount = hudbase._GaugeAmount
         if amount then
-            amount:setValue(1)
+            local current_value = amount:getValue()
+            amount:setValue(current_value - 1)
         end
     end)
 end
