@@ -43,23 +43,29 @@ local function draw_mod_menu()
     if imgui.menu_item(gui_util.tr("menu.config.enabled"), nil, config.current.mod.enabled) then
         config.current.mod.enabled = not config.current.mod.enabled
         hud.reset_elements()
+        config.save()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_fade"), nil, config.current.mod.enable_fade) then
         config.current.mod.enable_fade = not config.current.mod.enable_fade
         fade_manager.abort()
+        config.save()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_notification"), nil, config.current.mod.enable_notification) then
         config.current.mod.enable_notification = not config.current.mod.enable_notification
+        config.save()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), nil, config.current.mod.enable_weapon_binds) then
         config.current.mod.enable_weapon_binds = not config.current.mod.enable_weapon_binds
+        config.save()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), nil, config.current.mod.enable_key_binds) then
         config.current.mod.enable_key_binds = not config.current.mod.enable_key_binds
+        config.save()
+    end
     end
 end
 
@@ -78,6 +84,7 @@ local function draw_lang_menu()
 
     if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config.current.gui.lang.fallback) then
         config.current.gui.lang.fallback = not config.current.gui.lang.fallback
+        config.save()
     end
     util_imgui.tooltip(config.lang.tr("menu.language.fallback_tooltip"))
 end
