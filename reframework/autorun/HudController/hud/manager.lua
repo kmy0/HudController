@@ -198,12 +198,22 @@ function this.update()
     if config.current.mod.enable_key_binds then
         bind_manager.option_manager:monitor()
 
-        if bind_manager.hud_manager:monitor() then
-            timer.restart_key(timer_key)
+        if bind_manager.hud_manager:monitor() and config.current.mod.disable_weapon_binds_timed then
+            if config.current.mod.disable_weapon_binds_held then
+                bind_manager.hud_manager:register_on_release_callback(bind_manager.hud_manager:get_held(), function()
+                    timer.restart_key(timer_key)
+                end)
+            else
+                timer.restart_key(timer_key)
+            end
         end
     end
 
-    if config.current.mod.enable_weapon_binds and timer.check(timer_key, config.bind_timeout, nil, true) then
+    if
+        config.current.mod.enable_weapon_binds
+        and timer.check(timer_key, config.bind_timeout, nil, true)
+        and (not config.current.mod.disable_weapon_binds_held or not bind_manager.hud_manager:is_held())
+    then
         this.update_weapon_bind_state()
     end
 end

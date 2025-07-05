@@ -36,6 +36,10 @@ this.default = {
             enable_notification = "Enable Notifications",
             enable_weapon_binds = "Enable Weapon Binds",
             enable_key_binds = "Enable Key Binds",
+            disable_weapon_binds_held = "Disable Weapon Binds Held",
+            disable_weapon_binds_timed = "Disable Weapon Binds Timed",
+            disable_weapon_binds_held_tooltip = "Disable Weapon Binds while Hud key bind is held",
+            disable_weapon_binds_timed_tooltip = "Disable Weapon Binds for 30 seconds after Hud key bind is pressed",
         },
         language = {
             name = "Language",

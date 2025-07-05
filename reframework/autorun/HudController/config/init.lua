@@ -40,8 +40,10 @@
 ---@field enabled boolean
 ---@field enable_fade boolean
 ---@field enable_notification boolean
----@field enable_key_binds boolean,
----@field enable_weapon_binds boolean,
+---@field enable_key_binds boolean
+---@field enable_weapon_binds boolean
+---@field disable_weapon_binds_timed boolean
+---@field disable_weapon_binds_held boolean
 ---@field hud HudProfileConfig[]
 ---@field bind {weapon: WeaponStateBindConfig, key: {hud: HudBindBase[], option: OptionBindBase[]}}
 ---@field grid GridConfig
@@ -112,6 +114,8 @@ this.default = {
         enable_notification = true,
         enable_key_binds = true,
         enable_weapon_binds = false,
+        disable_weapon_binds_held = false,
+        disable_weapon_binds_timed = false,
         grid = {
             draw = false,
             color_center = 4278190335,

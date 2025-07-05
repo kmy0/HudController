@@ -66,7 +66,32 @@ local function draw_mod_menu()
         config.current.mod.enable_key_binds = not config.current.mod.enable_key_binds
         config.save()
     end
+
+    imgui.separator()
+
+    if
+        imgui.menu_item(
+            gui_util.tr("menu.config.disable_weapon_binds_timed"),
+            nil,
+            config.current.mod.disable_weapon_binds_timed
+        )
+    then
+        config.current.mod.disable_weapon_binds_timed = not config.current.mod.disable_weapon_binds_timed
+        config.save()
     end
+    util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_timed_tooltip"))
+
+    if
+        imgui.menu_item(
+            gui_util.tr("menu.config.disable_weapon_binds_held"),
+            nil,
+            config.current.mod.disable_weapon_binds_held
+        )
+    then
+        config.current.mod.disable_weapon_binds_held = not config.current.mod.disable_weapon_binds_held
+        config.save()
+    end
+    util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_held_tooltip"))
 end
 
 local function draw_lang_menu()
