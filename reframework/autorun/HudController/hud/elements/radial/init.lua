@@ -291,6 +291,8 @@ function this.get_config()
     children.text = {
         name_key = "text",
         hide = false,
+        enabled_offset = false,
+        offset = { x = 0, y = 0 },
     }
     children.center = {
         name_key = "center",
