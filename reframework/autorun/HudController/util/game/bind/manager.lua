@@ -2,6 +2,7 @@
 ---@field enum BindEnum
 ---@field binds Bind[]
 ---@field hold table<Bind, boolean>
+---@field on_release_callbacks table<string, fun()>
 ---@field pause boolean
 
 ---@class (exact) BindBase
@@ -29,7 +30,7 @@ this.__index = this
 
 ---@return BindManager
 function this:new()
-    local o = { binds = {}, hold = {}, pause = false }
+    local o = { binds = {}, hold = {}, pause = false, on_release_callbacks = {} }
     setmetatable(o, self)
     ---@cast o BindManager
     return o
@@ -95,6 +96,37 @@ function this:is_valid(bind)
     return false
 end
 
+---@param bind Bind?
+---@return boolean
+function this:is_held(bind)
+    if bind then
+        return self.hold[bind]
+    end
+
+    return util_table.any(self.hold, function(key, value)
+        return value
+    end)
+end
+
+---@return Bind[]
+function this:get_held()
+    return util_table.keys(util_table.filter(self.hold, function(key, value)
+        return value
+    end))
+end
+
+---@param bind Bind | Bind[]
+---@param callback fun()
+function this:register_on_release_callback(bind, callback)
+    if type(bind) ~= "table" then
+        bind = { bind }
+    end
+
+    for _, b in pairs(bind) do
+        self.on_release_callbacks[b.name] = callback
+    end
+end
+
 ---@return boolean
 function this:monitor()
     if self.pause or util_table.empty(self.binds) then
@@ -137,6 +169,11 @@ function this:monitor()
                 do_action()
                 goto continue
             end
+        end
+
+        if self.on_release_callbacks[bind.name] then
+            self.on_release_callbacks[bind.name]()
+            self.on_release_callbacks[bind.name] = nil
         end
 
         self.hold[bind] = false
