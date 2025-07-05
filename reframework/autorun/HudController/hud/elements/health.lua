@@ -26,7 +26,7 @@
 --- }
 
 ---@class (exact) SkillList : HudChild
----@field children {icon : HudChild}
+---@field children {icon : HudChild, timer: HudChild}
 
 ---@class (exact) HealthGauge : HudChild
 ---@field children {
@@ -37,7 +37,7 @@
 --- }
 
 ---@class (exact) SkillListConfig : HudChildConfig
----@field children {icon: HudChildConfig}
+---@field children {icon: HudChildConfig, timer: HudChildConfig}
 
 ---@class (exact) HealthConfig : VitalConfig
 ---@field options {
@@ -91,6 +91,18 @@ local ctrl_args = {
         {
             {
                 "PNL_Virus",
+            },
+        },
+    },
+    ["skill_list.timer"] = {
+        {
+            {
+                "PNL_timerLong",
+            },
+        },
+        {
+            {
+                "PNL_timerNum",
             },
         },
     },
@@ -274,6 +286,23 @@ function this:new(args)
             )
         end
     )
+    o.children.skill_list.children.timer = hud_child:new(
+        args.children.skill_list.children.timer,
+        o.children.skill_list,
+        function(s, hudbase, gui_id, ctrl)
+            local ret = {}
+            local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"])
+            for _, icon in pairs(icons) do
+                ---@cast icon via.gui.Control
+                util_table.array_merge_t(
+                    ret,
+                    play_object.iter_args(play_object.control.get, icon, ctrl_args["skill_list.timer"])
+                )
+            end
+
+            return ret
+        end
+    )
 
     o.children.skill_line = hud_child:new(args.children.skill_line, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_line)
@@ -388,6 +417,10 @@ function this.get_config()
             name_key = "icon",
             enabled_rot = false,
             rot = 0,
+        },
+        timer = {
+            name_key = "timer",
+            hide = false,
         },
     }
 
