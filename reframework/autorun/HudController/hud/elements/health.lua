@@ -1,5 +1,6 @@
 ---@class (exact) Health : VitalBase
 ---@field get_config fun(): HealthConfig
+---@field GUI020003 app.GUI020003
 ---@field children {
 --- skill_list: SkillList,
 --- anim_danger: HudChild,
@@ -55,12 +56,13 @@
 --- max_fall: MaxFallConfig,
 --- }
 
+local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object")
-local util_player = require("HudController.util.ace.player")
+local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 local vital_base = require("HudController.hud.def.vital_base")
 
@@ -343,23 +345,23 @@ end
 function this:reset(key)
     vital_base.reset(self, key)
 
-    --FIXME: health gauge does not update till next health change, so after reset it looks wrong
-    -- the solution is kinda dumb but it works :)
-    local master_player = util_player:get_master_char()
-    if master_player then
-        local health = master_player:get_HunterHealth()
-        if not health then
-            return
+    -- health gauge does not update till next health change
+    call_queue.queue_func(self.hud_id, function()
+        local hudbase = self:get_GUI020003()
+        local amount = hudbase._GaugeAmount
+        if amount then
+            amount:setValue(1)
         end
+    end)
+end
 
-        local health_man = health:get_HealthMgr()
-        if not health_man then
-            return
-        end
-
-        local current_health = health_man:get_Health()
-        health_man:set_Health(current_health - 0.0001)
+---@return app.GUI020003
+function this:get_GUI020003()
+    if not self.GUI020003 then
+        self.GUI020003 = util_game.get_all_components("app.GUI020003"):get_Item(0)
     end
+
+    return self.GUI020003
 end
 
 ---@return HealthConfig

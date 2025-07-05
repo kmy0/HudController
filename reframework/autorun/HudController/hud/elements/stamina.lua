@@ -1,5 +1,6 @@
 ---@class (exact) Stamina : VitalBase
 ---@field get_config fun(): StaminaConfig
+---@field GUI020004 app.GUI020004
 ---@field children {gauge: StaminaGauge, light_end: HudChild}
 
 ---@class (exact) StaminaGauge : HudChild
@@ -17,13 +18,14 @@
 --- line3: Scale9Config,
 --- }
 
+local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object")
 local scale9 = require("HudController.hud.def.scale9")
-local util_player = require("HudController.util.ace.player")
+local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 local vital_base = require("HudController.hud.def.vital_base")
 
@@ -185,16 +187,28 @@ end
 function this:reset(key)
     vital_base.reset(self, key)
 
-    local master_player = util_player:get_master_char()
-    if master_player then
-        local stamina = master_player:get_HunterStamina()
-        if not stamina then
-            return
-        end
+    -- stamina gauge does not update till next health change
+    call_queue.queue_func(self.hud_id, function()
+        local hudbase = self:get_GUI020004()
+        local amount = hudbase._GaugeAmount
+        local current_value = hudbase._CurrentGaugeAmountValue
 
-        local current_stamina = stamina:get_Stamina()
-        stamina:setStamina(current_stamina - 2)
+        if amount and current_value then
+            amount:setValue(current_value - 1)
+            call_queue.queue_func(self.hud_id, function()
+                amount:setValue(current_value)
+            end)
+        end
+    end)
+end
+
+---@return app.GUI020004
+function this:get_GUI020004()
+    if not self.GUI020004 then
+        self.GUI020004 = util_game.get_all_components("app.GUI020004"):get_Item(0)
     end
+
+    return self.GUI020004
 end
 
 ---@return StaminaConfig

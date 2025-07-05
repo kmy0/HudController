@@ -22,6 +22,7 @@
 ---@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
 ---@class app.GUI020401 : app.GUIBaseApp
+---@class app.GUI020003 : app.GUIGaugeHudBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -127,21 +128,8 @@
 ---@field get_HunterExtend fun(self: app.HunterCharacter): app.HunterCharacter.cHunterExtendBase
 ---@field get_MeshFadeController fun(self: app.HunterCharacter): app.cMeshFadeController
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator
----@field get_HunterHealth fun(self: app.HunterCharacter): app.cHunterHealth
----@field get_HunterStamina fun(self: app.HunterCharacter): app.cHunterStamina
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
 ---@field _HunterBTableCommandFlag ace.cSafeContinueFlag
-
----@class app.cHunterStamina : via.clr.ManagedObject
----@field setStamina fun(self: app.cHunterStamina, val: System.Single)
----@field get_Stamina fun(self: app.cHunterStamina): System.Single
-
----@class app.cHunterHealth : ace.cNonCycleTypeObject
----@field get_HealthMgr fun(self: app.cHunterHealth): app.cHealthManager
-
----@class app.cHealthManager : via.clr.ManagedObject
----@field get_Health fun(self: app.cHealthManager): System.Single
----@field set_Health fun(self: app.cHealthManager, val: System.Single)
 
 ---@class app.mcPorterCommunicator : ace.minicomponent.cOrderedActionBase
 ---@field get_IsRiderWithinRanged fun(self: app.mcPorterCommunicator): System.Boolean
@@ -152,7 +140,7 @@
 
 ---@class app.HunterCharacter.cHunterExtendNpc : app.HunterCharacter.cHunterExtendBase
 ---@field get_NpcID fun(self: app.HunterCharacter.cHunterExtendNpc): app.NpcDef.ID
----@field _ContextHolder app.cNpcContextHolder : app.cGameContextHolder
+---@field _ContextHolder app.cNpcContextHolder
 
 ---@class app.cNpcContextHolder : app.cGameContextHolder
 ---@field get_Npc fun(self: app.cNpcContextHolder): app.cNpcContext
@@ -368,3 +356,12 @@
 
 ---@class app.cGUIMapEmBossIconDrawUpdater : app.cGUIMapIconDrawUpdaterBase
 ---@field setMovePanel fun(self: app.cGUIMapEmBossIconDrawUpdater, beacon: app.cGUIBeaconEM, pattern: app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN)
+
+---@class app.GUIGaugeHudBase : app.GUIHudBase
+---@field _GaugeAmount ace.cGUIParamFloat
+
+---@class ace.cGUIParamFloat : ace.cGUIParameterBase
+---@field setValue fun(self: ace.cGUIParamFloat, val: System.Single)
+
+---@class app.GUI020004 : app.GUIGaugeHudBase
+---@field _CurrentGaugeAmountValue System.Single
