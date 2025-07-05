@@ -24,6 +24,7 @@ local combo = require("HudController.gui.combo")
 local config = require("HudController.config")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map
@@ -140,7 +141,9 @@ function this.init()
     this.combo.blend:swap(ace_enum.blend)
     this.combo.alpha_channel:swap(ace_enum.alpha_channel)
     this.combo.item_decide:swap(this.item_decide)
-    this.combo.segment:swap(ace_enum.draw_segment)
+    this.combo.segment:swap(util_table.filter(ace_enum.draw_segment, function(key, value)
+        return not value:match("RADAR.-")
+    end))
     this.tr_combo()
 end
 

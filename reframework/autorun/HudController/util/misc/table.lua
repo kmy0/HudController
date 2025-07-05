@@ -528,4 +528,19 @@ function this.split(t, splitter)
     return ret
 end
 
+---@generic K, V
+---@param t table<K, V>
+---@param predicate fun(key: K, value: V): boolean
+---@return table<K, V>
+function this.filter(t, predicate)
+    local ret = {}
+    for k, v in pairs(t) do
+        if predicate(k, v) then
+            ret[k] = v
+        end
+    end
+
+    return ret
+end
+
 return this
