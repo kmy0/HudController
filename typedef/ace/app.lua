@@ -234,9 +234,11 @@
 
 ---@class app.GUIAccessIconControl : via.clr.ManagedObject
 ---@field get_AccessIconInfos fun(self: app.GUIAccessIconControl) : System.Array<app.GUI020001PanelParams>
+---@field get_PlayerPosition fun(self: app.GUIAccessIconControl): via.vec3
 
 ---@class app.GUI020001PanelParams : via.clr.ManagedObject
 ---@field get_ObjectCategory fun(self: app.GUI020001PanelParams): app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field get_GameObject fun(self: app.GUI020001PanelParams): via.GameObject
 ---@field clear fun(self: app.GUI020001PanelParams)
 
 ---@class app.PorterCharacter : app.CharacterBase

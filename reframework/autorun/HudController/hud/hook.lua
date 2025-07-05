@@ -430,12 +430,31 @@ function this.hide_iteractables_post(retval)
     local name_access = get_elem_t("NameAccess")
     if name_access and not name_access.hide then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
+        ---@type Vector3f?
+        local player_pos
+
         util_game.do_something(access_control:get_AccessIconInfos(), function(system_array, index, value)
             if name_access.object_category["ALL"] then
                 value:clear()
             else
                 local cat = value:get_ObjectCategory()
-                if name_access.object_category[ace_enum.object_access_category[cat]] then
+                local cat_name = ace_enum.object_access_category[cat]
+
+                if cat_name == "NPC" and name_access.npc_draw_distance > 0 then
+                    local game_object = value:get_GameObject()
+                    local transform = game_object:get_Transform()
+                    local pos = transform:get_Position()
+
+                    if not player_pos then
+                        player_pos = access_control:get_PlayerPosition()
+                    end
+
+                    if (pos - player_pos):length() > name_access.npc_draw_distance then
+                        value:clear()
+                    end
+                end
+
+                if name_access.object_category[cat_name] then
                     value:clear()
                 end
             end

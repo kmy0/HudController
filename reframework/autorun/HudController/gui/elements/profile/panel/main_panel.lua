@@ -218,6 +218,22 @@ local function draw_name_access(elem, elem_config, config_key)
     ---@cast elem_config NameAccessConfig
     ---@cast elem NameAccess
 
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_npc_behavior"))
+    local item_config_key = config_key .. ".npc_draw_distance"
+    local config_value = config.get(item_config_key)
+    if
+        set.slider_float(
+            gui_util.tr("hud_element.entry.slider_draw_distance"),
+            item_config_key,
+            0,
+            50,
+            (config_value == 0 and config.lang.tr("hud.option_disable")) or "%.1f"
+        )
+    then
+        elem:set_npc_draw_distance(elem_config.npc_draw_distance)
+        config.save()
+    end
+
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_object_category"))
     group_things(
         elem,

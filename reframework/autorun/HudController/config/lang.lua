@@ -150,6 +150,7 @@ this.default = {
             category_parts_behavior = "Parts Behavior",
             category_radial_behavior = "Radial Behavior",
             category_pallet_behavior = "Pallet Behavior",
+            category_npc_behavior = "NPC Behavior",
             box_no_hide = "Do Not Hide",
             box_hide = "Hide",
             box_itembar_disable_right_stick = "Disable Right Stick / Enable Camera Control",
@@ -189,6 +190,7 @@ this.default = {
             tooltip_itembar_move_next = "Move to the next item if slot is empty after use",
             slider_x = "X",
             slider_y = "Y",
+            slider_draw_distance = "Draw Distance",
         },
     },
     hud_subelement = {
