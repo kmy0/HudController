@@ -46,8 +46,12 @@ function this:reset(key)
     end
 
     local subman = s.get("app.DialogueManager"):get_SubtitleManager()
-    local ctrl = self:get_scale_panel(subman._ChoiceGUI)
-    self:reset_ctrl(ctrl, key)
+    local hudbase = subman._ChoiceGUI
+
+    if hudbase then
+        local ctrl = self:get_scale_panel(subman._ChoiceGUI)
+        self:reset_ctrl(ctrl, key)
+    end
 end
 
 ---@return SubtitlesChoiceConfig
