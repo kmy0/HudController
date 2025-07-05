@@ -467,6 +467,10 @@ function this:reset_ctrl(ctrl, key)
 
     if self.hide and (not key or key == "hide") and default.hide ~= nil then
         self:change_visibility(ctrl, not default.hide, default.display)
+
+        if self.hud_id and not fade_manager.is_active() then
+            fade_manager.restore_opacity(self.hud_id, ctrl)
+        end
     end
 
     if self.scale and (not key or key == "scale") and default.scale then
@@ -555,12 +559,8 @@ end
 function this:_write(ctrl)
     play_object.default.check(ctrl)
 
-    if self.hide then
+    if self.hide and not fade_manager.is_active() then
         self:change_visibility(ctrl, not self.hide)
-
-        if not fade_manager.is_active() and self.hud_id then
-            fade_manager.restore_opacity(self.hud_id, ctrl)
-        end
 
         return false
     end
