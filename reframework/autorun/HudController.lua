@@ -101,7 +101,6 @@ m.hook(
 m.hook("app.cGUI060000Recommend.onLateUpdate()", util.ref.capture_this, hook.hide_recommend_post)
 m.hook("app.cGUIMapEmBossIconDrawUpdater.isTemporaryInvisible", hook.hide_monster_icon_pre, hook.hide_monster_icon_post)
 m.hook("app.cGUIPaintBallController.update()", hook.get_paitballs_pre)
-m.hook("app.cGUIPaintBallController.cPaintBallTarget.isValid()", nil, hook.reveal_monster_icon_post)
 m.hook("app.GUI060008.requestSummaryEnemy(app.cEnemyContextHolder)", hook.skip_monster_select_pre)
 m.hook("app.cQuestSuccessFreePlayTime.enter()", hook.skip_quest_end_timer_pre)
 m.hook("app.PlayerManager.evQuestFlowChanged(app.cQuestFlowPartsBase)", hook.skip_quest_end_animation_pre)

@@ -714,13 +714,6 @@ function this.get_paitballs_pre(args)
     end
 end
 
-function this.reveal_monster_icon_post(retval)
-    local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
-        return true
-    end
-end
-
 function this.hide_recommend_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("hide_monster_icon") then
