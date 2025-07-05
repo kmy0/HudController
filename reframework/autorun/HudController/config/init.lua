@@ -81,7 +81,7 @@ local this = {
     lang = require("HudController.config.lang"),
 }
 
-this.version = "0.0.3"
+this.version = "0.0.4"
 this.name = "HudController"
 this.config_path = this.name .. "/config.json"
 this.default_lang_path = this.name .. "/lang/en-us.json"
