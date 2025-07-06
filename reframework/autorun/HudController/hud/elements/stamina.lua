@@ -26,6 +26,7 @@ local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object")
 local scale9 = require("HudController.hud.def.scale9")
 local util_game = require("HudController.util.game")
+local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 local vital_base = require("HudController.hud.def.vital_base")
 
@@ -194,9 +195,13 @@ function this:reset(key)
         local current_value = hudbase._CurrentGaugeAmountValue
 
         if amount and current_value then
-            amount:setValue(current_value - 1)
+            util_misc.try(function()
+                amount:setValue(current_value - 1)
+            end)
             call_queue.queue_func(self.hud_id, function()
-                amount:setValue(current_value)
+                util_misc.try(function()
+                    amount:setValue(current_value)
+                end)
             end)
         end
     end)
