@@ -1,6 +1,7 @@
 local config = require("HudController.config")
 local data = require("HudController.data")
 local generic = require("HudController.gui.elements.profile.panel.generic")
+local gui_util = require("HudController.gui.util")
 local main_panel = require("HudController.gui.elements.profile.panel.main_panel")
 local set = require("HudController.gui.set")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub_panel")
@@ -67,7 +68,7 @@ local function draw_panel(elem, elem_config, config_key, tree)
                     or (
                         ace_map.weaponid_name_to_local_name[elem.name_key]
                         or (ace_map.no_lang_key[elem.name_key] and elem.name_key)
-                        or config.lang.tr("hud_subelement." .. elem.name_key)
+                        or gui_util.tr_int("hud_subelement." .. elem.name_key)
                     ),
                 elem:any_gui() and string.format(" (%s)", config.lang.tr("misc.text_changed")) or ""
             )
