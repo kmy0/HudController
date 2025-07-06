@@ -911,4 +911,32 @@ function this.update_subtitles_pre(args)
     end
 end
 
+function this.set_control_global_pos_pre(args)
+    local control = get_elem_t("Control")
+    if
+        control
+        and not control.hide
+        and not control.children.control_guide1.hide
+        and control.children.control_guide1.offset
+        and sdk.to_int64(args[3]) & 1 == 0
+    then
+        util_ref.capture_this(args)
+    end
+end
+
+function this.set_control_global_pos_post(retval)
+    local GUI020014 = util_ref.get_this() --[[@as app.GUI020014]]
+    if GUI020014 then
+        local control_guide00 = GUI020014:get__PNL_ControlGuide00()
+        local pat = play_object.control.get_parent(control_guide00, "PNL_Pat00")
+
+        local pat_default = play_object.default.get_default(pat)
+        if not pat_default then
+            return
+        end
+
+        pat:set_Position(Vector3f.new(pat_default.offset.x, pat_default.offset.y, 0))
+    end
+end
+
 return this

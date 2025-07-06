@@ -85,6 +85,9 @@ local ctrl_args = {
             },
         },
     },
+    pat00 = {
+        "PNL_Pat00",
+    },
 }
 
 ---@param args ControlConfig
@@ -104,9 +107,13 @@ function this:new(args)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.notes)
     end)
     o.children.control_guide1 = hud_child:new(args.children.control_guide1, o, function(s, hudbase, gui_id, ctrl)
+        ---@diagnostic disable-next-line: invisible
+        o:_store_pat00_default(ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide1)
     end)
     o.children.control_guide2 = hud_child:new(args.children.control_guide2, o, function(s, hudbase, gui_id, ctrl)
+        ---@diagnostic disable-next-line: invisible
+        o:_store_pat00_default(ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide2)
     end)
     o.children.skill_name = hud_child:new(args.children.skill_name, o, function(s, hudbase, gui_id, ctrl)
@@ -114,6 +121,14 @@ function this:new(args)
     end)
 
     return o
+end
+
+---@protected
+---@param ctrl via.gui.Control
+function this:_store_pat00_default(ctrl)
+    -- required to reset button guide position when hunting horn is used
+    local pat00 = play_object.control.get(ctrl, ctrl_args.pat00) --[[@as via.gui.Control]]
+    play_object.default.check(pat00)
 end
 
 ---@return ControlConfig

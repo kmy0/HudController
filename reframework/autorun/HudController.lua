@@ -123,6 +123,11 @@ m.hook(
 )
 m.hook("app.cQuestDirector.update()", util.ref.capture_this, hook.stop_hide_gui_post)
 m.hook("app.cDialogueSubtitleManager.updateDisp()", hook.update_subtitles_pre)
+m.hook(
+    "app.GUI020014.changeViewTypeState(System.Boolean)",
+    hook.set_control_global_pos_pre,
+    hook.set_control_global_pos_post
+)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

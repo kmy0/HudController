@@ -368,3 +368,6 @@
 
 ---@class app.GUI020004 : app.GUIGaugeHudBase
 ---@field _CurrentGaugeAmountValue System.Single
+
+---@class app.GUI020014 : app.GUIHudBase
+---@field get__PNL_ControlGuide00 fun(self: app.GUI020014): via.gui.Panel
