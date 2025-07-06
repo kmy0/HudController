@@ -270,6 +270,7 @@ this.default = {
         select = "Select",
         select_base = "Select Base",
         select_arrow = "Select Arrow",
+        perform = "Perform",
     },
 }
 

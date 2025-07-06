@@ -4,21 +4,50 @@
 --- background: HudChild,
 --- resonance: HudChild,
 --- melody: HudChild,
---- notice: HudChild,
+--- notice: WhistleNotice,
+--- perform: WhistlePerform,
 ---}
+
+---@class (exact) WhistlePerform : HudChild
+---@field children {
+--- melody1: HudChild,
+--- melody2: HudChild,
+--- melody3: HudChild,
+--- arrow: HudChild,
+--- }
+---@class (exact) WhistleNotice : HudChild
+---@field children {
+--- arrow: CtrlChild,
+--- }
 
 ---@class (exact) WhistleConfig : HudChildConfig
 ---@field children {
 --- background: HudChildConfig,
 --- resonance: HudChildConfig,
 --- melody: HudChildConfig,
---- notice: HudChildConfig,
+--- notice: WhistleNoticeConfig,
+--- perform: WhistlePerformConfig,
 --- }
 
+---@class (exact) WhistlePerformConfig : HudChildConfig
+---@field children {
+--- melody1: HudChildConfig,
+--- melody2: HudChildConfig,
+--- melody3: HudChildConfig,
+--- arrow: HudChildConfig,
+--- }
+
+---@class (exact) WhistleNoticeConfig : HudChildConfig
+---@field children {
+--- arrow: CtrlChildConfig,
+--- }
+
+local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup
@@ -68,6 +97,47 @@ local ctrl_args = {
             },
         },
     },
+    ["notice.arrow"] = {
+        {
+            {
+                "PNL_Notice00",
+                "PNL_NoticeAnim",
+            },
+            "tex_arrow",
+            "via.gui.Texture",
+        },
+        {
+            {
+                "PNL_Notice01",
+                "PNL_NoticeAnim",
+            },
+            "tex_arrow",
+            "via.gui.Texture",
+        },
+    },
+    perform = {
+        {
+            {
+                "PNL_Scale",
+                "PNL_Pat00",
+                "PNL_Perform",
+            },
+        },
+    },
+    ["perform.melody"] = {
+        {
+            {},
+            "PNL_PMelody",
+            true,
+        },
+    },
+    ["perform.melody.arrow"] = {
+        {
+            {
+                "PNL_arrow",
+            },
+        },
+    },
 }
 
 ---@param args WhistleConfig
@@ -93,9 +163,48 @@ function this:new(args, parent)
     o.children.melody = hud_child:new(args.children.melody, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.melody)
     end)
+
     o.children.notice = hud_child:new(args.children.notice, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.notice)
-    end)
+    end) --[[@as WhistleNotice]]
+    o.children.notice.children.arrow = ctrl_child:new(
+        args.children.notice.children.arrow,
+        o.children.notice,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(play_object.child.get, ctrl, ctrl_args["notice.arrow"])
+        end
+    )
+
+    o.children.perform = hud_child:new(args.children.perform, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.perform)
+    end) --[[@as WhistlePerform]]
+    for i = 1, 3 do
+        o.children.perform.children["melody" .. i] = hud_child:new(
+            args.children.perform.children["melody" .. i],
+            o.children.perform,
+            function(s, hudbase, gui_id, ctrl)
+                print(play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1))
+                return play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1)
+            end
+        )
+    end
+    o.children.perform.children.arrow = hud_child:new(
+        args.children.perform.children.arrow,
+        o.children.perform,
+        function(s, hudbase, gui_id, ctrl)
+            local ret = {}
+            local melody = play_object.iter_args(play_object.control.all, ctrl, ctrl_args["perform.melody"])
+            for _, m in pairs(melody) do
+                ---@cast m via.gui.Control
+                util_table.array_merge_t(
+                    ret,
+                    play_object.iter_args(play_object.control.get, m, ctrl_args["perform.melody.arrow"])
+                )
+            end
+
+            return ret
+        end
+    )
 
     return o
 end
@@ -111,7 +220,15 @@ function this.get_config()
     }
     children.resonance = hud_child.get_config("resonance")
     children.melody = hud_child.get_config("melody")
-    children.notice = hud_child.get_config("notice")
+
+    children.perform = hud_child.get_config("perform") --[[@as WhistlePerformConfig]]
+    for i = 1, 3 do
+        children.perform.children["melody" .. i] = hud_child.get_config("melody" .. i)
+    end
+    children.perform.children.arrow = hud_child.get_config("arrow")
+
+    children.notice = hud_child.get_config("notice") --[[@as WhistleNoticeConfig]]
+    children.notice.children.arrow = { name_key = "arrow", hide = false }
 
     return base
 end
