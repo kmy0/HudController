@@ -1,10 +1,14 @@
 ---@class (exact) Subtitles : HudBase
 ---@field get_config fun(): SubtitlesConfig
 ---@field previous_category string?
----@field children table<string, HudChild>
+---@field children table<string, HudChild> | {
+--- background: Scale9,
+--- }
 
 ---@class (exact) SubtitlesConfig : HudBaseConfig
----@field children table<string, HudChildConfig>
+---@field children table<string, HudChildConfig> | {
+--- background: Scale9Config,
+--- }
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
@@ -12,6 +16,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local s = require("HudController.util.ref.singletons")
+local scale9 = require("HudController.hud.def.scale9")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -24,6 +29,12 @@ local ctrl_args = {
             {
                 "PNL_Group00",
             },
+        },
+    },
+    background = {
+        {
+            "s9g_accessibility_BG",
+            "via.gui.Scale9Grid",
         },
     },
 }
@@ -62,6 +73,15 @@ function this:new(args)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.group)
         end)
     end
+
+    o.children.background = scale9:new(
+        args.children.background --[[@as Scale9Config]],
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(play_object.child.all_type, ctrl, ctrl_args.background)
+        end
+    )
+
     return o
 end
 
@@ -96,6 +116,11 @@ function this.get_config()
     for _, name in pairs(ace_enum.subtitles_category) do
         children[name] = hud_child.get_config(name)
     end
+
+    children.background = {
+        name_key = "background",
+        hide = false,
+    }
 
     return base
 end

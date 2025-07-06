@@ -58,5 +58,6 @@ this.control.from_func = lru.memoize(this.control.from_func, 1000, is_ok)
 this.control.top = lru.memoize(this.control.top, 1000, is_ok)
 this.control.get_parent = lru.memoize(this.control.get_parent, 1000, is_ok)
 this.child.get = lru.memoize(this.child.get, 1000, is_ok)
+this.child.all_type = lru.memoize(this.child.all_type, 1000, is_ok)
 
 return this
