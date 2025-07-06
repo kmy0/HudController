@@ -17,13 +17,16 @@
 ---@field children {
 --- background: HudChildConfig,
 --- keys: HudChildConfig,
---- text: HudChildConfig,
+--- text: RadialPalletTextConfig,
 --- frame: HudChildConfig,
 --- pallet_state: HudChildConfig,
 --- select: HudChildConfig,
 --- select_arrow: HudChildConfig,
 --- center: HudChildConfig,
 --- }
+
+---@class (exact) RadialPalletTextConfig : HudChildConfig
+---@field children table<string, HudChildConfig>
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -189,6 +192,15 @@ local ctrl_args = {
             },
         },
     },
+    icl = {
+        {
+            {
+                "PNL_Pallet",
+                "PNL_PalletSelect",
+                "ICL_PSG",
+            },
+        },
+    },
 }
 
 local pallet_expanded_states = {
@@ -246,6 +258,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
 
         return util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, ctrl, ctrl_args.keys))
     end)
+
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         local icons = get_pallet_icon_ps(ctrl)
         local ret = {}
@@ -256,6 +269,21 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
 
         return ret
     end)
+    for i = 1, 8 do
+        o.children.text.children["text" .. i] = hud_child:new(
+            args.children.text.children["text" .. i],
+            o.children.text,
+            function(s, hudbase, gui_id, ctrl)
+                local pallet = play_object.control.get_parent(ctrl, "PNL_PalletInOut")
+                local icl = play_object.control.get(pallet, ctrl_args.icl[1][1]) --[[@as via.gui.Control]]
+                local scg = play_object.control.get(icl, "SCG_PS_" .. i) --[[@as via.gui.Control]]
+                local ps = play_object.control.get(scg, "ITM_PS_" .. i) --[[@as via.gui.Control]]
+
+                return play_object.iter_args(play_object.control.get, ps, ctrl_args.text_icon)
+            end
+        )
+    end
+
     o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
         local icons = get_pallet_icon_ps(ctrl)
         local ret = {}
@@ -321,11 +349,6 @@ function this.get_config()
         name_key = "keybind",
         hide = false,
     }
-    children.text = {
-        name_key = "text",
-        hide = false,
-    }
-    children.pallet_state = { name_key = "__pallet_state", play_state = "" }
     children.select = {
         name_key = "select",
         hide = false,
@@ -338,6 +361,24 @@ function this.get_config()
         name_key = "center",
         hide = false,
     }
+    children.pallet_state = { name_key = "__pallet_state", play_state = "" }
+
+    children.text = {
+        name_key = "text",
+        hide = false,
+        enabled_offset = false,
+        offset = { x = 0, y = 0 },
+        children = {},
+    }
+
+    for i = 1, 8 do
+        children.text.children["text" .. i] = {
+            name_key = "text" .. i,
+            hide = false,
+            enabled_offset = false,
+            offset = { x = 0, y = 0 },
+        }
+    end
 
     return base
 end
