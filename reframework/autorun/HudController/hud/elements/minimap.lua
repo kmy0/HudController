@@ -45,8 +45,13 @@ function this:new(args, default_overwrite)
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
         local root = play_object.control.from_func(self._get_panel) --[[@as via.gui.Control?]]
+        ---@cast hudbase app.GUI060010
         if root then
-            return play_object.iter_args(play_object.control.get, root, ctrl_args.background)
+            if not hudbase:get_IsActive() then
+                s:reset()
+            else
+                return play_object.iter_args(play_object.control.get, root, ctrl_args.background)
+            end
         end
     end)
 

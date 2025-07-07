@@ -393,3 +393,6 @@
 ---@class app.cEnemyManageInfo : ace.cNonCycleTypeObject
 ---@field get_Browser fun(self: app.cEnemyManageInfo): app.cEnemyBrowser
 ---@field get_Pos fun(self: app.cEnemyManageInfo): Vector3f
+
+---@class app.GUI060010 : app.GUIHudBase
+---@field get_IsActive fun(self: app.GUI060010): System.Boolean
