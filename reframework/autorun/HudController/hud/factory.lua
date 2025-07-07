@@ -21,6 +21,7 @@
 ---@field skip_quest_end_timer boolean
 ---@field disable_quest_end_outro boolean
 ---@field hide_monster_icon boolean
+---@field hide_lock_target boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -60,6 +61,7 @@ function this.get_hud_profile_config(key, name)
         disable_quest_intro = false,
         disable_quest_end_camera = false,
         hide_monster_icon = false,
+        hide_lock_target = false,
         disable_quest_end_outro = false,
         skip_quest_end_timer = false,
     }

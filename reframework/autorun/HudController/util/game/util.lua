@@ -95,6 +95,18 @@ function this.system_array_to_lua(system_array)
 end
 
 ---@generic T
+---@param lua_array T[]
+---@param type_name `T`
+---@return System.Array<T>
+function this.lua_array_to_system_array(lua_array, type_name)
+    local ret = sdk.create_managed_array(type_name, #lua_array):add_ref() --[[@as System.Array]]
+    for i = 0, #lua_array - 1 do
+        ret:set_Item(i, lua_array[i + 1])
+    end
+    return ret
+end
+
+---@generic T
 ---@param array System.Array<T>
 ---@return System.ArrayEnumerator<T>
 function this.get_array_enum(array)

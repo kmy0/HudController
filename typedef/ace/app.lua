@@ -315,6 +315,7 @@
 
 ---@class app.cEnemyContext : app.cGameContext
 ---@field get_ContinueFlag fun(self: app.cEnemyContext): ace.cSafeContinueFlagGroup
+---@field PaintHitInfoIndex System.Array<app.cEnemyContext.EmPaintHit>
 
 ---@class app.cGUIBeaconEM : app.cGUIBeaconBase
 ---@field getGameContext fun(self: app.cGUIBeaconEM): app.cEnemyContext
@@ -353,12 +354,6 @@
 ---@field _SubtitlesGUI app.GUI020400
 ---@field _ChoiceGUI app.GUI020401
 
----@class app.cGUIMapIconDrawUpdaterBase : via.clr.ManagedObject
----@field isTemporaryInvisible fun(self: app.cGUIMapIconDrawUpdaterBase, beacon: app.cGUIBeaconEM): System.Boolean
-
----@class app.cGUIMapEmBossIconDrawUpdater : app.cGUIMapIconDrawUpdaterBase
----@field setMovePanel fun(self: app.cGUIMapEmBossIconDrawUpdater, beacon: app.cGUIBeaconEM, pattern: app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN)
-
 ---@class app.GUIGaugeHudBase : app.GUIHudBase
 ---@field _GaugeAmount ace.cGUIParamFloat
 
@@ -371,3 +366,30 @@
 
 ---@class app.GUI020014 : app.GUIHudBase
 ---@field get__PNL_ControlGuide00 fun(self: app.GUI020014): via.gui.Panel
+
+---@class app.cEnemyBrowser : ace.cNonCycleTypeObject
+---@field get_EmContext fun(self: app.cEnemyBrowser): app.cEnemyContext
+---@field get_IsBoss fun(self: app.cEnemyBrowser): System.Boolean
+
+---@class app.EnemyCharacter : app.CharacterBase
+---@field _Context app.cEnemyContextHolder
+
+---@class app.cGUI060000OutFrameTarget : app.cGUIPartsBaseApp
+---@field _OutFrameIcons System.Array<app.cGUI060000OutFrameTarget.cMapOutFrameIcon>
+
+---@class app.cGUI060000OutFrameTarget.cMapOutFrameIcon : via.clr.ManagedObject
+---@field get_TargetBeacon fun(self: app.cGUI060000OutFrameTarget.cMapOutFrameIcon): app.cGUIBeaconBase
+---@field setVisible fun(self: app.cGUI060000OutFrameTarget.cMapOutFrameIcon, val: System.Boolean)
+
+---@class app.cEnemyContext.EmPaintHit : System.ValueType
+---@field enable System.Boolean
+
+---@class app.EnemyManager : ace.GAElement
+---@field _EnemyList app.cManagedArray<app.cEnemyManageInfo>
+
+---@class app.cManagedArray<T> : via.clr.ManagedObject
+---@field get_Array fun(self: app.cManagedArray): System.Array<any>
+
+---@class app.cEnemyManageInfo : ace.cNonCycleTypeObject
+---@field get_Browser fun(self: app.cEnemyManageInfo): app.cEnemyBrowser
+---@field get_Pos fun(self: app.cEnemyManageInfo): Vector3f

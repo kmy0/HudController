@@ -180,7 +180,7 @@ function this.init()
     game_data.get_enum("app.GUIManager.APP_CONTINUE_FLAG", ace_enum.gui_continue_flag)
     game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
     game_data.get_enum("app.GUI020400.SUBTITLES_CATEGORY", ace_enum.subtitles_category)
-    game_data.get_enum("app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN", ace_enum.icon_move_pattern)
+    game_data.get_enum("app.EnemyDef.CONTINUE_FLAG", ace_enum.enemy_continue_flag)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)

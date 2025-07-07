@@ -48,8 +48,6 @@ local ammo_slider = {
     open = false,
     item_slider_open = false,
 }
----@type table<app.cGameContext, boolean>
-local paintballs = {}
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -80,6 +78,23 @@ local function force_opacity(pnl)
     local scale = pnl:get_ColorScale()
     scale.w = 1.0
     pnl:set_ColorScale(scale)
+end
+
+---@param em_ctx app.cEnemyContext
+local function is_paintballed(em_ctx)
+    local arr = em_ctx.PaintHitInfoIndex
+    local any = false
+
+    if arr then
+        util_game.do_something(arr, function(system_array, index, value)
+            if value.enable then
+                any = true
+                return false
+            end
+        end)
+    end
+
+    return any
 end
 
 function this.update_pre(args)
@@ -428,7 +443,7 @@ end
 
 function this.hide_iteractables_post(retval)
     local name_access = get_elem_t("NameAccess")
-    if name_access and not name_access.hide then
+    if name_access and (not name_access.hide or hud.get_hud_option("hide_monster_icon")) then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
         local player_pos
@@ -442,15 +457,31 @@ function this.hide_iteractables_post(retval)
 
                 if cat_name == "NPC" and name_access.npc_draw_distance > 0 then
                     local game_object = value:get_GameObject()
-                    local transform = game_object:get_Transform()
-                    local pos = transform:get_Position()
+                    if game_object then
+                        local transform = game_object:get_Transform()
+                        local pos = transform:get_Position()
 
-                    if not player_pos then
-                        player_pos = access_control:get_PlayerPosition()
+                        if not player_pos then
+                            player_pos = access_control:get_PlayerPosition()
+                        end
+
+                        if (pos - player_pos):length() > name_access.npc_draw_distance then
+                            value:clear()
+                        end
                     end
-
-                    if (pos - player_pos):length() > name_access.npc_draw_distance then
-                        value:clear()
+                elseif
+                    cat_name == "ENEMY"
+                    and not name_access.object_category[cat_name]
+                    and hud.get_hud_option("hide_monster_icon")
+                then
+                    local game_object = value:get_GameObject()
+                    if game_object then
+                        local char = util_game.get_component(game_object, "app.EnemyCharacter") --[[@as app.EnemyCharacter]]
+                        local holder = char._Context
+                        local ctx = holder:get_Em()
+                        if not is_paintballed(ctx) then
+                            value:clear()
+                        end
                     end
                 end
 
@@ -691,45 +722,89 @@ function this.disable_quest_end_camera_post(args)
     end
 end
 
+function this.hide_icon_out_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local out_frame_target = util_ref.get_this() --[[@as app.cGUI060000OutFrameTarget]]
+        local arr = out_frame_target._OutFrameIcons
+
+        if arr then
+            util_game.do_something(arr, function(system_array, index, value)
+                if value then
+                    local beacon = value:get_TargetBeacon()
+                    if
+                        beacon
+                        and util_ref.is_a(beacon, "app.cGUIBeaconEM")
+                        ---@cast beacon app.cGUIBeaconEM
+
+                        and not is_paintballed(beacon:getGameContext())
+                    then
+                        value:setVisible(false)
+                    end
+                end
+            end)
+        end
+    end
+end
+
+function this.reveal_monster_icon_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_lock_target") then
+        return true
+    end
+end
+
 function this.hide_monster_icon_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("hide_monster_icon") then
-        ---@diagnostic disable-next-line: no-unknown
-        thread.get_hook_storage()["this"] = sdk.to_managed_object(args[2])
-        ---@diagnostic disable-next-line: no-unknown
-        thread.get_hook_storage()["beacon"] = sdk.to_managed_object(args[3])
-    end
-end
+        local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
+        local beacons = beacon_man:get_EmBossBeaconContainer()
 
-function this.hide_monster_icon_post(retval)
-    local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
-        local updater = thread.get_hook_storage()["this"] --[[@as app.cGUIMapIconDrawUpdaterBase]]
-        if not util_ref.is_a(updater, "app.cGUIMapEmBossIconDrawUpdater") then
-            return
-        end
-
-        ---@cast updater app.cGUIMapEmBossIconDrawUpdater
-        local beacon = thread.get_hook_storage()["beacon"] --[[@as app.cGUIBeaconEM?]]
-        if not beacon then
-            return
-        end
-
-        if not paintballs[beacon:getGameContext()] then
-            updater:setMovePanel(beacon, rl(ace_enum.icon_move_pattern, "NONE"))
-            return true
-        end
-    end
-end
-
-function this.get_paitballs_pre(args)
-    local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
-        paintballs = {}
-        local paintball_controller = sdk.to_managed_object(args[2]) --[[@as app.cGUIPaintBallController]]
-        util_game.do_something(paintball_controller:getPaintBallBeaconListAll(), function(system_array, index, value)
-            paintballs[value:getGameContext()] = true
+        util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
+            local ctx = value:getGameContext()
+            if not is_paintballed(ctx) then
+                local flags = ctx:get_ContinueFlag()
+                flags:on(
+                    rl(
+                        ace_enum.enemy_continue_flag,
+                        hud.get_hud_option("hide_lock_target") and "HIDE_MAP_WITH_DISABLE_PIN" or "HIDE_MAP"
+                    )
+                )
+            end
         end)
+    end
+end
+
+function this.get_near_monsters_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local pos = sdk.to_valuetype(args[3], "via.vec3") --[[@as via.vec3]]
+        local player_pos = Vector3f.new(pos.x, pos.y, pos.z)
+        local range = sdk.to_float(args[4])
+        local emman = s.get("app.EnemyManager")
+        local em_arr = emman._EnemyList:get_Array() --[[@as System.Array<app.cEnemyManageInfo>]]
+        local arr = {}
+
+        util_game.do_something(em_arr, function(system_array, index, value)
+            if (value:get_Pos() - player_pos):length() <= range then
+                local browser = value:get_Browser()
+                if browser:get_IsBoss() and is_paintballed(browser:get_EmContext()) then
+                    table.insert(arr, value)
+                end
+            end
+        end)
+
+        if not util_table.empty(arr) then
+            ---@diagnostic disable-next-line: no-unknown
+            thread.get_hook_storage()["ret"] = util_game.lua_array_to_system_array(arr, "app.cEnemyManageInfo")
+        end
+    end
+end
+
+function this.get_near_monsters_post(retval)
+    local ret = thread.get_hook_storage()["ret"] --[[@as System.Array<app.cEnemyManageInfo>?]]
+    if ret then
+        return ret
     end
 end
 
@@ -756,7 +831,7 @@ function this.skip_monster_select_pre(args)
         local ctx_holder = sdk.to_managed_object(args[3]) --[[@as app.cEnemyContextHolder]]
         local ctx = ctx_holder:get_Em()
 
-        if not paintballs[ctx] then
+        if not is_paintballed(ctx) then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

@@ -34,7 +34,7 @@
 ---@field gui_continue_flag table<app.GUIManager.APP_CONTINUE_FLAG, string>
 ---@field gui_id table<app.GUIID.ID, string>
 ---@field subtitles_category table<app.GUI020400.SUBTITLES_CATEGORY, string>
----@field icon_move_pattern table<app.cGUIMapEmBossIconDrawUpdater.MOVE_PATTERN, string>
+---@field enemy_continue_flag table<app.EnemyDef.CONTINUE_FLAG, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -92,7 +92,7 @@ local this = {
         gui_continue_flag = {},
         gui_id = {},
         subtitles_category = {},
-        icon_move_pattern = {},
+        enemy_continue_flag = {},
     },
     map = {
         hudid_to_guiid = {},

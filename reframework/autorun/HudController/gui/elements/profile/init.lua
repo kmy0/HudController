@@ -73,6 +73,8 @@ local function draw_options()
         ),
         "disable_area_intro"
     ) or changed
+
+    util_imgui.separator_text(config.lang.tr("hud.category_monster"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_hide_monster_icon"),
@@ -81,6 +83,19 @@ local function draw_options()
         "hide_monster_icon"
     ) or changed
     util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_monster_icon"), true)
+
+    imgui.begin_disabled(not hud.get_hud_option("hide_monster_icon"))
+
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_hide_lock_target"),
+            string.format("mod.hud.int:%s.hide_lock_target", config.current.mod.combo_hud)
+        ),
+        "hide_lock_target"
+    ) or changed
+    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_lock_target"), true)
+
+    imgui.end_disabled()
 
     util_imgui.separator_text(config.lang.tr("hud.category_quest"))
     changed = check_overriden(
