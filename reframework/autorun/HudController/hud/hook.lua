@@ -939,4 +939,11 @@ function this.set_control_global_pos_post(retval)
     end
 end
 
+function this.hide_map_navi_points_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("disable_scoutflies") then
+        return false
+    end
+end
+
 return this
