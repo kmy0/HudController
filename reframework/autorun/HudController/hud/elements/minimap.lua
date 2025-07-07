@@ -1,10 +1,16 @@
 ---@class (exact) Minimap : HudBase
 ---@field get_config fun(): MinimapConfig
----@field children {background: HudChild}
+---@field children {
+--- background: HudChild,
+--- out_frame_icon: HudChild,
+--- }
 ---@field protected _get_panel fun(): via.gui.Control?
 
 ---@class (exact) MinimapConfig : HudBaseConfig
----@field children {background: HudChildConfig}
+---@field children {
+--- background: HudChildConfig,
+--- out_frame_icon: HudChildConfig,
+--- }
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
@@ -12,6 +18,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local s = require("HudController.util.ref.singletons")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -30,6 +37,26 @@ local ctrl_args = {
                 "PNL_All",
                 "PNL_BackLayer",
                 "PNL_background_black",
+            },
+        },
+    },
+    out_frame_icon = {
+        {
+            {
+                "PNL_Pat00",
+                "PNL_Radar",
+                "PNL_OutFrameIconMain",
+            },
+            "PNL_OutFrameIcon00",
+            true,
+        },
+    },
+    ["out_frame_icon.rot"] = {
+        {
+            {
+                "PNL_OutFrame_rot",
+                "PNL_OutFrame_pos",
+                "PNL_OutFrame_posY",
             },
         },
     },
@@ -54,6 +81,20 @@ function this:new(args, default_overwrite)
             end
         end
     end)
+    o.children.out_frame_icon = hud_child:new(args.children.out_frame_icon, o, function(s, hudbase, gui_id, ctrl)
+        local ret = {}
+        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.out_frame_icon)
+
+        for _, icon in pairs(icons) do
+            ---@cast icon via.gui.Control
+            util_table.array_merge_t(
+                ret,
+                play_object.iter_args(play_object.control.get, icon, ctrl_args["out_frame_icon.rot"])
+            )
+        end
+
+        return ret
+    end)
 
     return o
 end
@@ -77,6 +118,12 @@ function this.get_config()
         hide = false,
         enabled_offset = false,
         offset = { x = 0, y = 0 },
+    }
+    children.out_frame_icon = {
+        name_key = "out_frame_icon",
+        hide = false,
+        enabled_rot = false,
+        rot = 0,
     }
 
     return base

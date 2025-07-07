@@ -274,6 +274,7 @@ this.default = {
         select_base = "Select Base",
         select_arrow = "Select Arrow",
         perform = "Perform",
+        out_frame_icon = "Out Frame Icon",
     },
 }
 
