@@ -131,4 +131,28 @@ function this.hook_ret(f)
     end
 end
 
+---@param ptr userdata
+---@return boolean
+function this.to_bool(ptr)
+    return sdk.to_int64(ptr) & 1 == 1
+end
+
+---@param ptr userdata
+---@return integer
+function this.to_byte(ptr)
+    return sdk.to_int64(ptr) & 0xff
+end
+
+---@param ptr userdata
+---@return integer
+function this.to_short(ptr)
+    return sdk.to_int64(ptr) & 0xffff
+end
+
+---@param ptr userdata
+---@return integer
+function this.to_int(ptr)
+    return sdk.to_int64(ptr) & 0xfffffff
+end
+
 return this

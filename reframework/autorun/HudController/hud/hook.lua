@@ -166,7 +166,7 @@ function this.disable_gui_sound_pre(args)
         hud.get_hud_option("mute_gui")
         or (
             hud.get_hud_option("skip_quest_end_timer")
-            and sdk.to_int64(args[3]) & 0xffff == rl(ace_enum.gui_id, "UI020202")
+            and util_ref.to_short(args[3]) == rl(ace_enum.gui_id, "UI020202")
         )
     then
         return sdk.PreHookResult.SKIP_ORIGINAL
@@ -993,7 +993,7 @@ function this.set_control_global_pos_pre(args)
         and not control.hide
         and not control.children.control_guide1.hide
         and control.children.control_guide1.offset
-        and sdk.to_int64(args[3]) & 1 == 0
+        and not util_ref.to_bool(args[3])
     then
         util_ref.capture_this(args)
     end
