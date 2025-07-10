@@ -26,6 +26,7 @@ local this = {
             disable_quest_end_outro = "box_disable_quest_end_outro",
             skip_quest_end_timer = "box_skip_quest_end_timer",
             hide_lock_target = "box_hide_lock_target",
+            hide_quest_end_timer = "box_hide_quest_end_timer",
         },
     },
     initialized = false,

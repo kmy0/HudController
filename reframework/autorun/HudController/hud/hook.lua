@@ -915,7 +915,7 @@ function this.skip_gui_open_pre(args)
     local hud_config = get_hud()
     if
         hud_config
-        and hud.get_hud_option("skip_quest_end_timer")
+        and (hud.get_hud_option("skip_quest_end_timer") or hud.get_hud_option("hide_quest_end_timer"))
         and sdk.to_int64(args[3]) == rl(ace_enum.gui_id, "UI020202")
     then
         return sdk.PreHookResult.SKIP_ORIGINAL
