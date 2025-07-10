@@ -57,6 +57,16 @@ function this.get_all_components(type)
 end
 
 ---@generic T
+---@param type `T`
+---@return T?
+function this.get_component_any(type)
+    local arr = this.get_scene():call("findComponents(System.Type)", sdk.typeof(type))
+    if arr:get_Count() > 0 then
+        return arr:get_Item(0)
+    end
+end
+
+---@generic T
 ---@param game_object via.GameObject
 ---@param type_name `T`
 ---@return T?

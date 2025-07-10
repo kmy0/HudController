@@ -47,8 +47,7 @@ end
 ---@return app.GUI020020
 function this:get_GUI020020()
     if not self.GUI020020 then
-        local arr = util_game.get_all_components("app.GUI020020")
-        self.GUI020020 = arr:get_Item(0)
+        self.GUI020020 = util_game.get_component_any("app.GUI020020")
     end
 
     return self.GUI020020

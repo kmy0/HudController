@@ -1,6 +1,6 @@
 ---@class (exact) Stamina : VitalBase
 ---@field get_config fun(): StaminaConfig
----@field GUI020004 app.GUI020004
+---@field GUI020004 app.GUI020004?
 ---@field children {gauge: StaminaGauge, light_end: HudChild}
 
 ---@class (exact) StaminaGauge : HudChild
@@ -210,7 +210,7 @@ end
 ---@return app.GUI020004
 function this:get_GUI020004()
     if not self.GUI020004 then
-        self.GUI020004 = util_game.get_all_components("app.GUI020004"):get_Item(0)
+        self.GUI020004 = util_game.get_component_any("app.GUI020004")
     end
 
     return self.GUI020004

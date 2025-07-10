@@ -1,6 +1,6 @@
 ---@class (exact) Health : VitalBase
 ---@field get_config fun(): HealthConfig
----@field GUI020003 app.GUI020003
+---@field GUI020003 app.GUI020003?
 ---@field children {
 --- skill_list: SkillList,
 --- anim_danger: HudChild,
@@ -391,7 +391,7 @@ end
 ---@return app.GUI020003
 function this:get_GUI020003()
     if not self.GUI020003 then
-        self.GUI020003 = util_game.get_all_components("app.GUI020003"):get_Item(0)
+        self.GUI020003 = util_game.get_component_any("app.GUI020003")
     end
 
     return self.GUI020003
