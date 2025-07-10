@@ -137,6 +137,7 @@ this.default = {
             SUBTITLES = "Subtitles",
             SUBTITLES_CHOICE = "Subtitles Choice",
             DAMAGE_NUMBERS = "Damage Numbers",
+            PREPARE_WINDOW = "Prepare Window",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
