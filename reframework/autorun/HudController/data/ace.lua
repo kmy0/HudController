@@ -115,6 +115,7 @@ local this = {
             "SUBTITLES_CHOICE",
             "DAMAGE_NUMBERS",
             "PREPARE_WINDOW",
+            "ROD_RETICLE",
         },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
@@ -124,6 +125,7 @@ local this = {
             SUBTITLES_CHOICE = "UI020401",
             DAMAGE_NUMBERS = "UI020020",
             PREPARE_WINDOW = "UI020800",
+            ROD_RETICLE = "UI020028",
         },
         no_lang_key = { ALL = true },
     },

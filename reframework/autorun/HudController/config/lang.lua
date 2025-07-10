@@ -138,6 +138,7 @@ this.default = {
             SUBTITLES_CHOICE = "Subtitles Choice",
             DAMAGE_NUMBERS = "Damage Numbers",
             PREPARE_WINDOW = "Quest Prepare",
+            ROD_RETICLE = "Insect Glaive Reticle",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -292,6 +293,8 @@ this.default = {
         wound = "Wound",
         affinity = "Affinity",
         negative_affinity = "Negative Affinity",
+        extract = "Extract",
+        extract_frame = "Extract Frame",
     },
 }
 
