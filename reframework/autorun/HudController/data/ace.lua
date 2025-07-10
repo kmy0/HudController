@@ -126,6 +126,12 @@ local this = {
             DAMAGE_NUMBERS = "UI020020",
             PREPARE_WINDOW = "UI020800",
             ROD_RETICLE = "UI020028",
+            -- GUI020026 qte?
+            -- GUI020002 some reticle
+            -- GUI120200 some notification thing?
+            -- GUI020901 placeholder?
+            -- GUI020902 placeholder?
+            -- GUI090902 placeholder?
         },
         no_lang_key = { ALL = true },
     },
