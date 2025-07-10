@@ -18,6 +18,7 @@ local rl = util_game.data.reverse_lookup
 
 ---@return boolean
 local function get_hud_setting()
+    util_table.clear(ace_enum.hud)
     game_data.get_enum("app.GUIHudDef.TYPE", ace_enum.hud)
 
     local var_setting = s.get("app.VariousDataManager"):get_Setting()
