@@ -400,3 +400,6 @@
 
 ---@class app.GUI020020 : app.GUIBaseApp
 ---@field _DamageInfo System.Array<app.GUI020020.DAMAGE_INFO>
+
+---@class app.GUI600100 : app.GUIBaseApp
+---@field _TransitionGuide via.gui.Panel

@@ -1035,4 +1035,21 @@ function this.update_damage_numbers_post(retval)
     end
 end
 
+function this.update_training_room_hud_post(retval)
+    if not is_ok() then
+        return
+    end
+
+    local training_room_hud_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"])
+
+    call_queue.consume(training_room_hud_guiid)
+
+    local training_room_hud = get_elem_t("TrainingRoomHud")
+    if training_room_hud then
+        local hudbase = util_ref.get_this() --[[@as app.GUI600100]]
+        ---@diagnostic disable-next-line: param-type-mismatch
+        training_room_hud:write(hudbase, hudbase:get_ID(), training_room_hud:get_pnl_all())
+    end
+end
+
 return this

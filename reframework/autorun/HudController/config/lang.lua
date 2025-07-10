@@ -139,6 +139,7 @@ this.default = {
             DAMAGE_NUMBERS = "Damage Numbers",
             PREPARE_WINDOW = "Quest Prepare",
             ROD_RETICLE = "Insect Glaive Reticle",
+            TRAINING_ROOM_HUD = "Training Room HUD",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -295,6 +296,10 @@ this.default = {
         negative_affinity = "Negative Affinity",
         extract = "Extract",
         extract_frame = "Extract Frame",
+        damage = "Damage",
+        button_guide = "Button Guide",
+        command_history = "Command History",
+        combo_guide = "Combo Guide",
     },
 }
 
