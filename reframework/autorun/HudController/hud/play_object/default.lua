@@ -63,6 +63,11 @@ function this.create_default(obj)
             ret.blend = obj:get_BlendType()
             ret.ignore_alpha = obj:get_IgnoreAlpha()
             ret.alpha_channel = obj:get_AlphaChannelType()
+        elseif type:is_a("via.gui.Text") then
+            ---@cast obj via.gui.Text
+            ---@cast ret TextDefault
+            ret.hide_glow = not obj:get_GlowEnable()
+            ret.glow_color = obj:get_GlowColor().rgba
         end
 
         return ret

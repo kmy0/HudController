@@ -1,6 +1,7 @@
 ---@class Separator
 ---@field ordered_keys string[]
 ---@field protected _count integer
+---@field protected _start_count integer
 
 local config = require("HudController.config")
 
@@ -17,6 +18,7 @@ function Separator:new(ordered_keys)
     local o = {
         ordered_keys = ordered_keys,
         _count = -1,
+        _start_count = -1,
     }
     setmetatable(o, self)
     return o
@@ -30,10 +32,15 @@ function Separator:refresh(t)
             self._count = self._count + 1
         end
     end
+    self._start_count = self._count
 end
 
 function Separator:has_separators()
     return self._count > 0
+end
+
+function Separator:had_separators()
+    return self._start_count > -1
 end
 
 function Separator:draw()

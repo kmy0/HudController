@@ -30,6 +30,10 @@ local separator_control_child = gui_util.separator:new({
     "enabled_size_y",
     "enabled_color",
 })
+local separator_text = gui_util.separator:new({
+    "hide_glow",
+    "enabled_glow_color",
+})
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
@@ -94,6 +98,7 @@ local function draw_control_child(elem, elem_config, config_key)
 
         if changed then
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
+            config.save()
         end
 
         imgui.end_disabled()
@@ -107,8 +112,14 @@ end
 local function draw_material(elem, elem_config, config_key)
     draw_control_child(elem, elem_config, config_key)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_animation"))
-    separator_material:refresh(elem_config)
+    for i = 0, 4 do
+        local var_key = "var" .. i
+        if elem_config["enabled_" .. var_key] ~= nil then
+            util_imgui.separator_text(config.lang.tr("hud_element.entry.category_animation"))
+            separator_material:refresh(elem_config)
+            break
+        end
+    end
 
     for i = 0, 4 do
         local var_key = "var" .. i
@@ -273,6 +284,116 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_text(elem, elem_config, config_key)
+    draw_control_child(elem, elem_config, config_key)
+
+    ---@cast elem_config TextConfig
+    ---@cast elem Text
+
+    ---@type string
+    local item_config_key
+    local changed = false
+
+    if separator_control_child:had_separators() then
+        imgui.separator()
+    end
+
+    separator_text:refresh(elem_config)
+
+    if elem_config.hide_glow ~= nil then
+        if
+            set.checkbox(
+                gui_util.tr("hud_element.entry.box_hide_glow", config_key .. ".hide_glow"),
+                config_key .. ".hide_glow"
+            )
+        then
+            elem:set_hide_glow(elem_config.hide_glow)
+        end
+
+        separator_text:draw()
+    end
+
+    if elem_config.enabled_glow_color ~= nil then
+        item_config_key = config_key .. ".enabled_glow_color"
+        changed = set.checkbox(gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key), item_config_key)
+
+        imgui.begin_disabled(not elem_config.enabled_glow_color)
+
+        item_config_key = config_key .. ".glow_color"
+        changed = set.color_edit("##" .. item_config_key, item_config_key) or changed
+
+        if changed then
+            elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
+            config.save()
+        end
+
+        imgui.end_disabled()
+        separator_text:draw()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
+local function draw_damage_numbers(elem, elem_config, config_key)
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_numbers_behavior"))
+
+    ---@cast elem DamageNumbersDamageState
+    ---@cast elem_config DamageNumbersDamageStateConfig
+
+    local item_config_key = config_key .. ".enabled_box"
+    local changed = false
+
+    if set.checkbox(gui_util.tr("hud_element.entry.box_enable_box", item_config_key), item_config_key) then
+        elem:set_box(elem_config.enabled_box and {
+            x = elem_config.box.x,
+            y = elem_config.box.y,
+            w = elem_config.box.w,
+            h = elem_config.box.h,
+        } or nil)
+        config.save()
+    end
+    util_imgui.tooltip(config.lang.tr("hud_element.entry.tooltip_numbers_box"), true)
+
+    imgui.begin_disabled(not elem_config.enabled_box)
+
+    changed = generic.draw_slider_settings(nil, {
+        {
+            config_key = config_key .. ".box.x",
+            label = gui_util.tr("hud_element.entry.pos_x"),
+        },
+        {
+            config_key = config_key .. ".box.y",
+            label = gui_util.tr("hud_element.entry.pos_y"),
+        },
+    }, -1920, 1920, 1, "%.0f")
+    changed = generic.draw_slider_settings(nil, {
+        {
+            config_key = config_key .. ".box.w",
+            label = gui_util.tr("hud_element.entry.size_x"),
+        },
+        {
+            config_key = config_key .. ".box.h",
+            label = gui_util.tr("hud_element.entry.size_y"),
+        },
+    }, -1920, 1920, 1, "%.0f") or changed
+
+    if changed then
+        elem:set_box({
+            x = elem_config.box.x,
+            y = elem_config.box.y,
+            w = elem_config.box.w,
+            h = elem_config.box.h,
+        })
+        config.save()
+    end
+
+    imgui.end_disabled()
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_sub_type --[[@as HudSubType]]
@@ -284,5 +405,7 @@ end
 
 this.funcs[mod.enum.hud_sub_type.MATERIAL] = draw_material
 this.funcs[mod.enum.hud_sub_type.SCALE9] = draw_scale9
+this.funcs[mod.enum.hud_sub_type.TEXT] = draw_text
+this.funcs[mod.enum.hud_sub_type.DAMAGE_NUMBERS] = draw_damage_numbers
 
 return this

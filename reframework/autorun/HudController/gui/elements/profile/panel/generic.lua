@@ -68,7 +68,7 @@ function this.draw_step_buttons(config_key, min, max, step)
     return changed
 end
 
----@param checkbox {config_key: string, label: string}
+---@param checkbox {config_key: string, label: string}?
 ---@param sliders {config_key: string, label: string}[]
 ---@param min number
 ---@param max number
@@ -76,9 +76,14 @@ end
 ---@param format string
 ---@return boolean
 function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
-    local changed = set.checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
+    local changed = false
 
-    imgui.begin_disabled(not config.get(checkbox.config_key))
+    if checkbox then
+        changed = set.checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
+        imgui.begin_disabled(not config.get(checkbox.config_key))
+    else
+        imgui.begin_disabled(false)
+    end
 
     for i = 1, #sliders do
         local slider = sliders[i]

@@ -30,6 +30,8 @@ local all_bools = {
     "enabled_size_x",
     "enabled_size_y",
     "enabled_segment",
+    "hide_glow",
+    "enabled_glow_color",
 }
 
 ---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config

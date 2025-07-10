@@ -120,6 +120,10 @@
 ---@field set_Message fun(self: via.gui.Text, txt: System.String)
 ---@field get_Color fun(self: via.gui.Text): via.Color
 ---@field set_Color fun(self: via.gui.Text, color: via.Color)
+---@field get_GlowColor fun(self: via.gui.Text): via.Color
+---@field set_GlowColor fun(self: via.gui.Text, color: via.Color)
+---@field get_GlowEnable fun(self: via.gui.Text): System.Boolean
+---@field set_GlowEnable fun(self: via.gui.Text, val: System.Boolean)
 
 ---@class via.gui.HitArea : via.gui.Element
 ---@field get_Size fun(self: via.gui.HitArea ): via.Size

@@ -23,6 +23,7 @@
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
 ---@class app.GUI020401 : app.GUIBaseApp
 ---@class app.GUI020003 : app.GUIGaugeHudBase
+---@class app.GUI020020.DAMAGE_INFO : System.ValueType
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -396,3 +397,6 @@
 
 ---@class app.GUI060010 : app.GUIHudBase
 ---@field get_IsActive fun(self: app.GUI060010): System.Boolean
+
+---@class app.GUI020020 : app.GUIBaseApp
+---@field _DamageInfo System.Array<app.GUI020020.DAMAGE_INFO>

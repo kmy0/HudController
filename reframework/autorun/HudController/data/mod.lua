@@ -56,12 +56,15 @@ this.enum.hud_type = {
     BOW_RETICLE = 22,
     SUBTITLES = 23,
     SUBTITLES_CHOICE = 24,
+    DAMAGE_NUMBERS = 25,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = {
     BASE = 1,
     MATERIAL = 2,
     SCALE9 = 3,
+    TEXT = 4,
+    DAMAGE_NUMBERS = 5,
 }
 
 ---@return boolean

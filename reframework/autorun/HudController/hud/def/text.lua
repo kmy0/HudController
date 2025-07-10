@@ -1,0 +1,138 @@
+---@class (exact) Text : CtrlChild
+---@field hide_glow boolean?
+---@field glow_color via.Color?
+---@field properties TextProperties
+---@field default_overwrite TextDefaultOverwrite
+---@field ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text| via.gui.Text[]?
+---@field reset fun(self: Text, key: TextWriteKey)
+
+---@class (exact) TextConfig : CtrlChildConfig
+---@field hud_sub_type HudSubType
+---@field hide_glow boolean?
+---@field enabled_glow_color boolean?
+---@field glow_color integer?
+
+---@class (exact) TextDefault : CtrlChildDefault
+---@field hide_glow boolean
+---@field glow_color integer
+
+---@class (exact) TextDefaultOverwrite : CtrlChildDefaultOverwite
+---@field hide_glow boolean?
+---@field glow_color integer?
+
+---@class (exact) TextChangedProperties : CtrlChildChangedProperties
+---@field hide_glow boolean?
+---@field glow_color integer?
+
+---@class (exact) TextProperties : {[TextProperty]: boolean}, CtrlChildProperties
+---@field hide_glow boolean
+---@field glow_color boolean
+
+---@alias TextProperty CtrlChildProperty | "hide_glow" | "glow_color"
+---@alias TextWriteKey CtrlChildWriteKey | TextProperty
+
+local ctrl_child = require("HudController.hud.def.ctrl_child")
+local data = require("HudController.data")
+local game_data = require("HudController.util.game.data")
+local play_object = require("HudController.hud.play_object")
+local util_ref = require("HudController.util.ref")
+local util_table = require("HudController.util.misc.table")
+
+local ace_enum = data.ace.enum
+local rl = game_data.reverse_lookup
+
+---@class Text
+local this = {}
+---@diagnostic disable-next-line: inject-field
+this.__index = this
+setmetatable(this, { __index = ctrl_child })
+
+---@param args TextConfig
+---@param parent HudBase
+---@param ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text | via.gui.Text[]?
+---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Text): boolean)?
+---@param default_overwrite TextDefaultOverwrite?
+---@param ignore boolean?
+---@return Text
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
+    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
+    o.properties = util_table.merge_t(o.properties, {
+        hide_glow = true,
+        glow_color = true,
+    })
+
+    setmetatable(o, self)
+    ---@cast o Text
+
+    return o
+end
+
+---@param hide_glow boolean
+function this:set_hide_glow(hide_glow)
+    self:reset("hide")
+
+    if self.hide_glow and not hide_glow then
+        self:mark_idle()
+    elseif not self.hide_glow and hide_glow then
+        self:mark_write()
+    end
+    self.hide_glow = hide_glow
+end
+
+---@param color integer?
+function this:set_glow_color(color)
+    if color then
+        self:mark_write()
+        self.glow_color = util_ref.value_type("via.Color")
+        self.glow_color.rgba = color
+    else
+        self:reset("glow_color")
+        self.glow_color = color
+        self:mark_idle()
+    end
+end
+
+---@param obj via.gui.Text
+---@param key TextWriteKey
+function this:reset_ctrl(obj, key)
+    local default = play_object.default.get_default(obj) --[[@as TextDefault]]
+    if default then
+        default = util_table.merge_t(default, self.default_overwrite or {}) --[[@as TextDefault]]
+    else
+        default = (self.default_overwrite or {}) --[[@as TextDefault]]
+    end
+
+    if self.hide_glow and not key or key == "hide_glow" and default.hide_glow then
+        obj:set_GlowEnable(not default.hide_glow)
+    end
+
+    if self.glow_color and not key or key == "glow_color" and default.glow_color then
+        local color = util_ref.value_type("via.Color")
+        color.rgba = default.color
+        obj:set_GlowColor(color)
+    end
+
+    ---@cast key CtrlChildProperty
+    ctrl_child.reset_ctrl(self, obj, key)
+end
+
+---@protected
+---@param obj via.gui.Text
+---@return boolean
+function this:_write(obj)
+    if not ctrl_child._write(self, obj) then
+        return false
+    end
+
+    if self.hide_glow then
+        obj:set_GlowEnable(false)
+    end
+
+    if self.glow_color then
+        obj:set_GlowColor(self.glow_color)
+    end
+
+    return true
+end
+
+return this

@@ -232,6 +232,7 @@ function this:_set_size(obj, size, x, y)
     if obj:get_type_definition():is_a("via.gui.Text") then
         ---@cast obj via.gui.Text
         obj:set_FontSize(size)
+        return
     end
     ---@cast obj via.gui.Material
     obj:set_Size(size)

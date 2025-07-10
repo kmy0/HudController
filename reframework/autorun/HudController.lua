@@ -135,6 +135,7 @@ m.hook(
     hook.set_control_global_pos_post
 )
 m.hook("app.cGUIMapNaviPointController.IsGuideInsectNavigating", nil, hook.hide_map_navi_points_post)
+m.hook("app.GUI020020.guiLateUpdate()", nil, hook.update_damage_numbers_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

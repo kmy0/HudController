@@ -135,6 +135,7 @@ this.default = {
             BOW_RETICLE = "Bow Reticle",
             SUBTITLES = "Subtitles",
             SUBTITLES_CHOICE = "Subtitles Choice",
+            DAMAGE_NUMBERS = "Damage Numbers",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -154,6 +155,9 @@ this.default = {
             category_radial_behavior = "Radial Behavior",
             category_pallet_behavior = "Pallet Behavior",
             category_npc_behavior = "NPC Behavior",
+            category_numbers_behavior = "Numbers Behavior",
+            box_enable_box = "Enable Box",
+            tooltip_numbers_box = "Scales numbers position to fit inside a box",
             box_no_hide = "Do Not Hide",
             box_hide = "Hide",
             box_itembar_disable_right_stick = "Disable Right Stick / Enable Camera Control",
@@ -194,6 +198,12 @@ this.default = {
             slider_x = "X",
             slider_y = "Y",
             slider_draw_distance = "Draw Distance",
+            box_enable_glow_color = "Enable Glow Color",
+            box_hide_glow = "Hide Glow",
+            size_x = "Height",
+            size_y = "Width",
+            pos_x = "Pos X",
+            pos_y = "Pos Y",
         },
     },
     hud_subelement = {
@@ -275,6 +285,11 @@ this.default = {
         select_arrow = "Select Arrow",
         perform = "Perform",
         out_frame_icon = "Out Frame Icon",
+        circle = "Circle",
+        horizontal_line = "Horizontal Line",
+        wound = "Wound",
+        affinity = "Affinity",
+        negative_affinity = "Negative Affinity",
     },
 }
 

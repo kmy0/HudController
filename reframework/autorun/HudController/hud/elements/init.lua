@@ -24,6 +24,7 @@ local this = {
     bow_reticle = require("HudController.hud.elements.bow_reticle"),
     subtitles = require("HudController.hud.elements.subtitles"),
     subtitles_choice = require("HudController.hud.elements.subtitles_choice"),
+    damage_numbers = require("HudController.hud.elements.damage_numbers"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.VITAL] = require("HudController.hud.def.vital_base"),
@@ -48,6 +49,7 @@ local this = {
     [hud_enum.BOW_RETICLE] = require("HudController.hud.elements.bow_reticle"),
     [hud_enum.SUBTITLES] = require("HudController.hud.elements.subtitles"),
     [hud_enum.SUBTITLES_CHOICE] = require("HudController.hud.elements.subtitles_choice"),
+    [hud_enum.DAMAGE_NUMBERS] = require("HudController.hud.elements.damage_numbers"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -70,6 +72,7 @@ local this = {
     BowReticle = "BOW_RETICLE",
     Subtitles = "SUBTITLES",
     SubtitlesChoice = "SUBTITLES_CHOICE",
+    DamageNumbers = "DAMAGE_NUMBERS",
     --
     HEALTH = require("HudController.hud.elements.health"),
     WEAPON = require("HudController.hud.elements.weapon"),
@@ -92,6 +95,7 @@ local this = {
     BOW_RETICLE = require("HudController.hud.elements.bow_reticle"),
     SUBTITLES = require("HudController.hud.elements.subtitles"),
     SUBTITLES_CHOICE = require("HudController.hud.elements.subtitles_choice"),
+    DAMAGE_NUMBERS = require("HudController.hud.elements.damage_numbers"),
 }
 
 return this

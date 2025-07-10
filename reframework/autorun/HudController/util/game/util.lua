@@ -1,6 +1,10 @@
 local s = require("HudController.util.ref.singletons")
+---@class MethodUtil
+local m = require("HudController.util.ref.methods")
 local util_misc = require("HudController.util.misc")
 local util_ref = require("HudController.util.ref")
+
+m.getTextDisplaySize = m.wrap(m.get("app.GUIUtilApp.getTextDisplaySize(via.gui.Text)")) --[[@as fun(text: via.gui.Text): via.Size]]
 
 local this = {}
 

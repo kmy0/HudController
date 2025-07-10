@@ -35,6 +35,8 @@
 ---@field gui_id table<app.GUIID.ID, string>
 ---@field subtitles_category table<app.GUI020400.SUBTITLES_CATEGORY, string>
 ---@field enemy_continue_flag table<app.EnemyDef.CONTINUE_FLAG, string>
+---@field damage_state table<app.GUI020020.State, string>
+---@field critical_state table <app.GUI020020.CRITICAL_STATE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -93,6 +95,8 @@ local this = {
         gui_id = {},
         subtitles_category = {},
         enemy_continue_flag = {},
+        damage_state = {},
+        critical_state = {},
     },
     map = {
         hudid_to_guiid = {},
@@ -109,6 +113,7 @@ local this = {
             "BOW_RETICLE",
             "SUBTITLES",
             "SUBTITLES_CHOICE",
+            "DAMAGE_NUMBERS",
         },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
@@ -116,8 +121,9 @@ local this = {
             BOW_RETICLE = "UI020031",
             SUBTITLES = "UI020400",
             SUBTITLES_CHOICE = "UI020401",
+            DAMAGE_NUMBERS = "UI020020",
         },
-        no_lang_key = {},
+        no_lang_key = { ALL = true },
     },
 }
 

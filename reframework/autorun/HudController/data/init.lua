@@ -181,6 +181,8 @@ function this.init()
     game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
     game_data.get_enum("app.GUI020400.SUBTITLES_CATEGORY", ace_enum.subtitles_category)
     game_data.get_enum("app.EnemyDef.CONTINUE_FLAG", ace_enum.enemy_continue_flag)
+    game_data.get_enum("app.GUI020020.State", ace_enum.damage_state)
+    game_data.get_enum("app.GUI020020.CRITICAL_STATE", ace_enum.critical_state)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)
@@ -195,11 +197,14 @@ function this.init()
     get_weapon_map()
     get_option_map()
 
-    util_table.do_something({ ace_enum.subtitles_category }, function(t, key, value)
-        util_table.do_something(value, function(_, _, name)
-            ace_map.no_lang_key[name] = true
-        end)
-    end)
+    util_table.do_something(
+        { ace_enum.subtitles_category, ace_enum.damage_state, ace_enum.critical_state },
+        function(t, key, value)
+            util_table.do_something(value, function(_, _, name)
+                ace_map.no_lang_key[name] = true
+            end)
+        end
+    )
 
     return true
 end
