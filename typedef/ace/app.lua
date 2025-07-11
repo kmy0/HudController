@@ -87,8 +87,12 @@
 ---@class app.GUI020018 : app.GUIBaseApp
 ---@field _TimerPanelData app.MissionGuideGUIParts.TimePanelData
 ---@field _WatchPanelData app.MissionGuideGUIParts.WatchPanelData
+---@field _BestRecordPanelData app.MissionGuideGUIParts.BestRecordData
 ---@field releaseSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo)
 ---@field createSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo, panel_type: app.GUI020018.GUIDE_PANEL_TYPE): app.MissionGuideGUIParts.SmallMissionPanelBase
+
+---@class app.MissionGuideGUIParts.BestRecordData : app.MissionGuideGUIParts.SmallMissionPanelBase
+---@field _arenaRankPanel via.gui.Panel
 
 ---@class app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo : via.clr.ManagedObject
 ---@field IsEnableCheck System.Boolean

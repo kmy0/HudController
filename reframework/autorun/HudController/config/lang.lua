@@ -160,7 +160,6 @@ this.default = {
             category_texture = "Texture Settings",
             category_itembar_behavior = "Item Bar Behavior",
             category_expanded_itembar_behavior = "Expanded Item Bar Behavior",
-            category_timer_behavior = "Timer Behavior",
             category_weapon_behavior = "Weapon Behavior",
             category_notice_system = "System Message",
             category_notice_lobby = "Lobby Message",
@@ -313,6 +312,7 @@ this.default = {
         button_guide = "Button Guide",
         command_history = "Command History",
         combo_guide = "Combo Guide",
+        best_times = "Best Times",
     },
 }
 

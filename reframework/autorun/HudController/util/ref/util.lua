@@ -86,6 +86,18 @@ function this.is_a(obj, type)
     return obj_type:is_a(type)
 end
 
+---@param obj REManagedObject
+---@param ... string
+---@return string?
+function this.is_any(obj, ...)
+    local t = { ... }
+    for i = 1, #t do
+        if this.is_a(obj, t[i]) then
+            return t[i]
+        end
+    end
+end
+
 ---@param args userdata[]
 ---@param index integer?
 function this.capture_this(args, index)

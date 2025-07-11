@@ -36,7 +36,7 @@
 ---@field subtitles_category table<app.GUI020400.SUBTITLES_CATEGORY, string>
 ---@field enemy_continue_flag table<app.EnemyDef.CONTINUE_FLAG, string>
 ---@field damage_state table<app.GUI020020.State, string>
----@field critical_state table <app.GUI020020.CRITICAL_STATE, string>
+---@field critical_state table<app.GUI020020.CRITICAL_STATE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>

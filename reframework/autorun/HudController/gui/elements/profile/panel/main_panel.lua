@@ -198,22 +198,6 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
-local function draw_progress(elem, elem_config, config_key)
-    ---@cast elem_config ProgressConfig
-    ---@cast elem Progress
-
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_timer_behavior"))
-
-    local item_config_key = config_key .. ".children.timer.always_visible"
-    if set.checkbox(gui_util.tr("hud_element.entry.box_always_visible", item_config_key), item_config_key) then
-        elem.children.timer:set_always_visible(elem_config.children.timer.always_visible)
-        config.save()
-    end
-end
-
----@param elem HudBase
----@param elem_config HudBaseConfig
----@param config_key string
 local function draw_name_access(elem, elem_config, config_key)
     ---@cast elem_config NameAccessConfig
     ---@cast elem NameAccess
@@ -311,7 +295,6 @@ end
 this.funcs[mod.enum.hud_type.WEAPON] = draw_weapon
 this.funcs[mod.enum.hud_type.ITEMBAR] = draw_itembar
 this.funcs[mod.enum.hud_type.NOTICE] = draw_notice
-this.funcs[mod.enum.hud_type.PROGRESS] = draw_progress
 this.funcs[mod.enum.hud_type.NAME_ACCESS] = draw_name_access
 this.funcs[mod.enum.hud_type.NAME_OTHER] = draw_name_other
 this.funcs[mod.enum.hud_type.AMMO] = draw_ammo
