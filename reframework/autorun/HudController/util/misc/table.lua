@@ -543,4 +543,70 @@ function this.filter(t, predicate)
     return ret
 end
 
+---@param key string
+---@return string | integer
+function this.parse_key(key)
+    local pattern = "^int:(%d+)$"
+    if string.match(key, pattern) then
+        return tonumber(string.match(key, pattern)) --[[@as integer]]
+    end
+    return key
+end
+
+---@param key string
+---@return string[]
+function this.split_key(key)
+    local ret = {}
+    for i in string.gmatch(key, "([^%.]+)") do
+        table.insert(ret, i)
+    end
+    return ret
+end
+
+---@param t table
+---@param key string
+---@return any
+function this.get_by_key(t, key)
+    local ret = t
+    if not key:find(".") then
+        return ret[this.parse_key(key)]
+    end
+
+    local keys = this.split_key(key)
+    for i = 1, #keys do
+        ret = ret[this.parse_key(keys[i])] --[[@as any]]
+    end
+    return ret
+end
+
+---@param t table
+---@param key string
+---@param value any
+function this.set_by_key(t, key, value)
+    if not key:find(".") then
+        ---@diagnostic disable-next-line: no-unknown
+        t[this.parse_key(key)] = value
+        return
+    end
+
+    local keys = this.split_key(key)
+    for i = 1, #keys do
+        ---@diagnostic disable-next-line: assign-type-mismatch
+        keys[i] = this.parse_key(keys[i])
+    end
+    this.set_nested_value(t, keys, value)
+end
+
+---@generic T
+---@param t T[]
+---@param ... T
+---@return T
+function this.insert_front(t, ...)
+    local values = { ... }
+    for i = #values, 1, -1 do
+        table.insert(t, 1, values[i])
+    end
+    return t
+end
+
 return this

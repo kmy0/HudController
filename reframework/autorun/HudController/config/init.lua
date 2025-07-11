@@ -73,7 +73,6 @@
 ---@field default Settings
 ---@field current Settings
 
-local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 
 ---@class Config
@@ -147,34 +146,13 @@ this.default = {
 ---@param key string
 ---@return any
 function this.get(key)
-    local ret = this.current
-    if not key:find(".") then
-        return ret[util_misc.parse_key(key)]
-    end
-
-    local keys = util_misc.split_string(key, "%.")
-    for i = 1, #keys do
-        ret = ret[util_misc.parse_key(keys[i])] --[[@as any]]
-    end
-    return ret
+    return util_table.get_by_key(this.current, key)
 end
 
 ---@param key string
 ---@param value any
 function this.set(key, value)
-    local t = this.current
-    if not key:find(".") then
-        ---@diagnostic disable-next-line: no-unknown
-        t[util_misc.parse_key(key)] = value
-        return
-    end
-
-    local keys = util_misc.split_string(key, "%.")
-    for i = 1, #keys do
-        ---@diagnostic disable-next-line: assign-type-mismatch
-        keys[i] = util_misc.parse_key(keys[i])
-    end
-    util_table.set_nested_value(t, keys, value)
+    util_table.set_by_key(this.current, key, value)
 end
 
 function this.load()

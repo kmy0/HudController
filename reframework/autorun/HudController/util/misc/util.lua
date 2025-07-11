@@ -32,16 +32,6 @@ function this.split_string(s, sep)
     return ret
 end
 
----@param key string
----@return string | integer
-function this.parse_key(key)
-    local pattern = "^int:(%d+)$"
-    if string.match(key, pattern) then
-        return tonumber(string.match(key, pattern)) --[[@as integer]]
-    end
-    return key
-end
-
 ---@param int integer
 ---@return integer
 function this.unsigned_to_signed(int)

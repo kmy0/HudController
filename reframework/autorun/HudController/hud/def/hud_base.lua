@@ -100,6 +100,8 @@ local option_default = require("HudController.hud.option_default")
 local play_object = require("HudController.hud.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
+---@module"HudController.hud"
+local hud
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map
@@ -653,6 +655,23 @@ function this:_set_opacity(ctrl, val)
     local color = ctrl:get_ColorScale()
     color.w = val
     ctrl:set_ColorScale(color)
+end
+
+---@return HudBaseConfig
+function this:get_current_config()
+    if not hud then
+        hud = require("HudController.hud")
+    end
+
+    local current_hud = hud.get_current() --[[@as HudProfileConfig]]
+    local keys = { self.name_key }
+    local parent = self.parent
+
+    while parent do
+        util_table.insert_front(keys, parent.name_key, "children")
+        parent = parent.parent --[[@as HudBase]]
+    end
+    return util_table.get_by_key(current_hud.elements, table.concat(keys, "."))
 end
 
 ---@param hud_id app.GUIHudDef.TYPE
