@@ -171,14 +171,12 @@ end
 function this.abort()
     this.clear(true)
 
-    if not util_table.empty(this.faders) or not util_table.empty(this.to_restore) then
-        local elements = get_all_elements()
-        this.faders = {}
-        this.to_restore = {}
-        for _, ctrls in pairs(elements) do
-            for _, ctrl in pairs(ctrls) do
-                reset_opacity(ctrl)
-            end
+    local elements = get_all_elements()
+    this.faders = {}
+    this.to_restore = {}
+    for _, ctrls in pairs(elements) do
+        for _, ctrl in pairs(ctrls) do
+            reset_opacity(ctrl)
         end
     end
 end
