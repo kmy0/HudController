@@ -297,6 +297,54 @@ function this:whoami()
     return table.concat(ret, ".")
 end
 
+function this:whoami_cls()
+    local function get_cls_file(cls)
+        local info = debug.getinfo(cls.new, "S")
+        local source = info.source
+        ---@type string[]
+        local path_parts = {}
+
+        for part in source:gmatch("[^/\\]+") do
+            table.insert(path_parts, part)
+        end
+
+        local filename = path_parts[#path_parts]
+        if filename == "init.lua" and #path_parts > 1 then
+            return path_parts[#path_parts - 1]
+        else
+            return filename:gsub("%.lua$", "")
+        end
+    end
+
+    ---@type string[]
+    local chain = {}
+    ---@type table<HudBase, boolean>
+    local seen = {}
+    ---@type table<string, boolean>
+    local seen_file = {}
+    local cls = self
+
+    while cls and type(cls) == "table" and not seen[cls] do
+        seen[cls] = true
+
+        local file = get_cls_file(cls)
+        if not seen_file[file] then
+            table.insert(chain, 1, file)
+            seen_file[file] = true
+        end
+
+        local mt = getmetatable(cls)
+        if mt and type(mt.__index) == "table" then
+            ---@diagnostic disable-next-line: no-unknown
+            cls = mt.__index
+        else
+            break
+        end
+    end
+
+    return table.concat(chain, ".")
+end
+
 function this:mark_write()
     if not self.parent then
         return
