@@ -4,6 +4,9 @@
 ---@field GUI020018 app.GUI020018?
 
 ---@class (exact) ProgressConfig : HudBaseConfig
+---@field options {
+--- ELAPSED_TIME_DISP: integer,
+--- }
 ---@field children {
 --- clock: ProgressClockConfig,
 --- task: HudChildConfig,
@@ -171,6 +174,7 @@ function this.get_config()
     local base = hud_base.get_config(rl(ace_enum.hud, "PROGRESS"), "PROGRESS") --[[@as ProgressConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.PROGRESS
+    base.options.ELAPSED_TIME_DISP = -1
 
     children.clock = hud_child.get_config("clock") --[[@as ProgressClockConfig]]
     children.task = { name_key = "task", hide = false }
