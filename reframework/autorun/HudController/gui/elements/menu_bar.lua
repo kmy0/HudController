@@ -288,7 +288,23 @@ end
 local function draw_weapon_bind_menu()
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
     local changed = false
-    changed = set.checkbox(gui_util.tr("menu.bind.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
+    changed = set.slider_int(
+        gui_util.tr("menu.bind.weapon.out_of_combat_delay"),
+        "mod.bind.weapon.out_of_combat_delay",
+        0,
+        600,
+        config.current.mod.bind.weapon.out_of_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(config.current.mod.bind.weapon.out_of_combat_delay, nil, true)
+    ) or changed
+    changed = set.slider_int(
+        gui_util.tr("menu.bind.weapon.in_combat_delay"),
+        "mod.bind.weapon.in_combat_delay",
+        0,
+        600,
+        config.current.mod.bind.weapon.in_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(config.current.mod.bind.weapon.in_combat_delay, nil, true)
+    ) or changed
+
     if changed then
         config.save()
     end

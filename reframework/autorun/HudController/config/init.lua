@@ -25,6 +25,8 @@
 ---@field combat_out WeaponBindConfigData
 
 ---@class (exact) WeaponStateBindConfig
+---@field out_of_combat_delay integer
+---@field in_combat_delay integer
 ---@field quest_in_combat boolean
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
@@ -131,6 +133,8 @@ this.default = {
             },
             weapon = {
                 quest_in_combat = false,
+                out_of_combat_delay = 0,
+                in_combat_delay = 0,
                 singleplayer = {},
                 multiplayer = {},
             },

@@ -5,6 +5,8 @@
 ---@field requested_hud HudProfileConfig?
 ---@field notify boolean
 ---@field overridden_options table<string, boolean>
+---@field combat_state_frame boolean
+---@field combat_state boolean
 
 ---@class (exact) FadeCallbacks
 ---@field switch_profile fun()
@@ -37,6 +39,8 @@ local this = {
 ---@class FadeCallbacks
 local fade_callbacks = {}
 local timer_key = "disable_weapon_binds"
+local out_of_combat_delay_key = "out_of_combat_delay"
+local in_combat_delay_key = "in_combat_delay"
 
 function fade_callbacks.switch_profile()
     this.overridden_options = {}
@@ -142,20 +146,41 @@ function this.request_hud(new_hud)
 end
 
 function this.update_weapon_bind_state()
-    local is_combat = false
-
-    if
-        config.current.mod.bind.weapon.quest_in_combat
-        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
-    then
-        is_combat = true
-    else
-        is_combat = ace_player.is_combat()
-    end
+    local is_combat = ace_player.is_combat()
 
     if is_combat == nil then
         return
     end
+
+    if
+        not config.current.mod.bind.weapon.quest_in_combat
+        or not s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
+    then
+        if this.combat_state_frame and not is_combat and this.combat_state then
+            timer.new(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil)
+        elseif not this.combat_state_frame and is_combat and not this.combat_state then
+            timer.new(in_combat_delay_key, config.current.mod.bind.weapon.in_combat_delay, nil)
+        end
+
+        if not is_combat and timer.remaining_key(in_combat_delay_key) > 0 then
+            timer.reset_key(in_combat_delay_key)
+        elseif is_combat and timer.remaining_key(out_of_combat_delay_key) > 0 then
+            timer.reset_key(out_of_combat_delay_key)
+        end
+
+        if
+            timer.check(in_combat_delay_key, config.current.mod.bind.weapon.in_combat_delay, nil, true)
+            and timer.check(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil, true)
+        then
+            this.combat_state = is_combat
+        end
+    else
+        this.combat_state = true
+        timer.reset_key(in_combat_delay_key)
+        timer.reset_key(out_of_combat_delay_key)
+    end
+
+    this.combat_state_frame = is_combat
 
     local t = config.current.mod.bind.weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
     ---@type WeaponBindConfig
@@ -173,7 +198,7 @@ function this.update_weapon_bind_state()
         weapon_config = t[weapon_name]
     end
 
-    local state_config = weapon_config[is_combat and "combat_in" or "combat_out"] --[[@as WeaponBindConfigData]]
+    local state_config = weapon_config[this.combat_state and "combat_in" or "combat_out"] --[[@as WeaponBindConfigData]]
     if weapon_config.enabled then
         local hud_config = config.current.mod.hud[state_config.combo]
 
@@ -236,6 +261,8 @@ function this.clear()
     this.reset_elements()
     this.by_hudid = {}
     this.overridden_options = {}
+    this.combat_state_frame = false
+    this.combat_state = false
 
     this.current_hud = nil
     this.requested_hud = nil

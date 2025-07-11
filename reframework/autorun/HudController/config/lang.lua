@@ -74,6 +74,8 @@ this.default = {
                 header_combat_in = "In Combat",
                 header_combat_out = "Out of Combat",
                 header_weapon_name = "Weapon Name",
+                out_of_combat_delay = "Out of Combat Delay",
+                in_combat_delay = "In Combat Delay",
             },
             key = {
                 name = "Key",
