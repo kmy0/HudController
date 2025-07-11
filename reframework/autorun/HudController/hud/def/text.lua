@@ -32,14 +32,9 @@
 ---@alias TextWriteKey CtrlChildWriteKey | TextProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data")
-local game_data = require("HudController.util.game.data")
 local play_object = require("HudController.hud.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Text
 local this = {}
@@ -64,12 +59,20 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
     setmetatable(o, self)
     ---@cast o Text
 
+    if args.hide_glow then
+        o:set_hide_glow(args.hide_glow)
+    end
+
+    if args.enabled_glow_color then
+        o:set_glow_color(args.glow_color)
+    end
+
     return o
 end
 
 ---@param hide_glow boolean
 function this:set_hide_glow(hide_glow)
-    self:reset("hide")
+    self:reset("hide_glow")
 
     if self.hide_glow and not hide_glow then
         self:mark_idle()
@@ -108,7 +111,7 @@ function this:reset_ctrl(obj, key)
 
     if self.glow_color and not key or key == "glow_color" and default.glow_color then
         local color = util_ref.value_type("via.Color")
-        color.rgba = default.color
+        color.rgba = default.glow_color
         obj:set_GlowColor(color)
     end
 

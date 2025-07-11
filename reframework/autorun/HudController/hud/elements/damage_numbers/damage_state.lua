@@ -5,13 +5,14 @@
 ---@field pos_cache table<via.gui.Control, Vector2f>
 ---@field box {x: integer, y: integer, w: integer, h: integer}?
 ---@field protected _add_critical_state fun(config: HudChildConfig, NONE: boolean?, CRITICAL: boolean?, MINUS_CRITICAL: boolean?)
+---@field protected _critical_state_ctor fun(args: HudChildConfig, parent: DamageNumbersDamageStateCls, cls: HudChild, default_overwrite: CtrlChildDefaultOverwite?): DamageNumbersCriticalState
 ---@field children {
 --- circle: HudChild,
---- horizontal_line: DamageNumbersDamageStateMaterial,
+--- horizontal_line: DamageNumbersDamageStateCls,
 --- text: DamageNumbersDamageStateText,
---- wound: DamageNumbersDamageStateMaterial,
---- affinity: DamageNumbersDamageStateMaterial,
---- negative_affinity: DamageNumbersDamageStateMaterial,
+--- wound: DamageNumbersDamageStateCls,
+--- affinity: DamageNumbersDamageStateCls,
+--- negative_affinity: DamageNumbersDamageStateCls,
 --- shield: HudChild,
 ---}
 
@@ -22,7 +23,10 @@
 --- MINUS_CRITICAL: DamageNumbersCriticalState?,
 --- }?
 
----@class (exact) DamageNumbersDamageStateMaterial : DamageNumbersDamageStateCls, Material
+---@class (exact) DamageNumbersCriticalState : CtrlChild
+---@field root DamageNumbers
+---@field parent DamageNumbersDamageState
+
 ---@class (exact) DamageNumbersDamageStateText : DamageNumbersDamageStateCls, Text
 
 ---@class (exact) DamageNumbersDamageStateConfig : HudChildConfig
@@ -49,10 +53,9 @@
 ---@class (exact) DamageNumbersDamageStateMaterialConfig : MaterialConfig, DamageNumbersDamageStateClsConfig
 ---@class (exact) DamageNumbersDamageStateTextConfig : TextConfig, DamageNumbersDamageStateClsConfig
 
-local critical_state = require("HudController.hud.elements.damage_numbers.critical_state")
+local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local hud_child = require("HudController.hud.def.hud_child")
-local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.def.text")
 local util_table = require("HudController.util.misc.table")
@@ -192,38 +195,42 @@ function this:new(args, parent)
     ---@cast o DamageNumbersDamageState
 
     o.pos_cache = {}
-    o.children.horizontal_line = material:new(args.children.horizontal_line, o, function(s, hudbase, gui_id, ctrl)
+    o.children.horizontal_line = ctrl_child:new(args.children.horizontal_line, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.horizontal_line)
-    end) --[[@as DamageNumbersDamageStateMaterial]]
+    end) --[[@as DamageNumbersDamageStateCls]]
     for _, state in pairs(ace_enum.critical_state) do
-        o.children.horizontal_line.children[state] =
-            critical_state:new(args.children.horizontal_line.children[state], o.children.horizontal_line, material)
+        o.children.horizontal_line.children[state] = this._critical_state_ctor(
+            args.children.horizontal_line.children[state],
+            o.children.horizontal_line,
+            ctrl_child
+        )
     end
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
     end) --[[@as DamageNumbersDamageStateText]]
     for _, state in pairs(ace_enum.critical_state) do
-        o.children.text.children[state] = critical_state:new(args.children.text.children[state], o.children.text, text)
+        o.children.text.children[state] =
+            this._critical_state_ctor(args.children.text.children[state], o.children.text, text, { color = 4284729087 })
     end
 
-    o.children.wound = material:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
+    o.children.wound = ctrl_child:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.wound)
-    end) --[[@as DamageNumbersDamageStateMaterial]]
+    end) --[[@as DamageNumbersDamageStateCls]]
     for _, state in pairs(ace_enum.critical_state) do
         o.children.wound.children[state] =
-            critical_state:new(args.children.wound.children[state], o.children.wound, material)
+            this._critical_state_ctor(args.children.wound.children[state], o.children.wound, ctrl_child)
     end
 
     o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.circle)
     end)
-    o.children.affinity = material:new(args.children.affinity, o, function(s, hudbase, gui_id, ctrl)
+    o.children.affinity = ctrl_child:new(args.children.affinity, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.affinity)
-    end) --[[@as DamageNumbersDamageStateMaterial]]
-    o.children.negative_affinity = material:new(args.children.negative_affinity, o, function(s, hudbase, gui_id, ctrl)
+    end) --[[@as DamageNumbersDamageStateCls]]
+    o.children.negative_affinity = ctrl_child:new(args.children.negative_affinity, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.negative_affinity)
-    end) --[[@as DamageNumbersDamageStateMaterial]]
+    end) --[[@as DamageNumbersDamageStateCls]]
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.shield)
     end)
@@ -236,10 +243,22 @@ function this:new(args, parent)
         end
     end
 
+    o.children.text.reset_ctrl = this._text_reset
+    o.children.wound.reset_ctrl = this._text_reset
+
     if args.enabled_box then
         o:set_box(args.box)
     end
     return o
+end
+
+---@param obj via.gui.Text
+---@param key TextWriteKey
+function this:_text_reset(obj, key)
+    ---@cast obj via.gui.Text
+    text.reset_ctrl(self, obj, key)
+    local p = play_object.control.get_parent(obj, "PNL_Text")
+    p:set_PlayState(p:get_PlayState())
 end
 
 ---@param box {x: integer, y: integer, w: integer, h: integer}?
@@ -307,6 +326,31 @@ function this:reset(key)
 end
 
 ---@protected
+---@param args CtrlChildConfig
+---@param parent DamageNumbersDamageStateCls
+---@param cls CtrlChild
+---@param default_overwrite CtrlChildDefaultOverwite
+---@return DamageNumbersCriticalState
+function this._critical_state_ctor(args, parent, cls, default_overwrite)
+    local o = cls:new(args, parent, function(s, hudbase, gui_id, ctrl)
+        ---@cast hudbase app.GUI020020.DAMAGE_INFO
+        if
+            not hudbase
+            or ace_enum.critical_state[hudbase:get_field("<criticalState>k__BackingField")] == args.name_key
+        then
+            return ctrl
+        end
+    end, nil, default_overwrite)
+
+    o.reset = function(s, key)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        parent:reset(key)
+    end
+    ---@cast o DamageNumbersCriticalState
+    return o
+end
+
+---@protected
 ---@param config HudChildConfig
 ---@param NONE boolean?
 ---@param CRITICAL boolean?
@@ -343,7 +387,7 @@ function this.get_config(name_key)
     }
     children.horizontal_line = {
         name_key = "horizontal_line",
-        hud_sub_type = data.mod.enum.hud_sub_type.MATERIAL,
+        hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
         enabled_color = false,
         color = 4294967295,
         hide = false,
@@ -367,7 +411,7 @@ function this.get_config(name_key)
     children.wound = {
         name_key = "wound",
         hide = false,
-        hud_sub_type = data.mod.enum.hud_sub_type.MATERIAL,
+        hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
         enabled_color = false,
         color = 4294967295,
         children = {},
@@ -376,14 +420,14 @@ function this.get_config(name_key)
 
     children.affinity = {
         name_key = "affinity",
-        hud_sub_type = data.mod.enum.hud_sub_type.MATERIAL,
+        hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
         enabled_color = false,
         color = 4294967295,
         hide = false,
     }
     children.negative_affinity = {
         name_key = "negative_affinity",
-        hud_sub_type = data.mod.enum.hud_sub_type.MATERIAL,
+        hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
         enabled_color = false,
         color = 4294967295,
         hide = false,

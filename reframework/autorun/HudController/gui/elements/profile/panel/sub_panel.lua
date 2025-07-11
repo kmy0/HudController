@@ -92,7 +92,6 @@ local function draw_control_child(elem, elem_config, config_key)
         changed = set.checkbox(gui_util.tr("hud_element.entry.box_enable_color", item_config_key), item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_color)
-
         item_config_key = config_key .. ".color"
         changed = set.color_edit("##" .. item_config_key, item_config_key) or changed
 
@@ -313,6 +312,8 @@ local function draw_text(elem, elem_config, config_key)
         separator_text:draw()
     end
 
+    imgui.begin_disabled(elem_config.hide_glow ~= nil and elem_config.hide_glow)
+
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
         changed = set.checkbox(gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key), item_config_key)
@@ -330,6 +331,8 @@ local function draw_text(elem, elem_config, config_key)
         imgui.end_disabled()
         separator_text:draw()
     end
+
+    imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -407,5 +410,6 @@ this.funcs[mod.enum.hud_sub_type.MATERIAL] = draw_material
 this.funcs[mod.enum.hud_sub_type.SCALE9] = draw_scale9
 this.funcs[mod.enum.hud_sub_type.TEXT] = draw_text
 this.funcs[mod.enum.hud_sub_type.DAMAGE_NUMBERS] = draw_damage_numbers
+this.funcs[mod.enum.hud_sub_type.CTRL_CHILD] = draw_control_child
 
 return this

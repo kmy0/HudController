@@ -1021,6 +1021,13 @@ function this.hide_map_navi_points_post(retval)
     end
 end
 
+function this.reset_damage_numbers_pre(args)
+    local dmg = get_elem_t("DamageNumbers")
+    if dmg then
+        dmg:reset()
+    end
+end
+
 function this.update_damage_numbers_post(retval)
     local dmg_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
 
