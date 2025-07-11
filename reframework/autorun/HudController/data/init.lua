@@ -83,6 +83,7 @@ local function get_weapon_map()
         name = "",
         combat_in = { hud_key = -1, combo = 1 },
         combat_out = { hud_key = -1, combo = 1 },
+        camp = { hud_key = -1, combo = 1 },
     }
 
     for id, name in pairs(ace_enum.weapon) do

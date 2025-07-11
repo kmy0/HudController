@@ -106,6 +106,7 @@
 
 ---@class app.MissionManager : ace.GAElementBase
 ---@field get_QuestDirector fun(self: app.MissionManager): app.cQuestDirector
+---@field isFastTravel fun(self: app.MissionManager): System.Boolean
 
 ---@class app.cQuestDirector : via.clr.ManagedObject
 ---@field get_QuestElapsedTime fun(self: app.cQuestDirector): System.Single
@@ -129,6 +130,7 @@
 ---@field get_HunterExtend fun(self: app.HunterCharacter): app.HunterCharacter.cHunterExtendBase
 ---@field get_MeshFadeController fun(self: app.HunterCharacter): app.cMeshFadeController
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator
+---@field get_IsInBaseCamp fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
 ---@field _HunterBTableCommandFlag ace.cSafeContinueFlag
 

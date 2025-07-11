@@ -63,7 +63,6 @@ this.default = {
         bind = {
             name = "Bind",
             tooltip_bound = "Already bound to",
-            quest_in_combat = "Quest = In Combat",
             weapon = {
                 name = "Weapon",
                 name_global = "Global",
@@ -73,6 +72,7 @@ this.default = {
                 header_enabled = "",
                 header_combat_in = "In Combat",
                 header_combat_out = "Out of Combat",
+                header_camp = "Village",
                 header_weapon_name = "Weapon Name",
                 out_of_combat_delay = "Out of Combat Delay",
                 in_combat_delay = "In Combat Delay",

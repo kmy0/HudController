@@ -333,11 +333,12 @@ local function draw_weapon_bind_menu()
         end
     ) --[[@as table<integer, WeaponBindConfig>]]
 
-    if imgui.begin_table("weapon_state", 4) then
+    if imgui.begin_table("weapon_state", 5) then
         for _, header in ipairs({
             gui_util.tr("menu.bind.weapon.header_enabled"),
             gui_util.tr("menu.bind.weapon.header_combat_in"),
             gui_util.tr("menu.bind.weapon.header_combat_out"),
+            gui_util.tr("menu.bind.weapon.header_camp"),
             gui_util.tr("menu.bind.weapon.header_weapon_name"),
         }) do
             imgui.table_setup_column(header)
@@ -390,6 +391,9 @@ local function draw_weapon_bind_menu()
             draw_combo("combat_out")
 
             imgui.table_set_column_index(3)
+            draw_combo("camp")
+
+            imgui.table_set_column_index(4)
             imgui.text(
                 weapon.name == "GLOBAL" and config.lang.tr("menu.bind.weapon.name_global")
                     or ace_map.weaponid_name_to_local_name[weapon.name]

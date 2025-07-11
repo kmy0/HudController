@@ -1,5 +1,6 @@
 ---@class PlayerUtil
 ---@field master_char app.HunterCharacter?
+---@field is_village_frame boolean
 
 local s = require("HudController.util.ref.singletons")
 local util_misc = require("HudController.util.misc")
@@ -58,13 +59,34 @@ function this.is_combat()
 end
 
 ---@return app.WeaponDef.TYPE
-function this.get_master_weapon_type()
+function this.get_weapon_type()
     local master_player = this.get_master_char()
     if not master_player then
         return -1
     end
 
     return master_player:get_WeaponType()
+end
+
+---@return boolean
+function this.is_in_village()
+    local master_player = this.get_master_char()
+    if not master_player then
+        return false
+    end
+
+    local is_village = master_player:get_IsInBaseCamp()
+    if not is_village and this.is_village_frame and this.is_fast_travel() then
+        return true
+    end
+
+    this.is_village_frame = is_village
+    return is_village
+end
+
+---@return boolean
+function this.is_fast_travel()
+    return s.get("app.MissionManager"):isFastTravel()
 end
 
 return this

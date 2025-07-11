@@ -156,8 +156,9 @@ function this.update_weapon_bind_state()
     local in_quest = config.current.mod.bind.weapon.quest_in_combat
         and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
     local is_riding = config.current.mod.bind.weapon.ride_ignore_combat and ace_porter.is_master_riding()
+    local is_village = ace_player.is_in_village()
 
-    if not in_quest then
+    if not in_quest and not is_village then
         if this.combat_state_frame and not is_combat and this.combat_state then
             timer.new(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil)
         elseif not this.combat_state_frame and is_combat and not this.combat_state then
@@ -180,7 +181,11 @@ function this.update_weapon_bind_state()
                 this.combat_state = is_combat
             end
         end
-    else
+    elseif is_village then
+        this.combat_state = false
+        timer.reset_key(in_combat_delay_key)
+        timer.reset_key(out_of_combat_delay_key)
+    elseif in_quest then
         this.combat_state = true
         timer.reset_key(in_combat_delay_key)
         timer.reset_key(out_of_combat_delay_key)
@@ -195,8 +200,7 @@ function this.update_weapon_bind_state()
     if t["GLOBAL"].enabled then
         weapon_config = t["GLOBAL"]
     else
-        local weapon_name = ace_enum.weapon[ace_player.get_master_weapon_type()]
-
+        local weapon_name = ace_enum.weapon[ace_player.get_weapon_type()]
         if not weapon_name then
             return
         end
@@ -204,10 +208,9 @@ function this.update_weapon_bind_state()
         weapon_config = t[weapon_name]
     end
 
-    local state_config = weapon_config[this.combat_state and "combat_in" or "combat_out"] --[[@as WeaponBindConfigData]]
+    local state_config = weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
     if weapon_config.enabled then
         local hud_config = config.current.mod.hud[state_config.combo]
-
         if
             state_config.hud_key ~= hud_config.key
             or (hud_config.key == this.current_hud.key and not this.requested_hud)
