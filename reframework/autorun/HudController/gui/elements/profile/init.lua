@@ -174,19 +174,26 @@ local function draw_options()
     imgui.end_disabled()
     util_imgui.tooltip(config.lang.tr("hud.tooltip_fade_opacity_both"), true)
 
+    local item_config_key = string.format("mod.hud.int:%s.fade_in", config.current.mod.combo_hud)
+    local item_value = config.get(item_config_key)
     changed = set.slider_float(
         gui_util.tr("hud.slider_fade_in"),
-        string.format("mod.hud.int:%s.fade_in", config.current.mod.combo_hud),
+        item_config_key,
         0,
         10,
-        "%.1f"
+        item_value == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed
+
+    item_config_key = string.format("mod.hud.int:%s.fade_out", config.current.mod.combo_hud)
+    item_value = config.get(item_config_key)
     changed = set.slider_float(
         gui_util.tr("hud.slider_fade_out"),
-        string.format("mod.hud.int:%s.fade_out", config.current.mod.combo_hud),
+        item_config_key,
         0,
         10,
-        "%.1f"
+        item_value == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed
 
     if changed then

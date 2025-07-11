@@ -75,4 +75,12 @@ function this.try(try, catch, finally)
     return ok
 end
 
+---@param n number
+---@param decimals integer
+---@return unknown
+function this.round(n, decimals)
+    local mult = 10 ^ decimals
+    return math.floor(n * mult + 0.5) / mult
+end
+
 return this

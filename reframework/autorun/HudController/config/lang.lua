@@ -27,6 +27,11 @@ this.default = {
         text_notification_message = "is now active",
         text_override_notifcation_message = "overridden to",
         text_overridden = "Overridden to",
+        text_disabled = "Disabled",
+        text_second = "Second",
+        text_second_plural = "Seconds",
+        text_minute = "Minute",
+        text_minute_plural = "Minutes",
     },
     menu = {
         config = {
