@@ -609,7 +609,7 @@ end
 function this:_write(ctrl)
     play_object.default.check(ctrl)
 
-    if self.hide and not fade_manager.is_active() then
+    if self.hide and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
         self:change_visibility(ctrl, not self.hide)
 
         return false
@@ -631,7 +631,7 @@ function this:_write(ctrl)
         ctrl:set_PlayState(self.play_state)
     end
 
-    if self.opacity and not fade_manager.is_active() then
+    if self.opacity and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
         self:_set_opacity(ctrl, self.opacity)
     end
 
