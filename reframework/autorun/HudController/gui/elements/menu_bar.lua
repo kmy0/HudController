@@ -287,7 +287,12 @@ end
 
 local function draw_weapon_bind_menu()
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
+
     local changed = false
+    changed = set.checkbox(gui_util.tr("menu.bind.weapon.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
+    changed = set.checkbox(gui_util.tr("menu.bind.weapon.ride_ignore_combat"), "mod.bind.weapon.ride_ignore_combat")
+        or changed
+    util_imgui.tooltip(config.lang.tr("menu.bind.weapon.ride_ignore_combat_tooltip"), true)
     changed = set.slider_int(
         gui_util.tr("menu.bind.weapon.out_of_combat_delay"),
         "mod.bind.weapon.out_of_combat_delay",

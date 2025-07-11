@@ -76,6 +76,9 @@ this.default = {
                 header_weapon_name = "Weapon Name",
                 out_of_combat_delay = "Out of Combat Delay",
                 in_combat_delay = "In Combat Delay",
+                quest_in_combat = "Quest = In Combat",
+                ride_ignore_combat = "Riding = Out of Combat",
+                ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
             },
             key = {
                 name = "Key",

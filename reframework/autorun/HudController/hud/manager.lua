@@ -14,6 +14,7 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
+local ace_porter = require("HudController.util.ace.porter")
 local bind_manager = require("HudController.hud.bind")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config")
@@ -152,10 +153,11 @@ function this.update_weapon_bind_state()
         return
     end
 
-    if
-        not config.current.mod.bind.weapon.quest_in_combat
-        or not s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
-    then
+    local in_quest = config.current.mod.bind.weapon.quest_in_combat
+        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
+    local is_riding = config.current.mod.bind.weapon.ride_ignore_combat and ace_porter.is_master_riding()
+
+    if not in_quest then
         if this.combat_state_frame and not is_combat and this.combat_state then
             timer.new(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil)
         elseif not this.combat_state_frame and is_combat and not this.combat_state then
@@ -172,7 +174,11 @@ function this.update_weapon_bind_state()
             timer.check(in_combat_delay_key, config.current.mod.bind.weapon.in_combat_delay, nil, true)
             and timer.check(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil, true)
         then
-            this.combat_state = is_combat
+            if is_riding and is_combat and not this.combat_state then
+                this.combat_state = false
+            else
+                this.combat_state = is_combat
+            end
         end
     else
         this.combat_state = true

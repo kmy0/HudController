@@ -28,6 +28,7 @@
 ---@field out_of_combat_delay integer
 ---@field in_combat_delay integer
 ---@field quest_in_combat boolean
+---@field ride_ignore_combat boolean
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
 
@@ -48,7 +49,10 @@
 ---@field disable_weapon_binds_timed boolean
 ---@field disable_weapon_binds_held boolean
 ---@field hud HudProfileConfig[]
----@field bind {weapon: WeaponStateBindConfig, key: {hud: HudBindBase[], option: OptionBindBase[]}}
+---@field bind {
+--- weapon: WeaponStateBindConfig,
+--- key: {hud: HudBindBase[], option: OptionBindBase[]},
+--- }
 ---@field grid GridConfig
 ---@field combo_hud_key_bind integer
 ---@field combo_hud integer
@@ -135,6 +139,7 @@ this.default = {
                 quest_in_combat = false,
                 out_of_combat_delay = 0,
                 in_combat_delay = 0,
+                ride_ignore_combat = false,
                 singleplayer = {},
                 multiplayer = {},
             },
