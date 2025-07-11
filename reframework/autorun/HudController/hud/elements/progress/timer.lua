@@ -83,7 +83,7 @@ local ctrl_args = {
 function this:new(args, parent)
     local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         return this._get_panel(s)
-    end)
+    end, nil, { hide = false })
     setmetatable(o, self)
     ---@cast o ProgressTimer
 

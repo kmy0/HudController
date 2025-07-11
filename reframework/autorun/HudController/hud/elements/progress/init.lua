@@ -122,30 +122,36 @@ function this:new(args)
 
     o.children.task = hud_child:new(args.children.task, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task)
-    end)
+    end, nil, { hide = false })
     o.children.clock = hud_child:new(args.children.clock, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.clock)
-    end)
+    end, nil, { hide = false })
     o.children.clock.children.frame_base = hud_child:new(
         args.children.clock.children.frame_base,
         o.children.clock,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.frame_base"])
-        end
+        end,
+        nil,
+        { hide = false }
     )
     o.children.clock.children.frame_main = hud_child:new(
         args.children.clock.children.frame_main,
         o.children.clock,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.frame_main"])
-        end
+        end,
+        nil,
+        { hide = false }
     )
     o.children.clock.children.limit = hud_child:new(
         args.children.clock.children.limit,
         o.children.clock,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.limit"])
-        end
+        end,
+        nil,
+        { hide = false }
     )
     o.children.timer = timer:new(args.children.timer, o)
     return o
