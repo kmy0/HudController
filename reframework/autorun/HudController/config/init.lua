@@ -25,6 +25,7 @@
 ---@field combat_out WeaponBindConfigData
 
 ---@class (exact) WeaponStateBindConfig
+---@field quest_in_combat boolean
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
 
@@ -129,6 +130,7 @@ this.default = {
                 option = {},
             },
             weapon = {
+                quest_in_combat = false,
                 singleplayer = {},
                 multiplayer = {},
             },

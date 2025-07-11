@@ -63,11 +63,13 @@ this.default = {
         bind = {
             name = "Bind",
             tooltip_bound = "Already bound to",
+            quest_in_combat = "Quest = In Combat",
             weapon = {
                 name = "Weapon",
                 name_global = "Global",
                 singleplayer = "Singleplayer",
                 multiplayer = "Multiplayer",
+                game_mode = "Game Mode",
                 header_enabled = "",
                 header_combat_in = "In Combat",
                 header_combat_out = "Out of Combat",

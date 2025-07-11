@@ -21,6 +21,7 @@ local fade_manager = require("HudController.hud.fade")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_opt_default = require("HudController.hud.option_default")
 local play_object = require("HudController.hud.play_object")
+local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 
 local ace_enum = data.ace.enum
@@ -141,7 +142,17 @@ function this.request_hud(new_hud)
 end
 
 function this.update_weapon_bind_state()
-    local is_combat = ace_player.is_combat()
+    local is_combat = false
+
+    if
+        config.current.mod.bind.weapon.quest_in_combat
+        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
+    then
+        is_combat = true
+    else
+        is_combat = ace_player.is_combat()
+    end
+
     if is_combat == nil then
         return
     end

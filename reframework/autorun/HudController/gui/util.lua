@@ -4,6 +4,7 @@
 ---@field protected _start_count integer
 
 local config = require("HudController.config")
+local util_misc = require("HudController.util.misc")
 
 local this = {}
 
@@ -85,6 +86,7 @@ function this.tr_int(key)
 
     return msg
 end
+
 ---@param n string | number
 ---@param width integer?
 function this.pad_zero(n, width)

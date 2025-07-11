@@ -287,9 +287,16 @@ end
 
 local function draw_weapon_bind_menu()
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
+    local changed = false
+    changed = set.checkbox(gui_util.tr("menu.bind.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
+    if changed then
+        config.save()
+    end
+
+    imgui.separator()
 
     set.slider_int(
-        "##mod.slider_weapon_bind",
+        gui_util.tr("menu.bind.weapon.game_mode"),
         "mod.slider_weapon_bind",
         1,
         2,
@@ -327,7 +334,7 @@ local function draw_weapon_bind_menu()
                 weapon.name ~= "GLOBAL" and config.get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
             )
 
-            local changed = false
+            changed = false
             local config_key = string.format("mod.bind.weapon.%s.%s.enabled", key, weapon.name)
             if set.checkbox(string.format("##%s", weapon.name), config_key) then
                 changed = true
