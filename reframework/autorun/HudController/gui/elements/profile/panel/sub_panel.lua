@@ -4,6 +4,7 @@ local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
+local util_game = require("HudController.util.game")
 local util_imgui = require("HudController.util.imgui")
 
 local mod = data.mod
@@ -347,6 +348,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     local item_config_key = config_key .. ".enabled_box"
     local changed = false
 
+    item_config_key = config_key .. ".enabled_box"
     if set.checkbox(gui_util.tr("hud_element.entry.box_enable_box", item_config_key), item_config_key) then
         elem:set_box(elem_config.enabled_box and {
             x = elem_config.box.x,
@@ -359,6 +361,34 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     util_imgui.tooltip(config.lang.tr("hud_element.entry.tooltip_numbers_box"), true)
 
     imgui.begin_disabled(not elem_config.enabled_box)
+    imgui.same_line()
+
+    item_config_key = config_key .. ".preview_box"
+    if config.get(item_config_key) == nil then
+        config.set(item_config_key, false)
+    end
+
+    if imgui.button(gui_util.tr("hud_element.entry.box_preview_box", item_config_key)) then
+        config.set(item_config_key, not config.get(item_config_key))
+    end
+
+    if elem_config.enabled_box and config.get(item_config_key) then
+        local ss = util_game.get_screen_size()
+        ss.x = ss.x / 1920
+        ss.y = ss.y / 1080
+
+        draw.outline_quad(
+            elem_config.box.x * ss.x,
+            elem_config.box.y * ss.y,
+            elem_config.box.x * ss.x,
+            (elem_config.box.y + elem_config.box.h) * ss.y,
+            (elem_config.box.x + elem_config.box.w) * ss.x,
+            (elem_config.box.y + elem_config.box.h) * ss.y,
+            (elem_config.box.x + elem_config.box.w) * ss.x,
+            elem_config.box.y * ss.y,
+            4294967295
+        )
+    end
 
     changed = generic.draw_slider_settings(nil, {
         {

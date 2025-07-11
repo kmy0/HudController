@@ -257,8 +257,17 @@ end
 function this:_text_reset(obj, key)
     ---@cast obj via.gui.Text
     text.reset_ctrl(self, obj, key)
-    local p = play_object.control.get_parent(obj, "PNL_Text")
-    p:set_PlayState(p:get_PlayState())
+    local p = play_object.control.get_parent(obj, "PNL_Text", true)
+    if p then
+        local state = p:get_PlayState()
+        p:set_PlayState("")
+        p:set_PlayState(state)
+    end
+
+    local p = play_object.control.get_parent(obj, "PNL_TextForDesign", true)
+    if p then
+        p:set_PlayState("DEFAULT")
+    end
 end
 
 ---@param box {x: integer, y: integer, w: integer, h: integer}?
@@ -268,6 +277,13 @@ function this:set_box(box)
     else
         self:reset("offset")
         self:mark_idle()
+
+        local current_config = self:get_current_config()
+        if current_config.enabled_offset then
+            self.offset = Vector3f.new(current_config.offset.x, current_config.offset.y, 0)
+        else
+            self.offset = nil
+        end
     end
     self.box = box
 end
@@ -283,7 +299,7 @@ end
 
 ---@param hudbase app.GUI020020.DAMAGE_INFO
 function this:screen_to_box(hudbase)
-    local pnl = hudbase:get_field("<ParentPanel>k__BackingField") --[[@as via.gui.Control]]
+    local pnl = hudbase:get_field("<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
 
     if pnl:get_Visible() then
         if not self.pos_cache[pnl] then
