@@ -80,10 +80,19 @@ m.hook(
 )
 m.hook("app.GuideInsectCharacter.update()", hook.disable_scoutflies_pre)
 m.hook("app.cHunterEffect.updateGuideInsectCage(app.HunterCharacter)", hook.disable_scoutflies_pre)
-m.hook("app.PlayerCommonSubAction.cCallPorter.doEnter()", hook.disable_porter_call_cmd_pre)
 m.hook("app.PorterManager.update()", hook.hide_porter_post)
-m.hook("app.PlayerCommonSubAction.cCallPorter.doUpdate()", nil, hook.update_porter_call_post)
-m.hook("app.WpCommonSubAction.cCallPorter.doUpdate()", nil, hook.update_porter_call_post)
+m.hook("app.PlayerCommonSubAction.cCallPorter.doEnter()", hook.disable_porter_call_cmd_pre)
+m.hook("app.WpCommonSubAction.cCallPorter.doEnter()", nil, hook.disable_porter_call_cmd_pre)
+m.hook(
+    "app.btable.PlCommand.cCallPorterInputCheck.success(app.cPlayerBTableCommandWork)",
+    nil,
+    hook.update_porter_call_post
+)
+m.hook(
+    "app.btable.PlCommand.cPorterAskToRescure.callPorterRescue(app.cPlayerBTableCommandWork, System.Boolean)",
+    hook.disable_porter_call_cmd_pre,
+    hook.update_porter_call_post
+)
 m.hook("app.NpcManager.update()", nil, hook.hide_handler_post)
 m.hook("app.AttackAreaResult.getDangerousDetectedDataList()", nil, hook.hide_danger_line_post)
 m.hook(

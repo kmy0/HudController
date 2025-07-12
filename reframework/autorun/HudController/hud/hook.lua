@@ -509,14 +509,14 @@ end
 
 function this.disable_porter_call_cmd_pre(args)
     local hud_config = get_hud()
-    if hud_config and hud_config.disable_porter_call then
+    if hud_config and hud.get_hud_option("disable_porter_call") then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
 function this.update_porter_call_post(retval)
     local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_porter") and not hud.get_hud_option("disable_porter_call") then
+    if hud_config and hud.get_hud_option("hide_porter") then
         timer.restart_key(porter.call_timer_key)
     end
 end
