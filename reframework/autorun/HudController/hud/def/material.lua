@@ -80,10 +80,10 @@ setmetatable(this, { __index = ctrl_child })
 ---@param ctrl_getter fun(self: Material, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Material | via.gui.Material[]?
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Material): boolean)?
 ---@param default_overwrite MaterialDefaultOverwrite?
----@param ignore boolean?
+---@param gui_ignore boolean?
 ---@return Material
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
-    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
     o.properties = util_table.merge_t(o.properties, {
         var0 = true,
         var1 = true,

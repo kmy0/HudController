@@ -47,15 +47,15 @@ setmetatable(this, { __index = hud_base })
 ---@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@param default_overwrite HudBaseDefaultOverwrite?
----@param ignore boolean?
+---@param gui_ignore boolean?
 ---@return HudChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
     local o = hud_base.new(self, args, parent, default_overwrite)
     setmetatable(o, self)
     ---@cast o HudChild
     o.ctrl_getter = ctrl_getter
     o.ctrl_writer = ctrl_writer
-    o.gui_ignore = ignore
+    o.gui_ignore = gui_ignore
     o._getter_cache = {}
     return o
 end

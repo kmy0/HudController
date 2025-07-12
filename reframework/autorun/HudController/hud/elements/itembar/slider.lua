@@ -138,9 +138,9 @@ local appear_open_states = {
 ---@param ctrl_getter fun(self: ItembarSlider, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@param ctrl_writer (fun(self: ItembarSlider, ctrl: via.gui.Control): boolean)?
 ---@param default_overwrite HudBaseDefaultOverwrite?
----@param ignore boolean?
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
-    local o = hud_child:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ignore)
+---@param gui_ignore boolean?
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+    local o = hud_child:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
     setmetatable(o, self)
     ---@cast o ItembarSlider
 
