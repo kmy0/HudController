@@ -83,6 +83,7 @@ m.hook("app.cHunterEffect.updateGuideInsectCage(app.HunterCharacter)", hook.disa
 m.hook("app.PlayerCommonSubAction.cCallPorter.doEnter()", hook.disable_porter_call_cmd_pre)
 m.hook("app.PorterManager.update()", hook.hide_porter_post)
 m.hook("app.PlayerCommonSubAction.cCallPorter.doUpdate()", nil, hook.update_porter_call_post)
+m.hook("app.WpCommonSubAction.cCallPorter.doUpdate()", nil, hook.update_porter_call_post)
 m.hook("app.NpcManager.update()", nil, hook.hide_handler_post)
 m.hook("app.AttackAreaResult.getDangerousDetectedDataList()", nil, hook.hide_danger_line_post)
 m.hook(
