@@ -1054,8 +1054,11 @@ function this.update_training_room_hud_post(retval)
     local training_room_hud = get_elem_t("TrainingRoomHud")
     if training_room_hud then
         local hudbase = util_ref.get_this() --[[@as app.GUI600100]]
-        ---@diagnostic disable-next-line: param-type-mismatch
-        training_room_hud:write(hudbase, hudbase:get_ID(), training_room_hud:get_pnl_all())
+        local ctrl = training_room_hud:get_pnl_all()
+        if ctrl then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            training_room_hud:write(hudbase, hudbase:get_ID(), ctrl)
+        end
     end
 end
 
