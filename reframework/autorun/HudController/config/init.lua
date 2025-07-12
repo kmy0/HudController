@@ -63,6 +63,7 @@
 ---@field slider_key_bind integer
 
 ---@class (exact) Settings
+---@field version string
 ---@field gui GuiSettings
 ---@field mod ModSettings
 
@@ -81,6 +82,7 @@
 ---@field default Settings
 ---@field current Settings
 
+local migration = require("HudController.config.migration")
 local util_table = require("HudController.util.misc.table")
 
 ---@class Config
@@ -102,6 +104,7 @@ this.handler_timeout = 5
 ---@diagnostic disable-next-line: missing-fields
 this.current = {}
 this.default = {
+    version = this.version,
     gui = {
         main = {
             pos_x = 50,
@@ -168,11 +171,21 @@ function this.set(key, value)
 end
 
 function this.load()
-    local loaded_config = json.load_file(this.config_path)
+    local loaded_config = json.load_file(this.config_path) --[[@as Settings?]]
+    ---@type string?
+    local current_version
     if loaded_config then
+        current_version = loaded_config.version
         this.current = util_table.merge_t(this.default, loaded_config)
     else
+        current_version = this.version
         this.current = util_table.deep_copy(this.default)
+    end
+
+    if migration.need_migrate(current_version, this.version) then
+        this.save(true)
+        migration.migrate(current_version, this.version, this.current)
+        this.save()
     end
 end
 
