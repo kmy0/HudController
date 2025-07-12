@@ -1,64 +1,34 @@
----@class (exact) DamageNumbersDamageState : HudChild
+---@class (exact) DamageNumbersDamageState : DamageNumbersOffset, HudChild
 ---@field get_config fun(name_key: string): DamageNumbersDamageStateConfig
----@field parent DamageNumbers
+---@field parent DamageNumbersCriticalState
 ---@field root DamageNumbers
----@field pos_cache table<via.gui.Control, Vector2f>
----@field box {x: integer, y: integer, w: integer, h: integer}?
----@field protected _add_critical_state fun(config: HudChildConfig, NONE: boolean?, CRITICAL: boolean?, MINUS_CRITICAL: boolean?)
----@field protected _critical_state_ctor fun(args: HudChildConfig, parent: DamageNumbersDamageStateCls, cls: HudChild, default_overwrite: CtrlChildDefaultOverwite?): DamageNumbersCriticalState
 ---@field children {
 --- circle: HudChild,
---- horizontal_line: DamageNumbersDamageStateCls,
---- text: DamageNumbersDamageStateText,
---- wound: DamageNumbersDamageStateCls,
---- affinity: DamageNumbersDamageStateCls,
---- negative_affinity: DamageNumbersDamageStateCls,
+--- horizontal_line: CtrlChild,
+--- text: Text,
+--- wound: CtrlChild,
+--- affinity: CtrlChild,
+--- negative_affinity:  CtrlChild,
 --- shield: HudChild,
 ---}
 
----@class DamageNumbersDamageStateCls : CtrlChild
----@field children {
---- NONE: DamageNumbersCriticalState?,
---- CRITICAL: DamageNumbersCriticalState?,
---- MINUS_CRITICAL: DamageNumbersCriticalState?,
---- }?
-
----@class (exact) DamageNumbersCriticalState : CtrlChild
----@field root DamageNumbers
----@field parent DamageNumbersDamageState
-
----@class (exact) DamageNumbersDamageStateText : DamageNumbersDamageStateCls, Text
-
----@class (exact) DamageNumbersDamageStateConfig : HudChildConfig
----@field hud_sub_type HudSubType
----@field enabled_box boolean
----@field box {x: integer, y: integer, w: integer, h: integer}
+---@class (exact) DamageNumbersDamageStateConfig : DamageNumbersOffsetConfig, HudChildConfig
 ---@field children {
 --- circle: HudChildConfig,
---- horizontal_line: DamageNumbersDamageStateMaterialConfig,
---- text: DamageNumbersDamageStateTextConfig,
---- wound: DamageNumbersDamageStateMaterialConfig,
---- affinity: DamageNumbersDamageStateMaterialConfig,
---- negative_affinity: DamageNumbersDamageStateMaterialConfig,
+--- horizontal_line: CtrlChildConfig,
+--- text: TextConfig,
+--- wound: CtrlChildConfig,
+--- affinity: CtrlChildConfig,
+--- negative_affinity: CtrlChildConfig,
 --- shield: HudChildConfig,
 --- }
-
----@class (exact) DamageNumbersDamageStateClsConfig : CtrlChildConfig
----@field children {
---- NONE: CtrlChildConfig?,
---- CRITICAL: CtrlChildConfig?,
---- MINUS_CRITICAL: CtrlChildConfig?,
---- }?
-
----@class (exact) DamageNumbersDamageStateMaterialConfig : MaterialConfig, DamageNumbersDamageStateClsConfig
----@class (exact) DamageNumbersDamageStateTextConfig : TextConfig, DamageNumbersDamageStateClsConfig
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local hud_child = require("HudController.hud.def.hud_child")
+local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.def.text")
-local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -170,7 +140,7 @@ local ctrl_args = {
 }
 
 ---@param args DamageNumbersDamageStateConfig
----@param parent DamageNumbers
+---@param parent DamageNumbersCriticalState
 ---@return DamageNumbersDamageState
 function this:new(args, parent)
     local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
@@ -192,45 +162,27 @@ function this:new(args, parent)
         end
     end)
     setmetatable(o, self)
+    numbers_offset.wrap(o, args)
     ---@cast o DamageNumbersDamageState
 
-    o.pos_cache = {}
     o.children.horizontal_line = ctrl_child:new(args.children.horizontal_line, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.horizontal_line)
-    end) --[[@as DamageNumbersDamageStateCls]]
-    for _, state in pairs(ace_enum.critical_state) do
-        o.children.horizontal_line.children[state] = this._critical_state_ctor(
-            args.children.horizontal_line.children[state],
-            o.children.horizontal_line,
-            ctrl_child
-        )
-    end
-
+    end)
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
-    end) --[[@as DamageNumbersDamageStateText]]
-    for _, state in pairs(ace_enum.critical_state) do
-        o.children.text.children[state] =
-            this._critical_state_ctor(args.children.text.children[state], o.children.text, text, { color = 4284729087 })
-    end
-
+    end)
     o.children.wound = ctrl_child:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.wound)
-    end) --[[@as DamageNumbersDamageStateCls]]
-    for _, state in pairs(ace_enum.critical_state) do
-        o.children.wound.children[state] =
-            this._critical_state_ctor(args.children.wound.children[state], o.children.wound, ctrl_child)
-    end
-
+    end)
     o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.circle)
     end)
     o.children.affinity = ctrl_child:new(args.children.affinity, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.affinity)
-    end) --[[@as DamageNumbersDamageStateCls]]
+    end)
     o.children.negative_affinity = ctrl_child:new(args.children.negative_affinity, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.negative_affinity)
-    end) --[[@as DamageNumbersDamageStateCls]]
+    end)
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.shield)
     end)
@@ -243,12 +195,9 @@ function this:new(args, parent)
         end
     end
 
-    o.children.text.reset_ctrl = this._text_reset
-    o.children.wound.reset_ctrl = this._text_reset
+    o.children.text.reset_ctrl = o._text_reset
+    o.children.wound.reset_ctrl = o._text_reset
 
-    if args.enabled_box then
-        o:set_box(args.box)
-    end
     return o
 end
 
@@ -267,123 +216,6 @@ function this:_text_reset(obj, key)
     local p = play_object.control.get_parent(obj, "PNL_TextForDesign", true)
     if p then
         p:set_PlayState("DEFAULT")
-    end
-end
-
----@param box {x: integer, y: integer, w: integer, h: integer}?
-function this:set_box(box)
-    if box then
-        self:mark_write()
-    else
-        self:reset("offset")
-        self:mark_idle()
-
-        local current_config = self:get_current_config()
-        if current_config.enabled_offset then
-            self.offset = Vector3f.new(current_config.offset.x, current_config.offset.y, 0)
-        else
-            self.offset = nil
-        end
-    end
-    self.box = box
-end
-
----@param hudbase app.GUI020020.DAMAGE_INFO
-function this:adjust_offset(hudbase)
-    if self.box then
-        self:screen_to_box(hudbase)
-    elseif self.offset then
-        self.parent.set_offset_from_original_pos(self, hudbase)
-    end
-end
-
----@param hudbase app.GUI020020.DAMAGE_INFO
-function this:screen_to_box(hudbase)
-    local pnl = hudbase:get_field("<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
-
-    if pnl:get_Visible() then
-        if not self.pos_cache[pnl] then
-            self.pos_cache[pnl] = hudbase:get_field("<ScreenPos>k__BackingField") --[[@as Vector2f]]
-        end
-    else
-        self.pos_cache[pnl] = nil
-    end
-
-    if self.pos_cache[pnl] then
-        local pos = self.pos_cache[pnl]
-        local norm_x = pos.x / 1920
-        local norm_y = pos.y / 1080
-
-        local scaled_x = self.box.x + (norm_x * self.box.w)
-        local scaled_y = self.box.y + (norm_y * self.box.h)
-        self.offset = Vector3f.new(scaled_x, scaled_y, 0)
-    end
-end
-
----@param key HudChildWriteKey
-function this:reset(key)
-    if not self.initialized then
-        return
-    end
-
-    self.pos_cache = {}
-    util_table.do_something(self.root:get_all_panels(), function(t, _, value)
-        ---@diagnostic disable-next-line: param-type-mismatch
-        local ctrl = self:ctrl_getter(nil, nil, value)
-
-        if type(ctrl) ~= "table" then
-            ctrl = { ctrl }
-        end
-
-        for _, c in pairs(ctrl) do
-            self:reset_ctrl(c, key)
-        end
-    end)
-end
-
----@protected
----@param args CtrlChildConfig
----@param parent DamageNumbersDamageStateCls
----@param cls CtrlChild
----@param default_overwrite CtrlChildDefaultOverwite
----@return DamageNumbersCriticalState
-function this._critical_state_ctor(args, parent, cls, default_overwrite)
-    local o = cls:new(args, parent, function(s, hudbase, gui_id, ctrl)
-        ---@cast hudbase app.GUI020020.DAMAGE_INFO
-        if
-            not hudbase
-            or ace_enum.critical_state[hudbase:get_field("<criticalState>k__BackingField")] == args.name_key
-        then
-            return ctrl
-        end
-    end, nil, default_overwrite)
-
-    o.reset = function(s, key)
-        ---@diagnostic disable-next-line: param-type-mismatch
-        parent:reset(key)
-    end
-    ---@cast o DamageNumbersCriticalState
-    return o
-end
-
----@protected
----@param config HudChildConfig
----@param NONE boolean?
----@param CRITICAL boolean?
----@param MINUS_CRITICAL boolean?
-function this._add_critical_state(config, NONE, CRITICAL, MINUS_CRITICAL)
-    local states = {
-        NONE = NONE == nil and true or NONE,
-        CRITICAL = CRITICAL == nil and true or CRITICAL,
-        MINUS_CRITICAL = MINUS_CRITICAL == nil and true or MINUS_CRITICAL,
-    }
-    local _config = util_table.deep_copy(config)
-    local children = config.children --[[@as table<string, HudChildConfig>]]
-    for _, state in pairs(ace_enum.critical_state) do
-        if states[state] then
-            children[state] = util_table.deep_copy(_config)
-            children[state].name_key = state
-        end
     end
 end
 
@@ -407,10 +239,7 @@ function this.get_config(name_key)
         enabled_color = false,
         color = 4294967295,
         hide = false,
-        children = {},
     }
-    this._add_critical_state(children.horizontal_line)
-
     children.text = {
         name_key = "text",
         hide = false,
@@ -420,20 +249,14 @@ function this.get_config(name_key)
         enabled_glow_color = false,
         glow_color = 4294967295,
         hud_sub_type = data.mod.enum.hud_sub_type.TEXT,
-        children = {},
     }
-    this._add_critical_state(children.text)
-
     children.wound = {
         name_key = "wound",
         hide = false,
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
         enabled_color = false,
         color = 4294967295,
-        children = {},
     }
-    this._add_critical_state(children.wound)
-
     children.affinity = {
         name_key = "affinity",
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
