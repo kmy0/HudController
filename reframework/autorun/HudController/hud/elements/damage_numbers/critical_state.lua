@@ -26,24 +26,42 @@ setmetatable(this, { __index = hud_child })
 ---@param parent DamageNumbers
 ---@return DamageNumbersCriticalState
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        ---@cast hudbase app.GUI020020.DAMAGE_INFO?
-        ---@cast s DamageNumbersCriticalState
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        function(s, hudbase, gui_id, ctrl)
+            ---@cast hudbase app.GUI020020.DAMAGE_INFO?
+            ---@cast s DamageNumbersCriticalState
 
-        if
-            not hudbase -- reset only
-        then
-            return ctrl
-        end
+            if
+                not hudbase -- reset only
+            then
+                return ctrl
+            end
 
-        if
-            args.name_key == "ALL"
-            or ace_enum.critical_state[hudbase:get_field("<criticalState>k__BackingField")] == args.name_key
-        then
-            s:adjust_offset(hudbase)
-            return ctrl
+            if
+                args.name_key == "ALL"
+                or ace_enum.critical_state[hudbase:get_field("<criticalState>k__BackingField")] == args.name_key
+            then
+                s:adjust_offset(hudbase)
+                return ctrl
+            end
+        end,
+        nil,
+        nil,
+        nil,
+        function(a_key, b_key)
+            if a_key == "ALL" then
+                return true
+            end
+
+            if b_key == "ALL" then
+                return false
+            end
+            return a_key < b_key
         end
-    end)
+    )
 
     setmetatable(o, self)
     numbers_offset.wrap(o, args)

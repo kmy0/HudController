@@ -28,7 +28,16 @@ setmetatable(this, { __index = hud_base })
 ---@param args DamageNumbersConfig
 ---@return DamageNumbers
 function this:new(args)
-    local o = hud_base.new(self, args, nil, nil, true, true)
+    local o = hud_base.new(self, args, nil, nil, true, true, function(a_key, b_key)
+        if a_key == "ALL" then
+            return true
+        end
+
+        if b_key == "ALL" then
+            return false
+        end
+        return a_key < b_key
+    end)
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbers
@@ -92,12 +101,14 @@ function this:reset(key)
     self.pos_cache = {}
     util_table.do_something(self:get_all_panels(), function(_, _, value)
         self:reset_ctrl(value, key)
-        util_table.do_something(self.children, function(_, _, child)
+        local children_keys = self:get_children_keys()
+        for i = 1, #children_keys do
+            local child = self.children[children_keys[i]]
             if self.write_nodes[child] then
                 ---@diagnostic disable-next-line: param-type-mismatch
                 child:reset_child(nil, nil, value, key)
             end
-        end)
+        end
     end)
 end
 
