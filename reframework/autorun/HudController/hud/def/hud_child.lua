@@ -2,7 +2,6 @@
 ---@field parent HudBase | HudChild
 ---@field type nil
 ---@field hud_id nil
----@field ignore boolean?
 ---@field properties HudChildProperties
 ---@field ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
@@ -56,7 +55,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
     ---@cast o HudChild
     o.ctrl_getter = ctrl_getter
     o.ctrl_writer = ctrl_writer
-    o.ignore = ignore
+    o.gui_ignore = ignore
     o._getter_cache = {}
     return o
 end

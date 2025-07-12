@@ -19,6 +19,8 @@
 ---@field options table<string, integer>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
+---@field gui_ignore boolean? --dont draw gui for this element
+---@field gui_header_children boolean? --draw children with collapsed header instead of tree
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
 

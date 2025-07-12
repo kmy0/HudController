@@ -107,7 +107,7 @@ end
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
----@param children_filtered HudChildConfig[]
+---@param children_filtered table<string, HudChildConfig>
 ---@param config_key string
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
@@ -141,7 +141,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                 local key = chunk[j]
                 local child = elem.children[key]
 
-                if child.ignore then
+                if child.gui_ignore then
                     goto continue
                 end
 
@@ -184,7 +184,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
             local key = keys[i]
             local child = elem.children[key]
 
-            if child.ignore then
+            if child.gui_ignore then
                 goto continue
             end
 
@@ -241,9 +241,62 @@ end
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
+---@param children table<string, HudChildConfig>
+---@param config_key string
+local function draw_collapsed_child(elem, elem_config, children, config_key)
+    local keys = util_table.sort(util_table.keys(children))
+    for i = 1, #keys do
+        local key = keys[i]
+        local child = elem.children[key]
+
+        if child.gui_ignore then
+            goto continue
+        end
+
+        local child_config = elem_config.children[key]
+        local child_config_key = string.format("%s.children.%s", config_key, key)
+
+        if
+            imgui.collapsing_header(
+                string.format(
+                    "%s##%s",
+                    child.hud_id and ace_map.hudid_name_to_local_name[child.name_key]
+                        or (
+                            ace_map.weaponid_name_to_local_name[child.name_key]
+                            or (ace_map.no_lang_key[child.name_key] and child.name_key)
+                            or gui_util.tr_int("hud_subelement." .. child.name_key)
+                        ),
+                    string.format("%s_%s_tree", config_key, child.name_key)
+                )
+            )
+        then
+            draw_panel(child, child_config, child_config_key, false)
+
+            imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+
+            local children = util_table.remove(child_config.children or {}, function(t, index, j)
+                return not t[index].ignore
+            end)
+
+            if not util_table.empty(children) then
+                util_imgui.separator_text(config.lang.tr("hud_element.entry.category_children"))
+                draw_panel_child(child, child_config, children, child_config_key)
+            end
+
+            imgui.end_disabled()
+        end
+        ::continue::
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
-    draw_panel(elem, elem_config, config_key, false)
+    if not elem.gui_ignore then
+        draw_panel(elem, elem_config, config_key, false)
+    end
+
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
 
     local children = util_table.remove(elem_config.children or {}, function(t, i, j)
@@ -251,8 +304,15 @@ function this.draw(elem, elem_config, config_key)
     end)
 
     if not util_table.empty(children) then
-        util_imgui.separator_text(config.lang.tr("hud_element.entry.category_children"))
-        draw_panel_child(elem, elem_config, children, config_key)
+        if not elem.gui_ignore then
+            util_imgui.separator_text(config.lang.tr("hud_element.entry.category_children"))
+        end
+
+        if elem.gui_header_children then
+            draw_collapsed_child(elem, elem_config, children, config_key)
+        else
+            draw_panel_child(elem, elem_config, children, config_key)
+        end
     end
 
     imgui.end_disabled()
