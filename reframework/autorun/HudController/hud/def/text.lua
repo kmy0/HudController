@@ -1,6 +1,7 @@
 ---@class (exact) Text : CtrlChild
 ---@field hide_glow boolean?
 ---@field glow_color via.Color?
+---@field font_size via.Size?
 ---@field properties TextProperties
 ---@field default_overwrite TextDefaultOverwrite
 ---@field ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text| via.gui.Text[]?
@@ -11,24 +12,30 @@
 ---@field hide_glow boolean?
 ---@field enabled_glow_color boolean?
 ---@field glow_color integer?
+---@field enabled_font_size boolean?
+---@field font_size integer?
 
 ---@class (exact) TextDefault : CtrlChildDefault
 ---@field hide_glow boolean
 ---@field glow_color integer
+---@field font_size integer
 
 ---@class (exact) TextDefaultOverwrite : CtrlChildDefaultOverwite
 ---@field hide_glow boolean?
 ---@field glow_color integer?
+---@field font_size integer?
 
 ---@class (exact) TextChangedProperties : CtrlChildChangedProperties
 ---@field hide_glow boolean?
 ---@field glow_color integer?
+---@field font_size integer?
 
 ---@class (exact) TextProperties : {[TextProperty]: boolean}, CtrlChildProperties
 ---@field hide_glow boolean
 ---@field glow_color boolean
+---@field font_size boolean
 
----@alias TextProperty CtrlChildProperty | "hide_glow" | "glow_color"
+---@alias TextProperty CtrlChildProperty | "hide_glow" | "glow_color" | "font_size"
 ---@alias TextWriteKey CtrlChildWriteKey | TextProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
@@ -54,6 +61,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
     o.properties = util_table.merge_t(o.properties, {
         hide_glow = true,
         glow_color = true,
+        font_size = true,
     })
 
     setmetatable(o, self)
@@ -65,6 +73,10 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, ign
 
     if args.enabled_glow_color then
         o:set_glow_color(args.glow_color)
+    end
+
+    if args.enabled_font_size then
+        o:set_font_size(args.font_size)
     end
 
     return o
@@ -95,6 +107,20 @@ function this:set_glow_color(color)
     end
 end
 
+---@param size integer?
+function this:set_font_size(size)
+    if size then
+        self:mark_write()
+        self.font_size = util_ref.value_type("via.Size")
+        self.font_size.w = size
+        self.font_size.h = size
+    else
+        self:reset("font_size")
+        self.font_size = size
+        self:mark_idle()
+    end
+end
+
 ---@param obj via.gui.Text
 ---@param key TextWriteKey
 function this:reset_ctrl(obj, key)
@@ -115,6 +141,13 @@ function this:reset_ctrl(obj, key)
         obj:set_GlowColor(color)
     end
 
+    if self.font_size and not key or key == "font_size" and default.scale then
+        local font_size = util_ref.value_type("via.Size")
+        font_size.w = default.scale.x
+        font_size.h = default.scale.x
+        obj:set_FontSize(font_size)
+    end
+
     ---@cast key CtrlChildProperty
     ctrl_child.reset_ctrl(self, obj, key)
 end
@@ -133,6 +166,10 @@ function this:_write(obj)
 
     if self.glow_color then
         obj:set_GlowColor(self.glow_color)
+    end
+
+    if self.font_size then
+        obj:set_FontSize(self.font_size)
     end
 
     return true

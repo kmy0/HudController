@@ -210,6 +210,7 @@ this.default = {
             box_enable_scale9_blend_type = "Enable Blend Type",
             box_move_next = "Move Next",
             box_preview_box = "Preview Box",
+            box_enable_font_size = "Enable Font Size",
             tooltip_itembar_move_next = "Move to the next item if slot is empty after use",
             slider_x = "X",
             slider_y = "Y",

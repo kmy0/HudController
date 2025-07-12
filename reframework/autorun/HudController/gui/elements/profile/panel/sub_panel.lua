@@ -34,6 +34,7 @@ local separator_control_child = gui_util.separator:new({
 local separator_text = gui_util.separator:new({
     "hide_glow",
     "enabled_glow_color",
+    "enabled_font_size",
 })
 
 ---@param elem HudBase
@@ -299,6 +300,26 @@ local function draw_text(elem, elem_config, config_key)
     end
 
     separator_text:refresh(elem_config)
+
+    if elem_config.enabled_font_size ~= nil then
+        changed = generic.draw_slider_settings({
+            config_key = config_key .. ".enabled_font_size",
+            label = gui_util.tr("hud_element.entry.box_enable_font_size", item_config_key),
+        }, {
+            {
+                config_key = config_key .. ".font_size",
+                label = "",
+            },
+        }, 0, 1000, 0.1, "%.1f") or changed
+
+        if changed then
+            elem:set_font_size(elem_config.enabled_font_size and elem_config.font_size or nil)
+            config.save()
+        end
+
+        imgui.end_disabled()
+        separator_text:draw()
+    end
 
     if elem_config.hide_glow ~= nil then
         if
