@@ -50,12 +50,11 @@ setmetatable(this, { __index = hud_base })
 ---@param gui_ignore boolean?
 ---@return HudChild
 function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_base.new(self, args, parent, default_overwrite)
+    local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore)
     setmetatable(o, self)
     ---@cast o HudChild
     o.ctrl_getter = ctrl_getter
     o.ctrl_writer = ctrl_writer
-    o.gui_ignore = gui_ignore
     o._getter_cache = {}
     return o
 end

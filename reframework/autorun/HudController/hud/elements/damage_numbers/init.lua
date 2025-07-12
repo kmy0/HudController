@@ -28,13 +28,11 @@ setmetatable(this, { __index = hud_base })
 ---@param args DamageNumbersConfig
 ---@return DamageNumbers
 function this:new(args)
-    local o = hud_base.new(self, args)
+    local o = hud_base.new(self, args, nil, nil, true, true)
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbers
 
-    o.gui_ignore = true
-    o.gui_header_children = true
     o.previous_state = {}
 
     for _, state in pairs(ace_enum.critical_state) do
@@ -90,6 +88,7 @@ function this:reset(key)
         return
     end
 
+    self.previous_state = {}
     self.pos_cache = {}
     util_table.do_something(self:get_all_panels(), function(_, _, value)
         self:reset_ctrl(value, key)

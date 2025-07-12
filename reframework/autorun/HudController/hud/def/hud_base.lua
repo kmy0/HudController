@@ -118,8 +118,10 @@ this.__index = this
 ---@param args HudBaseConfig | HudChildConfig
 ---@param parent HudBase | HudChild?
 ---@param default_overwrite HudBaseDefaultOverwrite?
+---@param gui_ignore boolean?
+---@param gui_header_children boolean?
 ---@return HudBase
-function this:new(args, parent, default_overwrite)
+function this:new(args, parent, default_overwrite, gui_ignore, gui_header_children)
     local o = {
         hud_id = args.hud_id,
         name_key = args.name_key,
@@ -140,6 +142,8 @@ function this:new(args, parent, default_overwrite)
         },
         initialized = false,
         default_overwrite = default_overwrite,
+        gui_ignore = gui_ignore,
+        gui_header_children = gui_header_children,
     }
     setmetatable(o, self)
     ---@cast o HudBase
