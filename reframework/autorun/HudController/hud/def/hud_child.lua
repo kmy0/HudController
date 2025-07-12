@@ -48,9 +48,10 @@ setmetatable(this, { __index = hud_base })
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@param default_overwrite HudBaseDefaultOverwrite?
 ---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@return HudChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore, nil, children_sort)
     setmetatable(o, self)
     ---@cast o HudChild
     o.ctrl_getter = ctrl_getter
@@ -128,7 +129,9 @@ function this:reset_child(hudbase, gui_id, ctrl, key)
         self:reset_ctrl(c, key)
     end
 
-    for _, child in pairs(self.children) do
+    local children_keys = self:get_children_keys()
+    for i = 1, #children_keys do
+        local child = self.children[children_keys[i]]
         if self.write_nodes[child] then
             child:reset_child(hudbase, gui_id, child_ctrls, key)
         end
@@ -155,7 +158,9 @@ function this:write_child(hudbase, gui_id, ctrl)
         return
     end
 
-    for _, child in pairs(self.children) do
+    local children_keys = self:get_children_keys()
+    for i = 1, #children_keys do
+        local child = self.children[children_keys[i]]
         if self.write_nodes[child] then
             child:write_child(hudbase, gui_id, child_ctrls)
         end
