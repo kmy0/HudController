@@ -72,6 +72,14 @@ local function set_additional_hud()
         ace_map.guiid_to_hudid[guiid] = enum
         util_table.insert_nested_value(ace_map.hudid_to_guiid, { enum }, guiid)
     end
+
+    for gui, target in pairs(ace_map.hudless_to_hud) do
+        local guiid = rl(ace_enum.gui_id, gui)
+        local guiid_target = rl(ace_enum.gui_id, target)
+        local hudid = ace_map.guiid_to_hudid[guiid_target]
+        ace_map.guiid_to_hudid[guiid] = hudid
+        util_table.insert_nested_value(ace_map.hudid_to_guiid, { hudid }, guiid)
+    end
 end
 
 local function get_weapon_map()

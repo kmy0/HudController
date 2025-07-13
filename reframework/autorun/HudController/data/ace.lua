@@ -51,6 +51,7 @@
 ---@field hud_tr_flag string
 ---@field additional_hud_index integer
 ---@field no_lang_key table<string, boolean>
+---@field hudless_to_hud table<string, string>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -131,11 +132,13 @@ local this = {
             ROD_RETICLE = "UI020028",
             TRAINING_ROOM_HUD = "UI600100",
             -- GUI020026 qte?
-            -- GUI020002 focus reticle
             -- GUI120200 some notification thing?
             -- GUI020901 placeholder?
             -- GUI020902 placeholder?
             -- GUI090902 placeholder?
+        },
+        hudless_to_hud = {
+            UI020002 = "UI020000", -- focus reticle to slinger reticle
         },
         no_lang_key = { ALL = true },
     },

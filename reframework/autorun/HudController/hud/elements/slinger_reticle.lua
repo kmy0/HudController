@@ -2,7 +2,6 @@
 ---@field hide_slinger_empty boolean
 ---@field get_config fun(): SlingerReticleConfig
 ---@field GUI020002 app.GUI020002
----@field last_reticle GeneralReticleType?
 ---@field children {
 --- slinger: HudChild,
 --- capture: HudChild,
@@ -33,13 +32,6 @@ local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = hud_base })
-
----@enum GeneralReticleType
-local reticle_type = {
-    SLINGER = 1,
-    FOCUS = 2,
-    CAPTURE = 3,
-}
 
 -- ctrl = PNL_Scale
 local ctrl_args = {
@@ -81,14 +73,14 @@ function this:new(args)
     o.children.slinger = hud_child:new(args.children.slinger, o, function(s, hudbase, gui_id, ctrl)
         ---@cast hudbase app.GUI20000
 
-        if
-            play_object.control.get(ctrl, ctrl_args.slinger_state[1][1]):get_Visible() and not o:is_GUI020002_visible()
-        then
-            if o.last_reticle ~= reticle_type.SLINGER then
-                o.children.focus:reset()
-            end
+        local state_pnl = play_object.control.get(ctrl, ctrl_args.slinger_state[1][1])
+        if not state_pnl then
+            return
+        end
 
-            o.last_reticle = reticle_type.SLINGER
+        if state_pnl:get_Visible() and not o:is_GUI020002_visible() then
+            o.children.focus:reset()
+
             if o.hide_slinger_empty then
                 if hudbase:get__SetMainAmmoType() == rl(ace_enum.slinger_ammo, "NONE") then
                     s.hide = true
@@ -106,11 +98,8 @@ function this:new(args)
     end)
     o.children.focus = hud_child:new(args.children.focus, o, function(s, hudbase, gui_id, ctrl)
         if o:is_GUI020002_visible() then
-            if o.last_reticle ~= reticle_type.FOCUS then
-                o.children.slinger:reset()
-            end
+            o.children.slinger:reset()
 
-            o.last_reticle = reticle_type.FOCUS
             local ret = play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slinger)
             table.insert(ret, o:get_GUI020002_pnl())
             return ret
