@@ -84,10 +84,13 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    if self.hide_slinger_empty and self:is_no_ammo() then
-        self:change_visibility(ctrl, false)
-
-        return false
+    if self.hide_slinger_empty then
+        if self:is_no_ammo() then
+            self:change_visibility(ctrl, false)
+            return false
+        else
+            self:change_visibility(ctrl, true)
+        end
     end
 
     return hud_child._write(self, ctrl)

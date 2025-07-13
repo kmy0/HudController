@@ -36,14 +36,6 @@ setmetatable(this, { __index = hud_base })
 
 -- ctrl = PNL_Scale
 local ctrl_args = {
-    slinger = {
-        {
-            {
-                "PNL_Pat00",
-                "PNL_slinger",
-            },
-        },
-    },
     slinger_state = {
         {
             {
