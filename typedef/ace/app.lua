@@ -323,6 +323,7 @@
 
 ---@class app.cEnemyContext : app.cGameContext
 ---@field get_ContinueFlag fun(self: app.cEnemyContext): ace.cSafeContinueFlagGroup
+---@field get_IsBoss fun(self: app.cEnemyContext): System.Boolean
 ---@field PaintHitInfoIndex System.Array<app.cEnemyContext.EmPaintHit>
 
 ---@class app.cGUIBeaconEM : app.cGUIBeaconBase

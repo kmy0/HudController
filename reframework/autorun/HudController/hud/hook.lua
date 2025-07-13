@@ -479,7 +479,7 @@ function this.hide_iteractables_post(retval)
                         local char = util_game.get_component(game_object, "app.EnemyCharacter") --[[@as app.EnemyCharacter]]
                         local holder = char._Context
                         local ctx = holder:get_Em()
-                        if not is_paintballed(ctx) then
+                        if ctx:get_IsBoss() and not is_paintballed(ctx) then
                             value:clear()
                         end
                     end
