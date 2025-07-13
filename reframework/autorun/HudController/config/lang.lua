@@ -143,7 +143,7 @@ this.default = {
         button_add = "Add",
         button_remove = "Remove",
         name = {
-            SLINGER_RETICLE = "Slinger Reticle",
+            SLINGER_RETICLE = "General Reticle",
             GUN_RETICLE = "Gun Reticle",
             BOW_RETICLE = "Bow Reticle",
             SUBTITLES = "Subtitles",
@@ -171,6 +171,8 @@ this.default = {
             category_pallet_behavior = "Pallet Behavior",
             category_npc_behavior = "NPC Behavior",
             category_numbers_behavior = "Numbers Behavior",
+            category_slinger_behavior = "Slinger Behavior",
+            box_hide_slinger_empty = "Hide When Empty",
             box_enable_box = "Enable Box",
             tooltip_numbers_box = "Scales numbers position to fit inside a box. Disables Offset.",
             box_no_hide = "Do Not Hide",
@@ -314,6 +316,9 @@ this.default = {
         command_history = "Command History",
         combo_guide = "Combo Guide",
         best_times = "Best Times",
+        capture = "Capture",
+        slinger = "Slinger",
+        focus = "Focus",
     },
 }
 

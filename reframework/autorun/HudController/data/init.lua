@@ -185,6 +185,7 @@ function this.init()
     game_data.get_enum("app.EnemyDef.CONTINUE_FLAG", ace_enum.enemy_continue_flag)
     game_data.get_enum("app.GUI020020.State", ace_enum.damage_state)
     game_data.get_enum("app.GUI020020.CRITICAL_STATE", ace_enum.critical_state)
+    game_data.get_enum("app.HunterDef.SLINGER_AMMO_TYPE", ace_enum.slinger_ammo)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)

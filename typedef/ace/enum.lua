@@ -40,6 +40,7 @@
 ---@class app.GUI020400.SUBTITLES_CATEGORY : System.Enum
 ---@class app.GUI020020.State : System.Enum
 ---@class app.GUI020020.CRITICAL_STATE : System.Enum
+---@class app.HunterDef.SLINGER_AMMO_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

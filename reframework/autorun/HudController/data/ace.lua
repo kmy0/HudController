@@ -37,6 +37,7 @@
 ---@field enemy_continue_flag table<app.EnemyDef.CONTINUE_FLAG, string>
 ---@field damage_state table<app.GUI020020.State, string>
 ---@field critical_state table<app.GUI020020.CRITICAL_STATE, string>
+---@field slinger_ammo table<app.HunterDef.SLINGER_AMMO_TYPE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -97,6 +98,7 @@ local this = {
         enemy_continue_flag = {},
         damage_state = {},
         critical_state = {},
+        slinger_ammo = {},
     },
     map = {
         hudid_to_guiid = {},
@@ -129,7 +131,7 @@ local this = {
             ROD_RETICLE = "UI020028",
             TRAINING_ROOM_HUD = "UI600100",
             -- GUI020026 qte?
-            -- GUI020002 some reticle
+            -- GUI020002 focus reticle
             -- GUI120200 some notification thing?
             -- GUI020901 placeholder?
             -- GUI020902 placeholder?

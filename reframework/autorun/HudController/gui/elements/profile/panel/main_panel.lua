@@ -283,6 +283,21 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_slinger_reticle(elem, elem_config, config_key)
+    ---@cast elem_config SlingerReticleConfig
+    ---@cast elem SlingerReticle
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_slinger_behavior"))
+    local item_config_key = config_key .. ".hide_slinger_empty"
+    if set.checkbox(gui_util.tr("hud_element.entry.box_hide_slinger_empty", item_config_key), item_config_key) then
+        elem:set_hide_slinger_empty(elem_config.hide_slinger_empty)
+        config.save()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -299,5 +314,6 @@ this.funcs[mod.enum.hud_type.NAME_ACCESS] = draw_name_access
 this.funcs[mod.enum.hud_type.NAME_OTHER] = draw_name_other
 this.funcs[mod.enum.hud_type.AMMO] = draw_ammo
 this.funcs[mod.enum.hud_type.RADIAL] = draw_radial
+this.funcs[mod.enum.hud_type.SLINGER_RETICLE] = draw_slinger_reticle
 
 return this

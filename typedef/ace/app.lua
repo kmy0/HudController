@@ -24,6 +24,7 @@
 ---@class app.GUI020401 : app.GUIBaseApp
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
+---@class app.GUI020002 : app.GUIHudBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -409,3 +410,6 @@
 
 ---@class app.GUI600100 : app.GUIBaseApp
 ---@field _TransitionGuide via.gui.Panel
+
+---@class app.GUI20000 : app.GUIHudBase
+---@field get__SetMainAmmoType fun(self: app.GUI20000): app.HunterDef.SLINGER_AMMO_TYPE
