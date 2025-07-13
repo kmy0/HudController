@@ -700,9 +700,14 @@ function this:apply_other(other)
     for key in pairs(other.properties) do
         ---@diagnostic disable-next-line: no-unknown
         local value = other[key]
+        if value and not self[key] then
+            self:mark_write()
+        elseif not value and self[key] then
+            self:reset(key)
+            self:mark_idle()
+        end
         ---@diagnostic disable-next-line: no-unknown
         self[key] = value
-        self:mark_write()
     end
 end
 
