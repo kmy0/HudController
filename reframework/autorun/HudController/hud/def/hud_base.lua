@@ -679,6 +679,33 @@ function this:_set_opacity(ctrl, val)
     ctrl:set_ColorScale(color)
 end
 
+function this:clear()
+    self:reset()
+    for key in pairs(self.properties) do
+        if self[key] then
+            if self[key] == true then
+                ---@diagnostic disable-next-line: no-unknown
+                self[key] = false
+            else
+                ---@diagnostic disable-next-line: no-unknown
+                self[key] = nil
+            end
+            self:mark_idle()
+        end
+    end
+end
+
+---@param other HudBase
+function this:apply_other(other)
+    for key in pairs(other.properties) do
+        ---@diagnostic disable-next-line: no-unknown
+        local value = other[key]
+        ---@diagnostic disable-next-line: no-unknown
+        self[key] = value
+        self:mark_write()
+    end
+end
+
 ---@return HudBaseConfig
 function this:get_current_config()
     if not hud then

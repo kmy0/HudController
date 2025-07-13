@@ -288,9 +288,9 @@ local function draw_slinger_reticle(elem, elem_config, config_key)
     ---@cast elem SlingerReticle
 
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_slinger_behavior"))
-    local item_config_key = config_key .. ".hide_slinger_empty"
+    local item_config_key = config_key .. ".children.slinger.hide_slinger_empty"
     if set.checkbox(gui_util.tr("hud_element.entry.box_hide_slinger_empty", item_config_key), item_config_key) then
-        elem:set_hide_slinger_empty(elem_config.hide_slinger_empty)
+        elem.children.slinger:set_hide_slinger_empty(elem_config.children.slinger.hide_slinger_empty)
         config.save()
     end
 end
