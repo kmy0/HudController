@@ -26,9 +26,8 @@ setmetatable(this, { __index = hud_child })
 function this:new(args, parent)
     local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         if parent:is_GUI020002_visible() then
+            parent:reset_slinger()
             return parent:get_GUI020002_pnl()
-        else
-            s:reset()
         end
     end)
     setmetatable(o, self)
@@ -45,12 +44,10 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    local ret = hud_child._write(self, ctrl)
-    if ret then
-        self.children.slinger:apply_other(self)
-    end
+    self.children.slinger:apply_other(self)
+    hud_child._write(self, ctrl)
 
-    return ret
+    return true
 end
 
 ---@param ctrl via.gui.Control
@@ -59,7 +56,7 @@ function this:reset_ctrl(ctrl, key)
     ---@diagnostic disable-next-line: param-type-mismatch
     hud_child.reset_ctrl(self, ctrl, key)
     ---@diagnostic disable-next-line: param-type-mismatch
-    self.children.slinger.reset_ctrl(self, self.children.slinger:get_slinger_pnl(), key)
+    self.children.slinger:reset_ctrl(self.children.slinger:get_slinger_pnl(), key)
 end
 
 ---@return SlingerReticleFocusConfig

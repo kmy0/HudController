@@ -104,7 +104,7 @@ function this:reset_ctrl(ctrl, key)
     end
 
     ---@diagnostic disable-next-line: param-type-mismatch
-    hud_child.reset_ctrl(self, key)
+    hud_child.reset_ctrl(self, ctrl, key)
 end
 
 ---@param hide boolean

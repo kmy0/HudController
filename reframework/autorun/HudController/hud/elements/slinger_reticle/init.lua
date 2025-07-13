@@ -67,9 +67,8 @@ function this:new(args)
         ---@cast s SlingerReticleSlinger
 
         if s:is_open() then
+            o:reset_focus()
             return s:get_slinger_pnl()
-        else
-            s:reset()
         end
     end)
 
@@ -116,6 +115,14 @@ function this:is_GUI020002_visible()
     local ctrl = self:get_GUI020002_pnl()
     local gui = ctrl:get_Component()
     return gui:get_Enabled()
+end
+
+function this:reset_focus()
+    self.children.focus:reset()
+end
+
+function this:reset_slinger()
+    self.children.slinger:reset()
 end
 
 ---@return boolean
