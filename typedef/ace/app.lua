@@ -414,3 +414,7 @@
 
 ---@class app.GUI020000 : app.GUIHudBase
 ---@field get__SetMainAmmoType fun(self: app.GUI020000): app.HunterDef.SLINGER_AMMO_TYPE
+
+---@class app.GUI020202 : app.GUIBaseApp
+---@field _SkipPanel via.gui.Panel
+---@field _Input ace.cGUIInputCtrl

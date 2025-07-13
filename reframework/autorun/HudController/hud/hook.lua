@@ -915,10 +915,29 @@ function this.skip_gui_open_pre(args)
     local hud_config = get_hud()
     if
         hud_config
-        and (hud.get_hud_option("skip_quest_end_timer") or hud.get_hud_option("hide_quest_end_timer"))
+        and (hud.get_hud_option("skip_quest_end_timer"))
         and sdk.to_int64(args[3]) == rl(ace_enum.gui_id, "UI020202")
     then
         return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
+
+function this.hide_quest_end_input(args)
+    local GUI020202 = sdk.to_managed_object(args[2]) --[[@as app.GUI020202]]
+    local skip_panel = GUI020202._SkipPanel
+    local input = GUI020202._Input
+    local hud_config = get_hud()
+
+    if
+        hud_config
+        and (not hud.get_hud_option("skip_quest_end_timer") and hud.get_hud_option("hide_quest_end_timer"))
+    then
+        input:setEnableCtrl(false)
+        skip_panel:set_ForceInvisible(true)
+    --FIXME: game does not recreate the gui, so this is necessary, which kind of sucks
+    else
+        input:setEnableCtrl(true)
+        skip_panel:set_ForceInvisible(false)
     end
 end
 

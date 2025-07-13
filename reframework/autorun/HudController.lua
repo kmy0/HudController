@@ -154,6 +154,7 @@ m.hook(
     hook.reset_damage_numbers_pre
 )
 m.hook("app.GUI600100.guiUpdate()", util.ref.capture_this, hook.update_training_room_hud_post)
+m.hook("app.GUI020202.guiVisibleUpdate()", hook.hide_quest_end_input)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

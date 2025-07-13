@@ -135,7 +135,7 @@ this.default = {
         tooltip_hide_lock_target = "Target Lock is hidden and tracking is disabled unless monster is paintballed",
         box_skip_quest_end_timer = "Skip Quest End Timer",
         box_disable_quest_end_outro = "Disable Quest Outro",
-        box_hide_quest_end_timer = "Hide Quest End Timer",
+        box_hide_quest_end_timer = "Hide Quest End Timer Input",
         category_quest = "Quest",
     },
     hud_element = {
