@@ -2,7 +2,7 @@ local elem = require("HudController.gui.debug.elem")
 local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
 
-local this = { is_opened = false }
+local this = { is_opened = false, show_disabled = false }
 local window = {
     flags = 0,
     condition = 2,
@@ -205,6 +205,8 @@ function this.draw()
 
     imgui.same_line()
 
+    _, this.show_disabled = imgui.checkbox("Show Disabled", this.show_disabled)
+
     imgui.text("Right click tree nodes for options")
     imgui.text("H - Hidden")
     imgui.text("S - Has States")
@@ -217,7 +219,7 @@ function this.draw()
         local key = keys[i]
         local gui_elem = ace_gui_elements[key]
 
-        if gui_elem.gui:get_Enabled() then
+        if this.show_disabled or gui_elem.gui:get_Enabled() then
             ---@diagnostic disable-next-line: missing-fields
             elem.draw_pos({ obj = gui_elem.root }, key, 4278190335)
 
