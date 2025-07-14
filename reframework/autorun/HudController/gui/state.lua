@@ -14,6 +14,7 @@
 ---@field alpha_channel Combo
 ---@field option_bind Combo
 ---@field segment Combo
+---@field page_alignment Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -76,6 +77,9 @@ local this = {
             end
         ),
         segment = combo:new(nil, function(a, b)
+            return a.key < b.key
+        end),
+        page_alignment = combo:new(nil, function(a, b)
             return a.key < b.key
         end),
     },
@@ -144,6 +148,7 @@ function this.init()
     this.combo.segment:swap(util_table.filter(ace_enum.draw_segment, function(key, value)
         return not value:match("RADAR.-")
     end))
+    this.combo.page_alignment:swap(ace_enum.page_alignment)
     this.tr_combo()
 end
 

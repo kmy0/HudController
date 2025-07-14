@@ -92,9 +92,10 @@ setmetatable(this, { __index = hud_child })
 ---@param ctrl_writer (fun(self: CtrlChild, ctrl: ControlChild): boolean)?
 ---@param default_overwrite CtrlChildDefaultOverwite?
 ---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@return CtrlChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
     setmetatable(o, self)
     ---@cast o CtrlChild
 

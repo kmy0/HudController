@@ -68,6 +68,7 @@ function this.create_default(obj)
             ---@cast ret TextDefault
             ret.hide_glow = not obj:get_GlowEnable()
             ret.glow_color = obj:get_GlowColor().rgba
+            ret.page_alignment = obj:get_PageAlignment()
         end
 
         return ret

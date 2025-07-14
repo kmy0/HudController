@@ -35,6 +35,7 @@ local separator_text = gui_util.separator:new({
     "hide_glow",
     "enabled_glow_color",
     "enabled_font_size",
+    "enabled_page_alignment",
 })
 
 ---@param elem HudBase
@@ -319,6 +320,38 @@ local function draw_text(elem, elem_config, config_key)
 
         imgui.end_disabled()
         separator_text:draw()
+    end
+
+    if elem_config.enabled_page_alignment ~= nil then
+        item_config_key = config_key .. ".enabled_page_alignment"
+        changed =
+            set.checkbox(gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key), item_config_key)
+
+        imgui.begin_disabled(not elem_config.enabled_page_alignment)
+
+        item_config_key = config_key .. ".page_alignment"
+        if not config.get(item_config_key .. "_combo") then
+            config.set(
+                item_config_key .. "_combo",
+                state.combo.page_alignment:get_index(nil, config.get(item_config_key))
+            )
+        end
+
+        changed = set.combo(
+            "##" .. item_config_key .. "_combo",
+            item_config_key .. "_combo",
+            state.combo.page_alignment.values
+        ) or changed
+
+        if changed then
+            local value = state.combo.page_alignment:get_value(config.get(item_config_key .. "_combo"))
+            elem:set_page_alignment(value)
+            config.set(item_config_key, value)
+            config.save()
+        end
+
+        imgui.end_disabled()
+        separator_scale9:draw()
     end
 
     if elem_config.hide_glow ~= nil then

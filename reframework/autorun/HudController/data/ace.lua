@@ -38,6 +38,7 @@
 ---@field damage_state table<app.GUI020020.State, string>
 ---@field critical_state table<app.GUI020020.CRITICAL_STATE, string>
 ---@field slinger_ammo table<app.HunterDef.SLINGER_AMMO_TYPE, string>
+---@field page_alignment table<via.gui.PageAlignment, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -100,6 +101,7 @@ local this = {
         damage_state = {},
         critical_state = {},
         slinger_ammo = {},
+        page_alignment = {},
     },
     map = {
         hudid_to_guiid = {},

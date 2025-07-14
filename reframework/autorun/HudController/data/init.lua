@@ -194,6 +194,7 @@ function this.init()
     game_data.get_enum("app.GUI020020.State", ace_enum.damage_state)
     game_data.get_enum("app.GUI020020.CRITICAL_STATE", ace_enum.critical_state)
     game_data.get_enum("app.HunterDef.SLINGER_AMMO_TYPE", ace_enum.slinger_ammo)
+    game_data.get_enum("via.gui.PageAlignment", ace_enum.page_alignment)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)

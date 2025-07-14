@@ -33,6 +33,7 @@ local all_bools = {
     "hide_glow",
     "enabled_glow_color",
     "enabled_font_size",
+    "enabled_page_alignment",
 }
 
 ---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config

@@ -2,6 +2,7 @@
 ---@field hide_glow boolean?
 ---@field glow_color via.Color?
 ---@field font_size via.Size?
+---@field page_alignment via.gui.PageAlignment?
 ---@field properties TextProperties
 ---@field default_overwrite TextDefaultOverwrite
 ---@field ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text| via.gui.Text[]?
@@ -14,34 +15,45 @@
 ---@field glow_color integer?
 ---@field enabled_font_size boolean?
 ---@field font_size integer?
+---@field page_alignment string?
+---@field enabled_page_alignment boolean?
 
 ---@class (exact) TextDefault : CtrlChildDefault
 ---@field hide_glow boolean
 ---@field glow_color integer
 ---@field font_size integer
+---@field page_alignment via.gui.PageAlignment
 
 ---@class (exact) TextDefaultOverwrite : CtrlChildDefaultOverwite
 ---@field hide_glow boolean?
 ---@field glow_color integer?
 ---@field font_size integer?
+---@field page_alignment via.gui.PageAlignment?
 
 ---@class (exact) TextChangedProperties : CtrlChildChangedProperties
 ---@field hide_glow boolean?
 ---@field glow_color integer?
 ---@field font_size integer?
+---@field page_alignment via.gui.PageAlignment?
 
 ---@class (exact) TextProperties : {[TextProperty]: boolean}, CtrlChildProperties
 ---@field hide_glow boolean
 ---@field glow_color boolean
 ---@field font_size boolean
+---@field page_alignment boolean
 
----@alias TextProperty CtrlChildProperty | "hide_glow" | "glow_color" | "font_size"
+---@alias TextProperty CtrlChildProperty | "hide_glow" | "glow_color" | "font_size" | "page_alignment"
 ---@alias TextWriteKey CtrlChildWriteKey | TextProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
+local data = require("HudController.data")
+local game_data = require("HudController.util.game.data")
 local play_object = require("HudController.hud.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
+
+local ace_enum = data.ace.enum
+local rl = game_data.reverse_lookup
 
 ---@class Text
 local this = {}
@@ -55,9 +67,10 @@ setmetatable(this, { __index = ctrl_child })
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Text): boolean)?
 ---@param default_overwrite TextDefaultOverwrite?
 ---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@return Text
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
     o.properties = util_table.merge_t(o.properties, {
         hide_glow = true,
         glow_color = true,
@@ -79,7 +92,22 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
         o:set_font_size(args.font_size)
     end
 
+    if args.enabled_page_alignment then
+        o:set_page_alignment(args.page_alignment)
+    end
     return o
+end
+
+---@param page_alignment string?
+function this:set_page_alignment(page_alignment)
+    if page_alignment then
+        self:mark_write()
+        self.page_alignment = rl(ace_enum.page_alignment, page_alignment)
+    else
+        self:reset("page_alignment")
+        self.page_alignment = page_alignment
+        self:mark_idle()
+    end
 end
 
 ---@param hide_glow boolean
@@ -148,6 +176,10 @@ function this:reset_ctrl(obj, key)
         obj:set_FontSize(font_size)
     end
 
+    if self.page_alignment and (not key or key == "page_alignment") and default.page_alignment then
+        obj:set_PageAlignment(default.page_alignment)
+    end
+
     ---@cast key CtrlChildProperty
     ctrl_child.reset_ctrl(self, obj, key)
 end
@@ -170,6 +202,10 @@ function this:_write(obj)
 
     if self.font_size then
         obj:set_FontSize(self.font_size)
+    end
+
+    if self.page_alignment then
+        obj:set_PageAlignment(self.page_alignment)
     end
 
     return true

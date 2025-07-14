@@ -124,6 +124,8 @@
 ---@field set_GlowColor fun(self: via.gui.Text, color: via.Color)
 ---@field get_GlowEnable fun(self: via.gui.Text): System.Boolean
 ---@field set_GlowEnable fun(self: via.gui.Text, val: System.Boolean)
+---@field get_PageAlignment fun(self: via.gui.Text): via.gui.PageAlignment
+---@field set_PageAlignment fun(self: via.gui.Text, val: via.gui.PageAlignment)
 
 ---@class via.gui.HitArea : via.gui.Element
 ---@field get_Size fun(self: via.gui.HitArea ): via.Size
