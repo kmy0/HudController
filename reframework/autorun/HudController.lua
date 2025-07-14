@@ -155,6 +155,7 @@ m.hook(
 )
 m.hook("app.GUI600100.guiUpdate()", util.ref.capture_this, hook.update_training_room_hud_post)
 m.hook("app.GUI020202.guiVisibleUpdate()", hook.hide_quest_end_input)
+m.hook("app.GUI020001PanelBase.onLateUpdate()", util.ref.capture_this, hook.update_name_access_icons_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

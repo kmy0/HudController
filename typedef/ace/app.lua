@@ -25,6 +25,7 @@
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
 ---@class app.GUI020002 : app.GUIHudBase
+---@class app.GUI020001 : app.GUIHudBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -248,6 +249,7 @@
 ---@field get_ObjectCategory fun(self: app.GUI020001PanelParams): app.GUIAccessIconControl.OBJECT_CATEGORY
 ---@field get_GameObject fun(self: app.GUI020001PanelParams): via.GameObject
 ---@field clear fun(self: app.GUI020001PanelParams)
+---@field get_MyOwner fun(self: app.GUI020001PanelParams): app.GUI020001
 
 ---@class app.PorterCharacter : app.CharacterBase
 ---@field get_Context fun(self: app.PorterCharacter): app.cPorterContext
@@ -418,3 +420,7 @@
 ---@class app.GUI020202 : app.GUIBaseApp
 ---@field _SkipPanel via.gui.Panel
 ---@field _Input ace.cGUIInputCtrl
+
+---@class app.GUI020001PanelBase : ace.cGUIPartsBase
+---@field get_Params fun(self: app.GUI020001PanelBase): app.GUI020001PanelParams
+---@field get_BasePanel fun(self: app.GUI020001PanelBase): via.gui.Panel

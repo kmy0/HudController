@@ -121,7 +121,9 @@ function this.update_post(retval)
     call_queue.consume(gui_id)
 
     local hud_elem = hud.get_element_by_guiid(gui_id)
-    if not hud_elem then
+
+    -- NamesAccess is updated here @update_name_access_icons_post
+    if not hud_elem or hud_elem.hud_id == rl(ace_enum.hud, "NAME_ACCESSIBLE") then
         return
     end
 
@@ -1078,6 +1080,17 @@ function this.update_training_room_hud_post(retval)
             ---@diagnostic disable-next-line: param-type-mismatch
             training_room_hud:write(hudbase, hudbase:get_ID(), ctrl)
         end
+    end
+end
+
+function this.update_name_access_icons_post(retval)
+    local name_access = get_elem_t("NameAccess")
+    if name_access then
+        local GUI020001PanelBase = util_ref.get_this() --[[@as app.GUI020001PanelBase]]
+        local params = GUI020001PanelBase:get_Params()
+        local owner = params:get_MyOwner()
+
+        name_access:write(owner, owner:get_ID(), GUI020001PanelBase:get_BasePanel())
     end
 end
 
