@@ -1,6 +1,6 @@
 ---@class (exact) NameAccess : HudBase
 ---@field npc_draw_distance number
----@field GUI020001 app.GUI020001
+---@field GUI020001 app.GUI020001?
 ---@field get_config fun(): NameAccessConfig
 ---@field object_category table<string, boolean>
 
@@ -52,19 +52,21 @@ function this:get_all_ctrl()
     ---@type {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
     local ret = {}
     local hudbase = self:get_GUI020001()
-    local disp_ctrl = hudbase._DisplayControl
-    local ctrl = disp_ctrl._TargetControl
-    local gui_id = hudbase:get_ID()
-    local pnl = play_object.control.all(ctrl, "PNL_Pat00", "PNL_Pat", true) --[=[@as via.gui.Control[]]=]
+    if hudbase then
+        local disp_ctrl = hudbase._DisplayControl
+        local ctrl = disp_ctrl._TargetControl
+        local gui_id = hudbase:get_ID()
+        local pnl = play_object.control.all(ctrl, "PNL_Pat00", "PNL_Pat", true) --[=[@as via.gui.Control[]]=]
 
-    for _, name_pnl in pairs(pnl) do
-        table.insert(ret, { ctrl = name_pnl, hud_base = hudbase, gui_id = gui_id })
+        for _, name_pnl in pairs(pnl) do
+            table.insert(ret, { ctrl = name_pnl, hud_base = hudbase, gui_id = gui_id })
+        end
     end
 
     return ret
 end
 
----@return app.GUI020001
+---@return app.GUI020001?
 function this:get_GUI020001()
     if not self.GUI020001 then
         self.GUI020001 = util_game.get_component_any("app.GUI020001") --[[@as app.GUI020001]]
