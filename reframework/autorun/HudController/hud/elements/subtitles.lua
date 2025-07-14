@@ -102,7 +102,13 @@ function this:reset(key)
     end
 
     local subman = s.get("app.DialogueManager"):get_SubtitleManager()
-    local ctrl = self:get_scale_panel(subman._SubtitlesGUI)
+    local hudbase = subman._SubtitlesGUI
+
+    if not hudbase then
+        return
+    end
+
+    local ctrl = self:get_scale_panel(hudbase)
     self:reset_ctrl(ctrl, key)
 end
 
