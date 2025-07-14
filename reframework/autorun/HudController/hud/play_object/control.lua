@@ -1,9 +1,12 @@
+local hash = require("HudController.util.misc.hash")
+local lru = require("HudController.util.misc.lru")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
 
 local control_type = sdk.typeof("via.gui.Control") --[[@as System.Type]]
+local all_cache = lru:new(1000)
 
 ---@param ctrl via.gui.Control
 ---@param chain string[] | string
@@ -43,18 +46,34 @@ function this.all(ctrl, chain, target, lowercase)
 
     ---@type via.gui.Control[]
     local ret = {}
-    util_game.do_something(child:getChildren(control_type), function(system_array, index, candidate)
-        ---@cast candidate via.gui.Control
-        local candidate_name = candidate:get_Name() --[[@as string]]
+    local key = hash.hash_args(false, ctrl, chain, target, lowercase)
+    local cached = all_cache:get(key) --[=[@as string[]?]=]
 
-        if lowercase then
-            candidate_name = candidate_name:lower()
+    if cached then
+        for _, name in pairs(cached) do
+            local candidate = this.get(child, name)
+            if candidate then
+                table.insert(ret, candidate)
+            end
         end
+    else
+        ---@type string[]
+        local names = {}
+        util_game.do_something(child:getChildren(control_type), function(system_array, index, candidate)
+            ---@cast candidate via.gui.Control
+            local candidate_name = candidate:get_Name() --[[@as string]]
+            if lowercase then
+                candidate_name = candidate_name:lower()
+            end
 
-        if candidate_name == target or candidate_name:find(target) then
-            table.insert(ret, candidate)
-        end
-    end)
+            if candidate_name == target or candidate_name:find(target) then
+                table.insert(ret, candidate)
+                table.insert(names, candidate_name)
+            end
+        end)
+
+        all_cache:set(key, names)
+    end
 
     if not util_table.empty(ret) then
         return ret
