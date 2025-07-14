@@ -88,9 +88,7 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    print(self.hide_slinger_empty)
     if self.hide_slinger_empty then
-        print(self:is_no_ammo())
         if self:is_no_ammo() then
             self:change_visibility(ctrl, false)
             return false

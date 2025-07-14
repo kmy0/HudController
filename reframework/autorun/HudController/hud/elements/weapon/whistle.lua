@@ -183,7 +183,6 @@ function this:new(args, parent)
             args.children.perform.children["melody" .. i],
             o.children.perform,
             function(s, hudbase, gui_id, ctrl)
-                print(play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1))
                 return play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1)
             end
         )
