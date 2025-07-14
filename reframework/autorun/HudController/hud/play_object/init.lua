@@ -1,8 +1,6 @@
 ---@alias PlayObject via.gui.Control | via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 ---@alias ControlChild via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 
-local lru = require("HudController.util.misc.lru")
-local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 
 local this = {
@@ -10,21 +8,6 @@ local this = {
     child = require("HudController.hud.play_object.child"),
     default = require("HudController.hud.play_object.default"),
 }
-
----@param item PlayObject | PlayObject[]
----@return boolean
-local function is_ok(item)
-    if not item then
-        return false
-    end
-
-    if type(item) == "table" then
-        return util_table.all(item, function(o)
-            return not util_game.is_only_my_ref(o)
-        end)
-    end
-    return not util_game.is_only_my_ref(item)
-end
 
 ---@protected
 ---@param func fun(ctrl: via.gui.Control, ...): PlayObject[] | PlayObject?
@@ -51,13 +34,5 @@ function this.iter_args(func, ctrl, args)
 
     return ret
 end
-
-this.control.get = lru.memoize(this.control.get, 1000, is_ok)
-this.control.all = lru.memoize(this.control.all, 1000, is_ok)
-this.control.from_func = lru.memoize(this.control.from_func, 1000, is_ok)
-this.control.top = lru.memoize(this.control.top, 1000, is_ok)
-this.control.get_parent = lru.memoize(this.control.get_parent, 1000, is_ok)
-this.child.get = lru.memoize(this.child.get, 1000, is_ok)
-this.child.all_type = lru.memoize(this.child.all_type, 1000, is_ok)
 
 return this
