@@ -49,6 +49,7 @@
 ---@field enable_weapon_binds boolean
 ---@field disable_weapon_binds_timed boolean
 ---@field disable_weapon_binds_held boolean
+---@field show_order_buttons boolean
 ---@field hud HudProfileConfig[]
 ---@field bind {
 --- weapon: WeaponStateBindConfig,
@@ -126,6 +127,7 @@ this.default = {
         enable_weapon_binds = false,
         disable_weapon_binds_held = false,
         disable_weapon_binds_timed = false,
+        show_order_buttons = true,
         grid = {
             draw = false,
             color_center = 4278190335,

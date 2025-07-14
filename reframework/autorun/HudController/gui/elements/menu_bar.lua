@@ -69,6 +69,14 @@ local function draw_mod_menu()
 
     imgui.separator()
 
+    if imgui.menu_item(gui_util.tr("menu.config.show_order_buttons"), nil, config.current.mod.enable_key_binds) then
+        config.current.mod.show_order_buttons = not config.current.mod.show_order_buttons
+        config.save()
+    end
+    util_imgui.tooltip(config.lang.tr("menu.config.show_order_buttons_tooltip"))
+
+    imgui.separator()
+
     if
         imgui.menu_item(
             gui_util.tr("menu.config.disable_weapon_binds_timed"),

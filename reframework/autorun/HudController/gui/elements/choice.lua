@@ -95,6 +95,15 @@ function this.draw_element()
         hud.operations.add_element(state.combo.hud_elem:get_key(config.current.mod.combo_hud_elem) --[[@as string]])
         config.save()
     end
+
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("hud_element.button_sort")) then
+        local elements = config.current.mod.hud[config.current.mod.combo_hud].elements or {}
+        hud.operations.sort_elements(util_table.values(elements))
+        config.save()
+    end
+    util_imgui.tooltip(config.lang.tr("hud_element.button_sort_tooltip"))
 end
 
 return this

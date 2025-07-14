@@ -1,14 +1,12 @@
 local config = require("HudController.config")
-local data = require("HudController.data")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
+local operations = require("HudController.hud.operations")
 local panel = require("HudController.gui.elements.profile.panel")
 local set = require("HudController.gui.set")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
-
-local ace_map = data.ace.map
 
 local this = {}
 
@@ -235,17 +233,29 @@ local function draw_elements()
         local config_key =
             string.format("mod.hud.int:%s.elements.%s", config.current.mod.combo_hud, elem_config.name_key)
 
+        if config.current.mod.show_order_buttons then
+            if imgui.arrow_button(string.format("##up_%s", config_key), 2) then
+                operations.swap_elements_order(i, sorted, -1)
+                config.save()
+            end
+
+            imgui.same_line()
+
+            if imgui.arrow_button(string.format("##down_%s", config_key), 3) then
+                operations.swap_elements_order(i, sorted, 1)
+                config.save()
+            end
+
+            imgui.same_line()
+        end
+
         if imgui.button(gui_util.tr("hud_element.button_remove", elem.name_key)) then
             table.insert(remove, elem.name_key)
         end
 
         imgui.same_line()
 
-        local name = ace_map.hudid_name_to_local_name[elem.name_key]
-        if name == ace_map.hud_tr_flag then
-            name = config.lang.tr("hud_element.name." .. elem.name_key)
-        end
-
+        local name = operations.tr_element(elem_config)
         if imgui.collapsing_header(string.format("%s##%s_header", name, elem.name_key)) then
             panel.draw(elem, elem_config, config_key)
         end

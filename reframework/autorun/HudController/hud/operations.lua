@@ -9,9 +9,11 @@ local util_table = require("HudController.util.misc.table")
 
 local rl = util_game.data.reverse_lookup
 local ace_enum = data.ace.enum
+local ace_map = data.ace.map
 
 local this = {}
 
+---@protected
 ---@return HudProfileConfig
 function this._new()
     local _key = 1
@@ -113,13 +115,13 @@ function this.add_element(name_key)
         return
     end
 
-    local _key = 1
+    local key = 1
     for _, elem in pairs(_hud.elements) do
-        _key = math.max(_key, elem.key + 1)
+        key = math.max(key, elem.key + 1)
     end
 
     local hud_elem = factory.get_config(rl(ace_enum.hud, name_key))
-    hud_elem.key = _key
+    hud_elem.key = key
 
     _hud.elements[name_key] = hud_elem
     hud_manager.update_elements(_hud.elements)
@@ -150,6 +152,52 @@ function this.get_hud_by_key(key)
     return util_table.value(config.current.mod.hud, function(_, value)
         return value.key == key
     end) --[[@as HudProfileConfig]]
+end
+
+---@param elements HudBaseConfig[]
+function this.sort_elements(elements)
+    table.sort(elements, function(a, b)
+        return this.tr_element(a) > this.tr_element(b)
+    end)
+    for i, elem in pairs(elements) do
+        elem.key = i
+    end
+end
+
+---@param element HudBaseConfig
+function this.tr_element(element)
+    local name = ace_map.hudid_name_to_local_name[element.name_key]
+    if name == ace_map.hud_tr_flag then
+        name = config.lang.tr("hud_element.name." .. element.name_key)
+    end
+    return name
+end
+
+---@param element HudBaseConfig | integer
+---@param elements HudBaseConfig[]
+---@param dir integer -1 | 1
+function this.swap_elements_order(element, elements, dir)
+    ---@type integer
+    local index
+
+    if type(element) == "table" then
+        index = util_table.index(elements, element) --[[@as integer]]
+    else
+        ---@cast element integer
+        index = element
+        element = elements[index]
+    end
+
+    local swap_index = index + dir
+    if swap_index <= 0 or swap_index > #elements then
+        return
+    end
+
+    local element_b = elements[swap_index]
+    local a = element.key
+    local b = element_b.key
+    element_b.key = a
+    element.key = b
 end
 
 return this
