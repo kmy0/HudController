@@ -68,6 +68,14 @@ function this.wrap(method)
     end
 end
 
+---@param method REMethodDefinition
+---@return fun(...): any
+function this.wrap_obj(method)
+    return function(...)
+        return method:call(...)
+    end
+end
+
 ---@param method string | REMethodDefinition
 ---@param pre_cb (fun(args?: userdata[]): PreHookResult?)?
 ---@param post_cb (fun(retval?: userdata): any?)?
