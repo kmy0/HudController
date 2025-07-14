@@ -17,6 +17,7 @@ local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup
@@ -49,6 +50,9 @@ local ctrl_args = {
 ---@return SlingerReticleSlinger
 function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
     local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    o.properties = util_table.merge_t(o.properties, {
+        hide_slinger_empty = true,
+    })
     setmetatable(o, self)
     ---@cast o SlingerReticleSlinger
 
@@ -84,7 +88,9 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
+    print(self.hide_slinger_empty)
     if self.hide_slinger_empty then
+        print(self:is_no_ammo())
         if self:is_no_ammo() then
             self:change_visibility(ctrl, false)
             return false
