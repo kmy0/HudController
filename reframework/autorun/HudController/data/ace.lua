@@ -53,6 +53,7 @@
 ---@field additional_hud_index integer
 ---@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
+---@field guiid_ignore table<string, boolean>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -143,6 +144,9 @@ local this = {
             UI020002 = "UI020000", -- focus reticle to slinger reticle
         },
         no_lang_key = { ALL = true },
+        guiid_ignore = {
+            UI090901 = true, -- barrels
+        },
     },
 }
 

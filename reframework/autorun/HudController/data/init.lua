@@ -53,8 +53,11 @@ local function get_hud_map()
 
         if ace_enum.hud[hudid] then
             local guiid = setting:get_Id()
-            util_table.insert_nested_value(ace_map.hudid_to_guiid, { hudid }, guiid)
-            ace_map.guiid_to_hudid[guiid] = hudid
+            local guiid_name = ace_enum.gui_id[guiid]
+            if not ace_map.guiid_ignore[guiid_name] then
+                util_table.insert_nested_value(ace_map.hudid_to_guiid, { hudid }, guiid)
+                ace_map.guiid_to_hudid[guiid] = hudid
+            end
         end
     end
 end
