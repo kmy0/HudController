@@ -9,7 +9,6 @@ local this = {
     default = require("HudController.hud.play_object.default"),
 }
 
----@protected
 ---@param func fun(ctrl: via.gui.Control, ...): PlayObject[] | PlayObject?
 ---@param ctrl via.gui.Control
 ---@param args table<integer, ...[]>

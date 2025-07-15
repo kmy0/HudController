@@ -82,6 +82,25 @@ function this.all(ctrl, chain, target, lowercase)
     end
 end
 
+---@param ctrls via.gui.Control[]
+---@param chain string[] | string
+---@return via.gui.Control[]?
+function this.get_from_all(ctrls, chain)
+    ---@type via.gui.Control[]
+    local ret = {}
+
+    for _, ctrl in pairs(ctrls) do
+        local res = this.get(ctrl, chain)
+        if res then
+            table.insert(ret, res)
+        end
+    end
+
+    if not util_table.empty(ret) then
+        return ret
+    end
+end
+
 ---@param ctrl via.gui.Control
 ---@return via.gui.Control
 function this.top(ctrl)
@@ -128,11 +147,6 @@ function this.get_parent(ctrl, parent_name, strict)
 
     ---@cast ret via.gui.Control
     return ret
-end
-
----@param f fun(): via.gui.Control | via.gui.Control[]?
-function this.from_func(f)
-    return f()
 end
 
 return this
