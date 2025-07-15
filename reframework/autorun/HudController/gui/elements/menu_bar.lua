@@ -69,7 +69,7 @@ local function draw_mod_menu()
 
     imgui.separator()
 
-    if imgui.menu_item(gui_util.tr("menu.config.show_order_buttons"), nil, config.current.mod.enable_key_binds) then
+    if imgui.menu_item(gui_util.tr("menu.config.show_order_buttons"), nil, config.current.mod.show_order_buttons) then
         config.current.mod.show_order_buttons = not config.current.mod.show_order_buttons
         config.save()
     end
