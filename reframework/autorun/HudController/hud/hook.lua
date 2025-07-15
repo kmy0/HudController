@@ -1063,13 +1063,6 @@ function this.hide_map_navi_points_post(retval)
     end
 end
 
-function this.reset_damage_numbers_pre(args)
-    local dmg = get_elem_t("DamageNumbers")
-    if dmg then
-        dmg:reset()
-    end
-end
-
 function this.update_damage_numbers_post(retval)
     local dmg_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
 
@@ -1077,9 +1070,9 @@ function this.update_damage_numbers_post(retval)
 
     local dmg = get_elem_t("DamageNumbers")
     if dmg then
-        util_table.do_something(dmg:get_dmg(), function(_, _, value)
+        util_table.do_something(dmg:get_dmg(), function(_, key, _)
             ---@diagnostic disable-next-line: param-type-mismatch
-            dmg:write(value, dmg_guiid, value:get_field("<ParentPanel>k__BackingField") --[[@as via.gui.Panel]])
+            dmg:write(key, dmg_guiid, nil)
         end)
     end
 end

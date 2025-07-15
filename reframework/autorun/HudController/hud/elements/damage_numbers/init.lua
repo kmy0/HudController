@@ -1,7 +1,8 @@
 ---@class (exact) DamageNumbers : DamageNumbersOffset, HudBase
 ---@field get_config fun(): DamageNumbersConfig
 ---@field GUI020020 app.GUI020020?
----@field previous_state table<via.gui.Control, {damage_state: app.GUI020020.State, critical_state: app.GUI020020.CRITICAL_STATE}>
+---@field state table<app.GUI020020.DAMAGE_INFO, {[string]: any}>
+---@field written table<app.GUI020020.DAMAGE_INFO, boolean>
 ---@field children {[string]: DamageNumbersCriticalState}
 
 ---@class (exact) DamageNumbersConfig : DamageNumbersOffsetConfig, HudBaseConfig
@@ -42,7 +43,8 @@ function this:new(args)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbers
 
-    o.previous_state = {}
+    o.state = {}
+    o.written = {}
 
     for _, state in pairs(ace_enum.critical_state) do
         o.children[state] = critical_state:new(args.children[state], o)
@@ -68,27 +70,27 @@ function this:get_all_panels()
     local arr = self:get_GUI020020()._DamageInfo
     if arr then
         util_game.do_something(arr, function(system_array, index, value)
-            table.insert(ret, value:get_field("<ParentPanel>k__BackingField") --[[@as via.gui.Panel]])
+            table.insert(ret, self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]])
         end)
     end
 
     return ret
 end
 
----@param active_only boolean?
 ---@return app.GUI020020.DAMAGE_INFO[]
-function this:get_dmg(active_only)
-    local ret = {}
-    local arr = self:get_GUI020020()._DamageInfo
+function this:get_dmg()
+    local arr = self:get_GUI020020()._DamageInfoList
     if arr then
         util_game.do_something(arr, function(system_array, index, value)
-            if not active_only or value:get_field("<DispTimer>k__BackingField") > 0 then
-                table.insert(ret, value)
+            if not self.written[value] then
+                self:get_state_value(value, "<criticalState>k__BackingField", true)
+                self:get_state_value(value, "<State>k__BackingField", true)
+                self.written[value] = true
             end
         end)
     end
 
-    return ret
+    return self.written
 end
 
 ---@param key HudBaseWriteKey
@@ -97,7 +99,8 @@ function this:reset(key)
         return
     end
 
-    self.previous_state = {}
+    self.state = {}
+    self.written = {}
     self.pos_cache = {}
     util_table.do_something(self:get_all_panels(), function(_, _, value)
         self:reset_ctrl(value, key)
@@ -113,12 +116,51 @@ function this:reset(key)
 end
 
 ---@param hudbase app.GUI020020.DAMAGE_INFO
----@param gui_id app.GUIID.ID
----@param ctrl via.gui.Control
-function this:write(hudbase, gui_id, ctrl)
-    self:_reset_on_state(hudbase, ctrl)
-    self:adjust_offset(hudbase)
+---@param field_name string
+---@param clear boolean?
+---@return any
+function this:get_state_value(hudbase, field_name, clear)
+    local t = self.state[hudbase]
+    if not t then
+        self.state[hudbase] = {}
+        t = self.state[hudbase]
+    end
 
+    local ret = t[field_name]
+    if clear or not ret then
+        t[field_name] = hudbase:get_field(field_name)
+        ret = t[field_name]
+    end
+    return ret
+end
+
+---@param hudbase app.GUI020020.DAMAGE_INFO
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control?
+function this:write(hudbase, gui_id, ctrl)
+    local pnl_wrap = self:get_state_value(hudbase, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
+    ctrl = self:get_state_value(hudbase, "<ParentPanel>k__BackingField")
+
+    if not pnl_wrap:get_Visible() then
+        local crit_state = self:get_state_value(hudbase, "<criticalState>k__BackingField")
+        local dmg_state = self:get_state_value(hudbase, "<State>k__BackingField")
+        local crit_child = self.children[ace_enum.critical_state[crit_state]]
+        local dmg_child = crit_child.children[ace_enum.damage_state[dmg_state]]
+
+        self.children.ALL:reset_ctrl(ctrl)
+        self.children.ALL.children.ALL:reset_ctrl(ctrl)
+        self.children.ALL.children[ace_enum.damage_state[dmg_state]]:reset_ctrl(ctrl)
+
+        crit_child:reset_ctrl(ctrl)
+        crit_child.children.ALL:reset_ctrl(ctrl)
+        dmg_child:reset_ctrl(ctrl)
+
+        self.pos_cache[pnl_wrap] = nil
+        self.written[hudbase] = nil
+        return
+    end
+
+    self:adjust_offset(hudbase)
     ---@diagnostic disable-next-line: param-type-mismatch
     hud_base.write(self, hudbase, gui_id, ctrl)
 end
@@ -138,30 +180,6 @@ function this.get_config()
     children.ALL = critical_state.get_config("ALL")
 
     return base
-end
-
----@param hudbase app.GUI020020.DAMAGE_INFO
----@param ctrl via.gui.Control
-function this:_reset_on_state(hudbase, ctrl)
-    local dmg_state = hudbase:get_field("<State>k__BackingField") --[[@as app.GUI020020.State]]
-    local crit_state = hudbase:get_field("<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
-
-    if not self.previous_state[ctrl] then
-        self.previous_state[ctrl] = {
-            damage_state = dmg_state,
-            critical_state = crit_state,
-        }
-    elseif
-        self.previous_state[ctrl] and self.previous_state[ctrl].damage_state ~= dmg_state
-        or self.previous_state[ctrl].critical_state ~= crit_state
-    then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        self.children.ALL:reset_child(nil, nil, ctrl)
-        ---@diagnostic disable-next-line: param-type-mismatch
-        self.children[ace_enum.critical_state[self.previous_state[ctrl].critical_state]]:reset_child(nil, nil, ctrl)
-        self.previous_state[ctrl].damage_state = dmg_state
-        self.previous_state[ctrl].critical_state = crit_state
-    end
 end
 
 return this

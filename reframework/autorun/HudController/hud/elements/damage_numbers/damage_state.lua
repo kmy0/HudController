@@ -153,10 +153,8 @@ function this:new(args, parent)
             return ctrl
         end
 
-        if
-            args.name_key == "ALL"
-            or ace_enum.damage_state[hudbase:get_field("<State>k__BackingField")] == args.name_key
-        then
+        local state = s.root:get_state_value(hudbase, "<State>k__BackingField") --[[@as app.GUI020020.State]]
+        if args.name_key == "ALL" or ace_enum.damage_state[state] == args.name_key then
             s:adjust_offset(hudbase)
             return ctrl
         end

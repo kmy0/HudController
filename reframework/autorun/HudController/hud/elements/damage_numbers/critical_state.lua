@@ -40,10 +40,8 @@ function this:new(args, parent)
                 return ctrl
             end
 
-            if
-                args.name_key == "ALL"
-                or ace_enum.critical_state[hudbase:get_field("<criticalState>k__BackingField")] == args.name_key
-            then
+            local state = s.root:get_state_value(hudbase, "<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
+            if args.name_key == "ALL" or ace_enum.critical_state[state] == args.name_key then
                 s:adjust_offset(hudbase)
                 return ctrl
             end

@@ -146,13 +146,6 @@ m.hook(
 )
 m.hook("app.cGUIMapNaviPointController.IsGuideInsectNavigating()", nil, hook.hide_map_navi_points_post)
 m.hook("app.GUI020020.guiLateUpdate()", nil, hook.update_damage_numbers_post)
-m.hook(
-    "app.GUI020020"
-        .. ".requestDamage(via.vec3, System.Single, app.GUI020020.State, app.TARGET_ACCESS_KEY.CATEGORY, "
-        .. "app.GUI020020.DAMAGE_TYPE, app.GUI020020.CRITICAL_STATE, System.Boolean, System.Boolean, System.Action`1<app.GUI020020.DAMAGE_INFO>)",
-    nil,
-    hook.reset_damage_numbers_pre
-)
 m.hook("app.GUI600100.guiUpdate()", util.ref.capture_this, hook.update_training_room_hud_post)
 m.hook("app.GUI020202.guiVisibleUpdate()", hook.hide_quest_end_input)
 m.hook("app.GUI020001PanelBase.onLateUpdate()", util.ref.capture_this, hook.update_name_access_icons_post)
