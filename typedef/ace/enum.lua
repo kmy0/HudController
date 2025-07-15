@@ -42,6 +42,9 @@
 ---@class app.GUI020020.State : System.Enum
 ---@class app.GUI020020.CRITICAL_STATE : System.Enum
 ---@class app.HunterDef.SLINGER_AMMO_TYPE : System.Enum
+---@class app.ChatDef.ENEMY_LOG_TYPE : System.Enum
+---@class app.ChatDef.CAMP_LOG_TYPE : System.Enum
+---@class app.ChatDef.MSG_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

@@ -29,7 +29,9 @@ local function group_things(elem, t, t_config_key, f)
         for j = 1, #chunk do
             local key = chunk[j]
             local item_config_key = string.format("%s.%s", t_config_key, key)
-            imgui.begin_disabled(key ~= "ALL" and config.get(t_config_key .. ".ALL"))
+            imgui.begin_disabled(
+                key ~= "ALL" and config.get(t_config_key .. ".ALL") ~= nil and config.get(t_config_key .. ".ALL")
+            )
 
             if
                 set.checkbox(
@@ -191,7 +193,21 @@ local function draw_notice(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_system"))
     group_things(elem, elem_config.system_log, string.format("%s.%s", config_key, "system_log"), elem.set_system_log)
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_enemy"))
+    imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
+    group_things(elem, elem_config.enemy_log, string.format("%s.%s", config_key, "enemy_log"), elem.set_enemy_log)
+    imgui.end_disabled()
+
+    imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.CAMP)
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_camp"))
+    group_things(elem, elem_config.camp_log, string.format("%s.%s", config_key, "camp_log"), elem.set_camp_log)
+    imgui.end_disabled()
+
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_lobby"))
+    group_things(elem, elem_config.chat_log, string.format("%s.%s", config_key, "chat_log"), elem.set_chat_log)
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_lobby_target"))
     group_things(elem, elem_config.lobby_log, string.format("%s.%s", config_key, "lobby_log"), elem.set_lobby_log)
 end
 

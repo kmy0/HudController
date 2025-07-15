@@ -396,19 +396,40 @@ function this.skip_system_message_pre(args)
         if notice.system_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
+
+        local log_name = ""
+        local log_t = {}
+        if util_ref.is_a(def, "app.ChatDef.EnemyMessage") then
+            ---@cast def app.ChatDef.EnemyMessage
+            log_name = ace_enum.enemy_log[def:get_EnemyLogType()]
+            log_t = notice.enemy_log
+        elseif util_ref.is_a(def, "app.ChatDef.CampMessage") then
+            ---@cast def app.ChatDef.CampMessage
+            log_name = ace_enum.camp_log[def:get_CampLogType()]
+            log_t = notice.camp_log
+        end
+
+        if log_t[log_name] then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
     end
 end
 
 function this.skip_lobby_message_pre(args)
     local notice = get_elem_t("Notice")
     if notice then
-        if notice.hide or notice.lobby_log.ALL then
+        if notice.hide or notice.chat_log.ALL then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
 
         local def = sdk.to_managed_object(args[3]) --[[@as app.ChatDef.ChatBase]]
-        local name = ace_enum.send_target[def:get_SendTarget()]
+        local name = ace_enum.chat_log[def:get_MsgType()]
 
+        if notice.chat_log[name] then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+
+        name = ace_enum.send_target[def:get_SendTarget()]
         if notice.lobby_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end

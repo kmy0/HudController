@@ -39,6 +39,9 @@
 ---@field critical_state table<app.GUI020020.CRITICAL_STATE, string>
 ---@field slinger_ammo table<app.HunterDef.SLINGER_AMMO_TYPE, string>
 ---@field page_alignment table<via.gui.PageAlignment, string>
+---@field enemy_log table<app.ChatDef.ENEMY_LOG_TYPE, string>
+---@field camp_log table<app.ChatDef.CAMP_LOG_TYPE, string>
+---@field chat_log table<app.ChatDef.MSG_TYPE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -103,6 +106,9 @@ local this = {
         critical_state = {},
         slinger_ammo = {},
         page_alignment = {},
+        enemy_log = {},
+        camp_log = {},
+        chat_log = {},
     },
     map = {
         hudid_to_guiid = {},

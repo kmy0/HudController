@@ -6,7 +6,6 @@
 ---@class app.cGameContextHolder : via.clr.ManagedObject
 ---@class app.AttackAreaResult : via.clr.ManagedObject
 ---@class app.cCharacterExtendBase : via.clr.ManagedObject
----@class app.ChatDef.MessageElement : via.clr.ManagedObject
 ---@class app.GUIBaseApp : ace.GUIBase
 ---@class app.cGUIPartsBaseApp : ace.cGUIPartsBase
 ---@class app.GUI060001 : app.GUIBaseApp
@@ -424,3 +423,12 @@
 ---@class app.GUI020001PanelBase : ace.cGUIPartsBase
 ---@field get_Params fun(self: app.GUI020001PanelBase): app.GUI020001PanelParams
 ---@field get_BasePanel fun(self: app.GUI020001PanelBase): via.gui.Panel
+
+---@class app.ChatDef.EnemyMessage : app.ChatDef.SystemMessage
+---@field get_EnemyLogType fun(self: app.ChatDef.EnemyMessage): app.ChatDef.ENEMY_LOG_TYPE
+
+---@class app.ChatDef.CampMessage : app.ChatDef.SystemMessage
+---@field get_CampLogType fun(self: app.ChatDef.CampMessage): app.ChatDef.CAMP_LOG_TYPE
+
+---@class app.ChatDef.MessageElement : via.clr.ManagedObject
+---@field get_MsgType fun(self: app.ChatDef.MessageElement): app.ChatDef.MSG_TYPE
