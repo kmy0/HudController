@@ -34,7 +34,9 @@
 ---@alias HudChildProperty HudBaseProperty
 ---@alias HudChildWriteKey HudBaseWriteKey
 
+local config = require("HudController.config")
 local hud_base = require("HudController.hud.def.hud_base")
+local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 
 ---@class HudChild
@@ -83,6 +85,18 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
         local res = self:ctrl_getter(hudbase, gui_id, ctrl)
 
         if not res then
+            if config.is_debug then
+                log.debug(
+                    string.format(
+                        "Ctrl getter failed!\nGame Class: %s,\nName Chain: %s,\nClass Chain: %s,\nCtrl: %s\n",
+                        util_ref.whoami(hudbase),
+                        self:whoami(),
+                        self:whoami_cls(),
+                        ctrl:get_Name()
+                    )
+                )
+            end
+
             goto continue
         end
 

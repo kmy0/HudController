@@ -80,6 +80,7 @@
 ---@field hud_default_path string
 ---@field option_default_path string
 ---@field config_path string
+---@field is_debug boolean
 ---@field default Settings
 ---@field current Settings
 
@@ -101,6 +102,7 @@ this.grid_size = 160
 this.bind_timeout = 30
 this.porter_timeout = 3
 this.handler_timeout = 5
+this.is_debug = false
 
 ---@diagnostic disable-next-line: missing-fields
 this.current = {}

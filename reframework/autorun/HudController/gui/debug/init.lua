@@ -1,3 +1,4 @@
+local config = require("HudController.config")
 local elem = require("HudController.gui.debug.elem")
 local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
@@ -206,6 +207,7 @@ function this.draw()
     imgui.same_line()
 
     _, this.show_disabled = imgui.checkbox("Show Disabled", this.show_disabled)
+    _, config.is_debug = imgui.checkbox("Enable Debug Log", config.is_debug)
 
     imgui.text("Right click tree nodes for options")
     imgui.text("H - Hidden")

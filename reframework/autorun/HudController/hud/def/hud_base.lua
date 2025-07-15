@@ -95,6 +95,7 @@
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
 local ace_misc = require("HudController.util.ace.misc")
+local config = require("HudController.config")
 local data = require("HudController.data")
 local fade_manager = require("HudController.hud.fade")
 local game_data = require("HudController.util.game.data")
@@ -441,6 +442,21 @@ function this:get_all_ctrl()
 
         table.insert(ret, { ctrl = disp_ctrl._TargetControl, hud_base = disp_ctrl:get_Owner(), gui_id = gui_id })
         ::continue::
+    end
+
+    if config.is_debug and #ret > 1 then
+        local hudbase = util_table.values(ret, function(o)
+            return util_ref.whoami(o.hud_base)
+        end) --[=[@as string[]]=]
+        log.debug(
+            string.format(
+                "More than one Game Class\nGame Classes: %s,\nName Chain: %s,\nClass Chain: %s,\nHud Type: %s\n",
+                table.concat(hudbase, ", "),
+                self:whoami(),
+                self:whoami_cls(),
+                ace_enum.hud[self.hud_id]
+            )
+        )
     end
 
     return ret
