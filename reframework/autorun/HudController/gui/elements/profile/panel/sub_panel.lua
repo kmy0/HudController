@@ -507,7 +507,7 @@ local function draw_progress_part(elem, elem_config, config_key)
                 config_key = config_key .. ".offset_x",
                 label = gui_util.tr("hud_element.entry.slider_x"),
             },
-        }, -4000, 4000, 0.1, "%.1f")
+        }, -4000, 4000, 1, "%.0f")
 
         if changed then
             elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
