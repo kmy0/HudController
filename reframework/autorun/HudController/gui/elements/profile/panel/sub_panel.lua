@@ -37,6 +37,12 @@ local separator_text = gui_util.separator:new({
     "enabled_font_size",
     "enabled_page_alignment",
 })
+local separator_progress_text = gui_util.separator:new({
+    "align_left",
+})
+local separator_progress_part = gui_util.separator:new({
+    "enabled_offset_x",
+})
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
@@ -481,6 +487,65 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_progress_part(elem, elem_config, config_key)
+    ---@cast elem ProgressPartBase
+    ---@cast elem_config ProgressPartBaseConfig
+
+    if generic.separator:had_separators() then
+        imgui.separator()
+    end
+
+    separator_progress_part:refresh(elem_config)
+    local changed = false
+
+    if elem_config.enabled_offset_x ~= nil then
+        changed = generic.draw_slider_settings({
+            config_key = config_key .. ".enabled_offset_x",
+            label = gui_util.tr("hud_element.entry.box_enabled_offset_x"),
+        }, {
+            {
+                config_key = config_key .. ".offset_x",
+                label = gui_util.tr("hud_element.entry.slider_x"),
+            },
+        }, -4000, 4000, 0.1, "%.1f")
+
+        if changed then
+            elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
+            config.save()
+        end
+
+        separator_progress_part:draw()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
+local function draw_progress_text(elem, elem_config, config_key)
+    draw_text(elem, elem_config, config_key)
+
+    ---@cast elem ProgressPartText
+    ---@cast elem_config ProgressPartTextConfig
+
+    if separator_text:had_separators() or generic.separator:had_separators() then
+        imgui.separator()
+    end
+
+    separator_progress_text:refresh(elem_config)
+
+    if elem_config.align_left ~= nil then
+        if set.checkbox(gui_util.tr("hud_element.entry.box_align_left"), config_key .. ".align_left") then
+            elem:set_align_left(elem_config.align_left)
+            config.save()
+        end
+
+        separator_progress_text:draw()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_sub_type --[[@as HudSubType]]
@@ -495,5 +560,7 @@ this.funcs[mod.enum.hud_sub_type.SCALE9] = draw_scale9
 this.funcs[mod.enum.hud_sub_type.TEXT] = draw_text
 this.funcs[mod.enum.hud_sub_type.DAMAGE_NUMBERS] = draw_damage_numbers
 this.funcs[mod.enum.hud_sub_type.CTRL_CHILD] = draw_control_child
+this.funcs[mod.enum.hud_sub_type.PROGRESS_TEXT] = draw_progress_text
+this.funcs[mod.enum.hud_sub_type.PROGRESS_PART] = draw_progress_part
 
 return this

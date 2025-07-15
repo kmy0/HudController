@@ -69,6 +69,8 @@ this.enum.hud_sub_type = {
     TEXT = 4,
     DAMAGE_NUMBERS = 5,
     CTRL_CHILD = 6,
+    PROGRESS_TEXT = 7,
+    PROGRESS_PART = 8,
 }
 
 ---@return boolean

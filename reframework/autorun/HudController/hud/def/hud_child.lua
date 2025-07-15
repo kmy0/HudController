@@ -24,6 +24,7 @@
 ---@field hud_id nil
 ---@field hud_type nil
 ---@field hud_sub_type nil
+---@field gui_thing string? if thing is the only option within child tree node wont be drawn
 
 ---@class (exact) HudChildDefault : HudBaseDefault
 ---@class (excat) HudChildDefaultOverwrite : HudBaseDefaultOverwrite

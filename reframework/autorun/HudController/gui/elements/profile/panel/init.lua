@@ -11,49 +11,6 @@ local util_table = require("HudController.util.misc.table")
 local ace_map = data.ace.map
 
 local this = {}
-local all_bools = {
-    "enabled_scale",
-    "enabled_offset",
-    "enabled_rot",
-    "enabled_opacity",
-    "enabled_play_state",
-    "enabled_alpha_channel",
-    "enabled_blend",
-    "enabled_color",
-    "enabled_control_point",
-    "enabled_ignore_alpha",
-    "enabled_var0",
-    "enabled_var1",
-    "enabled_var2",
-    "enabled_var3",
-    "enabled_var4",
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_segment",
-    "hide_glow",
-    "enabled_glow_color",
-    "enabled_font_size",
-    "enabled_page_alignment",
-}
-
----@param elem_config HudBaseConfig | MaterialConfig | Scale9Config
----@return boolean
-local function is_only_hide(elem_config)
-    if elem_config.hide == nil then
-        return false
-    end
-
-    if
-        (elem_config.children and not util_table.empty(elem_config.children))
-        or util_table.any(all_bools, function(key, value)
-            return elem_config[value] ~= nil
-        end)
-    then
-        return false
-    end
-
-    return true
-end
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
@@ -113,7 +70,7 @@ end
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
     local elems = util_table.split(children_filtered, function(t, key, value)
-        if is_only_hide(value) then
+        if gui_util.is_only_thing(value, value.gui_thing) then
             return "box"
         end
         return "panel"
@@ -150,20 +107,21 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                 local child_config_key = string.format("%s.children.%s", config_key, key)
                 local cursor_pos = imgui.get_cursor_screen_pos()
                 cursor_pos.y = cursor_pos.y + text_size.y / 2 - 3
+                local var_key = child_config.gui_thing or "hide"
 
                 if
                     set.checkbox(
                         string.format(
                             "%s %s##%s",
-                            config.lang.tr("hud_element.entry.box_hide"),
+                            config.lang.tr("hud_element.entry.box_" .. var_key),
                             ace_map.weaponid_name_to_local_name[child_config.name_key]
                                 or config.lang.tr("hud_subelement." .. child_config.name_key),
-                            child_config_key .. ".hide"
+                            string.format("%s.%s", child_config_key, var_key)
                         ),
-                        child_config_key .. ".hide"
+                        string.format("%s.%s", child_config_key, var_key)
                     )
                 then
-                    child:set_hide(child_config.hide)
+                    child["set_" .. var_key](child, child_config[var_key])
                 end
 
                 if node_pos and i == 1 then

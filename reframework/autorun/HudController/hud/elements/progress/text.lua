@@ -1,0 +1,87 @@
+---@class (exact) ProgressPartText : Text
+---@field align_left boolean
+---@field ctrl_getter fun(self: ProgressPartText, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
+---@field ctrl_writer (fun(self: ProgressPartText, ctrl: via.gui.Control): boolean)?
+---@field get_config fun(): ProgressPartTextConfig
+
+---@class (exact) ProgressPartTextConfig : TextConfig, ProgressPartBaseConfig
+---@field align_left boolean?
+
+---@class (exact) ProgressPartTextdDefault : TextDefault
+---@field align_left boolean
+
+---@class (exact) ProgressPartTextDefaultOverwite : TextDefaultOverwrite
+---@field align_left boolean?
+
+---@class (exact) ProgressPartTextChangedProperties : TextChangedProperties
+---@field align_left boolean?
+
+---@class (exact) ProgressPartTextProperties : {[ProgressPartTextProperty]: boolean}, TextProperties
+---@field align_left boolean
+
+---@alias ProgressPartTextProperty "align_left"
+---@alias ProgressPartTextWriteKey ProgressPartTextProperty | TextProperties
+
+local data = require("HudController.data")
+local game_data = require("HudController.util.game.data")
+local text = require("HudController.hud.def.text")
+local util_table = require("HudController.util.misc.table")
+
+local ace_enum = data.ace.enum
+local mod = data.mod
+local rl = game_data.reverse_lookup
+
+---@class ProgressPartText
+local this = {}
+---@diagnostic disable-next-line: inject-field
+this.__index = this
+setmetatable(this, { __index = text })
+
+---@param args ProgressPartTextConfig
+---@param parent HudBase
+---@param ctrl_getter fun(self: ProgressPartText, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
+---@param ctrl_writer (fun(self: ProgressPartText, ctrl: via.gui.Control): boolean)?
+---@param default_overwrite ProgressPartTextDefaultOverwite?
+---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@return ProgressPartText
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    local o = text.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    o.properties = util_table.merge_t(o.properties, {
+        align_left = true,
+    })
+
+    setmetatable(o, self)
+    ---@cast o ProgressPartText
+
+    if args.align_left then
+        o:set_align_left(args.align_left)
+    end
+    return o
+end
+
+---@param align_left boolean
+function this:set_align_left(align_left)
+    if align_left then
+        self:mark_write()
+        self.align_left = align_left
+        self.page_alignment = rl(ace_enum.page_alignment, "LeftCenter")
+    else
+        self:reset("page_alignment")
+        self.align_left = align_left
+        self.page_alignment = nil
+        self:mark_idle()
+    end
+end
+
+---@return ProgressPartTextConfig
+function this.get_config()
+    return {
+        name_key = "text",
+        align_left = false,
+        hud_sub_type = mod.enum.hud_sub_type.PROGRESS_TEXT,
+        gui_thing = "align_left",
+    }
+end
+
+return this

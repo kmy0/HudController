@@ -5,8 +5,35 @@
 
 local config = require("HudController.config")
 local util_misc = require("HudController.util.misc")
+local util_table = require("HudController.util.misc.table")
 
 local this = {}
+local all_bools = {
+    "enabled_scale",
+    "enabled_offset",
+    "enabled_rot",
+    "enabled_opacity",
+    "enabled_play_state",
+    "enabled_alpha_channel",
+    "enabled_blend",
+    "enabled_color",
+    "enabled_control_point",
+    "enabled_ignore_alpha",
+    "enabled_var0",
+    "enabled_var1",
+    "enabled_var2",
+    "enabled_var3",
+    "enabled_var4",
+    "enabled_size_x",
+    "enabled_size_y",
+    "enabled_segment",
+    "hide_glow",
+    "enabled_glow_color",
+    "enabled_font_size",
+    "enabled_offset_x",
+    "align_left",
+    "enabled_page_alignment",
+}
 
 ---@class Separator
 local Separator = {}
@@ -141,6 +168,36 @@ function this.seconds_to_minutes_string(n, n_format, pad)
         util_misc.round(seconds, 1) == 1 and config.lang.tr("misc.text_second")
             or config.lang.tr("misc.text_second_plural")
     )
+end
+
+---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config
+---@param thing string?
+---@return boolean
+function this.is_only_thing(elem_config, thing)
+    thing = thing or "hide"
+
+    if elem_config[thing] == nil then
+        return false
+    end
+
+    if elem_config.name_key == "text" then
+        util_table.any(all_bools, function(key, value)
+            return elem_config[value] ~= nil
+        end)
+    end
+    if
+        (elem_config.children and not util_table.empty(elem_config.children))
+        or util_table.any(all_bools, function(key, value)
+            if value == thing then
+                return false
+            end
+            return elem_config[value] ~= nil
+        end)
+    then
+        return false
+    end
+
+    return true
 end
 
 this.separator = Separator

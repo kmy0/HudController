@@ -202,6 +202,7 @@ this.default = {
             box_enable_size_y = "Enable Size Y",
             box_enable_color = "Enable Color",
             box_enable_segment = "Enable Layer",
+            box_enabled_offset_x = "Enable Offset X",
             box_enable_material_width_scale = "Enable Width Scale",
             box_enable_material_anim_speed_scale = "Enable Animation Speed Scale",
             box_enable_material_size_x_scale = "Enable Size X Scale",
@@ -214,6 +215,7 @@ this.default = {
             box_scale9_ignore_alpha = "Ignore Alpha",
             box_enable_scale9_control_point = "Enable Control Point",
             box_enable_scale9_blend_type = "Enable Blend Type",
+            box_align_left = "Align Left",
             box_move_next = "Move Next",
             box_preview_box = "Preview Box",
             box_enable_font_size = "Enable Font Size",
@@ -324,6 +326,12 @@ this.default = {
         capture = "Capture",
         slinger = "Slinger",
         focus = "Focus",
+        checkbox = "Checkbox",
+        num = "Num",
+        guide_assign = "Button Assign",
+        base = "Base",
+        name_main = "Main Name",
+        name_sub = "Sub Name",
     },
 }
 

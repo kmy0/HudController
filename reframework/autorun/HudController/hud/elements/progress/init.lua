@@ -1,6 +1,15 @@
 ---@class (exact) Progress : HudBase
 ---@field get_config fun(): ProgressConfig
----@field children {clock: HudChild, task: HudChild, timer: ProgressTimer}
+---@field children {
+--- clock: ProgressQuestTimer,
+--- task: ProgressPartTask,
+--- name_main: ProgressPartNameMain,
+--- name_sub: ProgressPartNameSub,
+--- guide_assign: ProgressPartGuideAssign,
+--- gauge: ProgressPartGauge,
+--- text_part: ProgressPartTextPart,
+--- timer: ProgressTimer,
+--- }
 ---@field GUI020018 app.GUI020018?
 
 ---@class (exact) ProgressConfig : HudBaseConfig
@@ -8,24 +17,27 @@
 --- ELAPSED_TIME_DISP: integer,
 --- }
 ---@field children {
---- clock: ProgressClockConfig,
---- task: HudChildConfig,
+--- clock: ProgressQuestTimerConfig,
+--- task: ProgressPartTaskConfig,
 --- timer: ProgressTimerConfig,
---- }
-
----@class (exact) ProgressClockConfig : HudChildConfig
----@field children {
---- frame_base: HudChildConfig,
---- frame_main: HudChildConfig,
---- limit: HudChildConfig,
+--- name_main: ProgressPartNameMainConfig,
+--- name_sub: ProgressPartNameSubConfig,
+--- guide_assign: ProgressPartGuideAssignConfig,
+--- gauge: ProgressPartGaugeConfig,
+--- text_part: ProgressPartTextPartConfig,
 --- }
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
+local gauge = require("HudController.hud.elements.progress.gauge")
+local guide_assign = require("HudController.hud.elements.progress.guide_assign")
 local hud_base = require("HudController.hud.def.hud_base")
-local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local name_main = require("HudController.hud.elements.progress.name_main")
+local name_sub = require("HudController.hud.elements.progress.name_sub")
+local part_task = require("HudController.hud.elements.progress.task")
+local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
+local text_part = require("HudController.hud.elements.progress.text_part")
 local timer = require("HudController.hud.elements.progress.timer")
 
 local ace_enum = data.ace.enum
@@ -38,84 +50,6 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
-    task = {
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_task",
-        },
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_gauge",
-        },
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_guideAssign",
-        },
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_name_main",
-        },
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_name_sub",
-        },
-        {
-            {
-                "PNL_Pat00",
-            },
-            "PNL_text",
-        },
-    },
-    clock = {
-        {
-            {
-                "PNL_Pat00",
-                "PNL_questTimer",
-            },
-        },
-    },
-    -- ctrl = PNL_questTimer
-    ["clock.frame_base"] = {
-        {
-            {
-                "PNL_ref_questTimer",
-                "PNL_TimerAnim",
-                "PNL_base",
-            },
-        },
-    },
-    ["clock.frame_main"] = {
-        {
-            {
-                "PNL_ref_questTimer",
-                "PNL_TimerAnim",
-                "PNL_mainframe",
-            },
-        },
-    },
-    ["clock.limit"] = {
-        {
-            {
-                "PNL_ref_questTimer",
-                "PNL_TimerAnim",
-                "PNL_limit3",
-            },
-        },
-    },
-}
-
 ---@param args ProgressConfig
 ---@return Progress
 function this:new(args)
@@ -123,40 +57,14 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Progress
 
-    o.children.task = hud_child:new(args.children.task, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task)
-    end, nil, { hide = false })
-    o.children.clock = hud_child:new(args.children.clock, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.clock)
-    end, nil, { hide = false })
-    o.children.clock.children.frame_base = hud_child:new(
-        args.children.clock.children.frame_base,
-        o.children.clock,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.frame_base"])
-        end,
-        nil,
-        { hide = false }
-    )
-    o.children.clock.children.frame_main = hud_child:new(
-        args.children.clock.children.frame_main,
-        o.children.clock,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.frame_main"])
-        end,
-        nil,
-        { hide = false }
-    )
-    o.children.clock.children.limit = hud_child:new(
-        args.children.clock.children.limit,
-        o.children.clock,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["clock.limit"])
-        end,
-        nil,
-        { hide = false }
-    )
+    o.children.task = part_task:new(args.children.task, o)
+    o.children.name_main = name_main:new(args.children.name_main, o)
+    o.children.name_sub = name_sub:new(args.children.name_sub, o)
+    o.children.guide_assign = guide_assign:new(args.children.guide_assign, o)
+    o.children.gauge = gauge:new(args.children.gauge, o)
+    o.children.text_part = text_part:new(args.children.text_part, o)
     o.children.timer = timer:new(args.children.timer, o)
+    o.children.clock = quest_timer:new(args.children.clock, o)
     return o
 end
 
@@ -176,15 +84,14 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.PROGRESS
     base.options.ELAPSED_TIME_DISP = -1
 
-    children.clock = hud_child.get_config("clock") --[[@as ProgressClockConfig]]
-    children.task = { name_key = "task", hide = false }
+    children.task = part_task.get_config()
+    children.name_main = name_main.get_config()
+    children.name_sub = name_sub.get_config()
+    children.guide_assign = guide_assign.get_config()
+    children.gauge = gauge.get_config()
+    children.text_part = text_part.get_config()
     children.timer = timer.get_config()
-
-    ---@diagnostic disable-next-line: cast-local-type
-    children = children.clock.children
-    children.frame_base = { name_key = "frame_base", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
-    children.frame_main = { name_key = "frame_main", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
-    children.limit = { name_key = "limit", hide = false }
+    children.clock = quest_timer.get_config()
 
     return base
 end

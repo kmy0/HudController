@@ -7,7 +7,7 @@ local state = require("HudController.gui.state")
 local ace_map = data.ace.map
 
 local this = {}
-local separator = gui_util.separator:new({
+this.separator = gui_util.separator:new({
     "hide",
     "enabled_scale",
     "enabled_offset",
@@ -110,14 +110,14 @@ end
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local changed = false
-    separator:refresh(elem_config)
+    this.separator:refresh(elem_config)
 
     if elem_config.hide ~= nil then
         if set.checkbox(gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"), config_key .. ".hide") then
             elem:set_hide(elem_config.hide)
         end
 
-        separator:draw()
+        this.separator:draw()
     end
 
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
@@ -142,7 +142,7 @@ function this.draw(elem, elem_config, config_key)
             config.save()
         end
 
-        separator:draw()
+        this.separator:draw()
     end
 
     if elem_config.enabled_offset ~= nil then
@@ -165,7 +165,7 @@ function this.draw(elem, elem_config, config_key)
             config.save()
         end
 
-        separator:draw()
+        this.separator:draw()
     end
 
     if elem_config.enabled_rot ~= nil then
@@ -184,7 +184,7 @@ function this.draw(elem, elem_config, config_key)
             config.save()
         end
 
-        separator:draw()
+        this.separator:draw()
     end
 
     if elem_config.enabled_opacity ~= nil then
@@ -203,7 +203,7 @@ function this.draw(elem, elem_config, config_key)
             config.save()
         end
 
-        separator:draw()
+        this.separator:draw()
     end
 
     if elem_config.enabled_segment ~= nil then
@@ -234,7 +234,7 @@ function this.draw(elem, elem_config, config_key)
 
         imgui.end_disabled()
 
-        separator:draw()
+        this.separator:draw()
     end
 
     imgui.end_disabled()
