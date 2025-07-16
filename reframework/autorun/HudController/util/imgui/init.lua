@@ -56,4 +56,41 @@ function this.separator_text(label, padding, thickness, color)
     imgui.draw_list_path_stroke(color, false, thickness)
 end
 
+---@param color integer
+---@param offset_x integer?
+---@param offset_y integer?
+function this.highlight(color, offset_x, offset_y)
+    if not offset_x then
+        offset_x = 0
+    end
+    if not offset_y then
+        offset_y = 0
+    end
+    this.adjust_pos(offset_x, offset_y)
+    imgui.push_style_color(5, color)
+    imgui.begin_rect()
+    imgui.end_rect(0, 0)
+    imgui.pop_style_color(1)
+end
+
+---@param x integer?
+---@param y integer?
+function this.spacer(x, y)
+    x = x or 0
+    y = y or 0
+    imgui.push_style_var(14, Vector2f.new(x, y))
+    imgui.invisible_button(uuid.generate())
+    imgui.pop_style_var(1)
+end
+
+---@param label string
+---@param size_object Vector2f|Vector3f|Vector4f|number[]?
+function this.dummy_button(label, size_object)
+    imgui.push_style_color(21, 0)
+    imgui.push_style_color(22, 0)
+    imgui.push_style_color(23, 0)
+    imgui.button(label, size_object)
+    imgui.pop_style_color(3)
+end
+
 return this

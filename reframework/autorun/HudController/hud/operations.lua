@@ -173,31 +173,4 @@ function this.tr_element(element)
     return name
 end
 
----@param element HudBaseConfig | integer
----@param elements HudBaseConfig[]
----@param dir integer -1 | 1
-function this.swap_elements_order(element, elements, dir)
-    ---@type integer
-    local index
-
-    if type(element) == "table" then
-        index = util_table.index(elements, element) --[[@as integer]]
-    else
-        ---@cast element integer
-        index = element
-        element = elements[index]
-    end
-
-    local swap_index = index + dir
-    if swap_index <= 0 or swap_index > #elements then
-        return
-    end
-
-    local element_b = elements[swap_index]
-    local a = element.key
-    local b = element_b.key
-    element_b.key = a
-    element.key = b
-end
-
 return this

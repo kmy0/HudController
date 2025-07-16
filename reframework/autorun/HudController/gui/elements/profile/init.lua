@@ -5,10 +5,13 @@ local hud = require("HudController.hud")
 local operations = require("HudController.hud.operations")
 local panel = require("HudController.gui.elements.profile.panel")
 local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
+---@type HudBaseConfig?
+local drag
 
 ---@param changed boolean
 ---@param key string
@@ -219,9 +222,13 @@ local function draw_elements()
     local sorted = util_table.sort(util_table.values(elements), function(a, b)
         return a.key > b.key
     end)
+
+    util_imgui.spacer(0, 1)
+
     ---@type string[]
     local remove = {}
-
+    ---@type table<HudBaseConfig, number>
+    local elem_pos = {}
     for i = 1, #sorted do
         local elem_config = sorted[i]
         local elem = hud.get_element(elem_config.hud_id)
@@ -232,22 +239,14 @@ local function draw_elements()
 
         local config_key =
             string.format("mod.hud.int:%s.elements.%s", config.current.mod.combo_hud, elem_config.name_key)
+        local start_pos = imgui.get_cursor_screen_pos().y
 
-        if config.current.mod.show_order_buttons then
-            if imgui.arrow_button(string.format("##up_%s", config_key), 2) then
-                operations.swap_elements_order(i, sorted, -1)
-                config.save()
-            end
-
-            imgui.same_line()
-
-            if imgui.arrow_button(string.format("##down_%s", config_key), 3) then
-                operations.swap_elements_order(i, sorted, 1)
-                config.save()
-            end
-
-            imgui.same_line()
+        util_imgui.dummy_button("⸽⸽##" .. config_key)
+        if not drag and imgui.is_item_hovered() and imgui.is_mouse_down(0) then
+            drag = elem_config
         end
+
+        imgui.same_line()
 
         if imgui.button(gui_util.tr("hud_element.button_remove", elem.name_key)) then
             table.insert(remove, elem.name_key)
@@ -256,11 +255,37 @@ local function draw_elements()
         imgui.same_line()
 
         local name = operations.tr_element(elem_config)
-        if imgui.collapsing_header(string.format("%s##%s_header", name, elem.name_key)) then
+        local header = imgui.collapsing_header(string.format("%s##%s_header", name, elem.name_key))
+        local end_pos = imgui.get_cursor_screen_pos().y
+
+        if drag == elem_config then
+            util_imgui.highlight(state.colors.info, 0, -(end_pos - start_pos))
+        end
+
+        if header then
             panel.draw(elem, elem_config, config_key)
         end
 
+        if drag == elem_config then
+            elem_pos[elem_config] = imgui.get_mouse().y
+        else
+            elem_pos[elem_config] = start_pos
+        end
+
         ::continue::
+    end
+
+    if drag and imgui.is_mouse_released(0) then
+        drag = nil
+        config.save()
+    elseif drag then
+        for i, elem in
+            pairs(util_table.sort(util_table.values(elements), function(a, b)
+                return elem_pos[a] > elem_pos[b]
+            end))
+        do
+            elem.key = i
+        end
     end
 
     if not util_table.empty(remove) then
