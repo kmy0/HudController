@@ -275,11 +275,18 @@ end
 
 function this.draw()
     if not util_table.empty(config.current.mod.hud) then
-        if imgui.collapsing_header(gui_util.tr("hud.header_hud_options")) then
+        local header = imgui.collapsing_header(gui_util.tr("hud.header_hud_options"))
+        if header then
+            imgui.begin_child_window("hud_elements_child_window", { -1, -1 }, false)
             draw_options()
+            imgui.spacing()
+            imgui.end_child_window()
+        else
+            imgui.separator()
+            imgui.begin_child_window("hud_elements_child_window1", { -1, -1 }, false)
+            draw_elements()
+            imgui.end_child_window()
         end
-
-        draw_elements()
     end
 end
 

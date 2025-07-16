@@ -17,7 +17,7 @@ local mod = data.mod
 ---@class Gui
 local this = {
     window = {
-        flags = 1024,
+        flags = 1024 | 1 << 3 | 1 << 4,
         condition = 2,
         font = nil,
     },
@@ -83,6 +83,7 @@ function this.draw()
         not config.current.mod.enabled or (config.current.mod.enable_fade and fade_manager.is_active())
     )
 
+    imgui.begin_child_window("hud_child_window", { 0, 48 }, false)
     gui_elements.choice.draw_hud()
 
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
@@ -90,6 +91,8 @@ function this.draw()
     gui_elements.choice.draw_element()
 
     imgui.end_disabled()
+    imgui.end_child_window()
+
     imgui.separator()
 
     gui_elements.profile.draw()
