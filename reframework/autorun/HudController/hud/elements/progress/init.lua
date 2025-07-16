@@ -77,6 +77,13 @@ function this:get_GUI020018()
     return self.GUI020018
 end
 
+---@return boolean
+function this:is_visible_quest_timer()
+    local GUI020018 = self:get_GUI020018()
+    local watch = GUI020018._WatchPanelData
+    return watch and watch:isVisibleWatch()
+end
+
 ---@return ProgressConfig
 function this.get_config()
     local base = hud_base.get_config(rl(ace_enum.hud, "PROGRESS"), "PROGRESS") --[[@as ProgressConfig]]

@@ -41,7 +41,6 @@ local ctrl_args = {
         {
             {
                 "PNL_icon",
-                "PNL_ref_icon00",
             },
         },
     },

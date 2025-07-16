@@ -42,6 +42,7 @@ local separator_progress_text = gui_util.separator:new({
 })
 local separator_progress_part = gui_util.separator:new({
     "enabled_offset_x",
+    "enabled_clock_offset_x",
 })
 
 ---@param elem HudBase
@@ -501,7 +502,7 @@ local function draw_progress_part(elem, elem_config, config_key)
     if elem_config.enabled_offset_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_offset_x",
-            label = gui_util.tr("hud_element.entry.box_enabled_offset_x"),
+            label = gui_util.tr("hud_element.entry.box_enable_offset_x"),
         }, {
             {
                 config_key = config_key .. ".offset_x",
@@ -511,6 +512,25 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         if changed then
             elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
+            config.save()
+        end
+
+        separator_progress_part:draw()
+    end
+
+    if elem_config.enabled_offset_x ~= nil then
+        changed = generic.draw_slider_settings({
+            config_key = config_key .. ".enabled_clock_offset_x",
+            label = gui_util.tr("hud_element.entry.box_enable_clock_offset_x"),
+        }, {
+            {
+                config_key = config_key .. ".clock_offset_x",
+                label = gui_util.tr("hud_element.entry.slider_x"),
+            },
+        }, -4000, 4000, 1, "%.0f")
+
+        if changed then
+            elem:set_clock_offset_x(elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil)
             config.save()
         end
 
