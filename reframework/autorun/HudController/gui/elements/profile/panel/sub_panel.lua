@@ -519,6 +519,8 @@ local function draw_progress_part(elem, elem_config, config_key)
     end
 
     if elem_config.enabled_offset_x ~= nil then
+        imgui.begin_disabled(not elem_config.enabled_offset_x)
+
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_clock_offset_x",
             label = gui_util.tr("hud_element.entry.box_enable_clock_offset_x"),
@@ -534,6 +536,7 @@ local function draw_progress_part(elem, elem_config, config_key)
             config.save()
         end
 
+        imgui.end_disabled()
         separator_progress_part:draw()
     end
 end

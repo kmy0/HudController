@@ -109,17 +109,9 @@ function this:_write(ctrl)
         local vec = ctrl:get_Position()
         vec.x = self.offset_x
         self.offset = vec
-    end
 
-    if self.clock_offset_x and self.root:is_visible_quest_timer() then
-        print(self.offset_x)
-        if self.offset_x then
-            print(1)
+        if self.clock_offset_x and self.root:is_visible_quest_timer() then
             self.offset.x = self.offset_x + self.clock_offset_x
-        else
-            local vec = ctrl:get_Position()
-            vec.x = vec.x + self.clock_offset_x
-            self.offset = vec
         end
     end
 
