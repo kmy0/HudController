@@ -31,6 +31,7 @@ local this = {
             hide_no_facility_npc = "box_hide_no_facility_npc",
             monster_ignore_camp = "box_monster_ignore_camp",
             hide_small_monsters = "box_hide_small_monsters",
+            disable_scar = "box_disable_scar",
         },
     },
     initialized = false,

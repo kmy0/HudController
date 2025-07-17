@@ -153,8 +153,16 @@ m.hook("app.GUI020001PanelBase.onLateUpdate()", util.ref.capture_this, hook.upda
 m.hook("app.NpcCharacter.doLateUpdateEnd()", hook.hide_no_talk_npc_pre)
 m.hook("app.cEmReactableGmInterface_Camp.get_AcceptableAIStates()", hook.stop_camp_target_pre)
 m.hook("app.mcGimmickBreak.isHit(app.HitInfo)", util.ref.capture_this, hook.stop_camp_damage_post)
+m.hook("app.EnemyScar.requestScarStamp(app.cEmModuleScar.cScarParts.STATE)", hook.disable_scar_stamp_pre)
+m.hook(
+    "app.mcEnemyScarManager.activateScar(System.Int32, app.EnemyScar.CreateInfo, System.Boolean, app.cEmModuleScar.cScarParts.STATE)",
+    hook.disable_scar_activate_pre
+)
+m.hook(
+    "app.mcEnemyScarManager.changeState(System.Int32, app.cEmModuleScar.cScarParts.STATE, app.EnemyScar.CreateInfo, System.Boolean, System.Boolean)",
+    hook.disable_scar_state_pre
+)
 
---TODO: hide npc icons when invisible
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then
         config.current.gui.main.is_opened = not config.current.gui.main.is_opened

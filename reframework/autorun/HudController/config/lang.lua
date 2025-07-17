@@ -145,6 +145,7 @@ this.default = {
         box_monster_ignore_camp = "Ignore Camps",
         tooltip_monster_ignore_camp = "Camps can’t be targeted or destroyed by monsters",
         box_hide_small_monsters = "Hide Small Monsters",
+        box_disable_scar = "Disable Wounds",
     },
     hud_element = {
         combo = "Hud Element",

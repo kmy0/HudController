@@ -27,6 +27,7 @@
 ---@field hide_no_facility_npc boolean
 ---@field monster_ignore_camp boolean
 ---@field hide_small_monsters boolean
+---@field disable_scar boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -74,6 +75,7 @@ function this.get_hud_profile_config(key, name)
         hide_no_facility_npc = false,
         monster_ignore_camp = false,
         hide_small_monsters = false,
+        disable_scar = false,
     }
 end
 
