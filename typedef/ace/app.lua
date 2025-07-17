@@ -26,6 +26,8 @@
 ---@class app.GUI020002 : app.GUIHudBase
 ---@class app.GUI020001 : app.GUIHudBase
 ---@class app.MissionGuideGUIParts.TaskPanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
+---@class app.mcGimmickBreak : app.mcGimmick
+---@class app.GimmickBaseApp : ace.GimmickBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -442,3 +444,6 @@
 
 ---@class app.NpcCharacter : app.CharacterBase
 ---@field _ContextHolder app.cNpcContextHolder
+
+---@class app.mcGimmick : ace.mcGimmickBase
+---@field get_OwnerGimmick fun(self: app.mcGimmick): app.GimmickBaseApp

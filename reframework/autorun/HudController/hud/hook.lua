@@ -1139,4 +1139,22 @@ function this.hide_no_talk_npc_pre(args)
     end
 end
 
+function this.stop_camp_target_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("monster_ignore_camp") then
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
+
+function this.stop_camp_damage_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("monster_ignore_camp") then
+        local gm_break = util_ref.get_this() --[[@as app.mcGimmickBreak]]
+        local gm = gm_break:get_OwnerGimmick()
+        if util_ref.is_a(gm, "app.Gm100_000") then
+            return false
+        end
+    end
+end
+
 return this

@@ -29,6 +29,7 @@ local this = {
             hide_quest_end_timer = "box_hide_quest_end_timer",
             hide_no_talk_npc = "box_hide_no_talk_npc",
             hide_no_facility_npc = "box_hide_no_facility_npc",
+            monster_ignore_camp = "box_monster_ignore_camp",
         },
     },
     initialized = false,

@@ -150,6 +150,8 @@ m.hook("app.GUI600100.guiUpdate()", util.ref.capture_this, hook.update_training_
 m.hook("app.GUI020202.guiVisibleUpdate()", hook.hide_quest_end_input)
 m.hook("app.GUI020001PanelBase.onLateUpdate()", util.ref.capture_this, hook.update_name_access_icons_post)
 m.hook("app.NpcCharacter.doLateUpdateEnd()", hook.hide_no_talk_npc_pre)
+m.hook("app.cEmReactableGmInterface_Camp.get_AcceptableAIStates()", hook.stop_camp_target_pre)
+m.hook("app.mcGimmickBreak.isHit(app.HitInfo)", util.ref.capture_this, hook.stop_camp_damage_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

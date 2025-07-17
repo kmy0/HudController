@@ -19,6 +19,10 @@
 ---@class ace.cStateBase : ace.cNonCycleTypeObject
 ---@class ace.cGUIFlowContextBase : via.clr.ManagedObject
 ---@class ace.DialogueManagerBase : ace.GAElement
+---@class ace.GimmickBase : ace.GimmickBaseCore
+---@class ace.GimmickBaseCore : via.Behavior
+---@class ace.mcGimmickBase : ace.minicomponent.cUpdatableBase
+---@class ace.minicomponent.cUpdatableBase : ace.minicomponent.cMiniComponent
 
 ---@class ace.GUIFade : via.Behavior
 ---@field setFadeAlpha fun(self: ace.GUIFade, alpha: System.Single)
