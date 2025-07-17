@@ -1,29 +1,33 @@
----@class (exact) ProgressPartText : Text
+---@class (exact) ProgressPartText : Text, ProgressPartBaseConfig
 ---@field align_left boolean
 ---@field ctrl_getter fun(self: ProgressPartText, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartText, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(): ProgressPartTextConfig
+---@field set_offset_x fun(self: ProgressPartText, val: number?)
+---@field set_clock_offset_x fun(self: ProgressPartText, val: number?)
+---@field set_num_offset_x fun(self: ProgressPartText, val: number?)
 
 ---@class (exact) ProgressPartTextConfig : TextConfig, ProgressPartBaseConfig
 ---@field align_left boolean?
 
----@class (exact) ProgressPartTextdDefault : TextDefault
+---@class (exact) ProgressPartTextdDefault : TextDefault, ProgressPartBaseDefault
 ---@field align_left boolean
 
----@class (exact) ProgressPartTextDefaultOverwite : TextDefaultOverwrite
+---@class (exact) ProgressPartTextDefaultOverwite : TextDefaultOverwrite, ProgressPartBaseDefaultOverwrite
 ---@field align_left boolean?
 
----@class (exact) ProgressPartTextChangedProperties : TextChangedProperties
+---@class (exact) ProgressPartTextChangedProperties : TextChangedProperties, ProgressPartBaseChangedProperties
 ---@field align_left boolean?
 
----@class (exact) ProgressPartTextProperties : {[ProgressPartTextProperty]: boolean}, TextProperties
+---@class (exact) ProgressPartTextProperties : {[ProgressPartTextProperty]: boolean}, TextProperties, ProgressPartBaseProperties
 ---@field align_left boolean
 
----@alias ProgressPartTextProperty "align_left"
+---@alias ProgressPartTextProperty "align_left" | ProgressPartBaseProperty
 ---@alias ProgressPartTextWriteKey ProgressPartTextProperty | TextProperties
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
+local part_base = require("HudController.hud.elements.progress.part_base")
 local text = require("HudController.hud.def.text")
 local util_table = require("HudController.util.misc.table")
 
@@ -49,14 +53,35 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     local o = text.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
     o.properties = util_table.merge_t(o.properties, {
         align_left = true,
+        offset_x = true,
+        clock_offset_x = true,
+        num_offset_x = true,
     })
 
     setmetatable(o, self)
     ---@cast o ProgressPartText
 
+    --FIXME: this suck ass
+    o.set_offset_x = part_base.set_offset_x
+    o.set_num_offset_x = part_base.set_num_offset_x
+    o.set_clock_offset_x = part_base.set_clock_offset_x
+
     if args.align_left then
         o:set_align_left(args.align_left)
     end
+
+    if args.enabled_offset_x then
+        o:set_offset_x(args.offset_x)
+    end
+
+    if args.enabled_clock_offset_x then
+        o:set_clock_offset_x(args.clock_offset_x)
+    end
+
+    if args.enabled_num_offset_x then
+        o:set_num_offset_x(args.num_offset_x)
+    end
+
     return o
 end
 
@@ -72,6 +97,20 @@ function this:set_align_left(align_left)
         self.page_alignment = nil
         self:mark_idle()
     end
+end
+
+---@protected
+---@param ctrl via.gui.Text
+---@return boolean
+function this:_write(ctrl)
+    local ret = text._write(self, ctrl)
+
+    --FIXME: this writes hud_child properties twice
+    if ret and part_base.any(self) then
+        ---@diagnostic disable-next-line: invisible, param-type-mismatch
+        part_base._write(self, ctrl)
+    end
+    return ret
 end
 
 ---@return ProgressPartTextConfig

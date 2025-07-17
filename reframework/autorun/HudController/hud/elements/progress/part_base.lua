@@ -1,34 +1,35 @@
 ---@class (exact) ProgressPartBase : HudChild
 ---@field offset_x number?
 ---@field clock_offset_x number?
+---@field num_offset_x number?
 ---@field root Progress
 ---@field ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): ProgressPartBaseConfig
+---@field properties ProgressPartBaseProperties
 
 ---@class (exact) ProgressPartBaseConfig : HudChildConfig
 ---@field offset_x number?
 ---@field enabled_offset_x boolean?
 ---@field clock_offset_x number?
 ---@field enabled_clock_offset_x boolean?
+---@field enabled_num_offset_x boolean?
+---@field num_offset_x number?
 
----@class (exact) ProgressPartBaseDefault: HudChildDefault
----@field offset_x number
----@field clock_offset_x number
-
+---@class (exact) ProgressPartBaseDefault : HudChildDefault
 ---@class (exact) ProgressPartBaseDefaultOverwrite : HudChildDefaultOverwrite
----@field offset_x number?
----@field clock_offset_x number?
 
 ---@class (exact) ProgressPartBaseChangedProperties : HudChildChangedProperties
 ---@field offset_x number?
 ---@field clock_offset_x number?
+---@field num_offset_x number?
 
 ---@class (exact) ProgressPartBaseProperties : {[ProgressPartBaseProperty]: boolean}, HudChildProperties
 ---@field offset_x boolean
 ---@field clock_offset_x boolean
+---@field num_offset_x boolean
 
----@alias ProgressPartBaseProperty "offset_x" | "clock_offset_x"
+---@alias ProgressPartBaseProperty "offset_x" | "clock_offset_x" | "num_offset_x"
 ---@alias ProgressPartBaseWriteKey ProgressPartBaseProperty | HudChildProperties
 
 local data = require("HudController.data")
@@ -59,6 +60,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     o.properties = util_table.merge_t(o.properties, {
         offset_x = true,
         clock_offset_x = true,
+        num_offset_x = true,
     })
     setmetatable(o, self)
     ---@cast o ProgressPartBase
@@ -70,6 +72,11 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     if args.enabled_clock_offset_x then
         o:set_clock_offset_x(args.clock_offset_x)
     end
+
+    if args.enabled_num_offset_x then
+        o:set_num_offset_x(args.num_offset_x)
+    end
+
     return o
 end
 
@@ -99,11 +106,29 @@ function this:set_clock_offset_x(clock_offset_x)
     end
 end
 
+---@param num_offset_x number?
+function this:set_num_offset_x(num_offset_x)
+    if num_offset_x then
+        self:mark_write()
+        self.num_offset_x = num_offset_x
+    else
+        self:reset("offset")
+        self.num_offset_x = num_offset_x
+        self.offset = nil
+        self:mark_idle()
+    end
+end
+
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    play_object.default.check(ctrl)
+    if ctrl:get_ActualVisible() then
+        play_object.default.check(ctrl, true)
+    else
+        play_object.default.clear_obj(ctrl)
+        return false
+    end
 
     if self.offset_x then
         local vec = ctrl:get_Position()
@@ -113,9 +138,33 @@ function this:_write(ctrl)
         if self.clock_offset_x and self.root:is_visible_quest_timer() then
             self.offset.x = self.offset_x + self.clock_offset_x
         end
+
+        -- task only!
+        if self.num_offset_x then
+            local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
+            local num = play_object.control.get(taskset, "PNL_num")
+
+            if num and num:get_Visible() then
+                self.offset.x = self.offset_x + self.num_offset_x
+            end
+        end
     end
 
     return hud_child._write(self, ctrl)
+end
+
+---@return boolean
+function this:any_gui()
+    return util_table.any(self.properties, function(key, value)
+        if (key == "clock_offset_x" or key == "num_offset_x") and not self.offset_x then
+            return false
+        end
+
+        if self[key] then
+            return true
+        end
+        return false
+    end)
 end
 
 ---@param name_key string

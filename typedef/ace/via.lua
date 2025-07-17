@@ -104,6 +104,7 @@
 ---@field get_Next fun(self: via.gui.PlayObject): via.gui.PlayObject
 ---@field set_ForceInvisible fun(self: via.gui.PlayObject, is_invis: System.Boolean)
 ---@field get_ForceInvisible fun(self: via.gui.PlayObject): System.Boolean
+---@field get_ActualVisible fun(self: via.gui.PlayObject): System.Boolean
 
 ---@class via.gui.SelectItem : via.gui.Control
 ---@field get_ListIndex fun(self: via.gui.SelectItem): System.Int32

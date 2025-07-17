@@ -25,6 +25,7 @@
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
 ---@class app.GUI020002 : app.GUIHudBase
 ---@class app.GUI020001 : app.GUIHudBase
+---@class app.MissionGuideGUIParts.TaskPanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -88,6 +89,7 @@
 ---@class app.GUI020018 : app.GUIBaseApp
 ---@field _TimerPanelData app.MissionGuideGUIParts.TimePanelData
 ---@field _WatchPanelData app.MissionGuideGUIParts.WatchPanelData
+---@field _DiePanelData app.MissionGuideGUIParts.TaskPanelData
 ---@field _BestRecordPanelData app.MissionGuideGUIParts.BestRecordData
 ---@field releaseSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo)
 ---@field createSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo, panel_type: app.GUI020018.GUIDE_PANEL_TYPE): app.MissionGuideGUIParts.SmallMissionPanelBase

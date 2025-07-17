@@ -219,6 +219,7 @@ this.default = {
             box_enable_material_side_mag_scale = "Enable Side Position Scale",
             box_enable_material_level_max_scale = "Enable Level Max Scale",
             box_enable_scale9_alpha_channel = "Enable Alpha Channel",
+            box_enable_num_offset_x = "Enable Num Offset X",
             box_weapon_no_focus = "No Focus",
             box_enable_scale9_ignore_alpha = "Enable Ignore Alpha",
             box_scale9_ignore_alpha = "Ignore Alpha",
@@ -332,7 +333,6 @@ this.default = {
         button_guide = "Button Guide",
         command_history = "Command History",
         combo_guide = "Combo Guide",
-        best_times = "Best Times",
         capture = "Capture",
         slinger = "Slinger",
         focus = "Focus",
@@ -342,6 +342,9 @@ this.default = {
         base = "Base",
         name_main = "Main Name",
         name_sub = "Sub Name",
+        best_timer = "Best Times",
+        faint = "Faints",
+        quest_timer = "Quest Timer",
     },
 }
 

@@ -20,7 +20,7 @@ this.__index = this
 setmetatable(this, { __index = part_base })
 
 local ctrl_args = {
-    gauge = {
+    text = {
         {
             {
                 "PNL_Pat00",
@@ -45,7 +45,7 @@ local ctrl_args = {
 ---@return ProgressPartTextPart
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.gauge)
+        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.text)
     end, nil, { hide = false })
     setmetatable(o, self)
     ---@cast o ProgressPartTextPart

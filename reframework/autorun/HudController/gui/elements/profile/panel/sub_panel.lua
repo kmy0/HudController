@@ -43,6 +43,7 @@ local separator_progress_text = gui_util.separator:new({
 local separator_progress_part = gui_util.separator:new({
     "enabled_offset_x",
     "enabled_clock_offset_x",
+    "enabled_num_offset_x",
 })
 
 ---@param elem HudBase
@@ -518,8 +519,8 @@ local function draw_progress_part(elem, elem_config, config_key)
         separator_progress_part:draw()
     end
 
-    if elem_config.enabled_offset_x ~= nil then
-        imgui.begin_disabled(not elem_config.enabled_offset_x)
+    if elem_config.enabled_clock_offset_x ~= nil then
+        imgui.begin_disabled(elem_config.enabled_offset_x == false)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_clock_offset_x",
@@ -539,6 +540,28 @@ local function draw_progress_part(elem, elem_config, config_key)
         imgui.end_disabled()
         separator_progress_part:draw()
     end
+
+    if elem_config.enabled_num_offset_x ~= nil then
+        imgui.begin_disabled(elem_config.enabled_offset_x == false)
+
+        changed = generic.draw_slider_settings({
+            config_key = config_key .. ".enabled_num_offset_x",
+            label = gui_util.tr("hud_element.entry.box_enable_num_offset_x"),
+        }, {
+            {
+                config_key = config_key .. ".num_offset_x",
+                label = gui_util.tr("hud_element.entry.slider_x"),
+            },
+        }, -4000, 4000, 1, "%.0f")
+
+        if changed then
+            elem:set_num_offset_x(elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil)
+            config.save()
+        end
+
+        imgui.end_disabled()
+        separator_progress_part:draw()
+    end
 end
 
 ---@param elem HudBase
@@ -546,11 +569,16 @@ end
 ---@param config_key string
 local function draw_progress_text(elem, elem_config, config_key)
     draw_text(elem, elem_config, config_key)
+    draw_progress_part(elem, elem_config, config_key)
 
     ---@cast elem ProgressPartText
     ---@cast elem_config ProgressPartTextConfig
 
-    if separator_text:had_separators() or generic.separator:had_separators() then
+    if
+        separator_text:had_separators()
+        or generic.separator:had_separators()
+        or separator_progress_part:had_separators()
+    then
         imgui.separator()
     end
 

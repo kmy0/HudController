@@ -1,7 +1,7 @@
 ---@class (exact) Progress : HudBase
 ---@field get_config fun(): ProgressConfig
 ---@field children {
---- clock: ProgressQuestTimer,
+--- clock: ProgressClock,
 --- task: ProgressPartTask,
 --- name_main: ProgressPartNameMain,
 --- name_sub: ProgressPartNameSub,
@@ -9,6 +9,9 @@
 --- gauge: ProgressPartGauge,
 --- text_part: ProgressPartTextPart,
 --- timer: ProgressTimer,
+--- quest_timer: ProgressQuestTimer,
+--- best_timer: ProgressQuestTimerBest,
+--- faint: ProgressPartTaskFaint,
 --- }
 ---@field GUI020018 app.GUI020018?
 
@@ -17,7 +20,7 @@
 --- ELAPSED_TIME_DISP: integer,
 --- }
 ---@field children {
---- clock: ProgressQuestTimerConfig,
+--- clock: ProgressClockConfig,
 --- task: ProgressPartTaskConfig,
 --- timer: ProgressTimerConfig,
 --- name_main: ProgressPartNameMainConfig,
@@ -25,9 +28,15 @@
 --- guide_assign: ProgressPartGuideAssignConfig,
 --- gauge: ProgressPartGaugeConfig,
 --- text_part: ProgressPartTextPartConfig,
+--- quest_timer: ProgressQuestTimerConfig,
+--- best_timer: ProgressQuestTimerBestConfig,
+--- faint: ProgressPartTaskFaintConfig,
 --- }
 
+local best_timer = require("HudController.hud.elements.progress.best_timer")
+local clock = require("HudController.hud.elements.progress.clock")
 local data = require("HudController.data")
+local faint = require("HudController.hud.elements.progress.faint")
 local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.progress.gauge")
 local guide_assign = require("HudController.hud.elements.progress.guide_assign")
@@ -39,6 +48,7 @@ local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
 local text_part = require("HudController.hud.elements.progress.text_part")
 local timer = require("HudController.hud.elements.progress.timer")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -53,7 +63,18 @@ setmetatable(this, { __index = hud_base })
 ---@param args ProgressConfig
 ---@return Progress
 function this:new(args)
-    local o = hud_base.new(self, args)
+    local o = hud_base.new(self, args, nil, nil, nil, nil, function(a_key, b_key)
+        local t = { "faint", "best_timer", "quest_timer" }
+
+        if util_table.contains(t, a_key) then
+            return false
+        end
+
+        if util_table.contains(t, b_key) then
+            return true
+        end
+        return a_key < b_key
+    end)
     setmetatable(o, self)
     ---@cast o Progress
 
@@ -64,7 +85,10 @@ function this:new(args)
     o.children.gauge = gauge:new(args.children.gauge, o)
     o.children.text_part = text_part:new(args.children.text_part, o)
     o.children.timer = timer:new(args.children.timer, o)
-    o.children.clock = quest_timer:new(args.children.clock, o)
+    o.children.clock = clock:new(args.children.clock, o)
+    o.children.quest_timer = quest_timer:new(args.children.quest_timer, o)
+    o.children.best_timer = best_timer:new(args.children.best_timer, o)
+    o.children.faint = faint:new(args.children.faint, o)
     return o
 end
 
@@ -98,7 +122,10 @@ function this.get_config()
     children.gauge = gauge.get_config()
     children.text_part = text_part.get_config()
     children.timer = timer.get_config()
-    children.clock = quest_timer.get_config()
+    children.clock = clock.get_config()
+    children.quest_timer = quest_timer.get_config()
+    children.best_timer = best_timer.get_config()
+    children.faint = faint.get_config()
 
     return base
 end

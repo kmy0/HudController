@@ -81,9 +81,10 @@ local ctrl_args = {
 
 ---@param args ProgressPartTaskConfig
 ---@param parent Progress
+---@param ctrl_getter (fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
 ---@return ProgressPartTask
-function this:new(args, parent)
-    local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+function this:new(args, parent, ctrl_getter)
+    local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
         return play_object.control.get_from_all(
             play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task),
             "PNL_taskSet"
@@ -115,12 +116,26 @@ end
 function this.get_config()
     local base = part_base.get_config("task") --[[@as ProgressPartTaskConfig]]
     local children = base.children
+    base.enabled_num_offset_x = false
+    base.num_offset_x = 0
 
     children.text = text.get_config()
+    children.text.enabled_num_offset_x = false
+    children.text.num_offset_x = 0
+    children.text.enabled_offset_x = false
+    children.text.offset_x = 0
+    children.text.enabled_clock_offset_x = false
+    children.text.clock_offset_x = 0
     children.checkbox = part_base.get_config("checkbox")
+    children.checkbox.enabled_num_offset_x = false
+    children.checkbox.num_offset_x = 0
     children.icon = part_base.get_config("icon")
+    children.icon.enabled_num_offset_x = false
+    children.icon.num_offset_x = 0
     children.num = part_base.get_config("num")
     children.light = part_base.get_config("light")
+    children.light.enabled_num_offset_x = false
+    children.light.num_offset_x = 0
     return base
 end
 
