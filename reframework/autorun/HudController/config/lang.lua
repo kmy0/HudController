@@ -141,6 +141,7 @@ this.default = {
         category_quest = "Quest",
         category_npc = "Npc",
         box_hide_no_talk_npc = "Hide Non Interactable",
+        box_hide_no_facility_npc = "Hide Non Facility",
     },
     hud_element = {
         combo = "Hud Element",

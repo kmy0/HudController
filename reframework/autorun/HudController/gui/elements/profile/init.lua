@@ -78,11 +78,21 @@ local function draw_options()
     ) or changed
     changed = check_overriden(
         set.checkbox(
+            gui_util.tr("hud.box_hide_no_facility_npc"),
+            string.format("mod.hud.int:%s.hide_no_facility_npc", config.current.mod.combo_hud)
+        ),
+        "hide_no_facility_npc"
+    ) or changed
+
+    imgui.begin_disabled(hud.get_hud_option("hide_no_facility_npc"))
+    changed = check_overriden(
+        set.checkbox(
             gui_util.tr("hud.box_hide_no_talk_npc"),
             string.format("mod.hud.int:%s.hide_no_talk_npc", config.current.mod.combo_hud)
         ),
         "hide_no_talk_npc"
     ) or changed
+    imgui.end_disabled()
 
     util_imgui.separator_text(config.lang.tr("hud.category_monster"))
     changed = check_overriden(

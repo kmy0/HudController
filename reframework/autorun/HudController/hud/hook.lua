@@ -1110,9 +1110,19 @@ end
 
 function this.hide_no_talk_npc_pre(args)
     local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_no_talk_npc") then
+    if hud_config then
+        local no_talk = hud.get_hud_option("hide_no_talk_npc")
+        local no_facility = hud.get_hud_option("hide_no_facility_npc")
+
+        if not no_talk and not no_facility then
+            return
+        end
+
         local npc_base = sdk.to_managed_object(args[2]) --[[@as app.NpcCharacter]]
-        if ace_npc.is_talk(npc_base) == false then
+        if
+            (no_facility and ace_npc.is_facility(npc_base) == false)
+            or (no_talk and ace_npc.is_talk(npc_base) == false)
+        then
             ace_npc.set_continue_flag(npc_base, rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"), true)
         end
     end

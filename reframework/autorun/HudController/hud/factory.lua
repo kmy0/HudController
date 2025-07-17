@@ -24,6 +24,7 @@
 ---@field hide_monster_icon boolean
 ---@field hide_lock_target boolean
 ---@field hide_no_talk_npc boolean
+---@field hide_no_facility_npc boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -68,6 +69,7 @@ function this.get_hud_profile_config(key, name)
         skip_quest_end_timer = false,
         hide_quest_end_timer = false,
         hide_no_talk_npc = false,
+        hide_no_facility_npc = false,
     }
 end
 

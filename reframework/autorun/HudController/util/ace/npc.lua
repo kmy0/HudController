@@ -8,6 +8,7 @@ local util_ref = require("HudController.util.ref")
 
 m.NpcIDfromFIXED = m.wrap(m.get("app.NpcDef.getIDFromFixed(app.NpcDef.ID_Fixed, app.NpcDef.ID)")) --[[@as fun(id_fixed: app.NpcDef.ID_Fixed, out: app.NpcDef.ID): System.Boolean]]
 m.isEnableTalk = m.wrap(m.get("app.NpcUtil.isEnableTalk(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
+m.isEnableFacility = m.wrap(m.get("app.NpcUtil.isEnableFacility(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 
 local this = {}
 
@@ -70,6 +71,18 @@ function this.is_talk(npc_char)
 
     local ctx = ctx_holder:get_Npc()
     return m.isEnableTalk(ctx)
+end
+
+---@param npc_char app.NpcCharacter
+---@return boolean?
+function this.is_facility(npc_char)
+    local ctx_holder = npc_char._ContextHolder
+    if not ctx_holder then
+        return
+    end
+
+    local ctx = ctx_holder:get_Npc()
+    return m.isEnableFacility(ctx)
 end
 
 ---@param npc app.NpcDef.ID | app.NpcCharacter
