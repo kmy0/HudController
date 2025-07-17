@@ -331,7 +331,7 @@ end
 ---@return boolean
 function this.any(t, predicate)
     for key, value in pairs(t) do
-        if predicate and predicate(key, value) or value == true then
+        if predicate and predicate(key, value) or not predicate and value == true then
             return true
         end
     end
