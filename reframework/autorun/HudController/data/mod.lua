@@ -27,6 +27,7 @@ local this = {
             skip_quest_end_timer = "box_skip_quest_end_timer",
             hide_lock_target = "box_hide_lock_target",
             hide_quest_end_timer = "box_hide_quest_end_timer",
+            hide_no_talk_npc = "box_hide_no_talk_npc",
         },
     },
     initialized = false,

@@ -1108,4 +1108,14 @@ function this.update_name_access_icons_post(retval)
     end
 end
 
+function this.hide_no_talk_npc_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_no_talk_npc") then
+        local npc_base = sdk.to_managed_object(args[2]) --[[@as app.NpcCharacter]]
+        if ace_npc.is_talk(npc_base) == false then
+            ace_npc.set_continue_flag(npc_base, rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"), true)
+        end
+    end
+end
+
 return this

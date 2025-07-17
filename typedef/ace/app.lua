@@ -155,6 +155,7 @@
 
 ---@class app.cNpcContext : app.cGameContext
 ---@field NpcContinueFlag ace.cSafeContinueFlagGroup
+---@field NpcID app.NpcDef.ID
 
 ---@class app.user_data.VariousDataManagerSetting : via.UserData
 ---@field get_GUIVariousData fun(self: app.user_data.VariousDataManagerSetting): app.user_data.GUIVariousData
@@ -433,3 +434,6 @@
 
 ---@class app.ChatDef.MessageElement : via.clr.ManagedObject
 ---@field get_MsgType fun(self: app.ChatDef.MessageElement): app.ChatDef.MSG_TYPE
+
+---@class app.NpcCharacter : app.CharacterBase
+---@field _ContextHolder app.cNpcContextHolder

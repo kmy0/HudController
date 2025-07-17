@@ -7,6 +7,7 @@ local util_misc = require("HudController.util.misc")
 local util_ref = require("HudController.util.ref")
 
 m.NpcIDfromFIXED = m.wrap(m.get("app.NpcDef.getIDFromFixed(app.NpcDef.ID_Fixed, app.NpcDef.ID)")) --[[@as fun(id_fixed: app.NpcDef.ID_Fixed, out: app.NpcDef.ID): System.Boolean]]
+m.isEnableTalk = m.wrap(m.get("app.NpcUtil.isEnableTalk(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 
 local this = {}
 
@@ -59,6 +60,17 @@ function this.is_touch(npc_id)
     return interact_ctrl:get_IsTouch()
 end
 
+---@param npc_char app.NpcCharacter
+---@return boolean?
+function this.is_talk(npc_char)
+    local ctx_holder = npc_char._ContextHolder
+    if not ctx_holder then
+        return
+    end
+
+    local ctx = ctx_holder:get_Npc()
+    return m.isEnableTalk(ctx)
+end
 
 ---@param npc app.NpcDef.ID | app.NpcCharacter
 ---@return ace.cSafeContinueFlagGroup?
@@ -123,6 +135,8 @@ function this.get_npc_id_from_fixed(npc_id_fixed)
     m.NpcIDfromFIXED(npc_id_fixed, npc_id)
     return npc_id:get_field("value__")
 end
+
+this.is_talk = cache.memoize(this.is_talk)
 this.get_flags = cache.memoize(this.get_flags)
 this.get_npc_core = cache.memoize(this.get_npc_core, function(cached_value)
     ---@cast cached_value app.NpcCharacterCore

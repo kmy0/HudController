@@ -139,6 +139,8 @@ this.default = {
         box_disable_quest_end_outro = "Disable Quest Outro",
         box_hide_quest_end_timer = "Hide Quest End Timer Input",
         category_quest = "Quest",
+        category_npc = "Npc",
+        box_hide_no_talk_npc = "Hide Non Interactable",
     },
     hud_element = {
         combo = "Hud Element",

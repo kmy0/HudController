@@ -52,13 +52,6 @@ local function draw_options()
         ),
         "disable_scoutflies"
     ) or changed
-    changed = check_overriden(
-        set.checkbox(
-            gui_util.tr("hud.box_hide_handler"),
-            string.format("mod.hud.int:%s.hide_handler", config.current.mod.combo_hud)
-        ),
-        "hide_handler"
-    ) or changed
 
     local box = set.checkbox(
         gui_util.tr("hud.box_hide_danger"),
@@ -73,6 +66,22 @@ local function draw_options()
             string.format("mod.hud.int:%s.disable_area_intro", config.current.mod.combo_hud)
         ),
         "disable_area_intro"
+    ) or changed
+
+    util_imgui.separator_text(config.lang.tr("hud.category_npc"))
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_hide_handler"),
+            string.format("mod.hud.int:%s.hide_handler", config.current.mod.combo_hud)
+        ),
+        "hide_handler"
+    ) or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_hide_no_talk_npc"),
+            string.format("mod.hud.int:%s.hide_no_talk_npc", config.current.mod.combo_hud)
+        ),
+        "hide_no_talk_npc"
     ) or changed
 
     util_imgui.separator_text(config.lang.tr("hud.category_monster"))
