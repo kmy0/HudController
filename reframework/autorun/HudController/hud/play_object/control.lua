@@ -1,12 +1,11 @@
-local hash = require("HudController.util.misc.hash")
-local lru = require("HudController.util.misc.lru")
+local cache = require("HudController.util.misc.cache")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
 
 local control_type = sdk.typeof("via.gui.Control") --[[@as System.Type]]
-local all_cache = lru:new(1000)
+local all_cache = cache:new()
 
 ---@param ctrl via.gui.Control
 ---@param chain string[] | string
@@ -46,8 +45,8 @@ function this.all(ctrl, chain, target, lowercase)
 
     ---@type via.gui.Control[]
     local ret = {}
-    local key = hash.hash_args(false, ctrl, chain, target, lowercase)
-    local cached = all_cache:get(key) --[=[@as string[]?]=]
+    ---@type string[]?, string
+    local cached, key = all_cache:get_hashed(false, ctrl, chain, target, lowercase)
 
     if cached then
         for _, name in pairs(cached) do

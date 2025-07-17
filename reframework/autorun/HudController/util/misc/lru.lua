@@ -2,21 +2,23 @@
 
 ---@class (exact) LRUTuple : [any, LRUTuple, LRUTuple, any]
 
----@class (exact) LRU
+---@class (exact) LRU : Cache
 ---@field max_size integer
----@field memoize fun(func: (fun(...): any), size: integer, predicate: (fun(cached_value: any): boolean)?, deep_hash_table: boolean?): any
+---@field memoize fun(func: (fun(...): any), size: integer, predicate: (fun(cached_value: any): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
 ---@field protected _size integer
 ---@field protected _map table<any, LRUTuple>
 ---@field protected _newest LRUTuple?
 ---@field protected _oldest LRUTuple?
 ---@field protected _removed LRUTuple?
 
+local cache = require("HudController.util.misc.cache")
 local hash = require("HudController.util.misc.hash")
 
 ---@class LRU
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
+setmetatable(this, { __index = cache })
 
 local VALUE = 1
 local PREV = 2
@@ -26,13 +28,11 @@ local KEY = 4
 ---@param max_size integer
 ---@return LRU
 function this:new(max_size)
-    local o = {
-        max_size = max_size,
-        _size = 0,
-        _map = {},
-    }
+    local o = cache.new(self)
     setmetatable(o, self)
     ---@cast o LRU
+    o.max_size = max_size
+    o._size = 0
     return o
 end
 
@@ -127,21 +127,34 @@ end
 ---@param func fun(...): any
 ---@param size integer
 ---@param predicate (fun(cached_value: any): boolean)?
+---@param do_hash boolean?
 ---@param deep_hash_table boolean?
 ---@return fun(...): any
-function this.memoize(func, size, predicate, deep_hash_table)
-    local cache = this:new(size)
+function this.memoize(func, size, predicate, do_hash, deep_hash_table)
+    local _cache = this:new(size)
 
     return function(...)
-        local key = hash.hash_args(deep_hash_table, ...)
-        local cached = cache:get(key)
+        ---@type any
+        local key
+        if do_hash then
+            key = hash.hash_args(deep_hash_table, ...)
+        else
+            key = { ... }
+            if #key > 0 then
+                ---@diagnostic disable-next-line: no-unknown
+                key = key[1]
+            else
+                key = 1
+            end
+        end
 
+        local cached = _cache:get(key)
         if cached ~= nil and (not predicate or (predicate and predicate(cached))) then
             return cached
         end
 
         local ret = func(...)
-        cache:set(key, ret)
+        _cache:set(key, ret)
         return ret
     end
 end

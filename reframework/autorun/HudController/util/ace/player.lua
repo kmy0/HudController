@@ -1,7 +1,7 @@
 ---@class PlayerUtil
----@field master_char app.HunterCharacter?
 ---@field is_village_frame boolean
 
+local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
 local util_misc = require("HudController.util.misc")
 
@@ -13,18 +13,12 @@ function this.get_master_info()
     return s.get("app.PlayerManager"):getMasterPlayer()
 end
 
----@return app.HunterCharacter
+---@return app.HunterCharacter?
 function this.get_master_char()
-    if this.master_char and not this.master_char:get_Valid() then
-        this.master_char = nil
-    end
-
     local info = this.get_master_info()
     if info then
-        this.master_char = info:get_Character()
+        return info:get_Character()
     end
-
-    return this.master_char
 end
 
 ---@param flag app.HunterDef.CONTINUE_FLAG
@@ -88,5 +82,10 @@ end
 function this.is_fast_travel()
     return s.get("app.MissionManager"):isFastTravel()
 end
+
+this.get_master_char = cache.memoize(this.get_master_char, function(cached_value)
+    ---@cast cached_value app.HunterCharacter
+    return cached_value:get_Valid()
+end)
 
 return this

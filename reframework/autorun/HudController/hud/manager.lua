@@ -16,6 +16,7 @@ local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
 local ace_porter = require("HudController.util.ace.porter")
 local bind_manager = require("HudController.hud.bind")
+local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config")
 local data = require("HudController.data")
@@ -275,6 +276,8 @@ function this.clear()
 
     this.current_hud = nil
     this.requested_hud = nil
+
+    cache.clear_all()
 end
 
 ---@return boolean

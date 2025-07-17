@@ -1,9 +1,8 @@
 ---@class Porterutil
----@field master_porter app.PorterCharacter
----@field porters table<app.CharacterBase, app.PorterCharacter>
 ---@field porter_command table<app.PorterDef.COMMUNICATOR_COMMAND, string>
 ---@field porter_quest_interrupts string[]
 
+local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
@@ -30,18 +29,12 @@ function this.get_master_info()
     return s.get("app.PorterManager"):getMasterPlayerPorter()
 end
 
----@return app.PorterCharacter
+---@return app.PorterCharacter?
 function this.get_master_char()
-    if this.master_porter and not this.master_porter:get_Valid() then
-        this.master_porter = nil
-    end
-
     local info = this.get_master_info()
     if info then
-        this.master_porter = info:get_Character()
+        return info:get_Character()
     end
-
-    return this.master_porter
 end
 
 ---@return boolean
@@ -120,16 +113,10 @@ function this.set_master_continue_flag(flag, value)
 end
 
 ---@param hunter app.CharacterBase
----@return app.PorterCharacter
+---@return app.PorterCharacter?
 function this.get_porter(hunter)
-    if this.porters[hunter] then
-        if this.porters[hunter]:get_Valid() then
-            return this.porters[hunter]
-        else
-            this.porters[hunter] = nil
-        end
-    end
-
+    ---@type app.PorterCharacter?
+    local ret
     local arr = s.get("app.PorterManager"):get_InstancedPorterList()
     util_game.do_something(arr, function(system_array, index, value)
         local info = value:get_PorterInfo()
@@ -137,12 +124,12 @@ function this.get_porter(hunter)
         local ctx = holder:get_Pt()
 
         if ctx:get_RideOwner() == hunter then
-            this.porters[hunter] = info:get_Character()
+            ret = info:get_Character()
             return false
         end
     end)
 
-    return this.porters[hunter]
+    return ret
 end
 
 ---@param porter app.PorterCharacter
@@ -179,5 +166,14 @@ function this.init()
     end
     return true
 end
+
+this.get_master_char = cache.memoize(this.get_master_char, function(cached_value)
+    ---@cast cached_value app.PorterCharacter
+    return cached_value:get_Valid()
+end)
+this.get_porter = cache.memoize(this.get_porter, function(cached_value)
+    ---@cast cached_value app.PorterCharacter
+    return cached_value:get_Valid()
+end)
 
 return this
