@@ -1,3 +1,4 @@
+local ace_em = require("HudController.util.ace.enemy")
 local ace_misc = require("HudController.util.ace.misc")
 local ace_npc = require("HudController.util.ace.npc")
 local ace_player = require("HudController.util.ace.player")
@@ -78,23 +79,6 @@ local function force_opacity(pnl)
     local scale = pnl:get_ColorScale()
     scale.w = 1.0
     pnl:set_ColorScale(scale)
-end
-
----@param em_ctx app.cEnemyContext
-local function is_paintballed(em_ctx)
-    local arr = em_ctx.PaintHitInfoIndex
-    local any = false
-
-    if arr then
-        util_game.do_something(arr, function(system_array, index, value)
-            if value.enable then
-                any = true
-                return false
-            end
-        end)
-    end
-
-    return any
 end
 
 function this.update_pre(args)
@@ -498,13 +482,17 @@ function this.hide_iteractables_post(retval)
                     and hud.get_hud_option("hide_monster_icon")
                 then
                     local game_object = value:get_GameObject()
-                    if game_object then
-                        local char = util_game.get_component(game_object, "app.EnemyCharacter") --[[@as app.EnemyCharacter]]
-                        local holder = char._Context
-                        local ctx = holder:get_Em()
-                        if ctx:get_IsBoss() and not is_paintballed(ctx) then
-                            value:clear()
-                        end
+                    if not game_object then
+                        return
+                    end
+
+                    local char = ace_em.get_char_base(game_object)
+                    if not char then
+                        return
+                    end
+
+                    if ace_em.is_boss(char) and not ace_em.is_paintballed_char(char) then
+                        value:clear()
                     end
                 end
 
@@ -595,13 +583,13 @@ function this.hide_handler_post(retval)
             ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "DISABLE_TALK"), true)
             ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "ALPHA_ZERO"), true)
 
-            local alma_porter = ace_porter.get_porter(char_base)
-            if not alma_porter then
+            local handler_porter = ace_porter.get_porter(char_base)
+            if not handler_porter then
                 return
             end
 
-            ace_porter.set_continue_flag(alma_porter, rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"), true)
-            ace_porter.set_continue_flag(alma_porter, rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"), true)
+            ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"), true)
+            ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"), true)
         end
     end
 end
@@ -760,7 +748,7 @@ function this.hide_icon_out_post(retval)
                         and util_ref.is_a(beacon, "app.cGUIBeaconEM")
                         ---@cast beacon app.cGUIBeaconEM
 
-                        and not is_paintballed(beacon:getGameContext())
+                        and not ace_em.is_paintballed_ctx(beacon:getGameContext())
                     then
                         value:setVisible(false)
                     end
@@ -785,7 +773,7 @@ function this.hide_monster_icon_pre(args)
 
         util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
             local ctx = value:getGameContext()
-            if not is_paintballed(ctx) then
+            if not ace_em.is_paintballed_ctx(ctx) then
                 local flags = ctx:get_ContinueFlag()
                 flags:on(
                     rl(
@@ -811,7 +799,7 @@ function this.get_near_monsters_pre(args)
         util_game.do_something(em_arr, function(system_array, index, value)
             if (value:get_Pos() - player_pos):length() <= range then
                 local browser = value:get_Browser()
-                if browser:get_IsBoss() and is_paintballed(browser:get_EmContext()) then
+                if browser:get_IsBoss() and ace_em.is_paintballed_ctx(browser:get_EmContext()) then
                     table.insert(arr, value)
                 end
             end
@@ -854,7 +842,7 @@ function this.skip_monster_select_pre(args)
         local ctx_holder = sdk.to_managed_object(args[3]) --[[@as app.cEnemyContextHolder]]
         local ctx = ctx_holder:get_Em()
 
-        if not is_paintballed(ctx) then
+        if not ace_em.is_paintballed_ctx(ctx) then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
