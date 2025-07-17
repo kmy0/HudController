@@ -144,6 +144,7 @@ this.default = {
         box_hide_no_facility_npc = "Hide Non Facility",
         box_monster_ignore_camp = "Ignore Camps",
         tooltip_monster_ignore_camp = "Camps can’t be targeted or destroyed by monsters",
+        box_hide_small_monsters = "Hide Small Monsters",
     },
     hud_element = {
         combo = "Hud Element",

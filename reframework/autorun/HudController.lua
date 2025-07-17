@@ -113,6 +113,7 @@ m.hook(
 m.hook("app.cGUI060000Recommend.onLateUpdate()", util.ref.capture_this, hook.hide_recommend_post)
 m.hook("app.GUI060008.requestSummaryEnemy(app.cEnemyContextHolder)", hook.skip_monster_select_pre)
 m.hook("app.GUIMapBeaconManager.update()", hook.hide_monster_icon_pre)
+m.hook("app.GUIMapBeaconManager.update()", hook.hide_small_monsters_pre)
 m.hook(
     "app.cEmGridPartition.getArrayLimitedRadius_Func(via.vec3, System.Single, System.Func`2<app.cEnemyManageInfo,System.Boolean>, System.Int32, System.Boolean)",
     hook.get_near_monsters_pre,
@@ -153,6 +154,7 @@ m.hook("app.NpcCharacter.doLateUpdateEnd()", hook.hide_no_talk_npc_pre)
 m.hook("app.cEmReactableGmInterface_Camp.get_AcceptableAIStates()", hook.stop_camp_target_pre)
 m.hook("app.mcGimmickBreak.isHit(app.HitInfo)", util.ref.capture_this, hook.stop_camp_damage_post)
 
+--TODO: hide npc icons when invisible
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then
         config.current.gui.main.is_opened = not config.current.gui.main.is_opened

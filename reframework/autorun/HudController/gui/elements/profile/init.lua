@@ -97,6 +97,13 @@ local function draw_options()
     util_imgui.separator_text(config.lang.tr("hud.category_monster"))
     changed = check_overriden(
         set.checkbox(
+            gui_util.tr("hud.box_hide_small_monsters"),
+            string.format("mod.hud.int:%s.hide_small_monsters", config.current.mod.combo_hud)
+        ),
+        "hide_small_monsters"
+    ) or changed
+    changed = check_overriden(
+        set.checkbox(
             gui_util.tr("hud.box_monster_ignore_camp"),
             string.format("mod.hud.int:%s.monster_ignore_camp", config.current.mod.combo_hud)
         ),

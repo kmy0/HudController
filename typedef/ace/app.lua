@@ -323,6 +323,7 @@
 ---@class app.GUIMapBeaconManager : ace.GAElement
 ---@field PaintBallController app.cGUIPaintBallController
 ---@field get_EmBossBeaconContainer fun(self: app.GUIMapBeaconManager): app.cGUIEMBossBeaconContainer
+---@field get_EmZakoBeaconContainer fun(self: app.GUIMapBeaconManager): app.cGUIEMZakoBeaconContainer
 
 ---@class app.cGUIPaintBallController : via.clr.ManagedObject
 ---@field getPaintBallBeaconListAll fun(self: app.cGUIPaintBallController): System.Array<app.cGUIBeaconBase>
@@ -330,9 +331,15 @@
 ---@class app.cGUIEMBossBeaconContainer : app.cGUIBeaconContainerBase
 ---@field _BeaconListSafe System.Array<app.cGUIBeaconEM>
 
+---@class app.cGUIEMZakoBeaconContainer : app.cGUIBeaconContainerBase
+---@field _BeaconListSafe System.Array<app.cGUIBeaconEM>
+
 ---@class app.cEnemyContext : app.cGameContext
 ---@field get_ContinueFlag fun(self: app.cEnemyContext): ace.cSafeContinueFlagGroup
 ---@field get_IsBoss fun(self: app.cEnemyContext): System.Boolean
+---@field get_Browser fun(self: app.cEnemyContext): app.cEnemyBrowser
+---@field get_IsZako fun(self: app.cEnemyContext): System.Boolean
+---@field get_IsAnimal fun(self: app.cEnemyContext): System.Boolean
 ---@field PaintHitInfoIndex System.Array<app.cEnemyContext.EmPaintHit>
 
 ---@class app.cGUIBeaconEM : app.cGUIBeaconBase
@@ -388,6 +395,7 @@
 ---@class app.cEnemyBrowser : ace.cNonCycleTypeObject
 ---@field get_EmContext fun(self: app.cEnemyBrowser): app.cEnemyContext
 ---@field get_IsBoss fun(self: app.cEnemyBrowser): System.Boolean
+---@field _Character app.EnemyCharacter
 
 ---@class app.EnemyCharacter : app.CharacterBase
 ---@field _Context app.cEnemyContextHolder

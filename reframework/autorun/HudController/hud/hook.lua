@@ -1157,4 +1157,21 @@ function this.stop_camp_damage_post(retval)
     end
 end
 
+function this.hide_small_monsters_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_small_monsters") then
+        local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
+        local beacons = beacon_man:get_EmZakoBeaconContainer()
+
+        util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
+            ace_em.set_continue_flags(
+                value:getGameContext(),
+                true,
+                rl(data.ace.enum.enemy_continue_flag, "DRAW_OFF"),
+                rl(data.ace.enum.enemy_continue_flag, "HIDE_MAP_WITH_DISABLE_PIN")
+            )
+        end)
+    end
+end
+
 return this
