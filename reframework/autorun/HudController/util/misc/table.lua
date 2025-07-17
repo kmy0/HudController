@@ -327,11 +327,11 @@ end
 
 ---@generic K, V
 ---@param t table<K, V>
----@param predicate fun(key: K, value: V) : boolean
+---@param predicate (fun(key: K, value: V) : boolean)?
 ---@return boolean
 function this.any(t, predicate)
     for key, value in pairs(t) do
-        if predicate(key, value) then
+        if predicate and predicate(key, value) or value == true then
             return true
         end
     end

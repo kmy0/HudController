@@ -454,27 +454,49 @@ function this.hide_iteractables_post(retval)
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
         local player_pos
+        local any_panel = name_access:any_panel()
+        local any_npc = name_access:any_npc()
+        local any_gossip = name_access:any_gossip()
 
         util_game.do_something(access_control:get_AccessIconInfos(), function(system_array, index, value)
             if name_access.object_category["ALL"] then
                 value:clear()
             else
+                if any_panel and name_access.panel_type[ace_enum.interact_panel_type[value:getCurrentPanelType()]] then
+                    value:clear()
+                    return
+                end
+
                 local cat = value:get_ObjectCategory()
                 local cat_name = ace_enum.object_access_category[cat]
 
-                if cat_name == "NPC" and name_access.npc_draw_distance > 0 then
-                    local game_object = value:get_GameObject()
-                    if game_object then
-                        local transform = game_object:get_Transform()
-                        local pos = transform:get_Position()
+                if cat_name == "NPC" then
+                    if name_access.npc_draw_distance > 0 then
+                        local game_object = value:get_GameObject()
+                        if game_object then
+                            local transform = game_object:get_Transform()
+                            local pos = transform:get_Position()
 
-                        if not player_pos then
-                            player_pos = access_control:get_PlayerPosition()
-                        end
+                            if not player_pos then
+                                player_pos = access_control:get_PlayerPosition()
+                            end
 
-                        if (pos - player_pos):length() > name_access.npc_draw_distance then
-                            value:clear()
+                            if (pos - player_pos):length() > name_access.npc_draw_distance then
+                                value:clear()
+                                return
+                            end
                         end
+                    end
+
+                    if
+                        (any_npc and name_access.npc_type[ace_enum.interact_npc_type[value:getCurrentNpcType()]])
+                        or (
+                            any_gossip
+                            and name_access.gossip_type[ace_enum.interact_gossip_type[value:getCurrentGossipType()]]
+                        )
+                    then
+                        value:clear()
+                        return
                     end
                 elseif
                     cat_name == "ENEMY"
@@ -493,6 +515,7 @@ function this.hide_iteractables_post(retval)
 
                     if ace_em.is_boss(char) and not ace_em.is_paintballed_char(char) then
                         value:clear()
+                        return
                     end
                 end
 

@@ -241,6 +241,15 @@ local function draw_name_access(elem, elem_config, config_key)
         string.format("%s.%s", config_key, "object_category"),
         elem.set_object_category
     )
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_npc_type"))
+    group_things(elem, elem_config.npc_type, string.format("%s.%s", config_key, "npc_type"), elem.set_npc_type)
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_panel_type"))
+    group_things(elem, elem_config.panel_type, string.format("%s.%s", config_key, "panel_type"), elem.set_panel_type)
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_gossip_type"))
+    group_things(elem, elem_config.gossip_type, string.format("%s.%s", config_key, "gossip_type"), elem.set_gossip_type)
 end
 
 ---@param elem HudBase

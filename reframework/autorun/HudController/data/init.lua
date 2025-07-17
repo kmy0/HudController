@@ -201,6 +201,9 @@ function this.init()
     game_data.get_enum("app.ChatDef.CAMP_LOG_TYPE", ace_enum.camp_log)
     game_data.get_enum("app.ChatDef.ENEMY_LOG_TYPE", ace_enum.enemy_log)
     game_data.get_enum("app.ChatDef.MSG_TYPE", ace_enum.chat_log)
+    game_data.get_enum("app.GUI020001PanelParams.NPC_TYPE", ace_enum.interact_npc_type)
+    game_data.get_enum("app.GUI020001PanelParams.GOSSIP_TYPE", ace_enum.interact_gossip_type)
+    game_data.get_enum("app.GUI020001PanelParams.PANEL_TYPE", ace_enum.interact_panel_type)
 
     if
         util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)

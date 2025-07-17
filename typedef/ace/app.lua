@@ -247,6 +247,9 @@
 
 ---@class app.GUI020001PanelParams : via.clr.ManagedObject
 ---@field get_ObjectCategory fun(self: app.GUI020001PanelParams): app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field getCurrentNpcType fun(self: app.GUI020001PanelParams): app.GUI020001PanelParams.NPC_TYPE
+---@field getCurrentGossipType fun(self: app.GUI020001PanelParams): app.GUI020001PanelParams.GOSSIP_TYPE
+---@field getCurrentPanelType fun(self: app.GUI020001PanelParams): app.GUI020001PanelParams.PANEL_TYPE
 ---@field get_GameObject fun(self: app.GUI020001PanelParams): via.GameObject
 ---@field clear fun(self: app.GUI020001PanelParams)
 ---@field get_MyOwner fun(self: app.GUI020001PanelParams): app.GUI020001

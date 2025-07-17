@@ -42,6 +42,9 @@
 ---@field enemy_log table<app.ChatDef.ENEMY_LOG_TYPE, string>
 ---@field camp_log table<app.ChatDef.CAMP_LOG_TYPE, string>
 ---@field chat_log table<app.ChatDef.MSG_TYPE, string>
+---@field interact_npc_type table<app.GUI020001PanelParams.NPC_TYPE, string>
+---@field interact_gossip_type table<app.GUI020001PanelParams.GOSSIP_TYPE, string>
+---@field interact_panel_type table<app.GUI020001PanelParams.PANEL_TYPE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -109,6 +112,9 @@ local this = {
         enemy_log = {},
         camp_log = {},
         chat_log = {},
+        interact_gossip_type = {},
+        interact_npc_type = {},
+        interact_panel_type = {},
     },
     map = {
         hudid_to_guiid = {},

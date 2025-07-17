@@ -45,6 +45,9 @@
 ---@class app.ChatDef.ENEMY_LOG_TYPE : System.Enum
 ---@class app.ChatDef.CAMP_LOG_TYPE : System.Enum
 ---@class app.ChatDef.MSG_TYPE : System.Enum
+---@class app.GUI020001PanelParams.PANEL_TYPE : System.Enum
+---@class app.GUI020001PanelParams.NPC_TYPE : System.Enum
+---@class app.GUI020001PanelParams.GOSSIP_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

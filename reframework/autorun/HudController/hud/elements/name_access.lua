@@ -3,9 +3,15 @@
 ---@field GUI020001 app.GUI020001?
 ---@field get_config fun(): NameAccessConfig
 ---@field object_category table<string, boolean>
+---@field gossip_type table<string, boolean>
+---@field npc_type table<string, boolean>
+---@field panel_type table<string, boolean>
 
 ---@class (exact) NameAccessConfig : HudBaseConfig
 ---@field object_category table<string, boolean>
+---@field gossip_type table<string, boolean>
+---@field npc_type table<string, boolean>
+---@field panel_type table<string, boolean>
 ---@field npc_draw_distance number
 
 local data = require("HudController.data")
@@ -13,6 +19,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -32,6 +39,9 @@ function this:new(args)
     ---@cast o NameAccess
 
     o.object_category = args.object_category
+    o.npc_type = args.npc_type
+    o.gossip_type = args.gossip_type
+    o.panel_type = args.panel_type
     o.npc_draw_distance = args.npc_draw_distance
     return o
 end
@@ -40,6 +50,39 @@ end
 ---@param hide boolean
 function this:set_object_category(name_key, hide)
     self.object_category[name_key] = hide
+end
+
+---@param name_key string
+---@param hide boolean
+function this:set_panel_type(name_key, hide)
+    self.panel_type[name_key] = hide
+end
+
+---@param name_key string
+---@param hide boolean
+function this:set_gossip_type(name_key, hide)
+    self.gossip_type[name_key] = hide
+end
+
+---@param name_key string
+---@param hide boolean
+function this:set_npc_type(name_key, hide)
+    self.npc_type[name_key] = hide
+end
+
+---@return boolean
+function this:any_gossip()
+    return util_table.any(self.gossip_type)
+end
+
+---@return boolean
+function this:any_npc()
+    return util_table.any(self.npc_type)
+end
+
+---@return boolean
+function this:any_panel()
+    return util_table.any(self.panel_type)
 end
 
 ---@param val number
@@ -83,10 +126,25 @@ function this.get_config()
     base.enabled_offset = nil
     base.hud_type = mod.enum.hud_type.NAME_ACCESS
     base.object_category = { ALL = false }
+    base.gossip_type = {}
+    base.npc_type = {}
+    base.panel_type = {}
     base.npc_draw_distance = 0
 
     for _, name in pairs(ace_enum.object_access_category) do
         base.object_category[name] = false
+    end
+
+    for _, name in pairs(ace_enum.interact_gossip_type) do
+        base.gossip_type[name] = false
+    end
+
+    for _, name in pairs(ace_enum.interact_npc_type) do
+        base.npc_type[name] = false
+    end
+
+    for _, name in pairs(ace_enum.interact_panel_type) do
+        base.panel_type[name] = false
     end
 
     return base
