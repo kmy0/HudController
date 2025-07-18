@@ -163,6 +163,7 @@ this.default = {
             PREPARE_WINDOW = "Quest Prepare",
             ROD_RETICLE = "Insect Glaive Reticle",
             TRAINING_ROOM_HUD = "Training Room HUD",
+            ACTION_TUTORIAL = "Action Tutorial",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

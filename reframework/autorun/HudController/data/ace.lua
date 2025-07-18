@@ -137,6 +137,7 @@ local this = {
             "PREPARE_WINDOW",
             "ROD_RETICLE",
             "TRAINING_ROOM_HUD",
+            "ACTION_TUTORIAL",
         },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
@@ -148,6 +149,7 @@ local this = {
             PREPARE_WINDOW = "UI020800",
             ROD_RETICLE = "UI020028",
             TRAINING_ROOM_HUD = "UI600100",
+            ACTION_TUTORIAL = "UI600000",
             -- GUI020026 qte?
             -- GUI120200 some notification thing?
             -- GUI020901 placeholder?
