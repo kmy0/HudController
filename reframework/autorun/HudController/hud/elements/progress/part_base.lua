@@ -123,29 +123,38 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    if ctrl:get_ActualVisible() then
-        play_object.default.check(ctrl, true)
-    else
-        play_object.default.clear_obj(ctrl)
-        return false
-    end
+    if not self.hide then
+        -- this is unreliable
+        if ctrl:get_ActualVisible() then
+            play_object.default.check(ctrl, true)
+        else
+            -- possibly solves race between reset and this?
+            local default = play_object.default.get_default(ctrl)
+            if default and not util_table.empty(default) then
+                self:reset_ctrl(ctrl)
+            end
 
-    if self.offset_x then
-        local vec = ctrl:get_Position()
-        vec.x = self.offset_x
-        self.offset = vec
-
-        if self.clock_offset_x and self.root:is_visible_quest_timer() then
-            self.offset.x = self.offset_x + self.clock_offset_x
+            play_object.default.clear_obj(ctrl)
+            return false
         end
 
-        -- task only!
-        if self.num_offset_x then
-            local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
-            local num = play_object.control.get(taskset, "PNL_num")
+        if self.offset_x then
+            local vec = ctrl:get_Position()
+            vec.x = self.offset_x
+            self.offset = vec
 
-            if num and num:get_Visible() then
-                self.offset.x = self.offset_x + self.num_offset_x
+            if self.clock_offset_x and self.root:is_visible_quest_timer() then
+                self.offset.x = self.offset_x + self.clock_offset_x
+            end
+
+            -- task only!
+            if self.num_offset_x then
+                local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
+                local num = play_object.control.get(taskset, "PNL_num")
+
+                if num and num:get_Visible() then
+                    self.offset.x = self.offset_x + self.num_offset_x
+                end
             end
         end
     end
