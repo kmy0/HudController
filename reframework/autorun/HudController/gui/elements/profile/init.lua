@@ -175,6 +175,14 @@ local function draw_options()
         ),
         "hide_quest_end_timer"
     ) or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_skip_quest_result"),
+            string.format("mod.hud.int:%s.skip_quest_result", config.current.mod.combo_hud)
+        ),
+        "skip_quest_result"
+    ) or changed
+    util_imgui.tooltip(config.lang.tr("hud.tooltip_skip_quest_result"), true)
 
     util_imgui.separator_text(config.lang.tr("hud.category_porter"))
     changed = check_overriden(

@@ -125,13 +125,14 @@ m.hook("app.CameraManager.onQuestFlowChanged(app.cQuestFlowPartsBase)", hook.ski
 m.hook(
     "app.GUIFlowQuestResult.cContext.setup(app.cGUIQuestResultInfo.MODE, System.Boolean, System.Boolean, System.Boolean, System.Boolean, System.Boolean)",
     util.ref.capture_this,
-    hook.hide_seamless_quest_result_setup_post
+    hook.hide_quest_result_setup_post
 )
 m.hook(
     "app.GUIFlowQuestResult.Flow.SeamlessResultList.onEnter()",
-    hook.hide_seamless_quest_result_pre,
-    hook.hide_seamless_quest_result_post
+    hook.hide_quest_result_pre,
+    hook.hide_quest_result_post
 )
+m.hook("app.GUIFlowQuestResult.Flow.FixResultList.onEnter()", hook.hide_quest_result_pre, hook.hide_quest_result_post)
 m.hook(
     "ace.GUIManagerBase`2<app.GUIID.ID,app.GUIFunc.TYPE>"
         .. ".openGUI(app.GUIID.ID, System.Object, ace.GUIDef.CtrlGUIFunc`2<app.GUIID.ID,app.GUIFunc.TYPE>, "

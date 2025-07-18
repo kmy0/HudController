@@ -28,6 +28,7 @@
 ---@field monster_ignore_camp boolean
 ---@field hide_small_monsters boolean
 ---@field disable_scar boolean
+---@field skip_quest_result boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -76,6 +77,7 @@ function this.get_hud_profile_config(key, name)
         monster_ignore_camp = false,
         hide_small_monsters = false,
         disable_scar = false,
+        skip_quest_result = false,
     }
 end
 

@@ -81,6 +81,15 @@ local function force_opacity(pnl)
     pnl:set_ColorScale(scale)
 end
 
+---@return boolean?, boolean?
+local function is_result_skip()
+    local hud_config = get_hud()
+    local skip = hud_config and hud.get_hud_option("skip_quest_result")
+    local notice = get_elem_t("Notice")
+    local skip_seamless = notice and (notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"])
+    return skip, skip_seamless
+end
+
 function this.update_pre(args)
     if not is_ok() then
         return
@@ -911,37 +920,51 @@ function this.skip_quest_end_animation_pre(args)
     end
 end
 
-function this.hide_seamless_quest_result_setup_post(retval)
-    local notice = get_elem_t("Notice")
-    if notice then
-        if notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"] then
-            local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.cContext]]
-            local mode = flow:getMode()
+function this.hide_quest_result_setup_post(retval)
+    local skip, skip_seamless = is_result_skip()
+    if not skip and not skip_seamless then
+        return
+    end
 
-            if ace_enum.quest_result_mode[mode] == "SEAMLESS" then
-                flow:set_SkipReward(true)
-            end
+    local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.cContext]]
+    if skip then
+        flow:set_SkipReward(true)
+    elseif skip_seamless then
+        local mode = flow:getMode()
+        if ace_enum.quest_result_mode[mode] == "SEAMLESS" then
+            flow:set_SkipReward(true)
         end
     end
 end
 
-function this.hide_seamless_quest_result_pre(args)
-    local notice = get_elem_t("Notice")
-    if notice then
-        if notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"] then
-            util_ref.capture_this(args)
-            return sdk.PreHookResult.SKIP_ORIGINAL
-        end
+function this.hide_quest_result_pre(args)
+    local skip, skip_seamless = is_result_skip()
+    if
+        skip
+        or (
+            skip_seamless
+            and util_ref.is_a(
+                sdk.to_managed_object(args[2]) --[[@as REManagedObject]],
+                "app.GUIFlowQuestResult.Flow.SeamlessResultList"
+            )
+        )
+    then
+        util_ref.capture_this(args)
+        return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
-function this.hide_seamless_quest_result_post(retval)
-    local notice = get_elem_t("Notice")
-    if notice then
-        if notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"] then
-            local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.Flow.SeamlessResultList]]
-            flow:endFlow()
-        end
+function this.hide_quest_result_post(retval)
+    local skip, skip_seamless = is_result_skip()
+    if not skip and not skip_seamless then
+        return
+    end
+
+    local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.Flow.SeamlessResultList | app.GUIFlowQuestResult.Flow.FixResultList]]
+    if skip then
+        flow:endFlow()
+    elseif skip_seamless and util_ref.is_a(flow, "app.GUIFlowQuestResult.Flow.SeamlessResultList") then
+        flow:endFlow()
     end
 end
 

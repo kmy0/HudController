@@ -146,6 +146,8 @@ this.default = {
         tooltip_monster_ignore_camp = "Camps can’t be targeted or destroyed by monsters",
         box_hide_small_monsters = "Hide Small Monsters",
         box_disable_scar = "Disable Wounds",
+        box_skip_quest_result = "Skip Quest Result",
+        tooltip_skip_quest_result = "You still get all rewards",
     },
     hud_element = {
         combo = "Hud Element",

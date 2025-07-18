@@ -363,6 +363,9 @@
 ---@class app.GUIFlowQuestResult.Flow.SeamlessResultList : app.cGUIFlowBaseApp
 ---@field endFlow fun(self: app.GUIFlowQuestResult.Flow.SeamlessResultList)
 
+---@class app.GUIFlowQuestResult.Flow.FixResultList : app.cGUIFlowBaseApp
+---@field endFlow fun(self: app.GUIFlowQuestResult.Flow.FixResultList)
+
 ---@class app.cGUI060000Recommend : app.cGUIPartsBaseApp
 ---@field _RecommendSignParts System.Array<app.cGUI060000Recommend.cRecommendNoticeSign>
 

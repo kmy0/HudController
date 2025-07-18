@@ -32,6 +32,7 @@ local this = {
             monster_ignore_camp = "box_monster_ignore_camp",
             hide_small_monsters = "box_hide_small_monsters",
             disable_scar = "box_disable_scar",
+            skip_quest_result = "box_skip_quest_result",
         },
     },
     initialized = false,
