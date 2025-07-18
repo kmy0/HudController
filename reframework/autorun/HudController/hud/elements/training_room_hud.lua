@@ -111,11 +111,7 @@ end
 
 ---@return app.GUI600100?
 function this:get_GUI600100()
-    if not self.GUI600100 then
-        self.GUI600100 = util_game.get_component_any("app.GUI600100")
-    end
-
-    return self.GUI600100
+    return util_game.get_component_any("app.GUI600100")
 end
 
 ---@return via.gui.Control?
