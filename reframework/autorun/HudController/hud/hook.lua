@@ -1216,11 +1216,4 @@ function this.disable_scar_state_pre(args)
     end
 end
 
-function this.disabled_scar_post(retval)
-    local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("disable_scar") then
-        return false
-    end
-end
-
 return this
