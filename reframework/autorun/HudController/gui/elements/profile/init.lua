@@ -282,7 +282,7 @@ local function draw_elements()
             string.format("mod.hud.int:%s.elements.%s", config.current.mod.combo_hud, elem_config.name_key)
         local start_pos = imgui.get_cursor_screen_pos().y
 
-        util_imgui.dummy_button(" ⸽⸽##" .. config_key, { 14, 18 })
+        util_imgui.dummy_button(" ⸽⸽##" .. config_key, { 16, 18 })
         if not drag and imgui.is_item_hovered() and imgui.is_mouse_down(0) then
             drag = elem_config
         end
