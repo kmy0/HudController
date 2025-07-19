@@ -1293,6 +1293,7 @@ function this.disable_focus_turn_pre(args)
             local dodge = ace_map.wp_action_to_index["Dodge"]
             action_id._Category = dodge.category
             action_id._Index = dodge.index
+            act_controler:call("changeActionRequest(ace.ACTION_ID)", action_id)
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
