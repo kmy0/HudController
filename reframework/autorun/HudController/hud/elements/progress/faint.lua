@@ -42,6 +42,8 @@ end
 ---@return ProgressPartTaskFaintConfig
 function this.get_config()
     local base = part_task.get_config() --[[@as ProgressPartTaskFaintConfig]]
+    base.enabled_offset = false
+    base.offset = { x = 0, y = 0 }
     base.name_key = "faint"
     return base
 end

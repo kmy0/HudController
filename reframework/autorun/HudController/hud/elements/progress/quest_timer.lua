@@ -15,7 +15,6 @@
 --- }
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local timer = require("HudController.hud.elements.progress.timer")
 
@@ -99,6 +98,8 @@ function this.get_config()
     local base = timer.get_config() --[[@as ProgressQuestTimerConfig]]
     base.name_key = "quest_timer"
     local children = base.children
+    base.enabled_offset = false
+    base.offset = { x = 0, y = 0 }
 
     children.background = { name_key = "background", hide = false }
     return base

@@ -131,22 +131,24 @@ function this:_write(ctrl)
         return false
     end
 
-    if self.offset_x then
-        local vec = ctrl:get_Position()
-        vec.x = self.offset_x
-        self.offset = vec
+    if not self:get_current_config().enabled_offset then
+        if self.offset_x then
+            local vec = ctrl:get_Position()
+            vec.x = self.offset_x
+            self.offset = vec
 
-        if self.clock_offset_x and self.root:is_visible_quest_timer() then
-            self.offset.x = self.offset_x + self.clock_offset_x
-        end
+            if self.clock_offset_x and self.root:is_visible_quest_timer() then
+                self.offset.x = self.offset_x + self.clock_offset_x
+            end
 
-        -- task only!
-        if self.num_offset_x then
-            local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
-            local num = play_object.control.get(taskset, "PNL_num")
+            -- task only!
+            if self.num_offset_x then
+                local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
+                local num = play_object.control.get(taskset, "PNL_num")
 
-            if num and num:get_Visible() then
-                self.offset.x = self.offset_x + self.num_offset_x
+                if num and num:get_Visible() then
+                    self.offset.x = self.offset_x + self.num_offset_x
+                end
             end
         end
     end

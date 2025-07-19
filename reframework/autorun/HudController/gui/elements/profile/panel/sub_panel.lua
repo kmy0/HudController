@@ -500,6 +500,8 @@ local function draw_progress_part(elem, elem_config, config_key)
     separator_progress_part:refresh(elem_config)
     local changed = false
 
+    imgui.begin_disabled(elem_config.enabled_offset == true)
+
     if elem_config.enabled_offset_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_offset_x",
@@ -562,6 +564,8 @@ local function draw_progress_part(elem, elem_config, config_key)
         imgui.end_disabled()
         separator_progress_part:draw()
     end
+
+    imgui.end_disabled()
 end
 
 ---@param elem HudBase
