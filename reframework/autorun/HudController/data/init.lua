@@ -161,6 +161,7 @@ function this.get_wp_action()
         pairs(game_data.get_data("app.WpCommonAction.SetID") --[[@as table<string, ace.ACTION_ID>]])
     do
         ace_map.wp_action_to_index[name] = { category = action_id._Category, index = action_id._Index }
+        ace_map.key_to_wp_action_name[string.format("%s:%s", action_id._Category, action_id._Index)] = name
     end
 end
 

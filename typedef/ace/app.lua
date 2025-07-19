@@ -1,7 +1,6 @@
 ---@meta
 
 ---@class app.AppBehavior : via.Behavior
----@class app.CharacterBase : app.AppBehavior
 ---@class app.cGameContext : via.clr.ManagedObject
 ---@class app.cGameContextHolder : via.clr.ManagedObject
 ---@class app.AttackAreaResult : via.clr.ManagedObject
@@ -28,6 +27,7 @@
 ---@class app.MissionGuideGUIParts.TaskPanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.mcGimmickBreak : app.mcGimmick
 ---@class app.GimmickBaseApp : ace.GimmickBase
+---@class app.cActionController : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -460,3 +460,6 @@
 
 ---@class app.mcGimmick : ace.mcGimmickBase
 ---@field get_OwnerGimmick fun(self: app.mcGimmick): app.GimmickBaseApp
+
+---@class app.CharacterBase : app.AppBehavior
+---@field get_BaseActionController fun(self: app.CharacterBase): app.cActionController

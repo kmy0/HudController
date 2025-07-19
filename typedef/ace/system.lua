@@ -2,7 +2,7 @@
 
 ---@class System.Object : via.clr.ManagedObject
 ---@class System.Reflection.MemberInfo : via.clr.ManagedObject
----@class System.ValueType : via.clr.ManagedObject
+---@class System.ValueType : ValueType, via.clr.ManagedObject
 ---@class System.UInt32 : integer, System.ValueType
 ---@class System.Int32 : integer, System.ValueType
 ---@class System.UInt16 : integer, System.ValueType

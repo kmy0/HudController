@@ -1276,8 +1276,23 @@ function this.disable_focus_turn_pre(args)
     if hud_config and hud.get_hud_option("disable_focus_turn") then
         local action_id = sdk.to_valuetype(args[4], "ace.ACTION_ID") --[[@as ace.ACTION_ID]]
         data.get_wp_action()
-        local focus_turn_id = ace_map.wp_action_to_index["WP_STEP_SP_ON"]
-        if focus_turn_id.category == action_id._Category and focus_turn_id.index == action_id._Index then
+        local key = string.format("%s:%s", action_id._Category, action_id._Index)
+        local name = ace_map.key_to_wp_action_name[key]
+
+        if not name then
+            return
+        end
+
+        if name == "WP_STEP_SP_ON" then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+
+        if name:match("Dodge") and name ~= "Dodge" then
+            local char = sdk.to_managed_object(args[2]) --[[@as app.HunterCharacter]]
+            local act_controler = char:get_BaseActionController()
+            local dodge = ace_map.wp_action_to_index["Dodge"]
+            action_id._Category = dodge.category
+            action_id._Index = dodge.index
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

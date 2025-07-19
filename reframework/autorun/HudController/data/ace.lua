@@ -62,6 +62,7 @@
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
 ---@field wp_action_to_index table<string, {category: integer, index: integer}>
+---@field key_to_wp_action_name table<string, string>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -165,6 +166,7 @@ local this = {
             UI090901 = true, -- barrels
         },
         wp_action_to_index = {},
+        key_to_wp_action_name = {},
     },
 }
 
