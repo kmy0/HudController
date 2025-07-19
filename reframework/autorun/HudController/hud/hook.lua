@@ -1158,6 +1158,7 @@ function this.hide_no_talk_npc_pre(args)
             or (no_talk and ace_npc.is_talk(npc_base) == false)
         then
             ace_npc.set_continue_flag(npc_base, rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"), true)
+            ace_npc.set_continue_flag(npc_base, rl(data.ace.enum.npc_continue_flag, "DISABLE_TALK"), true)
         end
     end
 end
