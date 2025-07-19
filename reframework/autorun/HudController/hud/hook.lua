@@ -560,7 +560,7 @@ end
 
 function this.update_porter_call_post(retval)
     local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("hide_porter") then
+    if hud_config and hud.get_hud_option("hide_porter") and not hud.get_hud_option("disable_porter_call") then
         timer.restart_key(porter.call_timer_key)
     end
 end
