@@ -776,13 +776,19 @@ function this.hide_icon_out_post(retval)
             util_game.do_something(arr, function(system_array, index, value)
                 if value then
                     local beacon = value:get_TargetBeacon()
-                    if
-                        beacon
-                        and util_ref.is_a(beacon, "app.cGUIBeaconEM")
-                        ---@cast beacon app.cGUIBeaconEM
+                    if not beacon or not util_ref.is_a(beacon, "app.cGUIBeaconEM") then
+                        return
+                    end
 
-                        and not ace_em.is_paintballed_ctx(beacon:getGameContext())
-                    then
+                    ---@cast beacon app.cGUIBeaconEM
+                    local ctx = beacon:getGameContext()
+                    local char = ace_em.ctx_to_char(ctx)
+
+                    if not char then
+                        return
+                    end
+
+                    if ace_em.is_boss(char) and not ace_em.is_paintballed_ctx(ctx) then
                         value:setVisible(false)
                     end
                 end
@@ -832,7 +838,9 @@ function this.get_near_monsters_pre(args)
         util_game.do_something(em_arr, function(system_array, index, value)
             if (value:get_Pos() - player_pos):length() <= range then
                 local browser = value:get_Browser()
-                if browser:get_IsBoss() and ace_em.is_paintballed_ctx(browser:get_EmContext()) then
+                local ctx = browser:get_EmContext()
+                local char = ace_em.ctx_to_char(ctx)
+                if char and ace_em.is_boss(char) and ace_em.is_paintballed_ctx(ctx) then
                     table.insert(arr, value)
                 end
             end
