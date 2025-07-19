@@ -163,6 +163,7 @@ m.hook(
     "app.mcEnemyScarManager.changeState(System.Int32, app.cEmModuleScar.cScarParts.STATE, app.EnemyScar.CreateInfo, System.Boolean, System.Boolean)",
     hook.disable_scar_state_pre
 )
+m.hook("app.GUIManager.resetTitleApp()", nil, hook.reset_hud_default_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then
