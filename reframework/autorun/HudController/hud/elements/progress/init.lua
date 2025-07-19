@@ -121,9 +121,16 @@ function this:write(hudbase, gui_id, ctrl)
     end
 end
 
-function this:clear_default()
-    self:reset()
-    play_object.default.clear_obj("GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00")
+---@param key HudBaseWriteKey
+function this:reset(key)
+    if not self.initialized then
+        return
+    end
+
+    hud_base.reset(self, key)
+    if not key then
+        play_object.default.clear_obj("GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00")
+    end
 end
 
 ---@return boolean

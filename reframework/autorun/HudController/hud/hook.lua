@@ -1258,7 +1258,7 @@ function this.reset_progress_default_pre(args)
 
     if progress then
         if progress_reset_arr or progress:get_GUI020018()._MissionDuplicatePanelDataList:get_Count() > 0 then
-            progress:clear_default()
+            progress:reset()
             progress_reset_arr = false
         end
     end

@@ -117,16 +117,19 @@ end
 function this.clear()
     this.by_path = {}
     this.by_obj = {}
-    this.path_to_obj = {}
     json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
 end
 
 ---@param path string
 function this.clear_obj(path)
-    for p, obj in pairs(this.path_to_obj) do
+    for p in pairs(this.by_path) do
         if p:match(path) then
             this.by_path[p] = nil
-            this.by_obj[obj] = nil
+            local obj = this.path_to_obj[p]
+            if obj then
+                this.by_obj[obj] = nil
+            end
+            this.path_to_obj[p] = nil
         end
     end
 
