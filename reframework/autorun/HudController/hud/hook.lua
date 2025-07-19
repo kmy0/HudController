@@ -723,7 +723,7 @@ function this.no_hide_ammo_slider_parts_pre(args)
         -- not sure how else deal with it
         if GUI020007:get_IsRapidMode() then
             local pnl_slider = GUI020007:get__PanelBulletSlider()
-            local pnl_pat = play_object.control.get_parent(pnl_slider, "PNL_Pat00")
+            local pnl_pat = play_object.control.get_parent(pnl_slider, "PNL_Pat00") --[[@as via.gui.Control]]
             local pnl_change = play_object.control.get(pnl_pat, "PNL_change") --[[@as via.gui.Control]]
 
             force_opacity(pnl_change)
@@ -1079,7 +1079,7 @@ function this.set_control_global_pos_post(retval)
     local GUI020014 = util_ref.get_this() --[[@as app.GUI020014]]
     if GUI020014 then
         local control_guide00 = GUI020014:get__PNL_ControlGuide00()
-        local pat = play_object.control.get_parent(control_guide00, "PNL_Pat00")
+        local pat = play_object.control.get_parent(control_guide00, "PNL_Pat00") --[[@as via.gui.Control]]
 
         local pat_default = play_object.default.get_default(pat)
         if not pat_default then

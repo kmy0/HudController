@@ -232,7 +232,7 @@ function this:_init_slider_appear_open(args)
     )
     -- stops input animations for mantle
     self.children.mantle_state = hud_child:new(args.children.mantle_state, self, function(s, hudbase, gui_id, ctrl)
-        ctrl = play_object.control.get_parent(ctrl, "PNL_Scale")
+        ctrl = play_object.control.get_parent(ctrl, "PNL_Scale") --[[@as via.gui.Control]]
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.mantle_state)
     end, function(s, ctrl)
         play_object.default.check(ctrl)

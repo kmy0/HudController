@@ -274,7 +274,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
             args.children.text.children["text" .. i],
             o.children.text,
             function(s, hudbase, gui_id, ctrl)
-                local pallet = play_object.control.get_parent(ctrl, "PNL_PalletInOut")
+                local pallet = play_object.control.get_parent(ctrl, "PNL_PalletInOut") --[[@as via.gui.Control]]
                 local icl = play_object.control.get(pallet, ctrl_args.icl[1][1]) --[[@as via.gui.Control]]
                 local scg = play_object.control.get(icl, "SCG_PS_" .. i) --[[@as via.gui.Control]]
                 local ps = play_object.control.get(scg, "ITM_PS_" .. i) --[[@as via.gui.Control]]

@@ -211,7 +211,7 @@ function this:_text_reset(obj, key)
         p:set_PlayState(state)
     end
 
-    local p = play_object.control.get_parent(obj, "PNL_TextForDesign", true)
+    p = play_object.control.get_parent(obj, "PNL_TextForDesign", true)
     if p then
         p:set_PlayState("DEFAULT")
     end

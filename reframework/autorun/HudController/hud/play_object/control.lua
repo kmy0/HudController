@@ -117,11 +117,11 @@ function this.top(ctrl)
     return ret
 end
 
----@overload fun(ctrl: PlayObject, parent_name: string, strict: true): via.gui.Control?
----@overload fun(ctrl: PlayObject, parent_name: string, strict: false | nil): via.gui.Control
+---@overload fun(ctrl: PlayObject, parent_name: string?, strict: true): via.gui.Control?
+---@overload fun(ctrl: PlayObject, parent_name: string?, strict: false | nil): via.gui.Control
 ---@param ctrl PlayObject
----@param parent_name string
----@param strict boolean
+---@param parent_name string?
+---@param strict boolean?
 ---@return via.gui.Control?
 function this.get_parent(ctrl, parent_name, strict)
     local ret = ctrl
@@ -134,6 +134,9 @@ function this.get_parent(ctrl, parent_name, strict)
         end
 
         ret = parent --[[@as via.gui.Control]]
+        if not parent_name then
+            return ret
+        end
 
         if ret:get_Name() == parent_name then
             break
