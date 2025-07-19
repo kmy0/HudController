@@ -99,6 +99,14 @@ function this:set_align_left(align_left)
     end
 end
 
+function this:any()
+    return part_base.any(self)
+end
+
+function this:any_gui()
+    return part_base.any_gui(self)
+end
+
 ---@protected
 ---@param ctrl via.gui.Text
 ---@return boolean
