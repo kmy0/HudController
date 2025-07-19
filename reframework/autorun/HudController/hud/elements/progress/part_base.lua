@@ -3,6 +3,7 @@
 ---@field clock_offset_x number?
 ---@field num_offset_x number?
 ---@field root Progress
+---@field hide nil
 ---@field ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): ProgressPartBaseConfig
@@ -15,6 +16,7 @@
 ---@field enabled_clock_offset_x boolean?
 ---@field enabled_num_offset_x boolean?
 ---@field num_offset_x number?
+---@field hide nil
 
 ---@class (exact) ProgressPartBaseDefault : HudChildDefault
 ---@class (exact) ProgressPartBaseDefaultOverwrite : HudChildDefaultOverwrite
@@ -23,11 +25,13 @@
 ---@field offset_x number?
 ---@field clock_offset_x number?
 ---@field num_offset_x number?
+---@field hide nil
 
 ---@class (exact) ProgressPartBaseProperties : {[ProgressPartBaseProperty]: boolean}, HudChildProperties
 ---@field offset_x boolean
 ---@field clock_offset_x boolean
 ---@field num_offset_x boolean
+---@field hide nil
 
 ---@alias ProgressPartBaseProperty "offset_x" | "clock_offset_x" | "num_offset_x"
 ---@alias ProgressPartBaseWriteKey ProgressPartBaseProperty | HudChildProperties
@@ -123,38 +127,26 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    if not self.hide then
-        -- this is unreliable
-        if ctrl:get_ActualVisible() then
-            play_object.default.check(ctrl, true)
-        else
-            -- possibly solves race between reset and this?
-            local default = play_object.default.get_default(ctrl)
-            if default and not util_table.empty(default) then
-                self:reset_ctrl(ctrl)
-            end
+    if not ctrl:get_ActualVisible() then
+        return false
+    end
 
-            play_object.default.clear_obj(ctrl)
-            return false
+    if self.offset_x then
+        local vec = ctrl:get_Position()
+        vec.x = self.offset_x
+        self.offset = vec
+
+        if self.clock_offset_x and self.root:is_visible_quest_timer() then
+            self.offset.x = self.offset_x + self.clock_offset_x
         end
 
-        if self.offset_x then
-            local vec = ctrl:get_Position()
-            vec.x = self.offset_x
-            self.offset = vec
+        -- task only!
+        if self.num_offset_x then
+            local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
+            local num = play_object.control.get(taskset, "PNL_num")
 
-            if self.clock_offset_x and self.root:is_visible_quest_timer() then
-                self.offset.x = self.offset_x + self.clock_offset_x
-            end
-
-            -- task only!
-            if self.num_offset_x then
-                local taskset = play_object.control.get_parent(ctrl, "PNL_taskSet", true) --[[@as via.gui.Control]]
-                local num = play_object.control.get(taskset, "PNL_num")
-
-                if num and num:get_Visible() then
-                    self.offset.x = self.offset_x + self.num_offset_x
-                end
+            if num and num:get_Visible() then
+                self.offset.x = self.offset_x + self.num_offset_x
             end
         end
     end
@@ -181,7 +173,6 @@ end
 function this.get_config(name_key)
     return {
         name_key = name_key,
-        hide = false,
         enabled_offset_x = false,
         offset_x = 0,
         enabled_clock_offset_x = false,

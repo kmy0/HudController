@@ -4,7 +4,6 @@ local data = require("HudController.data")
 local m = require("HudController.util.ref.methods")
 local util_game = require("HudController.util.game")
 local util_misc = require("HudController.util.misc")
-local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local ace_enum = data.ace.enum
@@ -14,6 +13,8 @@ local this = {
     by_path = {},
     ---@type table<PlayObject, HudBaseDefault>
     by_obj = {},
+    ---@type table<string, PlayObject>
+    path_to_obj = {},
     boot_time = util_misc.get_boot_time(),
 }
 
@@ -116,35 +117,30 @@ end
 function this.clear()
     this.by_path = {}
     this.by_obj = {}
+    this.path_to_obj = {}
     json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
 end
 
----@param obj PlayObject
-function this.clear_obj(obj)
-    if this.by_obj[obj] and util_table.empty(this.by_obj[obj]) then
-        return
-    end
-
-    ---@diagnostic disable-next-line: missing-fields
-    this.by_obj[obj] = {}
-    ---@diagnostic disable-next-line: missing-fields
-    this.by_path[this.get_path(obj)] = {}
-    json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
-end
-
----@param obj PlayObject
----@param check_clear boolean?
-function this.check(obj, check_clear)
-    if this.by_obj[obj] then
-        if check_clear and util_table.empty(this.by_obj[obj]) then
+---@param path string
+function this.clear_obj(path)
+    for p, obj in pairs(this.path_to_obj) do
+        if p:match(path) then
+            this.by_path[p] = nil
             this.by_obj[obj] = nil
-            this.by_path[this.get_path(obj)] = nil
-        else
-            return
         end
     end
 
+    json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
+end
+
+---@param obj PlayObject
+function this.check(obj)
+    if this.by_obj[obj] then
+        return
+    end
+
     local path = this.get_path(obj)
+    this.path_to_obj[path] = obj
     if this.by_path[path] then
         this.by_obj[obj] = this.by_path[path]
         return

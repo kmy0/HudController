@@ -44,6 +44,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local name_main = require("HudController.hud.elements.progress.name_main")
 local name_sub = require("HudController.hud.elements.progress.name_sub")
 local part_task = require("HudController.hud.elements.progress.task")
+local play_object = require("HudController.hud.play_object")
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
 local text_part = require("HudController.hud.elements.progress.text_part")
@@ -99,6 +100,30 @@ function this:get_GUI020018()
         self.GUI020018 = accessor.MissionGuideGUI
     end
     return self.GUI020018
+end
+
+---@param hudbase app.GUIHudBase
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control
+function this:write(hudbase, gui_id, ctrl)
+    if self:any() and not self:_write(ctrl) then
+        return
+    end
+
+    if self:get_GUI020018()._DispSmallMissionTargetList:get_Count() > 0 then
+        local children_keys = self:get_children_keys()
+        for i = 1, #children_keys do
+            local child = self.children[children_keys[i]]
+            if self.write_nodes[child] then
+                child:write_child(hudbase, gui_id, ctrl)
+            end
+        end
+    end
+end
+
+function this:clear_default()
+    self:reset()
+    play_object.default.clear_obj("GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00")
 end
 
 ---@return boolean

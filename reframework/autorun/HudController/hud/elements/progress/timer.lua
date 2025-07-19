@@ -55,7 +55,7 @@ local ctrl_args = {
 function this:new(args, parent, ctrl_getter)
     local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.timer)
-    end, nil, { hide = false })
+    end)
     setmetatable(o, self)
     ---@cast o ProgressTimer
 

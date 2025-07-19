@@ -46,7 +46,7 @@ local ctrl_args = {
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.text)
-    end, nil, { hide = false })
+    end)
     setmetatable(o, self)
     ---@cast o ProgressPartTextPart
 

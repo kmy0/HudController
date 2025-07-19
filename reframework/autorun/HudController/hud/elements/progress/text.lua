@@ -103,12 +103,12 @@ end
 ---@param ctrl via.gui.Text
 ---@return boolean
 function this:_write(ctrl)
-    local ret = text._write(self, ctrl)
+    ---@diagnostic disable-next-line: invisible, param-type-mismatch
+    local ret = part_base._write(self, ctrl)
 
     --FIXME: this writes hud_child properties twice
-    if ret and part_base.any(self) then
-        ---@diagnostic disable-next-line: invisible, param-type-mismatch
-        part_base._write(self, ctrl)
+    if ret and text.any(self) then
+        text._write(self, ctrl)
     end
     return ret
 end

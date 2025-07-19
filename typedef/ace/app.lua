@@ -88,11 +88,13 @@
 ---@class app.StatusIconInfo : via.clr.ManagedObject
 ---@field get_StatusIconPanel fun(self: app.StatusIconInfo): via.gui.Panel
 
----@class app.GUI020018 : app.GUIBaseApp
+---@class app.GUI020018 : app.GUIHudBase
 ---@field _TimerPanelData app.MissionGuideGUIParts.TimePanelData
 ---@field _WatchPanelData app.MissionGuideGUIParts.WatchPanelData
 ---@field _DiePanelData app.MissionGuideGUIParts.TaskPanelData
 ---@field _BestRecordPanelData app.MissionGuideGUIParts.BestRecordData
+---@field _DispSmallMissionTargetList System.Array<app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo>
+---@field _MissionDuplicatePanelDataList System.Array<app.MissionGuideGUIParts.MissionGuidePartsBase>
 ---@field releaseSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo)
 ---@field createSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo, panel_type: app.GUI020018.GUIDE_PANEL_TYPE): app.MissionGuideGUIParts.SmallMissionPanelBase
 

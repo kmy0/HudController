@@ -5,7 +5,6 @@
 ---@class (exact) ProgressPartTaskFaintConfig : ProgressPartTaskConfig
 
 local part_task = require("HudController.hud.elements.progress.task")
-local play_object = require("HudController.hud.play_object")
 
 ---@class ProgressPartTaskFaint
 local this = {}
@@ -20,9 +19,8 @@ function this:new(args, parent)
     local o = part_task.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         local pnl = this._get_panel(s)
         if pnl then
-            local taskset = play_object.control.get(pnl, "PNL_taskSet") --[[@as via.gui.Control]]
-            parent.children.task:reset_ctrl(taskset)
-            return taskset
+            parent.children.task:reset_ctrl(pnl)
+            return pnl
         end
     end)
     setmetatable(o, self)

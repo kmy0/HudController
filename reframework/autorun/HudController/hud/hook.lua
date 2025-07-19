@@ -49,6 +49,7 @@ local ammo_slider = {
     open = false,
     item_slider_open = false,
 }
+local progress_reset_arr = false
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -1237,6 +1238,28 @@ function this.disable_scar_state_pre(args)
         then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
+    end
+end
+
+function this.reset_hud_default_post(retval)
+    play_object.default.clear()
+end
+
+function this.reset_progress_default_pre(args)
+    local progress = get_elem_t("Progress")
+
+    if progress then
+        if progress_reset_arr or progress:get_GUI020018()._MissionDuplicatePanelDataList:get_Count() > 0 then
+            progress:clear_default()
+            progress_reset_arr = false
+        end
+    end
+end
+
+function this.reset_progress_mission_pre(args)
+    local progress = get_elem_t("Progress")
+    if progress then
+        progress_reset_arr = true
     end
 end
 

@@ -40,6 +40,7 @@ local ctrl_args = {
     icon = {
         {
             {
+                "PNL_taskSet",
                 "PNL_icon",
             },
         },
@@ -47,6 +48,7 @@ local ctrl_args = {
     num = {
         {
             {
+                "PNL_taskSet",
                 "PNL_num",
             },
         },
@@ -54,6 +56,7 @@ local ctrl_args = {
     checkbox = {
         {
             {
+                "PNL_taskSet",
                 "PNL_ref_CheckBox",
             },
         },
@@ -61,6 +64,7 @@ local ctrl_args = {
     text = {
         {
             {
+                "PNL_taskSet",
                 "PNL_taskAccent",
                 "PNL_taskLighjt",
             },
@@ -71,6 +75,7 @@ local ctrl_args = {
     light = {
         {
             {
+                "PNL_taskSet",
                 "PNL_taskAccent",
                 "PNL_taskLighjt",
                 "PNL_taskLightColor",
@@ -85,29 +90,26 @@ local ctrl_args = {
 ---@return ProgressPartTask
 function this:new(args, parent, ctrl_getter)
     local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
-        return play_object.control.get_from_all(
-            play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task),
-            "PNL_taskSet"
-        )
-    end, nil, { hide = false })
+        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task)
+    end)
     setmetatable(o, self)
     ---@cast o ProgressPartTask
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
-    end, nil, { hide = false })
+    end)
     o.children.checkbox = part_base:new(args.children.checkbox, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.checkbox)
-    end, nil, { hide = false })
+    end)
     o.children.icon = part_base:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.icon)
-    end, nil, { hide = false })
+    end)
     o.children.num = part_base:new(args.children.num, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.num)
-    end, nil, { hide = false })
+    end)
     o.children.light = part_base:new(args.children.light, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.light)
-    end, nil, { hide = false })
+    end)
 
     return o
 end

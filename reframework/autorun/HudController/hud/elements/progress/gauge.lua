@@ -57,16 +57,16 @@ local ctrl_args = {
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.gauge)
-    end, nil, { hide = false })
+    end)
     setmetatable(o, self)
     ---@cast o ProgressPartGauge
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
-    end, nil, { hide = false })
+    end)
     o.children.gauge = part_base:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.gauge_)
-    end, nil, { hide = false })
+    end)
 
     return o
 end

@@ -163,6 +163,8 @@ m.hook(
     "app.mcEnemyScarManager.changeState(System.Int32, app.cEmModuleScar.cScarParts.STATE, app.EnemyScar.CreateInfo, System.Boolean, System.Boolean)",
     hook.disable_scar_state_pre
 )
+m.hook("app.MissionManager.unLoadMissionData(app.MissionIDList.ID)", hook.reset_progress_mission_pre)
+m.hook("app.MissionManager.unLoadAllMissionData()", hook.reset_progress_default_pre)
 m.hook("app.GUIManager.resetTitleApp()", nil, hook.reset_hud_default_post)
 
 re.on_draw_ui(function()
