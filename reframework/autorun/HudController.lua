@@ -165,6 +165,11 @@ m.hook(
 m.hook("app.MissionManager.unLoadMissionData(app.MissionIDList.ID)", hook.reset_progress_mission_pre)
 m.hook("app.MissionManager.unLoadAllMissionData()", hook.reset_progress_default_pre)
 m.hook("app.GUIManager.resetTitleApp()", nil, hook.reset_hud_default_post)
+m.hook(
+    "app.HunterCharacter.changeActionRequest(app.AppActionDef.LAYER, ace.ACTION_ID, System.Boolean)",
+    hook.disable_focus_turn_pre
+)
+m.hook("app.HunterCharacter.isEnableAimTurn()", nil, hook.disable_focus_turn_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

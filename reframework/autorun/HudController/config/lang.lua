@@ -148,6 +148,7 @@ this.default = {
         box_disable_scar = "Disable Wounds",
         box_skip_quest_result = "Skip Quest Result",
         tooltip_skip_quest_result = "You still get all rewards",
+        box_disable_focus_turn = "Disable Focus Mode Aim",
     },
     hud_element = {
         combo = "Hud Element",

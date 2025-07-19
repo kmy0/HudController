@@ -67,6 +67,13 @@ local function draw_options()
         ),
         "disable_area_intro"
     ) or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_disable_focus_turn"),
+            string.format("mod.hud.int:%s.disable_focus_turn", config.current.mod.combo_hud)
+        ),
+        "disable_focus_turn"
+    ) or changed
 
     util_imgui.separator_text(config.lang.tr("hud.category_npc"))
     changed = check_overriden(

@@ -55,6 +55,26 @@ function this.iter_fields(type_def_name, as_string, ignore_values)
 end
 
 ---@param type_def_name string
+---@return table<string, any>
+function this.get_data(type_def_name)
+    local ret = {}
+    local co = coroutine.create(this.iter_fields)
+    local status = true
+    ---@type integer
+    local data
+    ---@type integer | string
+    local name
+    while status do
+        status, name, data = coroutine.resume(co, type_def_name)
+        if name and data then
+            ret[name] = data
+        end
+    end
+
+    return ret
+end
+
+---@param type_def_name string
 ---@param t table
 ---@param as_string boolean?
 ---@param ignore_values string[]?

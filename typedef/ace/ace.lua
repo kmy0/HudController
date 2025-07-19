@@ -100,3 +100,7 @@
 ---@class ace.cMouseKeyboardInfo : via.clr.ManagedObject
 ---@field isOn fun(self: ace.cMouseKeyboardInfo, key: ace.ACE_MKB_KEY.INDEX): System.Boolean
 ---@field get_MousePos fun(self: ace.cMouseKeyboardInfo): via.Point
+
+---@class ace.ACTION_ID : System.ValueType
+---@field _Category System.Int32
+---@field _Index System.Int32

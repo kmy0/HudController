@@ -1271,4 +1271,23 @@ function this.reset_progress_mission_pre(args)
     end
 end
 
+function this.disable_focus_turn_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("disable_focus_turn") then
+        local action_id = sdk.to_valuetype(args[4], "ace.ACTION_ID") --[[@as ace.ACTION_ID]]
+        data.get_wp_action()
+        local focus_turn_id = ace_map.wp_action_to_index["WP_STEP_SP_ON"]
+        if focus_turn_id.category == action_id._Category and focus_turn_id.index == action_id._Index then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
+function this.disable_focus_turn_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("disable_focus_turn") then
+        return false
+    end
+end
+
 return this

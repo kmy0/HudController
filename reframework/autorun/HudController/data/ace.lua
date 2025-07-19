@@ -61,6 +61,7 @@
 ---@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
+---@field wp_action_to_index table<string, {category: integer, index: integer}>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -163,6 +164,7 @@ local this = {
         guiid_ignore = {
             UI090901 = true, -- barrels
         },
+        wp_action_to_index = {},
     },
 }
 
