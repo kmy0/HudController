@@ -86,9 +86,9 @@ end
 ---@param label string
 ---@param size_object Vector2f|Vector3f|Vector4f|number[]?
 function this.dummy_button(label, size_object)
-    imgui.push_style_color(21, 0)
-    imgui.push_style_color(22, 0)
-    imgui.push_style_color(23, 0)
+    imgui.push_style_color(21, 4282400832)
+    imgui.push_style_color(22, 4282400832)
+    imgui.push_style_color(23, 4282400832)
     imgui.button(label, size_object)
     imgui.pop_style_color(3)
 end
