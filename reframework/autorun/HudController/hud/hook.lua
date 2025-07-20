@@ -91,6 +91,21 @@ local function is_result_skip()
     return skip, skip_seamless
 end
 
+---@param game_object via.GameObject?
+---@return boolean?
+local function is_hide_enemy_access(game_object)
+    if not game_object then
+        return
+    end
+
+    local char = ace_em.get_char_base(game_object)
+    if not char then
+        return
+    end
+
+    return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
+end
+
 function this.update_pre(args)
     if not is_ok() then
         return
@@ -460,6 +475,7 @@ end
 
 function this.hide_iteractables_post(retval)
     local name_access = get_elem_t("NameAccess")
+    local hud_config = get_hud()
     if name_access and (not name_access.hide or hud.get_hud_option("hide_monster_icon")) then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
@@ -479,7 +495,6 @@ function this.hide_iteractables_post(retval)
 
                 local cat = value:get_ObjectCategory()
                 local cat_name = ace_enum.object_access_category[cat]
-
                 if cat_name == "NPC" then
                     if name_access.npc_draw_distance > 0 then
                         local game_object = value:get_GameObject()
@@ -512,26 +527,24 @@ function this.hide_iteractables_post(retval)
                     cat_name == "ENEMY"
                     and not name_access.object_category[cat_name]
                     and hud.get_hud_option("hide_monster_icon")
+                    and is_hide_enemy_access(value:get_GameObject())
                 then
-                    local game_object = value:get_GameObject()
-                    if not game_object then
-                        return
-                    end
-
-                    local char = ace_em.get_char_base(game_object)
-                    if not char then
-                        return
-                    end
-
-                    if ace_em.is_boss(char) and not ace_em.is_paintballed_char(char) then
-                        value:clear()
-                        return
-                    end
+                    value:clear()
+                    return
                 end
 
                 if name_access.object_category[cat_name] then
                     value:clear()
                 end
+            end
+        end)
+    elseif hud_config and hud.get_hud_option("hide_monster_icon") then
+        local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
+        util_game.do_something(access_control:get_AccessIconInfos(), function(system_array, index, value)
+            local cat = value:get_ObjectCategory()
+            local cat_name = ace_enum.object_access_category[cat]
+            if cat_name == "ENEMY" and is_hide_enemy_access(value:get_GameObject()) then
+                value:clear()
             end
         end)
     end
