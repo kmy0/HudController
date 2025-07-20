@@ -1,9 +1,11 @@
 ---@class (exact) NameOther : HudBase
 ---@field get_config fun(): NameOtherConfig
 ---@field nameplate_type table<string, boolean>
+---@field pl_draw_distance number
 
 ---@class (exact) NameOtherConfig : HudBaseConfig
 ---@field nameplate_type table<string, boolean>
+---@field pl_draw_distance number
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
@@ -27,9 +29,14 @@ function this:new(args)
     ---@cast o NameOther
 
     o.nameplate_type = args.nameplate_type
+    o.pl_draw_distance = args.pl_draw_distance
     return o
 end
 
+---@param val number
+function this:set_pl_draw_distance(val)
+    self.pl_draw_distance = val
+end
 ---@param name_key string
 ---@param hide boolean
 function this:set_nameplate_type(name_key, hide)
@@ -42,6 +49,7 @@ function this.get_config()
 
     base.hud_type = mod.enum.hud_type.NAME_OTHER
     base.nameplate_type = { ALL = false }
+    base.pl_draw_distance = 0
 
     for _, name in pairs(ace_enum.nameplate_type) do
         base.nameplate_type[name] = false

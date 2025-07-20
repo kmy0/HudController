@@ -666,10 +666,19 @@ function this.hide_nameplate_post(retval)
             return false
         end
 
-        local GUI020016 = util_ref.get_this() --[[@as app.GUI020016PartsBase]]
-        local type = GUI020016:get_Type()
+        local GUI020016Part = util_ref.get_this() --[[@as app.GUI020016PartsBase]]
+        local type = GUI020016Part:get_Type()
         if name_other.nameplate_type[ace_enum.nameplate_type[type]] then
             return false
+        end
+
+        if name_other.pl_draw_distance > 0 and ace_enum.nameplate_type[type] == "PL" then
+            ---@cast GUI020016Part app.GUI020016PartsPlayer
+            local master_pos = ace_player.get_master_pos_cached()
+            local pl_pos = ace_player.get_pos_cached(GUI020016Part._PlayerManageInfo)
+            if (master_pos - pl_pos):length() > name_other.pl_draw_distance then
+                return false
+            end
         end
     end
 end

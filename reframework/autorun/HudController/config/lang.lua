@@ -190,6 +190,7 @@ this.default = {
             category_npc_behavior = "NPC Behavior",
             category_numbers_behavior = "Numbers Behavior",
             category_slinger_behavior = "Slinger Behavior",
+            category_pl_behavior = "Player Behavior",
             category_npc_type = "NPC Type",
             category_gossip_type = "Gossip Type",
             category_panel_type = "Panel Type",

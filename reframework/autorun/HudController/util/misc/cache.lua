@@ -1,5 +1,5 @@
 ---@class (exact) Cache
----@field memoize fun(func: (fun(...): any), predicate: (fun(cached_value: any): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
+---@field memoize fun(func: (fun(...): any), predicate: (fun(cached_value: any, key: any?): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
 ---@field clear_all fun()
 ---@field protected _map table<any, any>
 
@@ -50,7 +50,7 @@ function this:clear()
 end
 
 ---@param func fun(...): any
----@param predicate (fun(cached_value: any): boolean)?
+---@param predicate (fun(cached_value: any, key: any?): boolean)?
 ---@param do_hash boolean?
 ---@param deep_hash_table boolean?
 ---@return fun(...): any
@@ -74,7 +74,7 @@ function this.memoize(func, predicate, do_hash, deep_hash_table)
 
         local cached = cache:get(key)
 
-        if cached ~= nil and (not predicate or (predicate and predicate(cached))) then
+        if cached ~= nil and (not predicate or (predicate and predicate(cached, key))) then
             return cached
         end
 

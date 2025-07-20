@@ -463,3 +463,7 @@
 
 ---@class app.CharacterBase : app.AppBehavior
 ---@field get_BaseActionController fun(self: app.CharacterBase): app.cActionController
+---@field get_Pos fun(self: app.CharacterBase): Vector3f
+
+---@class app.GUI020016PartsPlayer : app.GUI020016PartsBase
+---@field _PlayerManageInfo app.cPlayerManageInfo

@@ -4,7 +4,7 @@
 
 ---@class (exact) LRU : Cache
 ---@field max_size integer
----@field memoize fun(func: (fun(...): any), size: integer, predicate: (fun(cached_value: any): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
+---@field memoize fun(func: (fun(...): any), size: integer, predicate: (fun(cached_value: any, key: any?): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
 ---@field protected _size integer
 ---@field protected _map table<any, LRUTuple>
 ---@field protected _newest LRUTuple?
@@ -126,7 +126,7 @@ end
 
 ---@param func fun(...): any
 ---@param size integer
----@param predicate (fun(cached_value: any): boolean)?
+---@param predicate (fun(cached_value: any, key: any?): boolean)?
 ---@param do_hash boolean?
 ---@param deep_hash_table boolean?
 ---@return fun(...): any
@@ -149,7 +149,7 @@ function this.memoize(func, size, predicate, do_hash, deep_hash_table)
         end
 
         local cached = _cache:get(key)
-        if cached ~= nil and (not predicate or (predicate and predicate(cached))) then
+        if cached ~= nil and (not predicate or (predicate and predicate(cached, key))) then
             return cached
         end
 

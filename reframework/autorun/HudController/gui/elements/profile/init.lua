@@ -320,8 +320,8 @@ local function draw_elements()
 
         if header then
             panel.draw(elem, elem_config, config_key)
-            imgui.spacing()
         end
+        imgui.spacing()
 
         if drag == elem_config then
             elem_pos[elem_config] = imgui.get_mouse().y
