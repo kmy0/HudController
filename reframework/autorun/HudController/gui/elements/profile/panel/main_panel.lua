@@ -339,6 +339,31 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_sharpness(elem, elem_config, config_key)
+    ---@cast elem_config SharpnessConfig
+    ---@cast elem Sharpness
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_state_behavior"))
+    local item_config_key = config_key .. ".state"
+    local config_value = config.get(item_config_key)
+    if
+        set.slider_int(
+            gui_util.tr("hud_element.entry.state"),
+            item_config_key,
+            -1,
+            #state.sharpnes_state - 1,
+            (config_value == -1 and config.lang.tr("hud.option_disable"))
+                or config.lang.tr("hud_element.entry." .. state.sharpnes_state[config_value + 1])
+        )
+    then
+        elem:set_state(elem_config.state)
+        config.save()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -356,5 +381,6 @@ this.funcs[mod.enum.hud_type.NAME_OTHER] = draw_name_other
 this.funcs[mod.enum.hud_type.AMMO] = draw_ammo
 this.funcs[mod.enum.hud_type.RADIAL] = draw_radial
 this.funcs[mod.enum.hud_type.SLINGER_RETICLE] = draw_slinger_reticle
+this.funcs[mod.enum.hud_type.SHARPNESS] = draw_sharpness
 
 return this

@@ -46,6 +46,7 @@
 ---@field interact_gossip_type table<app.GUI020001PanelParams.GOSSIP_TYPE, string>
 ---@field interact_panel_type table<app.GUI020001PanelParams.PANEL_TYPE, string>
 ---@field scar_state table<app.cEmModuleScar.cScarParts.STATE, string>
+---@field sharpness_state table<app.GUI020015.DEFAULT_STATUS, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -119,6 +120,7 @@ local this = {
         interact_npc_type = {},
         interact_panel_type = {},
         scar_state = {},
+        sharpness_state = {},
     },
     map = {
         hudid_to_guiid = {},

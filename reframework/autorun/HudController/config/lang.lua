@@ -250,6 +250,10 @@ this.default = {
             size_y = "Width",
             pos_x = "Pos X",
             pos_y = "Pos Y",
+            big = "Big",
+            small = "Small",
+            category_state_behavior = "State Behavior",
+            state = "State",
         },
     },
     hud_subelement = {

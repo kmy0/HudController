@@ -1,5 +1,7 @@
 ---@class (exact) Sharpness : HudBase
 ---@field get_config fun(): SharpnessConfig
+---@field GUI020015 app.GUI020015
+---@field state integer
 ---@field children {
 --- anim_max: HudChild,
 --- background: HudChild,
@@ -10,6 +12,7 @@
 
 ---@class (exact) SharpnessConfig : HudBaseConfig
 ---@field options {AUTO_SCALING_SHARPNESS: integer}
+---@field state integer
 ---@field children {
 --- anim_max: HudChildConfig,
 --- background: HudChildConfig,
@@ -23,6 +26,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local util_game = require("HudController.util.game")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -44,6 +48,15 @@ local ctrl_args = {
                 "PNL_gaugeMode00Over",
                 "PNL_MaxLightMove",
                 "PNL_MaxLight",
+            },
+        },
+        {
+            {
+                "PNL_Pat00",
+                "PNL_allRotate",
+                "PNL_gaugeMode01Over",
+                "PNL_MaxLight",
+                "PNL_MaxLightAnim",
             },
         },
     },
@@ -123,7 +136,46 @@ function this:new(args)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
     end)
 
+    if args.state ~= -1 then
+        o:set_state(args.state)
+    else
+        o.state = args.state
+    end
+
     return o
+end
+
+---@param val integer
+function this:set_state(val)
+    if val ~= -1 then
+        self:mark_write()
+        self.state = val
+    else
+        -- no reset needed
+        self.state = val
+        self:mark_idle()
+    end
+end
+
+---@return app.GUI020015
+function this:get_GUI020015()
+    if not self.GUI020015 then
+        self.GUI020015 = util_game.get_component_any("app.GUI020015") --[[@as app.GUI020015]]
+    end
+    return self.GUI020015
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return boolean
+function this:_write(ctrl)
+    if self.state == 0 then
+        self:get_GUI020015():setGaugeModeStatus(rl(ace_enum.sharpness_state, "DEFAULT"))
+    elseif self.state == 1 then
+        self:get_GUI020015():setGaugeModeStatus(rl(ace_enum.sharpness_state, "SELECT"))
+    end
+
+    return hud_base._write(self, ctrl)
 end
 
 ---@return SharpnessConfig
@@ -132,6 +184,7 @@ function this.get_config()
     local children = base.children
     base.options.AUTO_SCALING_SHARPNESS = -1
     base.hud_type = mod.enum.hud_type.SHARPNESS
+    base.state = -1
 
     children.anim_max = { name_key = "anim_max", hide = false }
     children.frame = { name_key = "frame", hide = false }

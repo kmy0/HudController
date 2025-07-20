@@ -94,6 +94,10 @@ local this = {
         "expanded_itembar_disable_dpad",
         "expanded_itembar_disable_face",
     },
+    sharpnes_state = {
+        "small",
+        "big",
+    },
     item_decide = {
         ["option_disable"] = { value = "option_disable", sort = -1 },
         ["LIST_TRIGGER_L_UP"] = { value = "L_UP", sort = 0 },

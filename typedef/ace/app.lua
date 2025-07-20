@@ -467,3 +467,6 @@
 
 ---@class app.GUI020016PartsPlayer : app.GUI020016PartsBase
 ---@field _PlayerManageInfo app.cPlayerManageInfo
+
+---@class app.GUI020015 : app.GUIHudBase
+---@field setGaugeModeStatus fun(self: app.GUI020015, status: app.GUI020015.DEFAULT_STATUS)
