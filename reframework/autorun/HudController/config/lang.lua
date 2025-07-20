@@ -354,6 +354,8 @@ this.default = {
         best_timer = "Best Times",
         faint = "Faints",
         quest_timer = "Quest Timer",
+        next_line = "Next Line",
+        edge = "Edge",
     },
 }
 
