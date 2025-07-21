@@ -51,6 +51,10 @@ function this.get_config()
     base.name_key = "faint"
     base.children.icon = { name_key = "__icon" }
     base.children.checkbox = { name_key = "__checkbox" }
+    base.children.text.enabled_num_offset_x = nil
+    base.children.text.num_offset_x = nil
+    base.children.light.enabled_num_offset_x = nil
+    base.children.light.num_offset_x = nil
     return base
 end
 
