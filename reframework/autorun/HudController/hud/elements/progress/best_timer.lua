@@ -26,10 +26,14 @@ function this:new(args, parent)
 end
 
 ---@protected
----@return via.gui.Panel
+---@return via.gui.Panel?
 function this:_get_panel()
     local GUI020018 = self.root:get_GUI020018()
     local best = GUI020018._BestRecordPanelData
+    if not best then
+        return
+    end
+
     return best._DuplicatePanel
 end
 

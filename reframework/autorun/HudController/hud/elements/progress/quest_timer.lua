@@ -72,25 +72,11 @@ end
 ---@protected
 ---@return via.gui.Panel?
 function this:_get_panel()
-    local timer_panel = self:_get_timer()
+    local GUI020018 = self.root:get_GUI020018()
+    local timer_panel = GUI020018._TimerPanelData
     if timer_panel then
         return timer_panel._DuplicatePanel
     end
-end
-
----@protected
----@return via.gui.Panel
-function this:_get_panel_best_times()
-    local GUI020018 = self.root:get_GUI020018()
-    local best = GUI020018._BestRecordPanelData
-    return best._DuplicatePanel
-end
-
----@protected
----@return app.MissionGuideGUIParts.TimePanelData
-function this:_get_timer()
-    local GUI020018 = self.root:get_GUI020018()
-    return GUI020018._TimerPanelData
 end
 
 ---@return ProgressQuestTimerConfig
