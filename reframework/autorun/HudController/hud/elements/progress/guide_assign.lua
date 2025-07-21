@@ -92,6 +92,10 @@ function this.get_config()
     children.text = text.get_config()
     children.base = part_base.get_config("base")
     children.icon = part_base.get_config("icon")
+    children.base.enabled_clock_offset_x = nil
+    children.base.clock_offset_x = nil
+    children.icon.enabled_clock_offset_x = nil
+    children.icon.clock_offset_x = nil
 
     return base
 end

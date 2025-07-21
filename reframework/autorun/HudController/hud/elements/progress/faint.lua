@@ -26,6 +26,8 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o ProgressPartTaskFaint
 
+    o.children.checkbox.gui_ignore = true
+    o.children.icon.gui_ignore = true
     return o
 end
 
@@ -42,9 +44,13 @@ end
 ---@return ProgressPartTaskFaintConfig
 function this.get_config()
     local base = part_task.get_config() --[[@as ProgressPartTaskFaintConfig]]
+    base.enabled_clock_offset_x = nil
+    base.clock_offset_x = nil
     base.enabled_offset = false
     base.offset = { x = 0, y = 0 }
     base.name_key = "faint"
+    base.children.icon = { name_key = "__icon" }
+    base.children.checkbox = { name_key = "__checkbox" }
     return base
 end
 

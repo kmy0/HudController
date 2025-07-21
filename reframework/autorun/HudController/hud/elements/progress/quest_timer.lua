@@ -82,10 +82,13 @@ end
 ---@return ProgressQuestTimerConfig
 function this.get_config()
     local base = timer.get_config() --[[@as ProgressQuestTimerConfig]]
-    base.name_key = "quest_timer"
     local children = base.children
+
+    base.name_key = "quest_timer"
     base.enabled_offset = false
     base.offset = { x = 0, y = 0 }
+    base.enabled_clock_offset_x = nil
+    base.clock_offset_x = nil
 
     children.background = { name_key = "background", hide = false }
     return base

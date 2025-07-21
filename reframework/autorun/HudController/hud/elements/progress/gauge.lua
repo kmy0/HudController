@@ -78,6 +78,8 @@ function this.get_config()
 
     children.text = text.get_config()
     children.gauge = part_base.get_config("gauge")
+    children.gauge.enabled_clock_offset_x = nil
+    children.gauge.clock_offset_x = nil
 
     return base
 end
