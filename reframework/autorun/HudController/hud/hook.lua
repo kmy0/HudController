@@ -534,6 +534,10 @@ function this.hide_iteractables_post(retval)
                     return
                 elseif cat_name == "ENEMY" and any_enemy and not name_access.object_category[cat_name] then
                     local game_object = value:get_GameObject()
+                    if not game_object then
+                        return
+                    end
+
                     local char = ace_em.get_char_base(game_object)
                     if not char then
                         return
