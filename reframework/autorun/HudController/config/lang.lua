@@ -194,6 +194,7 @@ this.default = {
             category_npc_type = "NPC Type",
             category_gossip_type = "Gossip Type",
             category_panel_type = "Panel Type",
+            category_enemy_type = "Enemy Type",
             box_hide_slinger_empty = "Hide When Empty",
             box_enable_box = "Enable Box",
             tooltip_numbers_box = "Scales numbers position to fit inside a box. Disables Offset.",

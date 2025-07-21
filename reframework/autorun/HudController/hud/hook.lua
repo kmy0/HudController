@@ -93,7 +93,7 @@ end
 
 ---@param game_object via.GameObject?
 ---@return boolean?
-local function is_hide_enemy_access(game_object)
+local function is_hide_enemy_access_paint(game_object)
     if not game_object then
         return
     end
@@ -483,6 +483,7 @@ function this.hide_iteractables_post(retval)
         local any_panel = name_access:any_panel()
         local any_npc = name_access:any_npc()
         local any_gossip = name_access:any_gossip()
+        local any_enemy = name_access:any_enemy()
 
         util_game.do_something(access_control:get_AccessIconInfos(), function(system_array, index, value)
             if name_access.object_category["ALL"] then
@@ -527,10 +528,25 @@ function this.hide_iteractables_post(retval)
                     cat_name == "ENEMY"
                     and not name_access.object_category[cat_name]
                     and hud.get_hud_option("hide_monster_icon")
-                    and is_hide_enemy_access(value:get_GameObject())
+                    and is_hide_enemy_access_paint(value:get_GameObject())
                 then
                     value:clear()
                     return
+                elseif cat_name == "ENEMY" and any_enemy and not name_access.object_category[cat_name] then
+                    local game_object = value:get_GameObject()
+                    local char = ace_em.get_char_base(game_object)
+                    if not char then
+                        return
+                    end
+
+                    if
+                        (name_access.enemy_type["ZAKO"] and ace_em.is_small(char))
+                        or (name_access.enemy_type["ANIMAL"] and ace_em.is_animal(char))
+                        or (name_access.enemy_type["BOSS"] and ace_em.is_boss(char))
+                    then
+                        value:clear()
+                        return
+                    end
                 end
 
                 if name_access.object_category[cat_name] then
@@ -543,7 +559,7 @@ function this.hide_iteractables_post(retval)
         util_game.do_something(access_control:get_AccessIconInfos(), function(system_array, index, value)
             local cat = value:get_ObjectCategory()
             local cat_name = ace_enum.object_access_category[cat]
-            if cat_name == "ENEMY" and is_hide_enemy_access(value:get_GameObject()) then
+            if cat_name == "ENEMY" and is_hide_enemy_access_paint(value:get_GameObject()) then
                 value:clear()
             end
         end)
@@ -991,7 +1007,11 @@ function this.hide_quest_result_post(retval)
         return
     end
 
-    local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.Flow.SeamlessResultList | app.GUIFlowQuestResult.Flow.FixResultList]]
+    local flow = util_ref.get_this() --[[@as app.GUIFlowQuestResult.Flow.SeamlessResultList | app.GUIFlowQuestResult.Flow.FixResultList?]]
+    if not flow then
+        return
+    end
+
     if skip then
         flow:endFlow()
     elseif skip_seamless and util_ref.is_a(flow, "app.GUIFlowQuestResult.Flow.SeamlessResultList") then

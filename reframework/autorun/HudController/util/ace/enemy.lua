@@ -119,7 +119,18 @@ function this.is_small(char_base)
         return
     end
 
-    return ctx:get_IsZako() or ctx:get_IsAnimal()
+    return ctx:get_IsZako()
+end
+
+---@param char_base app.EnemyCharacter
+---@return boolean?
+function this.is_animal(char_base)
+    local ctx = this.get_ctx(char_base)
+    if not ctx then
+        return
+    end
+
+    return ctx:get_IsAnimal()
 end
 
 ---@param char_base app.EnemyCharacter
@@ -147,6 +158,7 @@ this.get_ctx = cache.memoize(this.get_ctx)
 this.is_boss = cache.memoize(this.is_boss)
 this.get_flags = cache.memoize(this.get_flags)
 this.is_small = cache.memoize(this.is_small)
+this.is_animal = cache.memoize(this.is_animal)
 this.ctx_to_char = cache.memoize(this.ctx_to_char)
 
 return this

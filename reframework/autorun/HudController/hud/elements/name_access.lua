@@ -6,12 +6,14 @@
 ---@field gossip_type table<string, boolean>
 ---@field npc_type table<string, boolean>
 ---@field panel_type table<string, boolean>
+---@field enemy_type table<string, boolean>
 
 ---@class (exact) NameAccessConfig : HudBaseConfig
 ---@field object_category table<string, boolean>
 ---@field gossip_type table<string, boolean>
 ---@field npc_type table<string, boolean>
 ---@field panel_type table<string, boolean>
+---@field enemy_type table<string, boolean>
 ---@field npc_draw_distance number
 
 local data = require("HudController.data")
@@ -42,6 +44,7 @@ function this:new(args)
     o.npc_type = args.npc_type
     o.gossip_type = args.gossip_type
     o.panel_type = args.panel_type
+    o.enemy_type = args.enemy_type
     o.npc_draw_distance = args.npc_draw_distance
     return o
 end
@@ -70,6 +73,12 @@ function this:set_npc_type(name_key, hide)
     self.npc_type[name_key] = hide
 end
 
+---@param name_key string
+---@param hide boolean
+function this:set_enemy_type(name_key, hide)
+    self.enemy_type[name_key] = hide
+end
+
 ---@return boolean
 function this:any_gossip()
     return util_table.any(self.gossip_type)
@@ -83,6 +92,11 @@ end
 ---@return boolean
 function this:any_panel()
     return util_table.any(self.panel_type)
+end
+
+---@return boolean
+function this:any_enemy()
+    return util_table.any(self.enemy_type)
 end
 
 ---@param val number
@@ -130,6 +144,11 @@ function this.get_config()
     base.npc_type = {}
     base.panel_type = {}
     base.npc_draw_distance = 0
+    base.enemy_type = {
+        BOSS = false,
+        ZAKO = false,
+        ANIMAL = false,
+    }
 
     for _, name in pairs(ace_enum.object_access_category) do
         base.object_category[name] = false
