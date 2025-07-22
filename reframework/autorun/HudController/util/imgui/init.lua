@@ -1,3 +1,4 @@
+local util_game = require("HudController.util.game")
 local uuid = require("HudController.util.misc.uuid")
 
 local this = {}
@@ -91,6 +92,65 @@ function this.dummy_button(label, size_object)
     imgui.push_style_color(23, 4282400832)
     imgui.button(label, size_object)
     imgui.pop_style_color(3)
+end
+
+---@param str_id string
+---@param draw_func fun()
+function this.center_h(str_id, draw_func)
+    if imgui.begin_table(str_id .. "_center_h_table", 3, 3 << 13) then
+        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 1), nil, 0.01)
+        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 2), 1 << 4)
+        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 3), nil, 0.01)
+
+        imgui.table_next_row()
+        imgui.table_set_column_index(0)
+        imgui.table_set_column_index(1)
+        draw_func()
+        imgui.table_set_column_index(2)
+        imgui.end_table()
+    end
+end
+
+---@param str_id string
+---@param text string
+---@param button_yes string
+---@param button_no string
+---@return boolean
+function this.popup_yesno(str_id, text, button_yes, button_no)
+    local ret = false
+    if imgui.begin_popup(str_id, 1 << 27) then
+        this.spacer(0, 2)
+        this.center_h(str_id .. "_popupyesno1", function()
+            imgui.text(text)
+        end)
+        this.spacer(0, 1)
+        this.center_h(str_id .. "_popupyesno2", function()
+            if imgui.button(string.format("%s##%s_yes", button_yes, str_id)) then
+                ret = true
+                imgui.close_current_popup()
+            end
+
+            imgui.same_line()
+
+            if imgui.button(string.format("%s##%s_no", button_no, str_id)) then
+                imgui.close_current_popup()
+            end
+        end)
+        this.spacer(0, 2)
+        imgui.end_popup()
+    end
+
+    return ret
+end
+
+---@param key string
+function this.open_popup(key, offset_x, offset_y)
+    offset_x = offset_x or 0
+    offset_y = offset_y or 0
+
+    local screen_center = util_game.get_screen_center()
+    imgui.set_next_window_pos(Vector2f.new(screen_center.x - offset_x, screen_center.y - offset_y))
+    imgui.open_popup(key)
 end
 
 return this

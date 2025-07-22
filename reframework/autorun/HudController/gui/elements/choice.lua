@@ -38,7 +38,18 @@ function this.draw_hud()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("hud.button_remove")) then
+        util_imgui.open_popup("hud_remove", 62, 30)
         state.input_action = nil
+    end
+
+    if
+        util_imgui.popup_yesno(
+            "hud_remove",
+            config.lang.tr("misc.text_rusure"),
+            config.lang.tr("misc.text_yes"),
+            config.lang.tr("misc.text_no")
+        )
+    then
         hud.operations.remove(config.current.mod.hud[config.current.mod.combo_hud])
         if not util_table.empty(config.current.mod.hud) then
             hud.request_hud(config.current.mod.hud[config.current.mod.combo_hud])

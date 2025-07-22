@@ -27,6 +27,14 @@ function this.get_screen_size()
     return { x = size.w, y = size.h }
 end
 
+---@return {x: number, y:number}
+function this.get_screen_center()
+    local size = this.get_screen_size()
+    size.x = size.x / 2
+    size.y = size.y / 2
+    return size
+end
+
 ---@param guid System.Guid
 ---@return string
 function this.format_guid(guid)

@@ -32,6 +32,9 @@ this.default = {
         text_second_plural = "Seconds",
         text_minute = "Minute",
         text_minute_plural = "Minutes",
+        text_yes = "Yes",
+        text_no = "No",
+        text_rusure = "Are you sure?",
     },
     menu = {
         config = {
