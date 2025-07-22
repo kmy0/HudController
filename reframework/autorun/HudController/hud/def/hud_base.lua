@@ -186,6 +186,11 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         o:set_option(option, value)
     end
 
+    if o.hud_id and ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)] == "HIDDEN" then
+        ---@diagnostic disable-next-line: param-type-mismatch
+        o:change_visibility(nil, true, "DEFAULT")
+    end
+
     o.initialized = true
     return o
 end
