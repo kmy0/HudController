@@ -1363,4 +1363,14 @@ function this.wound_state_post()
     end
 end
 
+function this.disable_porter_nav(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("disable_porter_tracking") then
+        local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
+        if target_access.Category == rl(ace_enum.target_access, "ENEMY") then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
 return this

@@ -153,6 +153,7 @@ this.default = {
         box_hide_scar = "Hide Wounds",
         box_show_scar = "Always Display Wounds",
         slider_wound_state = "Wounds",
+        box_disable_porter_tracking = "Disable Monster Tracking",
     },
     hud_element = {
         combo = "Hud Element",

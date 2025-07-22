@@ -36,6 +36,7 @@ local this = {
             disable_focus_turn = "box_disable_focus_turn",
             hide_scar = "box_hide_scar",
             show_scar = "box_show_scar",
+            disable_porter_tracking = "box_disable_porter_tracking",
         },
     },
     initialized = false,

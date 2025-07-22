@@ -47,6 +47,7 @@
 ---@field interact_panel_type table<app.GUI020001PanelParams.PANEL_TYPE, string>
 ---@field scar_state table<app.cEmModuleScar.cScarParts.STATE, string>
 ---@field sharpness_state table<app.GUI020015.DEFAULT_STATUS, string>
+---@field target_access table<app.TARGET_ACCESS_KEY.CATEGORY, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -121,6 +122,7 @@ local this = {
         interact_panel_type = {},
         scar_state = {},
         sharpness_state = {},
+        target_access = {},
     },
     map = {
         hudid_to_guiid = {},

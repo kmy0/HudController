@@ -32,6 +32,7 @@
 ---@field disable_focus_turn boolean
 ---@field hide_wounds boolean
 ---@field show_wounds boolean
+---@field disable_porter_tracking boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -84,6 +85,7 @@ function this.get_hud_profile_config(key, name)
         disable_focus_turn = false,
         hide_wounds = false,
         show_wounds = false,
+        disable_porter_tracking = false,
     }
 end
 

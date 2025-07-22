@@ -171,6 +171,10 @@ m.hook(
 )
 m.hook("app.HunterCharacter.isEnableAimTurn()", nil, hook.disable_focus_turn_post)
 m.hook("app.cEnemyLoopEffectHighlight.isActivate()", util.ref.capture_this, hook.wound_state_post)
+m.hook(
+    "app.mcPorterNavigationController.startNavigation(app.TARGET_ACCESS_KEY, System.Boolean)",
+    hook.disable_porter_nav
+)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

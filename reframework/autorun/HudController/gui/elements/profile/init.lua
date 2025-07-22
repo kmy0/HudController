@@ -267,6 +267,13 @@ local function draw_options()
         ),
         "hide_porter"
     ) or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_disable_porter_tracking"),
+            string.format("mod.hud.int:%s.disable_porter_tracking", config.current.mod.combo_hud)
+        ),
+        "disable_porter_tracking"
+    ) or changed
 
     util_imgui.separator_text(config.lang.tr("hud.category_profile"))
     changed = set.checkbox(

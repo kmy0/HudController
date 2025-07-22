@@ -475,3 +475,6 @@
 
 ---@class app.cEnemyLoopEffectHighlight : app.cEnemyEntrustMultipleLoopEffectState
 ---@field _IsAim System.Boolean
+
+---@class app.TARGET_ACCESS_KEY : System.ValueType
+---@field Category app.TARGET_ACCESS_KEY.CATEGORY
