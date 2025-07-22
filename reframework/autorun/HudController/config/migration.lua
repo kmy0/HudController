@@ -13,16 +13,37 @@ local function to_0_0_5_weapon_binds_camp(config)
     end
 end
 
+---@param config Settings
+local function to_0_0_6_objectives(config)
+    for _, profile in pairs(config.mod.hud) do
+        for key, elem in pairs(profile.elements or {}) do
+            if key ~= "PROGRESS" or not elem.children or not elem.children.timer or elem.children.quest_timer then
+                goto continue
+            end
+
+            local quest_timer_config = elem.children.timer
+            elem.children.timer = nil
+
+            quest_timer_config.name_key = "quest_timer"
+            elem.children.quest_timer = quest_timer_config
+            ::continue::
+        end
+    end
+end
+
 this.migrations = {
     ["0.0.5"] = function(config)
         to_0_0_5_weapon_binds_camp(config)
+    end,
+    ["0.0.6"] = function(config)
+        to_0_0_6_objectives(config)
     end,
 }
 
 ---@param from string?
 ---@param to string
 ---@return string[]
-local function get_funcs(from, to, check_only)
+local function get_funcs(from, to)
     from = from or "0.0.0"
 
     if from == to then
