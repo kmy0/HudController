@@ -29,6 +29,71 @@ local function check_overriden(changed, key)
     return changed
 end
 
+---@param label string
+---@param boxes string[]
+---@return boolean
+local function boxes_to_slider(label, boxes)
+    local value = 0
+    local display = config.lang.tr("hud.option_disable")
+    for i = 1, #boxes do
+        if config.get(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i])) then
+            value = i
+            display = config.lang.tr("hud.box_" .. boxes[i])
+            break
+        end
+    end
+
+    local changed, value = imgui.slider_int(label, value, 0, #boxes, display)
+    if changed then
+        for i = 1, #boxes do
+            config.set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i]), false)
+            hud.clear_overridden(boxes[i])
+        end
+
+        if value ~= 0 then
+            config.set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[value]), true)
+        end
+    end
+
+    ---@type boolean[]
+    local ov_bools = {}
+    for i = 1, #boxes do
+        local val = hud.get_overridden(boxes[i])
+        if val == nil then
+            break
+        end
+
+        table.insert(ov_bools, val)
+    end
+
+    local any_true = util_table.index(ov_bools, function(o)
+        return o == true
+    end)
+
+    if any_true then
+        imgui.same_line()
+        imgui.text(
+            string.format(
+                "(%s %s)",
+                config.lang.tr("misc.text_overridden"),
+                config.lang.tr("hud.box_" .. boxes[any_true])
+            )
+        )
+    elseif
+        not util_table.empty(ov_bools)
+        and util_table.all(ov_bools, function(o)
+            return o == false
+        end)
+    then
+        imgui.same_line()
+        imgui.text(
+            string.format("(%s %s)", config.lang.tr("misc.text_overridden"), config.lang.tr("hud.option_disable"))
+        )
+    end
+
+    return changed
+end
+
 local function draw_options()
     util_imgui.separator_text(config.lang.tr("hud.category_general"))
     local changed = check_overriden(
@@ -45,20 +110,6 @@ local function draw_options()
         ),
         "hide_subtitles"
     ) or changed
-    changed = check_overriden(
-        set.checkbox(
-            gui_util.tr("hud.box_disable_scoutflies"),
-            string.format("mod.hud.int:%s.disable_scoutflies", config.current.mod.combo_hud)
-        ),
-        "disable_scoutflies"
-    ) or changed
-
-    local box = set.checkbox(
-        gui_util.tr("hud.box_hide_danger"),
-        string.format("mod.hud.int:%s.hide_danger", config.current.mod.combo_hud)
-    )
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_danger"), true)
-    changed = check_overriden(box, "hide_danger") or changed
 
     changed = check_overriden(
         set.checkbox(
@@ -67,12 +118,27 @@ local function draw_options()
         ),
         "disable_area_intro"
     ) or changed
+
+    util_imgui.separator_text(config.lang.tr("hud.category_player"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_disable_focus_turn"),
             string.format("mod.hud.int:%s.disable_focus_turn", config.current.mod.combo_hud)
         ),
         "disable_focus_turn"
+    ) or changed
+    local box = set.checkbox(
+        gui_util.tr("hud.box_hide_danger"),
+        string.format("mod.hud.int:%s.hide_danger", config.current.mod.combo_hud)
+    )
+    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_danger"), true)
+    changed = check_overriden(box, "hide_danger") or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_disable_scoutflies"),
+            string.format("mod.hud.int:%s.disable_scoutflies", config.current.mod.combo_hud)
+        ),
+        "disable_scoutflies"
     ) or changed
 
     util_imgui.separator_text(config.lang.tr("hud.category_npc"))
@@ -102,13 +168,8 @@ local function draw_options()
     imgui.end_disabled()
 
     util_imgui.separator_text(config.lang.tr("hud.category_monster"))
-    changed = check_overriden(
-        set.checkbox(
-            gui_util.tr("hud.box_disable_scar"),
-            string.format("mod.hud.int:%s.disable_scar", config.current.mod.combo_hud)
-        ),
-        "disable_scar"
-    ) or changed
+    changed = boxes_to_slider(gui_util.tr("hud.slider_wound_state"), { "hide_scar", "show_scar", "disable_scar" })
+        or changed
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_hide_small_monsters"),

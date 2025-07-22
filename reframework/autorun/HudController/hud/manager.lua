@@ -5,6 +5,7 @@
 ---@field requested_hud HudProfileConfig?
 ---@field notify boolean
 ---@field overridden_options table<string, boolean>
+---@field overridden_options_func table<string, fun(key: string, value: boolean)>
 ---@field combat_state_frame boolean
 ---@field combat_state boolean
 
@@ -37,12 +38,26 @@ local this = {
     by_hudid = {},
     by_guiid = {},
     overridden_options = {},
+    overridden_options_func = {},
 }
 ---@class FadeCallbacks
 local fade_callbacks = {}
 local timer_key = "disable_weapon_binds"
 local out_of_combat_delay_key = "out_of_combat_delay"
 local in_combat_delay_key = "in_combat_delay"
+
+---@param key string
+---@param value boolean
+local function override_scar_option(key, value)
+    if value then
+        local t = { "hide_scar", "show_scar", "disable_scar" }
+        for _, k in pairs(t) do
+            if k ~= key then
+                this.overridden_options[k] = false
+            end
+        end
+    end
+end
 
 function fade_callbacks.switch_profile()
     this.overridden_options = {}
@@ -294,5 +309,9 @@ function this.init()
 
     return true
 end
+
+this.overridden_options_func["hide_scar"] = override_scar_option
+this.overridden_options_func["show_scar"] = override_scar_option
+this.overridden_options_func["disable_scar"] = override_scar_option
 
 return this

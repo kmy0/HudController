@@ -28,6 +28,8 @@
 ---@class app.mcGimmickBreak : app.mcGimmick
 ---@class app.GimmickBaseApp : ace.GimmickBase
 ---@class app.cActionController : via.clr.ManagedObject
+---@class app.cEnemyEntrustMultipleLoopEffectState : app.cEnemyEntrustEffectState
+---@class app.cEnemyEntrustEffectState : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -470,3 +472,6 @@
 
 ---@class app.GUI020015 : app.GUIHudBase
 ---@field setGaugeModeStatus fun(self: app.GUI020015, status: app.GUI020015.DEFAULT_STATUS)
+
+---@class app.cEnemyLoopEffectHighlight : app.cEnemyEntrustMultipleLoopEffectState
+---@field _IsAim System.Boolean

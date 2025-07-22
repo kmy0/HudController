@@ -125,6 +125,7 @@ this.default = {
         category_profile = "Profile",
         category_general = "General",
         category_monster = "Monster",
+        category_player = "Player",
         box_hide_handler = "Hide Handler",
         box_hide_danger = "Hide Danger Line",
         tooltip_hide_danger = "Hide red line indicating fatal attack",
@@ -149,6 +150,9 @@ this.default = {
         box_skip_quest_result = "Skip Quest Result",
         tooltip_skip_quest_result = "You still get all rewards",
         box_disable_focus_turn = "Disable Focus Mode Aim",
+        box_hide_scar = "Hide Wounds",
+        box_show_scar = "Always Display Wounds",
+        slider_wound_state = "Wounds",
     },
     hud_element = {
         combo = "Hud Element",

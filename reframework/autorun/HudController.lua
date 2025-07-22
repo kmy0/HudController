@@ -170,6 +170,7 @@ m.hook(
     hook.disable_focus_turn_pre
 )
 m.hook("app.HunterCharacter.isEnableAimTurn()", nil, hook.disable_focus_turn_post)
+m.hook("app.cEnemyLoopEffectHighlight.isActivate()", util.ref.capture_this, hook.wound_state_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.version)) then

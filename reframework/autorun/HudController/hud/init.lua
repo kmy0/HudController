@@ -87,6 +87,11 @@ function this.overwrite_hud_option(key)
         this.manager.overridden_options[key] = not current_hud[key]
     end
 
+    local func = this.manager.overridden_options_func[key]
+    if func then
+        func(key, this.manager.overridden_options[key])
+    end
+
     return this.manager.overridden_options[key]
 end
 

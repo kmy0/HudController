@@ -1255,13 +1255,9 @@ end
 
 function this.disable_scar_stamp_pre(args)
     local hud_config = get_hud()
-    if hud_config and hud.get_hud_option("disable_scar") then
+    if hud_config and (hud.get_hud_option("disable_scar") or hud.get_hud_option("hide_scar")) then
         local state = sdk.to_int64(args[3]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if
-            state ~= rl(ace_enum.scar_state, "NONE")
-            and state ~= rl(ace_enum.scar_state, "OLD")
-            and state ~= rl(ace_enum.scar_state, "HEAL")
-        then
+        if state ~= rl(ace_enum.scar_state, "NORMAL") then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -1271,11 +1267,7 @@ function this.disable_scar_activate_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_scar") then
         local state = sdk.to_int64(args[6]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if
-            state ~= rl(ace_enum.scar_state, "NONE")
-            and state ~= rl(ace_enum.scar_state, "OLD")
-            and state ~= rl(ace_enum.scar_state, "HEAL")
-        then
+        if state == rl(ace_enum.scar_state, "RAW") or state == rl(ace_enum.scar_state, "TEAR") then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -1285,11 +1277,7 @@ function this.disable_scar_state_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_scar") then
         local state = sdk.to_int64(args[4]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if
-            state ~= rl(ace_enum.scar_state, "NONE")
-            and state ~= rl(ace_enum.scar_state, "OLD")
-            and state ~= rl(ace_enum.scar_state, "HEAL")
-        then
+        if state == rl(ace_enum.scar_state, "RAW") or state == rl(ace_enum.scar_state, "TEAR") then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -1349,6 +1337,29 @@ function this.disable_focus_turn_post(retval)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_focus_turn") then
         return false
+    end
+end
+
+function this.wound_state_post()
+    local hud_config = get_hud()
+    if
+        hud_config
+        and not hud.get_hud_option("disable_scar")
+        and (hud.get_hud_option("show_scar") or hud.get_hud_option("hide_scar"))
+    then
+        ---@type boolean?
+        local bool
+        if hud.get_hud_option("show_scar") then
+            bool = true
+        elseif hud.get_hud_option("hide_scar") then
+            bool = false
+        end
+
+        local eff_highlight = util_ref.get_this() --[[@as app.cEnemyLoopEffectHighlight?]]
+        if bool ~= nil and eff_highlight then
+            eff_highlight._IsAim = bool
+            return bool
+        end
     end
 end
 
