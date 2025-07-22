@@ -17,7 +17,11 @@ setmetatable(this, { __index = quest_timer })
 ---@return ProgressQuestTimerBest
 function this:new(args, parent)
     local o = quest_timer.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return this._get_panel(s)
+        local pnl = this._get_panel(s)
+        if pnl then
+            parent.children.timer:reset_specific(nil, pnl)
+        end
+        return pnl
     end)
     setmetatable(o, self)
     ---@cast o ProgressQuestTimerBest
