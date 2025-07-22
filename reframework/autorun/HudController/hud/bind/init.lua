@@ -91,9 +91,9 @@ function this.set_pause(pause)
 end
 
 ---@return boolean
-function this.init(hud_ref)
-    this.option_manager = option_bind_manager:new(hud_ref)
-    this.hud_manager = hud_bind_manager:new(hud_ref)
+function this.init()
+    this.option_manager = option_bind_manager:new()
+    this.hud_manager = hud_bind_manager:new()
 
     this.option_manager:load(config.current.mod.bind.key.option)
     this.hud_manager:load(config.current.mod.bind.key.hud)

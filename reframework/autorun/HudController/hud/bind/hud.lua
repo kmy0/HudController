@@ -42,9 +42,8 @@ local function action(bind)
     config.save()
 end
 
----@param hud_ref HudManager
 ---@return HudBindManager
-function this:new(hud_ref)
+function this:new()
     local o = game_bind.manager.new(self)
     setmetatable(o, self)
     ---@cast o HudBindManager

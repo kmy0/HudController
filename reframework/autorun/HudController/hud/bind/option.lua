@@ -53,9 +53,8 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = game_bind.manager })
 
----@param hud_ref HudManager
 ---@return OptionBindManager
-function this:new(hud_ref)
+function this:new()
     local o = game_bind.manager.new(self)
     setmetatable(o, self)
     ---@cast o OptionBindManager
