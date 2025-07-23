@@ -50,6 +50,7 @@ local ammo_slider = {
     item_slider_open = false,
 }
 local progress_reset_arr = false
+local clear_map_navi = true
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -104,6 +105,22 @@ local function is_hide_enemy_access_paint(game_object)
     end
 
     return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
+end
+
+---@return boolean
+local function clear_map_navi_lines()
+    local guiman = s.get("app.GUIManager")
+    local GUI060002Accessor = guiman:get_GUI060002Accessor()
+    local GUI060002 = GUI060002Accessor.GUIs:get_Item(0) --[[@as app.GUI060002]]
+    local icon_ctrl = GUI060002:get_IconController()
+    if icon_ctrl then
+        local line_ctrl = icon_ctrl._LineCtrl
+        util_game.do_something(line_ctrl._Handlers, function(system_array, index, value)
+            value:clearAll()
+        end)
+        return true
+    end
+    return false
 end
 
 function this.update_pre(args)
@@ -863,6 +880,12 @@ end
 function this.hide_monster_icon_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("hide_monster_icon") then
+        if clear_map_navi then
+            if clear_map_navi_lines() then
+                clear_map_navi = false
+            end
+        end
+
         local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
         local beacons = beacon_man:get_EmBossBeaconContainer()
 
@@ -878,6 +901,8 @@ function this.hide_monster_icon_pre(args)
                 )
             end
         end)
+    else
+        clear_map_navi = true
     end
 end
 
