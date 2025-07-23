@@ -208,7 +208,10 @@ local function draw_key_bind_menu()
             if is_col and col then
                 local type = col.manager_type == bind_manager.manager_type.HUD and config.lang.tr("menu.bind.key.hud")
                     or config.lang.tr("menu.bind.key.option")
-                local name = col.manager_type == bind_manager.manager_type.HUD and state.listener.opt.name
+                local name = col.manager_type == bind_manager.manager_type.HUD
+                        and util_table.value(config.current.mod.hud, function(key, value)
+                            return col.bind.key == value.key
+                        end).name
                     or config.lang.tr("hud." .. mod.map.hud_options[col.bind.key])
 
                 state.listener.collision =
