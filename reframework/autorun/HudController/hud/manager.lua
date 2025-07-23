@@ -272,7 +272,7 @@ function this.update()
 
     if
         config.current.mod.enable_weapon_binds
-        and timer.check(timer_key, config.bind_timeout, nil, true)
+        and timer.check(timer_key, config.current.mod.disable_weapon_binds_time, nil, true)
         and (not config.current.mod.disable_weapon_binds_held or not bind_manager.hud_manager:is_held())
     then
         this.update_weapon_bind_state()

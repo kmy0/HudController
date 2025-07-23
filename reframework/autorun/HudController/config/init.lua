@@ -49,6 +49,7 @@
 ---@field enable_weapon_binds boolean
 ---@field disable_weapon_binds_timed boolean
 ---@field disable_weapon_binds_held boolean
+---@field disable_weapon_binds_time number
 ---@field hud HudProfileConfig[]
 ---@field bind {
 --- weapon: WeaponStateBindConfig,
@@ -72,7 +73,6 @@
 ---@field version string
 ---@field name string
 ---@field grid_size integer
----@field bind_timeout number
 ---@field porter_timeout number
 ---@field handler_timeout number
 ---@field default_lang_path string
@@ -98,7 +98,6 @@ this.default_lang_path = this.name .. "/lang/en-us.json"
 this.hud_default_path = this.name .. "/hud_default.json"
 this.option_default_path = this.name .. "/option_default.json"
 this.grid_size = 160
-this.bind_timeout = 30
 this.porter_timeout = 3
 this.handler_timeout = 5
 this.is_debug = false
@@ -128,6 +127,7 @@ this.default = {
         enable_weapon_binds = false,
         disable_weapon_binds_held = false,
         disable_weapon_binds_timed = false,
+        disable_weapon_binds_time = 30,
         grid = {
             draw = false,
             color_center = 4278190335,

@@ -81,6 +81,22 @@ local function draw_mod_menu()
     end
     util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_timed_tooltip"))
 
+    imgui.begin_disabled(not config.current.mod.disable_weapon_binds_timed)
+    local item_config_key = "mod.disable_weapon_binds_time"
+    local item_value = config.get(item_config_key)
+    if
+        set.slider_int(
+            "##" .. item_config_key,
+            item_config_key,
+            1,
+            300,
+            gui_util.seconds_to_minutes_string(item_value, "%.0f")
+        )
+    then
+        config.save()
+    end
+    imgui.end_disabled()
+
     if
         imgui.menu_item(
             gui_util.tr("menu.config.disable_weapon_binds_held"),
