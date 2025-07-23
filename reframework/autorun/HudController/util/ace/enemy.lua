@@ -147,7 +147,12 @@ end
 ---@param game_object via.GameObject
 ---@return app.EnemyCharacter?
 function this.get_char_base(game_object)
-    return util_game.get_component(game_object, "app.EnemyCharacter")
+    ---@type app.EnemyCharacter?
+    local ret
+    util_misc.try(function()
+        ret = util_game.get_component(game_object, "app.EnemyCharacter")
+    end)
+    return ret
 end
 
 this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
