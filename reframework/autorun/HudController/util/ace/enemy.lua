@@ -1,10 +1,6 @@
 local cache = require("HudController.util.misc.cache")
-local s = require("HudController.util.ref.singletons")
----@class MethodUtil
-local m = require("HudController.util.ref.methods")
 local util_game = require("HudController.util.game")
 local util_misc = require("HudController.util.misc")
-local util_ref = require("HudController.util.ref")
 
 local this = {}
 
