@@ -882,7 +882,11 @@ function this.get_near_monsters_pre(args)
                 local browser = value:get_Browser()
                 local ctx = browser:get_EmContext()
                 local char = ace_em.ctx_to_char(ctx)
-                if char and ace_em.is_boss(char) and ace_em.is_paintballed_ctx(ctx) then
+                if
+                    char
+                    and ace_em.is_boss(char)
+                    and (not hud.get_hud_option("hide_lock_target") or ace_em.is_paintballed_ctx(ctx))
+                then
                     table.insert(arr, value)
                 end
             end
