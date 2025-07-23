@@ -1197,6 +1197,11 @@ function this.hide_map_navi_points_post(retval)
     if hud_config and hud.get_hud_option("hide_monster_icon") then
         local insman = s.get("app.GuideInsectManager")
         local ctrl = insman:getMasterEntityNavigationController()
+
+        if not ctrl then
+            return
+        end
+
         local ctx = ctrl:get_Context()
         local target_info = ctx.TargetInfo
         local nav_info = target_info:get_CurrentNavigationTargetInfoGuideInsect()
