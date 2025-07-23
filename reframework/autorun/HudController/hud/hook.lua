@@ -577,6 +577,20 @@ function this.disable_scoutflies_pre(args)
     end
 end
 
+function this.disable_scoutflies_target_tracking_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("disable_scoutflies") then
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
+        if target_access.Category == rl(ace_enum.target_access, "ENEMY") then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
 function this.disable_scoutflies_post(retval)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_scoutflies") then
@@ -1153,6 +1167,20 @@ function this.hide_map_navi_points_post(retval)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_scoutflies") then
         return false
+    end
+
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local insman = s.get("app.GuideInsectManager")
+        local ctrl = insman:getMasterEntityNavigationController()
+        local ctx = ctrl:get_Context()
+        local target_info = ctx.TargetInfo
+        local nav_info = target_info:get_CurrentNavigationTargetInfoGuideInsect()
+        if nav_info then
+            local target_access = nav_info:getTargetAccessKey()
+            if target_access.Category == rl(ace_enum.target_access, "ENEMY") then
+                return false
+            end
+        end
     end
 end
 

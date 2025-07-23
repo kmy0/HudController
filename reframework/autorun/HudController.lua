@@ -76,7 +76,7 @@ m.hook(
 m.hook(
     "app.mcGuideInsectNavigationController"
         .. ".startNavigation(app.TARGET_ACCESS_KEY, via.vec3, System.Boolean, System.Boolean, System.Boolean, System.Boolean)",
-    hook.disable_scoutflies_pre
+    hook.disable_scoutflies_target_tracking_pre
 )
 m.hook("app.GuideInsectCharacter.update()", hook.disable_scoutflies_pre)
 m.hook("app.cHunterEffect.updateGuideInsectCage(app.HunterCharacter)", hook.disable_scoutflies_pre)

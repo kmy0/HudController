@@ -30,6 +30,7 @@
 ---@class app.cActionController : via.clr.ManagedObject
 ---@class app.cEnemyEntrustMultipleLoopEffectState : app.cEnemyEntrustEffectState
 ---@class app.cEnemyEntrustEffectState : via.clr.ManagedObject
+---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -478,3 +479,18 @@
 
 ---@class app.TARGET_ACCESS_KEY : System.ValueType
 ---@field Category app.TARGET_ACCESS_KEY.CATEGORY
+
+---@class app.GuideInsectManager : ace.GAElement
+---@field getMasterEntityNavigationController fun(self: app.GuideInsectManager): app.mcGuideInsectNavigationController
+
+---@class app.mcGuideInsectNavigationController : ace.minicomponent.cOrderedActionBase
+---@field get_Context fun(self: app.mcGuideInsectNavigationController): app.cGuideInsectContext
+
+---@class app.cGuideInsectContext : app.cGameContext
+---@field TargetInfo app.cGuideInsectContext.cTargetInfo
+
+---@class app.cGuideInsectContext.cTargetInfo : via.clr.ManagedObject
+---@field get_CurrentNavigationTargetInfoGuideInsect fun(self: app.cGuideInsectContext.cTargetInfo): app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect
+
+---@class app.cNavigationTargetInfo : via.clr.ManagedObject
+---@field getTargetAccessKey fun(self: app.cNavigationTargetInfo): app.TARGET_ACCESS_KEY
