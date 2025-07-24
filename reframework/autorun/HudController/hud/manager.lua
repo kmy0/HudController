@@ -256,6 +256,7 @@ function this.update()
 
     fade_manager.update()
 
+    local is_held = false
     if config.current.mod.enable_key_binds then
         bind_manager.option_manager:monitor()
 
@@ -268,12 +269,23 @@ function this.update()
                 timer.restart_key(timer_key)
             end
         end
+
+        if config.current.mod.enable_weapon_binds and config.current.mod.disable_weapon_binds_held then
+            is_held = bind_manager.hud_manager:is_held()
+        end
+
+        if
+            not config.current.mod.disable_weapon_binds_timed
+            and (not config.current.mod.disable_weapon_binds_held or not is_held)
+        then
+            timer.reset_key(timer_key)
+        end
     end
 
     if
         config.current.mod.enable_weapon_binds
         and timer.check(timer_key, config.current.mod.disable_weapon_binds_time, nil, true)
-        and (not config.current.mod.disable_weapon_binds_held or not bind_manager.hud_manager:is_held())
+        and (not config.current.mod.disable_weapon_binds_held or not is_held)
     then
         this.update_weapon_bind_state()
     end

@@ -126,6 +126,7 @@ function this.remaining_key(key)
     return timer:remaining()
 end
 
+---@param key string
 function this.reset_key(key)
     local timer = this._instances[key]
     if timer then
