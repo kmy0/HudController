@@ -35,6 +35,7 @@ this.default = {
         text_yes = "Yes",
         text_no = "No",
         text_rusure = "Are you sure?",
+        text_drag = "⸽⸽",
     },
     menu = {
         config = {
@@ -203,6 +204,7 @@ this.default = {
             category_gossip_type = "Gossip Type",
             category_panel_type = "Panel Type",
             category_enemy_type = "Enemy Type",
+            category_pet_behavior = "Pet Behavior",
             box_hide_slinger_empty = "Hide When Empty",
             box_enable_box = "Enable Box",
             tooltip_numbers_box = "Scales numbers position to fit inside a box. Disables Offset.",
