@@ -71,6 +71,7 @@
 ---@class Config
 ---@field lang Language
 ---@field version string
+---@field commit string
 ---@field name string
 ---@field grid_size integer
 ---@field porter_timeout number
@@ -85,13 +86,15 @@
 
 local migration = require("HudController.config.migration")
 local util_table = require("HudController.util.misc.table")
+local version = require("HudController.config.version")
 
 ---@class Config
 local this = {
     lang = require("HudController.config.lang"),
 }
 
-this.version = "0.0.7"
+this.version = version.version
+this.commit = version.commit
 this.name = "HudController"
 this.config_path = this.name .. "/config.json"
 this.default_lang_path = this.name .. "/lang/en-us.json"

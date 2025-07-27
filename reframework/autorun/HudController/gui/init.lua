@@ -38,7 +38,7 @@ function this.draw()
     end
 
     config.current.gui.main.is_opened = imgui.begin_window(
-        string.format("%s %s", config.name, config.version),
+        string.format("%s %s", config.name, config.commit),
         config.current.gui.main.is_opened,
         this.window.flags
     )

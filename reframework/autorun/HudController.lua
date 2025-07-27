@@ -177,7 +177,7 @@ m.hook(
 )
 
 re.on_draw_ui(function()
-    if imgui.button(string.format("%s %s", config.name, config.version)) then
+    if imgui.button(string.format("%s %s", config.name, config.commit)) then
         config.current.gui.main.is_opened = not config.current.gui.main.is_opened
     end
 end)
