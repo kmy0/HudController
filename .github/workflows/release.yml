@@ -13,16 +13,17 @@ jobs:
           fetch-depth: 0
 
       - run: |
-          echo "RELEASE_VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+          RELEASE_VERSION=$(git describe --tags --always)
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
           cat > reframework/autorun/HudController/config/version.lua << EOF
           return {
-              version = "$(git describe --tags --abbrev=0",
+              version = "$(git describe --tags --abbrev=0)",
               commit = "$RELEASE_VERSION",
           }
           EOF
 
-          zip -r "HudController-${commit}.zip" reframework/
+          zip -r "HudController-${RELEASE_VERSION}.zip" reframework/
 
       - name: Create Release
         uses: ncipollo/release-action@v1
