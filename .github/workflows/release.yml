@@ -13,9 +13,9 @@ jobs:
           fetch-depth: 0
 
       - run: |
-          cat > reframework/autorun/HudController/config/version.lua << EOF
           echo "RELEASE_VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
 
+          cat > reframework/autorun/HudController/config/version.lua << EOF
           return {
               version = "$(git describe --tags --abbrev=0",
               commit = "$RELEASE_VERSION",
