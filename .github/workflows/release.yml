@@ -1,0 +1,36 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: |
+          cat > reframework/autorun/HudController/config/version.lua << EOF
+          echo "RELEASE_VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+
+          return {
+              version = "$(git describe --tags --abbrev=0",
+              commit = "$RELEASE_VERSION",
+          }
+          EOF
+
+          zip -r "HudController-${commit}.zip" reframework/
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          repo: HudController-releases
+          owner: kmy0
+          token: ${{ secrets.RELEASE_REPO_TOKEN }}
+          name: "${{ env.RELEASE_VERSION }}"
+          tag: "${{ env.RELEASE_VERSION }}"
+          artifacts: "HudController-*.zip"
+          makeLatest: true
