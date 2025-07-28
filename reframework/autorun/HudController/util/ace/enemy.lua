@@ -2,6 +2,7 @@ local cache = require("HudController.util.misc.cache")
 local util_game = require("HudController.util.game")
 local util_misc = require("HudController.util.misc")
 
+---@class EnemyUtil
 local this = {}
 
 ---@param em_ctx app.cEnemyContext

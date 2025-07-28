@@ -33,6 +33,7 @@
 ---@class app.cEnemyEntrustEffectState : via.clr.ManagedObject
 ---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
+---@class app.OtomoCharacter : app.CharacterBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -473,6 +474,16 @@
 
 ---@class app.GUI020016PartsPlayer : app.GUI020016PartsBase
 ---@field _PlayerManageInfo app.cPlayerManageInfo
+---@field _NpcManageInfo app.cNpcManageInfo
+
+---@class app.GUI020016PartsSeikret : app.GUI020016PartsBase
+---@field _PorterManageInfo app.cPorterManageInfo
+
+---@class app.GUI020016PartsOtomo : app.GUI020016PartsBase
+---@field _OtomoManageInfo app.cOtomoManageInfo
+
+---@class app.cOtomoManageInfo : via.clr.ManagedObject
+---@field get_Character fun(self: app.cOtomoManageInfo): app.OtomoCharacter
 
 ---@class app.GUI020015 : app.GUIHudBase
 ---@field setGaugeModeStatus fun(self: app.GUI020015, status: app.GUI020015.DEFAULT_STATUS)
