@@ -123,7 +123,7 @@ function this.get_config()
         name_key = "out_frame_icon",
         hide = false,
         enabled_rot = false,
-        rot = 0,
+        rot = { x = 0, y = 0, z = 0 },
     }
 
     return base

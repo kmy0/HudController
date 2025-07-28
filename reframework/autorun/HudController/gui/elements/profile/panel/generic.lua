@@ -174,13 +174,24 @@ function this.draw(elem, elem_config, config_key)
             label = gui_util.tr("hud_element.entry.box_enable_rotation"),
         }, {
             {
-                config_key = config_key .. ".rot",
-                label = "",
+                config_key = config_key .. ".rot.x",
+                label = gui_util.tr("hud_element.entry.slider_x"),
+            },
+            {
+                config_key = config_key .. ".rot.y",
+                label = gui_util.tr("hud_element.entry.slider_y"),
+            },
+            {
+                config_key = config_key .. ".rot.z",
+                label = gui_util.tr("hud_element.entry.slider_z"),
             },
         }, 0, 360, 0.1, "%.1f")
 
         if changed then
-            elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
+            elem:set_rot(
+                elem_config.enabled_rot and { x = elem_config.rot.x, y = elem_config.rot.y, z = elem_config.rot.z }
+                    or nil
+            )
             config.save()
         end
 

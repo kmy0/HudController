@@ -419,7 +419,7 @@ function this.get_config()
         icon = {
             name_key = "icon",
             enabled_rot = false,
-            rot = 0,
+            rot = { x = 0, y = 0, z = 0 },
         },
         timer = {
             name_key = "timer",

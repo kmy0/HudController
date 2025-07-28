@@ -98,14 +98,25 @@ local function to_0_0_6_objectives(config)
     end
 end
 
-this.migrations = {
-    ["0.0.5"] = function(config)
-        to_0_0_5_weapon_binds_camp(config)
-    end,
-    ["0.0.6"] = function(config)
-        to_0_0_6_objectives(config)
-    end,
-}
+---@param config Settings
+local function to_0_0_7_21_rotation(config)
+    local function iter(elem)
+        if type(elem.rot) == "number" then
+            local rot = elem.rot --[[@as number]]
+            elem.rot = { x = 0, y = 0, z = rot }
+        end
+
+        for _, child in pairs(elem.children or {}) do
+            iter(child)
+        end
+    end
+
+    for _, profile in pairs(config.mod.hud) do
+        for _, elem in pairs(profile.elements or {}) do
+            iter(elem)
+        end
+    end
+end
 
 ---@param from string?
 ---@param to string
@@ -153,5 +164,17 @@ function this.migrate(from, to, config)
     end
     config.version = to
 end
+
+this.migrations = {
+    ["0.0.5"] = function(config)
+        to_0_0_5_weapon_binds_camp(config)
+    end,
+    ["0.0.6"] = function(config)
+        to_0_0_6_objectives(config)
+    end,
+    ["0.0.7-21"] = function(config)
+        to_0_0_7_21_rotation(config)
+    end,
+}
 
 return this

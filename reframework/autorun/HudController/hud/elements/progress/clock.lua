@@ -90,8 +90,22 @@ function this.get_config()
     local base = hud_child.get_config("clock") --[[@as ProgressClockConfig]]
     local children = base.children
 
-    children.frame_base = { name_key = "frame_base", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
-    children.frame_main = { name_key = "frame_main", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
+    children.frame_base = {
+        name_key = "frame_base",
+        hide = false,
+        enabled_scale = false,
+        scale = { x = 1, y = 1 },
+        enabled_rot = false,
+        rot = { x = 0, y = 0, z = 0 },
+    }
+    children.frame_main = {
+        name_key = "frame_main",
+        hide = false,
+        enabled_scale = false,
+        scale = { x = 1, y = 1 },
+        enabled_rot = false,
+        rot = { x = 0, y = 0, z = 0 },
+    }
     children.limit = { name_key = "limit", hide = false }
 
     return base

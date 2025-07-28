@@ -200,6 +200,8 @@ function this.get_config(name_key)
         clock_offset_x = 0,
         enabled_scale = false,
         scale = { x = 1, y = 1 },
+        enabled_rot = false,
+        rot = { x = 0, y = 0, z = 0 },
         children = {},
         hud_sub_type = mod.enum.hud_sub_type.PROGRESS_PART,
     }

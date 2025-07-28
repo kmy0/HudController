@@ -254,6 +254,7 @@ this.default = {
             tooltip_itembar_move_next = "Move to the next item if slot is empty after use",
             slider_x = "X",
             slider_y = "Y",
+            slider_z = "Z",
             slider_draw_distance = "Draw Distance",
             box_enable_glow_color = "Enable Glow Color",
             box_hide_glow = "Hide Glow",

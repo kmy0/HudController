@@ -11,7 +11,7 @@
 ---@class (exact) HudChildConfig : HudBaseConfig
 ---@field scale {x:number, y:number}?
 ---@field offset {x:number, y:number}?
----@field rot number?
+---@field rot {x:number, y:number, z:number}?
 ---@field opacity number?
 ---@field segment string?
 ---@field hide boolean?
@@ -195,7 +195,7 @@ function this.get_config(name_key)
         hide = false,
         scale = { x = 1, y = 1 },
         offset = { x = 0, y = 0 },
-        rot = 0,
+        rot = { x = 0, y = 0, z = 0 },
         opacity = 1,
         children = {},
         options = {},

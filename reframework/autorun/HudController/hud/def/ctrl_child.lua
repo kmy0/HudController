@@ -21,7 +21,7 @@
 ---@field hud_sub_type HudSubType?
 ---@field scale {x:number, y:number}?
 ---@field offset {x:number, y:number}?
----@field rot number?
+---@field rot {x:number, y:number, z:number}?
 ---@field color integer?
 ---@field size_x number?
 ---@field size_y number?
@@ -38,7 +38,7 @@
 ---@class (exact) CtrlChildDefault : HudChildDefault
 ---@field scale {x:number, y:number}
 ---@field offset {x:number, y:number}
----@field rot number
+---@field rot {x:number, y:number, z:number}
 ---@field hide boolean
 ---@field color integer
 ---@field opacity nil
@@ -213,7 +213,7 @@ function this:reset_ctrl(obj, key)
     end
 
     if self.rot and (not key or key == "rot") and default.rot then
-        obj:set_Rotation(Vector3f.new(0, 0, default.rot))
+        obj:set_Rotation(Vector3f.new(default.rot.x, default.rot.y, default.rot.z))
     end
 
     if not key then

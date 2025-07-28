@@ -43,7 +43,7 @@ function this.create_default(obj)
         local ret = {
             hide = hide,
             offset = { x = offset.x, y = offset.y },
-            rot = rot.x,
+            rot = { x = rot.x, y = rot.y, z = rot.z },
             scale = { x = size.w, y = size.h },
             color = obj:get_Color().rgba,
         }
@@ -94,7 +94,7 @@ function this.create_default(obj)
     local ret = {
         hide = hide,
         offset = { x = offset.x, y = offset.y },
-        rot = rot.z,
+        rot = { x = rot.x, y = rot.y, z = rot.z },
         opacity = color.w,
         scale = { x = scale.x, y = scale.y },
         play_state = obj:get_PlayState(),

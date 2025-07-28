@@ -34,7 +34,7 @@
 ---@field scale {x:number, y:number}
 ---@field offset {x:number, y:number}
 ---@field segment string
----@field rot number
+---@field rot {x:number, y:number, z:number}
 ---@field opacity number
 ---@field hide boolean
 ---@field play_state string?
@@ -52,7 +52,7 @@
 ---@class (exact) HudBaseDefault
 ---@field scale {x:number, y:number}
 ---@field offset {x:number, y:number}
----@field rot number
+---@field rot {x:number, y:number, z:number}
 ---@field opacity number
 ---@field hide boolean
 ---@field play_state string
@@ -63,7 +63,7 @@
 ---@class (exact) HudBaseDefaultOverwrite
 ---@field scale {x:number, y:number}?
 ---@field offset {x:number, y:number}?
----@field rot number?
+---@field rot {x:number, y:number, z:number}?
 ---@field opacity number?
 ---@field hide boolean?
 ---@field play_state string?
@@ -253,11 +253,11 @@ function this:set_offset(offset)
     end
 end
 
----@param rot number?
+---@param rot {x:number, y:number, z:number}?
 function this:set_rot(rot)
     if rot then
         self:mark_write()
-        self.rot = Vector3f.new(0, 0, rot)
+        self.rot = Vector3f.new(rot.x, rot.y, rot.z)
     else
         self:reset("rot")
         self.rot = rot
@@ -573,7 +573,7 @@ function this:reset_ctrl(ctrl, key)
     end
 
     if self.rot and (not key or key == "rot") and default.rot then
-        ctrl:set_Rotation(Vector3f.new(0, 0, default.rot))
+        ctrl:set_Rotation(Vector3f.new(default.rot.x, default.rot.y, default.rot.z))
     end
 
     if self.play_state and (not key or key == "play_state") and default.play_state then
@@ -763,7 +763,7 @@ function this.get_config(hud_id, name_key)
         hide = false,
         scale = { x = 1, y = 1 },
         offset = { x = 0, y = 0 },
-        rot = 0,
+        rot = { x = 0, y = 0, z = 0 },
         opacity = 1,
         children = {},
         options = {},
