@@ -1,6 +1,73 @@
+---@class Version
+---@field major number
+---@field minor number
+---@field patch number
+---@field commit number
+
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
+
+---@class Version
+local Version = {}
+---@diagnostic disable-next-line: inject-field
+Version.__index = Version
+
+---@param version_string string 0.0.0-0
+---@return Version
+function Version.new(version_string)
+    local major, minor, patch = version_string:match("(%d+)%.(%d+)%.(%d+)")
+    local commit = version_string:match("%-(%d+)") or "0"
+
+    local o = {
+        major = tonumber(major),
+        minor = tonumber(minor),
+        patch = tonumber(patch),
+        commit = tonumber(commit) or 0,
+    }
+    return setmetatable(o, Version) --[[@as Version]]
+end
+
+---@param a Version
+---@param b Version
+---@return boolean
+function Version.__lt(a, b)
+    if a.major ~= b.major then
+        return a.major < b.major
+    end
+    if a.minor ~= b.minor then
+        return a.minor < b.minor
+    end
+    if a.patch ~= b.patch then
+        return a.patch < b.patch
+    end
+    return a.commit < b.commit
+end
+
+---@param a Version
+---@param b Version
+---@return boolean
+function Version.__eq(a, b)
+    return a.major == b.major and a.minor == b.minor and a.patch == b.patch and a.commit == b.commit
+end
+
+function Version.__le(a, b)
+    return a < b or a == b
+end
+function Version.__gt(a, b)
+    return not (a <= b)
+end
+function Version.__ge(a, b)
+    return not (a < b)
+end
+
+---@return string
+function Version:__tostring()
+    if self.commit > 0 then
+        return string.format("Version(%d.%d.%d-%d)", self.major, self.minor, self.patch, self.commit)
+    end
+    return string.format("Version(%d.%d.%d)", self.major, self.minor, self.patch)
+end
 
 ---@param config Settings
 local function to_0_0_5_weapon_binds_camp(config)
@@ -52,34 +119,27 @@ local function get_funcs(from, to)
 
     ---@type string[]
     local sorted = {}
-    local from_n = this.version_to_number(from)
-    local to_n = this.version_to_number(to)
+    local from_n = Version.new(from)
+    local to_n = Version.new(to)
     for ver in pairs(this.migrations) do
-        local ver_n = this.version_to_number(ver)
+        local ver_n = Version.new(ver)
         if ver_n > from_n and ver_n <= to_n then
             table.insert(sorted, ver)
         end
     end
 
     table.sort(sorted, function(a, b)
-        return this.version_to_number(a) < this.version_to_number(b)
+        return Version.new(a) < Version.new(b)
     end)
 
     return sorted
-end
-
----@param version string
----@return number
-function this.version_to_number(version)
-    local major, minor, patch = version:match("(%d+)%.(%d+)%.(%d+)")
-    return tonumber(major) * 10000 + tonumber(minor) * 100 + tonumber(patch)
 end
 
 ---@param from string
 ---@param to string
 ---@return boolean
 function this.need_migrate(from, to)
-    return not util_table.empty(get_funcs(from, to))
+    return Version.new(from) < Version.new(to)
 end
 
 ---@param from string?

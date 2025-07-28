@@ -185,19 +185,22 @@ function this.load()
         current_version = loaded_config.version
         this.current = util_table.merge_t(this.default, loaded_config)
     else
-        current_version = this.version
+        current_version = this.commit
         this.current = util_table.deep_copy(this.default)
     end
 
-    if migration.need_migrate(current_version, this.version) then
+    if migration.need_migrate(current_version, this.commit) then
         this.backup()
-        migration.migrate(current_version, this.version, this.current)
+        migration.migrate(current_version, this.commit, this.current)
         this.save_no_timer()
     end
 end
 
 function this.backup()
-    json.dump_file(string.format("%s/%s_backup_config.json", this.name, os.time()), this.current)
+    json.dump_file(
+        string.format("%s/%s_backup_v%s_config.json", this.name, os.time(), this.current.version),
+        this.current
+    )
 end
 
 function this.save()

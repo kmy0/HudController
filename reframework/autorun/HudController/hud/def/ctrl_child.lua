@@ -292,7 +292,7 @@ function this:_write(obj)
     end
 
     if self.rot then
-        obj:set_Rotation(self.offset)
+        obj:set_Rotation(self.rot)
     end
 
     if self.size_x or self.size_y then
