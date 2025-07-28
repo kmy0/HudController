@@ -10,6 +10,7 @@ m.NpcIDfromFIXED = m.wrap(m.get("app.NpcDef.getIDFromFixed(app.NpcDef.ID_Fixed, 
 m.isEnableTalk = m.wrap(m.get("app.NpcUtil.isEnableTalk(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 m.isEnableFacility = m.wrap(m.get("app.NpcUtil.isEnableFacility(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 
+---@class NpcUtil
 local this = {}
 
 ---@param npc_id app.NpcDef.ID
