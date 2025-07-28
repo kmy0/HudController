@@ -132,6 +132,17 @@ function this.get_porter(hunter)
     return ret
 end
 
+---@param info app.cPorterManageInfo
+---@return Vector3f
+function this.get_pos(info)
+    local char = info:get_Character()
+    if not char then
+        return Vector3f.new(0, 0, 0)
+    end
+
+    return char:get_Pos()
+end
+
 ---@param porter app.PorterCharacter
 ---@param flag app.PorterDef.CONTINUE_FLAG
 ---@param value boolean

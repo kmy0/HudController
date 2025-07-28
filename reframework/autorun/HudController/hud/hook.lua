@@ -1,6 +1,7 @@
 local ace_em = require("HudController.util.ace.enemy")
 local ace_misc = require("HudController.util.ace.misc")
 local ace_npc = require("HudController.util.ace.npc")
+local ace_otomo = require("HudController.util.ace.otomo")
 local ace_player = require("HudController.util.ace.player")
 local ace_porter = require("HudController.util.ace.porter")
 local call_queue = require("HudController.hud.call_queue")
@@ -754,6 +755,21 @@ function this.hide_nameplate_post(retval)
             ---@cast GUI020016Part app.GUI020016PartsPlayer
             local npc_pos = ace_npc.get_pos(GUI020016Part._NpcManageInfo)
             if (name_other_master_pl_pos - npc_pos):length() > name_other.pl_draw_distance then
+                return false
+            end
+        elseif name_other.pet_draw_distance > 0 and ace_enum.nameplate_type[type] == "SEIKRET" then
+            ---@cast GUI020016Part app.GUI020016PartsSeikret
+            local porter_pos = ace_porter.get_pos(GUI020016Part._PorterManageInfo)
+            if (name_other_master_pl_pos - porter_pos):length() > name_other.pet_draw_distance then
+                return false
+            end
+        elseif
+            name_other.pet_draw_distance > 0
+            and (ace_enum.nameplate_type[type] == "OT" or ace_enum.nameplate_type[type] == "SUPPORT_OT")
+        then
+            ---@cast GUI020016Part app.GUI020016PartsOtomo
+            local otomo_pos = ace_otomo.get_pos(GUI020016Part._OtomoManageInfo)
+            if (name_other_master_pl_pos - otomo_pos):length() > name_other.pet_draw_distance then
                 return false
             end
         end

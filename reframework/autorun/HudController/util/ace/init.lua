@@ -5,6 +5,7 @@ local this = {
     scene_fade = require("HudController.util.ace.scene_fade"),
     misc = require("HudController.util.ace.misc"),
     flag = require("HudController.util.ace.flag"),
+    otomo = require("HudController.util.ace.otomo"),
 }
 
 return this
