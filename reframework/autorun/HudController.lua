@@ -206,11 +206,13 @@ re.on_frame(function()
     if gui_debug.is_opened then
         gui_debug.draw()
     end
+
+    config.run_save()
 end)
 
 re.on_config_save(function()
     if data.mod.initialized then
-        config.save()
+        config.save_no_timer()
     end
 end)
 re.on_script_reset(hud.clear)

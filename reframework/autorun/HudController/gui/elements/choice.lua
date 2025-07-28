@@ -80,7 +80,7 @@ function this.draw_hud()
 
     if imgui.button(gui_util.tr("hud.button_save")) then
         config.backup()
-        config.save()
+        config.save_no_timer()
     end
 
     if state.input_action then

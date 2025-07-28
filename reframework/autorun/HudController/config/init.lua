@@ -83,8 +83,10 @@
 ---@field is_debug boolean
 ---@field default Settings
 ---@field current Settings
+---@field save_timer Timer
 
 local migration = require("HudController.config.migration")
+local timer = require("HudController.util.misc.timer")
 local util_table = require("HudController.util.misc.table")
 local version = require("HudController.config.version")
 
@@ -190,7 +192,7 @@ function this.load()
     if migration.need_migrate(current_version, this.version) then
         this.backup()
         migration.migrate(current_version, this.version, this.current)
-        this.save()
+        this.save_no_timer()
     end
 end
 
@@ -199,15 +201,20 @@ function this.backup()
 end
 
 function this.save()
+    this.save_timer:restart()
+end
+
+function this.save_no_timer()
     json.dump_file(this.config_path, this.current)
 end
 
-    json.dump_file(this.config_path, this.current)
+function this.run_save()
+    this.save_timer:update()
 end
 
 function this.restore()
     this.current = util_table.deep_copy(this.default)
-    this.save()
+    this.save_no_timer()
     this.lang.change()
 end
 
@@ -217,5 +224,7 @@ function this.init()
     this.lang.init(this)
     return true
 end
+
+this.save_timer = timer.new("config_save_timer", 0.5, this.save_no_timer, true)
 
 return this
