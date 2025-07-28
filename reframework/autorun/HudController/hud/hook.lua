@@ -750,6 +750,12 @@ function this.hide_nameplate_post(retval)
             if (name_other_master_pl_pos - pl_pos):length() > name_other.pl_draw_distance then
                 return false
             end
+        elseif name_other.pl_draw_distance > 0 and ace_enum.nameplate_type[type] == "SUPPORT_PL" then
+            ---@cast GUI020016Part app.GUI020016PartsPlayer
+            local npc_pos = ace_npc.get_pos(GUI020016Part._NpcManageInfo)
+            if (name_other_master_pl_pos - npc_pos):length() > name_other.pl_draw_distance then
+                return false
+            end
         end
     end
 end

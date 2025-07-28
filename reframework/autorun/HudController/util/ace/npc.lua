@@ -120,10 +120,18 @@ function this.set_continue_flag(npc, flag, value)
     end
 end
 
----@param npc_id app.NpcDef.ID
+---@param npc app.NpcDef.ID | app.cNpcManageInfo
 ---@return app.CharacterBase?
-function this.get_char_base(npc_id)
-    local core = this.get_npc_core(npc_id)
+function this.get_char_base(npc)
+    ---@type app.NpcCharacterCore?
+    local core
+    if type(npc) == "number" then
+        core = this.get_npc_core(npc)
+    else
+        ---@cast npc app.cNpcManageInfo
+        core = npc:get_NpcCore()
+    end
+
     if not core then
         return
     end
@@ -141,6 +149,17 @@ function this.get_char_base(npc_id)
     return util_game.get_component(game_object, "app.CharacterBase") --[[@as app.CharacterBase]]
 end
 
+---@param npc app.NpcDef.ID | app.cNpcManageInfo
+---@return Vector3f
+function this.get_pos(npc)
+    local char = this.get_char_base(npc)
+    if not char then
+        return Vector3f.new(0, 0, 0)
+    end
+
+    return char:get_Pos()
+end
+
 ---@param npc_id_fixed app.NpcDef.ID_Fixed
 ---@return app.NpcDef.ID
 function this.get_npc_id_from_fixed(npc_id_fixed)
@@ -153,6 +172,10 @@ this.is_talk = cache.memoize(this.is_talk)
 this.get_flags = cache.memoize(this.get_flags)
 this.get_npc_core = cache.memoize(this.get_npc_core, function(cached_value)
     ---@cast cached_value app.NpcCharacterCore
+    return cached_value:get_Valid()
+end)
+this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
+    ---@cast cached_value app.CharacterBase
     return cached_value:get_Valid()
 end)
 
