@@ -197,7 +197,10 @@ function this.load()
 end
 
 function this.backup()
-    json.dump_file(string.format("%s/%s_backup_config.json", this.name, os.time()), this.current)
+    json.dump_file(
+        string.format("%s/%s_backup_v%s_config.json", this.name, os.time(), this.current.version),
+        this.current
+    )
 end
 
 function this.save()
