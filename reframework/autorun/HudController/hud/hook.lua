@@ -51,6 +51,7 @@ local ammo_slider = {
 }
 local progress_reset_arr = false
 local clear_map_navi = true
+local name_other_master_pl_pos = Vector3f.new(0, 0, 0)
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -723,6 +724,13 @@ function this.disable_quest_intro_outro_post(retval)
     end
 end
 
+function this.name_other_update_player_pos_pre()
+    local name_other = get_elem_t("NameOther")
+    if name_other and (name_other.pl_draw_distance > 0 or name_other.pet_draw_distance > 0) then
+        name_other_master_pl_pos = ace_player.get_master_pos()
+    end
+end
+
 function this.hide_nameplate_post(retval)
     local name_other = get_elem_t("NameOther")
     if name_other and not name_other.hide then
@@ -738,9 +746,8 @@ function this.hide_nameplate_post(retval)
 
         if name_other.pl_draw_distance > 0 and ace_enum.nameplate_type[type] == "PL" then
             ---@cast GUI020016Part app.GUI020016PartsPlayer
-            local master_pos = ace_player.get_master_pos_cached()
-            local pl_pos = ace_player.get_pos_cached(GUI020016Part._PlayerManageInfo)
-            if (master_pos - pl_pos):length() > name_other.pl_draw_distance then
+            local pl_pos = ace_player.get_pos(GUI020016Part._PlayerManageInfo)
+            if (name_other_master_pl_pos - pl_pos):length() > name_other.pl_draw_distance then
                 return false
             end
         end

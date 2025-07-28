@@ -175,6 +175,7 @@ m.hook(
     "app.mcPorterNavigationController.startNavigation(app.TARGET_ACCESS_KEY, System.Boolean)",
     hook.disable_porter_nav
 )
+m.hook("app.GUI020016.guiHudUpdate()", hook.name_other_update_player_pos_pre)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then
