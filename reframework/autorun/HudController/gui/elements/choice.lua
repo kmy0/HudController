@@ -79,7 +79,8 @@ function this.draw_hud()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("hud.button_save")) then
-        config.save(true)
+        config.backup()
+        config.save()
     end
 
     if state.input_action then

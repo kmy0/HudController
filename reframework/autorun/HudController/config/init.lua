@@ -188,7 +188,7 @@ function this.load()
     end
 
     if migration.need_migrate(current_version, this.version) then
-        this.save(true)
+        this.backup()
         migration.migrate(current_version, this.version, this.current)
         this.save()
     end
@@ -198,11 +198,9 @@ function this.backup()
     json.dump_file(string.format("%s/%s_backup_config.json", this.name, os.time()), this.current)
 end
 
----@param backup boolean?
-function this.save(backup)
-    if backup then
-        this.backup()
-    end
+function this.save()
+    json.dump_file(this.config_path, this.current)
+end
 
     json.dump_file(this.config_path, this.current)
 end
