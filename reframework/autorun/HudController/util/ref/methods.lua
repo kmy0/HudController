@@ -42,13 +42,21 @@ function this.get_by_regex(type_def, regex)
     log.debug(string.format('Failed to get method with "%s" regex from "%s" type.', regex, type_def))
 end
 
----@param type_def RETypeDefinition
+---@param type_def RETypeDefinition | string
 ---@param name string
 ---@return REMethodDefinition
 function this.t_get(type_def, name)
-    local type_name = type_def:get_full_name()
-    local key = string.format("%s.%s", type_name, name)
+    ---@type string
+    local type_name
+    if type(type_def) == "string" then
+        type_name = type_def
+        type_def = types.get(type_name)
+    else
+        type_name = type_def:get_full_name()
+    end
+    ---@cast type_def RETypeDefinition
 
+    local key = string.format("%s.%s", type_name, name)
     if not this.methods[key] then
         this.methods[key] = type_def:get_method(name)
     end

@@ -4,6 +4,7 @@
 ---@class (exact) NativeSingleton
 ---@field ptr userdata
 ---@field type_def RETypeDefinition
+---@field type_def_name string
 
 local m = require("HudController.util.ref.methods")
 local types = require("HudController.util.ref.types")
@@ -17,7 +18,7 @@ local this = {
 local NativeSingleton = {
     __index = function(self, key)
         ---@cast self NativeSingleton
-        if m.t_get(self.type_def, key) then
+        if m.t_get(self.type_def_name, key) then
             return function(...)
                 return sdk.call_native_func(self.ptr, self.type_def, key, select(2, ...))
             end
@@ -69,6 +70,7 @@ function this.get_native(singleton)
         }
         setmetatable(o, NativeSingleton)
 
+        o.type_def_name = o.type_def:get_full_name()
         this.singletons[singleton] = o
     end
 
