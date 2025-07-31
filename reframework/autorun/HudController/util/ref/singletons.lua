@@ -72,6 +72,7 @@ function this.get_native(singleton)
         o.type_def_name = o.type_def:get_full_name()
         setmetatable(o, NativeSingleton)
 
+        o.type_def_name = o.type_def:get_full_name()
         this.singletons[singleton] = o
     end
 
