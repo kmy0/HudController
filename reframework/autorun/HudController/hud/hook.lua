@@ -1464,4 +1464,23 @@ function this.disable_porter_nav(args)
     end
 end
 
+function this.update_target_reticle_post(retval)
+    if not is_ok() then
+        return
+    end
+
+    local guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
+
+    call_queue.consume(guiid)
+
+    local hud_elem = hud.get_element_by_guiid(guiid)
+    if not hud_elem then
+        return
+    end
+
+    local hudbase = util_ref.get_this() --[[@as app.GUI020021]]
+    ---@diagnostic disable-next-line: param-type-mismatch
+    hud_elem:write(hudbase, guiid, hudbase:get__Main())
+end
+
 return this

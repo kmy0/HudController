@@ -520,3 +520,6 @@
 
 ---@class app.cGUILineModelController.cGUILineModelHandler : via.clr.ManagedObject
 ---@field clearAll fun(self: app.cGUILineModelController.cGUILineModelHandler)
+
+---@class app.GUI020021 : app.GUIBaseApp
+---@field get__Main fun(self: app.GUI020021): via.gui.Panel

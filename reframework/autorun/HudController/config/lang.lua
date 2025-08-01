@@ -176,6 +176,7 @@ this.default = {
             ROD_RETICLE = "Insect Glaive Reticle",
             TRAINING_ROOM_HUD = "Training Room HUD",
             ACTION_TUTORIAL = "Action Tutorial",
+            TARGET_RETICLE = "Target Reticle",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

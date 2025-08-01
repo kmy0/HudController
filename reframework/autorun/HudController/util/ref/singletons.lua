@@ -17,7 +17,6 @@ local this = {
 ---@class NativeSingleton
 local NativeSingleton = {
     __index = function(self, key)
-        print(self.type_def_name)
         ---@cast self NativeSingleton
         if m.t_get(self.type_def_name, key) then
             return function(...)
