@@ -173,7 +173,7 @@ m.hook("app.HunterCharacter.isEnableAimTurn()", nil, hook.disable_focus_turn_pos
 m.hook("app.cEnemyLoopEffectHighlight.isActivate()", util.ref.capture_this, hook.wound_state_post)
 m.hook(
     "app.mcPorterNavigationController.startNavigation(app.TARGET_ACCESS_KEY, System.Boolean)",
-    hook.disable_porter_nav
+    hook.disable_porter_nav_pre
 )
 m.hook("app.GUI020016.guiHudUpdate()", hook.name_other_update_player_pos_pre)
 m.hook("app.GUI020021.guiUpdate()", util.ref.capture_this, hook.update_target_reticle_post)

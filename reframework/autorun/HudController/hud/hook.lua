@@ -1431,7 +1431,7 @@ function this.disable_focus_turn_post(retval)
     end
 end
 
-function this.wound_state_post()
+function this.wound_state_post(retval)
     local hud_config = get_hud()
     if
         hud_config
@@ -1454,7 +1454,7 @@ function this.wound_state_post()
     end
 end
 
-function this.disable_porter_nav(args)
+function this.disable_porter_nav_pre(args)
     local hud_config = get_hud()
     if hud_config and hud.get_hud_option("disable_porter_tracking") then
         local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
