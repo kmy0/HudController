@@ -69,6 +69,29 @@ local function get_elem_t(name)
     return hud.get_element(elements[name])
 end
 
+---@generic T
+---@param element_type `T`?
+---@param guiid_name string app.GUIID.ID name
+---@return T | HudBase?, app.GUIID.ID?
+local function get_elem_consume_t(element_type, guiid_name, ...)
+    if not is_ok() then
+        return
+    end
+
+    local guiid = rl(ace_enum.gui_id, guiid_name)
+    call_queue.consume(guiid)
+
+    ---@type HudBase?
+    local ret
+    if element_type then
+        ret = hud.get_element(elements[element_type])
+    else
+        ret = hud.get_element_by_guiid(guiid)
+    end
+
+    return ret, guiid
+end
+
 ---@return HudProfileConfig?
 local function get_hud()
     if not is_ok() then
@@ -1152,17 +1175,7 @@ function this.stop_hide_gui_post(retval)
 end
 
 function this.update_subtitles_pre(args)
-    if not is_ok() then
-        return
-    end
-
-    local subtitles_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["SUBTITLES"])
-    local subtitles_choice_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["SUBTITLES_CHOICE"])
-
-    call_queue.consume(subtitles_guiid)
-    call_queue.consume(subtitles_choice_guiid)
-
-    local subtitles = get_elem_t("Subtitles")
+    local subtitles, guiid = get_elem_consume_t("Subtitles", ace_map.additional_hud_to_guiid_name["SUBTITLES"])
     if subtitles then
         local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
         local GUI020400 = subman._SubtitlesGUI
@@ -1172,10 +1185,11 @@ function this.update_subtitles_pre(args)
         end
 
         ---@diagnostic disable-next-line: param-type-mismatch
-        subtitles:write(GUI020400, subtitles_guiid, subtitles:get_scale_panel(GUI020400))
+        subtitles:write(GUI020400, guiid, subtitles:get_scale_panel(GUI020400))
     end
 
-    local subtitles_choice = get_elem_t("SubtitlesChoice")
+    local subtitles_choice, guiid =
+        get_elem_consume_t("SubtitlesChoice", ace_map.additional_hud_to_guiid_name["SUBTITLES_CHOICE"])
     if subtitles_choice then
         local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
         local GUI020401 = subman._ChoiceGUI
@@ -1185,7 +1199,7 @@ function this.update_subtitles_pre(args)
         end
 
         ---@diagnostic disable-next-line: param-type-mismatch
-        subtitles_choice:write(GUI020401, subtitles_guiid, subtitles_choice:get_scale_panel(GUI020401))
+        subtitles_choice:write(GUI020401, guiid, subtitles_choice:get_scale_panel(GUI020401))
     end
 end
 
@@ -1244,35 +1258,24 @@ function this.hide_map_navi_points_post(retval)
 end
 
 function this.update_damage_numbers_post(retval)
-    local dmg_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
-
-    call_queue.consume(dmg_guiid)
-
-    local dmg = get_elem_t("DamageNumbers")
+    local dmg, guiid = get_elem_consume_t("DamageNumbers", ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
     if dmg then
         util_table.do_something(dmg:get_dmg(), function(_, key, _)
             ---@diagnostic disable-next-line: param-type-mismatch
-            dmg:write(key, dmg_guiid, nil)
+            dmg:write(key, guiid, nil)
         end)
     end
 end
 
 function this.update_training_room_hud_post(retval)
-    if not is_ok() then
-        return
-    end
-
-    local training_room_hud_guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"])
-
-    call_queue.consume(training_room_hud_guiid)
-
-    local training_room_hud = get_elem_t("TrainingRoomHud")
+    local training_room_hud, guiid =
+        get_elem_consume_t("TrainingRoomHud", ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"])
     if training_room_hud then
         local hudbase = util_ref.get_this() --[[@as app.GUI600100]]
         local ctrl = training_room_hud:get_pnl_all()
         if ctrl then
             ---@diagnostic disable-next-line: param-type-mismatch
-            training_room_hud:write(hudbase, hudbase:get_ID(), ctrl)
+            training_room_hud:write(hudbase, guiid, ctrl)
         end
     end
 end
@@ -1465,15 +1468,7 @@ function this.disable_porter_nav_pre(args)
 end
 
 function this.update_target_reticle_post(retval)
-    if not is_ok() then
-        return
-    end
-
-    local guiid = rl(ace_enum.gui_id, ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
-
-    call_queue.consume(guiid)
-
-    local hud_elem = hud.get_element_by_guiid(guiid)
+    local hud_elem, guiid = get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
     if not hud_elem then
         return
     end
