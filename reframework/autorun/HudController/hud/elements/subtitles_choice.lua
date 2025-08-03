@@ -73,6 +73,8 @@ function this:reset(key)
     if hudbase then
         local ctrl = self:get_scale_panel(subman._ChoiceGUI)
         self:reset_ctrl(ctrl, key)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self:reset_children(hudbase, nil, ctrl, key)
     end
 end
 
