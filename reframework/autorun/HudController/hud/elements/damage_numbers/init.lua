@@ -142,12 +142,15 @@ function this:write(hudbase, gui_id, ctrl)
         local dmg_child = crit_child.children[ace_enum.damage_state[dmg_state]]
 
         self.children.ALL:reset_ctrl(ctrl)
-        self.children.ALL.children.ALL:reset_ctrl(ctrl)
-        self.children.ALL.children[ace_enum.damage_state[dmg_state]]:reset_ctrl(ctrl)
-
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self.children.ALL.children.ALL:reset_specific(nil, nil, ctrl)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self.children.ALL.children[ace_enum.damage_state[dmg_state]]:reset_specific(nil, nil, ctrl)
         crit_child:reset_ctrl(ctrl)
-        crit_child.children.ALL:reset_ctrl(ctrl)
-        dmg_child:reset_ctrl(ctrl)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        crit_child.children.ALL:reset_specific(nil, nil, ctrl)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        dmg_child:reset_specific(nil, nil, ctrl)
 
         self.pos_cache[pnl_wrap] = nil
         self.written[hudbase] = nil
