@@ -70,6 +70,7 @@ this.enum.hud_type = {
     DAMAGE_NUMBERS = 25,
     ROD_RETICLE = 26,
     TRAINING_ROOM_HUD = 27,
+    MENU_BUTTON_GUIDE = 28,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = {

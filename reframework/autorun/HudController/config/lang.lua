@@ -177,6 +177,7 @@ this.default = {
             TRAINING_ROOM_HUD = "Training Room HUD",
             ACTION_TUTORIAL = "Action Tutorial",
             TARGET_RETICLE = "Target Reticle",
+            MENU_BUTTON_GUIDE = "Menu Button Guide",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -372,6 +373,7 @@ this.default = {
         quest_timer = "Quest Timer",
         next_line = "Next Line",
         edge = "Edge",
+        tooltip = "Tooltip",
     },
 }
 

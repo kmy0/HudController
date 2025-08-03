@@ -523,3 +523,9 @@
 
 ---@class app.GUI020021 : app.GUIBaseApp
 ---@field get__Main fun(self: app.GUI020021): via.gui.Panel
+
+---@class app.GUI000005 : app.GUIBaseApp
+---@field get_HelpPanel fun(self: app.GUI000005): via.gui.Panel
+
+---@class app.GUI000008 : app.GUIBaseApp
+---@field get_Control fun(self: app.GUI000008): via.gui.Panel

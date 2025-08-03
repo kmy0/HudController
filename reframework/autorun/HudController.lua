@@ -177,6 +177,7 @@ m.hook(
 )
 m.hook("app.GUI020016.guiHudUpdate()", hook.name_other_update_player_pos_pre)
 m.hook("app.GUI020021.guiUpdate()", util.ref.capture_this, hook.update_target_reticle_post)
+m.hook("app.GUI000008.guiLateUpdate()", util.ref.capture_this, hook.update_menu_button_guide_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then

@@ -1478,4 +1478,15 @@ function this.update_target_reticle_post(retval)
     hud_elem:write(hudbase, guiid, hudbase:get__Main())
 end
 
+function this.update_menu_button_guide_post(retval)
+    local hud_elem, guiid = get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["MENU_BUTTON_GUIDE"])
+    if not hud_elem then
+        return
+    end
+
+    local hudbase = util_ref.get_this() --[[@as app.GUI000008]]
+    ---@diagnostic disable-next-line: param-type-mismatch
+    hud_elem:write(hudbase, guiid, hudbase:get_Control())
+end
+
 return this
