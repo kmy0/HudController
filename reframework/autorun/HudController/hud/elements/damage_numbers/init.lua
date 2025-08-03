@@ -93,6 +93,27 @@ function this:get_dmg()
     return self.written
 end
 
+---@return app.GUI020020.DAMAGE_INFO[]
+function this:get_dmg_static()
+    local arr = self:get_GUI020020()._DamageInfo
+    if arr then
+        util_game.do_something(arr, function(system_array, index, value)
+            if not self.written[value] then
+                local pnl_wrap = self:get_state_value(value, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
+                if not pnl_wrap:get_Visible() then
+                    return
+                end
+
+                self:get_state_value(value, "<criticalState>k__BackingField", true)
+                self:get_state_value(value, "<State>k__BackingField", true)
+                self.written[value] = true
+            end
+        end)
+    end
+
+    return self.written
+end
+
 ---@param key HudBaseWriteKey
 function this:reset(key)
     if not self.initialized then

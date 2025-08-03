@@ -53,6 +53,7 @@ local ammo_slider = {
 local progress_reset_arr = false
 local clear_map_navi = true
 local name_other_master_pl_pos = Vector3f.new(0, 0, 0)
+local dmg_static = false
 
 local function is_ok()
     return mod.initialized and config.get("mod.enabled")
@@ -1260,11 +1261,17 @@ end
 function this.update_damage_numbers_post(retval)
     local dmg, guiid = get_elem_consume_t("DamageNumbers", ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
     if dmg then
-        util_table.do_something(dmg:get_dmg(), function(_, key, _)
+        util_table.do_something(dmg_static and dmg:get_dmg_static() or dmg:get_dmg(), function(_, key, _)
             ---@diagnostic disable-next-line: param-type-mismatch
             dmg:write(key, guiid, nil)
         end)
     end
+
+    dmg_static = false
+end
+
+function this.update_damage_numbers_static_pre(args)
+    dmg_static = util_ref.to_bool(args[9])
 end
 
 function this.update_training_room_hud_post(retval)

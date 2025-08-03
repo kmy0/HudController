@@ -178,6 +178,12 @@ m.hook(
 m.hook("app.GUI020016.guiHudUpdate()", hook.name_other_update_player_pos_pre)
 m.hook("app.GUI020021.guiUpdate()", util.ref.capture_this, hook.update_target_reticle_post)
 m.hook("app.GUI000008.guiLateUpdate()", util.ref.capture_this, hook.update_menu_button_guide_post)
+m.hook(
+    "app.GUI020020.requestDamage(via.vec3, System.Single, app.GUI020020.State, app.TARGET_ACCESS_KEY.CATEGORY, "
+        .. "app.GUI020020.DAMAGE_TYPE, app.GUI020020.CRITICAL_STATE, System.Boolean, "
+        .. "System.Boolean, System.Action`1<app.GUI020020.DAMAGE_INFO>)",
+    hook.update_damage_numbers_static_pre
+)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then
