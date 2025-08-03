@@ -144,13 +144,7 @@ function this:reset_child(hudbase, gui_id, ctrl, key)
         self:reset_ctrl(c, key)
     end
 
-    local children_keys = self:get_children_keys()
-    for i = 1, #children_keys do
-        local child = self.children[children_keys[i]]
-        if self.write_nodes[child] then
-            child:reset_child(hudbase, gui_id, child_ctrls, key)
-        end
-    end
+    self:reset_children(hudbase, gui_id, child_ctrls, key)
 end
 
 ---@param hudbase app.GUIHudBase

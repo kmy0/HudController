@@ -534,13 +534,20 @@ function this:reset(key)
 
     for _, args in pairs(self:get_all_ctrl()) do
         self:reset_ctrl(args.ctrl, key)
+        self:reset_children(args.hud_base, args.gui_id, args.ctrl, key)
+    end
+end
 
-        local children_keys = self:get_children_keys()
-        for i = 1, #children_keys do
-            local child = self.children[children_keys[i]]
-            if self.write_nodes[child] then
-                child:reset_child(args.hud_base, args.gui_id, args.ctrl, key)
-            end
+---@param hudbase app.GUIHudBase
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control | via.gui.Control[]
+---@param key HudBaseWriteKey
+function this:reset_children(hudbase, gui_id, ctrl, key)
+    local children_keys = self:get_children_keys()
+    for i = 1, #children_keys do
+        local child = self.children[children_keys[i]]
+        if self.write_nodes[child] then
+            child:reset_child(hudbase, gui_id, ctrl, key)
         end
     end
 end

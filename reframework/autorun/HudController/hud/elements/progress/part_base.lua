@@ -131,15 +131,8 @@ function this:reset_specific(key, ctrl)
     end
 
     self:reset_ctrl(ctrl, key)
-
-    local children_keys = self:get_children_keys()
-    for i = 1, #children_keys do
-        local child = self.children[children_keys[i]]
-        if self.write_nodes[child] then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            child:reset_child(nil, nil, ctrl, key)
-        end
-    end
+    ---@diagnostic disable-next-line: param-type-mismatch
+    self:reset_children(nil, nil, ctrl, key)
 end
 
 ---@protected

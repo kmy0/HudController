@@ -104,14 +104,8 @@ function this:reset(key)
     self.pos_cache = {}
     util_table.do_something(self:get_all_panels(), function(_, _, value)
         self:reset_ctrl(value, key)
-        local children_keys = self:get_children_keys()
-        for i = 1, #children_keys do
-            local child = self.children[children_keys[i]]
-            if self.write_nodes[child] then
-                ---@diagnostic disable-next-line: param-type-mismatch
-                child:reset_child(nil, nil, value, key)
-            end
-        end
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self:reset_children(nil, nil, value, key)
     end)
 end
 

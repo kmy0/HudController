@@ -99,13 +99,8 @@ function this:reset(key)
     local pnl = self:get_pnl_all()
     if hudbase and pnl then
         self:reset_ctrl(pnl, key)
-        ---@diagnostic disable-next-line: no-unknown
-        util_table.do_something(self.children, function(_, _, child)
-            if self.write_nodes[child] then
-                ---@diagnostic disable-next-line: param-type-mismatch
-                child:reset_child(hudbase, hudbase:get_ID(), pnl, key)
-            end
-        end)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self:reset_children(hudbase, hudbase:get_ID(), pnl, key)
     end
 end
 
