@@ -19,7 +19,8 @@ function this:new(args, parent)
     local o = part_task.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         local pnl = this._get_panel(s)
         if pnl then
-            parent.children.task:reset_specific(nil, pnl)
+            ---@diagnostic disable-next-line: param-type-mismatch
+            parent.children.task:reset_specific(nil, nil, pnl)
             return pnl
         end
     end)

@@ -537,6 +537,18 @@ function this:reset(key)
         self:reset_children(args.hud_base, args.gui_id, args.ctrl, key)
     end
 end
+---@param hudbase app.GUIHudBase
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control
+---@param key HudBaseWriteKey
+function this:reset_specific(hudbase, gui_id, ctrl, key)
+    if not self.initialized then
+        return
+    end
+
+    self:reset_ctrl(ctrl, key)
+    self:reset_children(hudbase, gui_id, ctrl, key)
+end
 
 ---@param hudbase app.GUIHudBase
 ---@param gui_id app.GUIID.ID

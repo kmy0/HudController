@@ -123,18 +123,6 @@ function this:set_num_offset_x(num_offset_x)
     end
 end
 
----@param key HudBaseWriteKey
----@param ctrl via.gui.Control
-function this:reset_specific(key, ctrl)
-    if not self.initialized then
-        return
-    end
-
-    self:reset_ctrl(ctrl, key)
-    ---@diagnostic disable-next-line: param-type-mismatch
-    self:reset_children(nil, nil, ctrl, key)
-end
-
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean

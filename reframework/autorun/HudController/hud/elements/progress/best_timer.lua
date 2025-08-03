@@ -19,7 +19,8 @@ function this:new(args, parent)
     local o = quest_timer.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
         local pnl = this._get_panel(s)
         if pnl then
-            parent.children.timer:reset_specific(nil, pnl)
+            ---@diagnostic disable-next-line: param-type-mismatch
+            parent.children.timer:reset_specific(nil, nil, pnl)
         end
         return pnl
     end)
