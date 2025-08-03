@@ -167,13 +167,7 @@ function this:write_child(hudbase, gui_id, ctrl)
         return
     end
 
-    local children_keys = self:get_children_keys()
-    for i = 1, #children_keys do
-        local child = self.children[children_keys[i]]
-        if self.write_nodes[child] then
-            child:write_child(hudbase, gui_id, child_ctrls)
-        end
-    end
+    self:write_children(hudbase, gui_id, child_ctrls)
 end
 
 ---@param name_key string

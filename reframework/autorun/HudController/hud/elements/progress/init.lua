@@ -111,13 +111,7 @@ function this:write(hudbase, gui_id, ctrl)
     end
 
     if self:get_GUI020018()._DispSmallMissionTargetList:get_Count() > 0 then
-        local children_keys = self:get_children_keys()
-        for i = 1, #children_keys do
-            local child = self.children[children_keys[i]]
-            if self.write_nodes[child] then
-                child:write_child(hudbase, gui_id, ctrl)
-            end
-        end
+        self:write_children(hudbase, gui_id, ctrl)
     end
 end
 

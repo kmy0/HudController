@@ -622,6 +622,13 @@ function this:write(hudbase, gui_id, ctrl)
         return
     end
 
+    self:write_children(hudbase, gui_id, ctrl)
+end
+
+---@param hudbase app.GUIHudBase
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control | via.gui.Control[]
+function this:write_children(hudbase, gui_id, ctrl)
     local children_keys = self:get_children_keys()
     for i = 1, #children_keys do
         local child = self.children[children_keys[i]]
