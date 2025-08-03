@@ -29,6 +29,7 @@ local this = {
     training_room_hud = require("HudController.hud.elements.training_room_hud"),
     slinger_reticle = require("HudController.hud.elements.slinger_reticle"),
     menu_button_guide = require("HudController.hud.elements.menu_button_guide"),
+    target_reticle = require("HudController.hud.elements.target_reticle"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.VITAL] = require("HudController.hud.def.vital_base"),
@@ -58,6 +59,7 @@ local this = {
     [hud_enum.TRAINING_ROOM_HUD] = require("HudController.hud.elements.training_room_hud"),
     [hud_enum.SLINGER_RETICLE] = require("HudController.hud.elements.slinger_reticle"),
     [hud_enum.MENU_BUTTON_GUIDE] = require("HudController.hud.elements.menu_button_guide"),
+    [hud_enum.TARGET_RETICLE] = require("HudController.hud.elements.target_reticle"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -85,6 +87,7 @@ local this = {
     TrainingRoomHud = "TRAINING_ROOM_HUD",
     SlingerReticle = "SLINGER_RETICLE",
     MenuButtonGuide = "MENU_BUTTON_GUIDE",
+    TargetReticle = "TARGET_RETICLE",
     --
     HEALTH = require("HudController.hud.elements.health"),
     WEAPON = require("HudController.hud.elements.weapon"),
@@ -112,6 +115,7 @@ local this = {
     TRAINING_ROOM_HUD = require("HudController.hud.elements.training_room_hud"),
     SLINGER_RETICLE = require("HudController.hud.elements.slinger_reticle"),
     MENU_BUTTON_GUIDE = require("HudController.hud.elements.menu_button_guide"),
+    TARGET_RETICLE = require("HudController.hud.elements.target_reticle"),
 }
 
 return this

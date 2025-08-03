@@ -1468,7 +1468,7 @@ function this.disable_porter_nav_pre(args)
 end
 
 function this.update_target_reticle_post(retval)
-    local hud_elem, guiid = get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
+    local hud_elem, guiid = get_elem_consume_t("TargetReticle", ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
     if not hud_elem then
         return
     end
