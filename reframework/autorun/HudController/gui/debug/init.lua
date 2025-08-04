@@ -8,6 +8,7 @@
 
 local config = require("HudController.config")
 local elem = require("HudController.gui.debug.elem")
+local gui_util = require("HudController.gui.util")
 local play_object = require("HudController.hud.play_object")
 local set = require("HudController.gui.set")
 local util_table = require("HudController.util.misc.table")
@@ -27,7 +28,7 @@ local this = {
     sub_window_pos = {},
     snapshot = {},
     first_frame = true,
-    window_size = 132,
+    window_size = 138,
 }
 
 ---@param panel AceElem
@@ -62,14 +63,33 @@ local function draw_option_window(panel, key)
         imgui.spacing()
         imgui.indent(3)
 
-        if imgui.button(string.format("%s##%s", panel.visible and "Hide" or "Show", key), button_size) then
+        if
+            imgui.button(
+                string.format(
+                    "%s##%s",
+                    panel.visible and config.lang.tr("debug.button_hide") or config.lang.tr("debug.button_show"),
+                    key
+                ),
+                button_size
+            )
+        then
             panel.obj:set_Visible(not panel.visible)
             panel.obj:set_ForceInvisible(panel.visible)
         end
 
         imgui.same_line()
 
-        if imgui.button(string.format("%s##%s", panel.draw_name and "Hide Pos" or "Draw Pos", key), button_size) then
+        if
+            imgui.button(
+                string.format(
+                    "%s##%s",
+                    panel.draw_name and config.lang.tr("debug.button_hide_pos")
+                        or config.lang.tr("debug.button_draw_pos"),
+                    key
+                ),
+                button_size
+            )
+        then
             panel.draw_name = not panel.draw_name
         end
 
@@ -79,7 +99,12 @@ local function draw_option_window(panel, key)
             panel.children
             and #panel.children > 0
             and imgui.button(
-                string.format("%s Chain##%s", not panel.chain_state and "Open" or "Close", key),
+                string.format(
+                    "%s##%s",
+                    not panel.chain_state and config.lang.tr("debug.button_open_chain")
+                        or config.lang.tr("debug.button_close_chain"),
+                    key
+                ),
                 button_size
             )
         then
@@ -91,7 +116,7 @@ local function draw_option_window(panel, key)
 
         imgui.same_line()
 
-        if imgui.button("Copy Path##" .. key, button_size) then
+        if imgui.button(string.format("%s##%s", config.lang.tr("debug.button_copy_args"), key), button_size) then
             imgui.set_clipboard(elem.get_chain(panel))
         end
 
@@ -209,8 +234,11 @@ function this.draw()
         imgui.push_font(config.lang.font)
     end
 
-    config.current.gui.debug.is_opened =
-        imgui.begin_window("HudController Debug", config.current.gui.debug.is_opened, this.window.flags)
+    config.current.gui.debug.is_opened = imgui.begin_window(
+        string.format("%s %s", config.name, config.lang.tr("debug.name")),
+        config.current.gui.debug.is_opened,
+        this.window.flags
+    )
 
     if not config.current.gui.debug.is_opened then
         if config.lang.font then
@@ -234,13 +262,13 @@ function this.draw()
     imgui.begin_child_window("debug_child_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
-    if imgui.button("Clear HUD Defaults") then
+    if imgui.button(gui_util.tr("debug.button_clear_default")) then
         play_object.default.clear()
     end
 
     imgui.same_line()
 
-    local changed = set.checkbox("Show Disabled", "debug.show_disabled")
+    local changed = set.checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
 
     local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
         local gui_elem = this.ace_gui_elements[value]
@@ -248,13 +276,13 @@ function this.draw()
     end)
     keys = util_table.sort(util_table.values(keys))
 
-    if imgui.button("Snapshot") then
+    if imgui.button(gui_util.tr("debug.button_snapshot")) then
         this.snapshot = util_table.deep_copy(keys)
     end
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(this.snapshot))
-    changed = set.checkbox("Filter", "debug.is_filter")
+    changed = set.checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
     imgui.end_disabled()
 
     if config.current.debug.is_filter and not util_table.empty(this.snapshot) then
@@ -264,10 +292,10 @@ function this.draw()
         keys = util_table.sort(util_table.values(keys))
     end
 
-    changed = set.checkbox("Enable Debug Log", "debug.is_debug")
-    imgui.text("Right click tree nodes for options")
-    imgui.text("H - Hidden")
-    imgui.text("S - Has States")
+    changed = set.checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
+    imgui.text(config.lang.tr("debug.text_option_info"))
+    imgui.text(string.format("H - %s", config.lang.tr("debug.text_hidden")))
+    imgui.text(string.format("S - %s", config.lang.tr("debug.text_states")))
 
     this.window_size = imgui.get_cursor_pos().y - pos.y
 
