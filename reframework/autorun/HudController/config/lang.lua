@@ -374,6 +374,7 @@ this.default = {
         next_line = "Next Line",
         edge = "Edge",
         tooltip = "Tooltip",
+        group = "Group",
     },
 }
 
