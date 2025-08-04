@@ -54,6 +54,12 @@ this.default = {
         button_open_chain = "Open Chain",
         button_close_chain = "Close Chain",
         button_copy_args = "Copy Args",
+        text_pos_info = "If the element's position (shown in red or white text) is not visible on screen,\nit means the element is located at coordinates (0, 0)",
+        tooltip_clear_default = "Clear default settings for all elements.\nThese settings are used to restore element values when\nswitching profiles, resetting scripts, or disabling options",
+        tooltip_show_disabled = "Show disabled gui elements",
+        tooltip_snapshot = "Save all element keys to be used with the filter",
+        tooltip_filter = "Filter out elements present in the snapshot",
+        tooltip_copy_args = "Copy arguments for use with hud.play_object.control.get\nor hud.play_object.child.get functions",
     },
     menu = {
         config = {

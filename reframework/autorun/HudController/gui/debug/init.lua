@@ -11,6 +11,7 @@ local elem = require("HudController.gui.debug.elem")
 local gui_util = require("HudController.gui.util")
 local play_object = require("HudController.hud.play_object")
 local set = require("HudController.gui.set")
+local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
 ---@class GuiDebug
@@ -28,7 +29,7 @@ local this = {
     sub_window_pos = {},
     snapshot = {},
     first_frame = true,
-    window_size = 138,
+    window_size = 170,
 }
 
 ---@param panel AceElem
@@ -119,6 +120,7 @@ local function draw_option_window(panel, key)
         if imgui.button(string.format("%s##%s", config.lang.tr("debug.button_copy_args"), key), button_size) then
             imgui.set_clipboard(elem.get_chain(panel))
         end
+        util_imgui.tooltip(config.lang.tr("debug.tooltip_copy_args"))
 
         if panel.states and #panel.states > 1 then
             imgui.separator()
@@ -265,10 +267,12 @@ function this.draw()
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
         play_object.default.clear()
     end
+    util_imgui.tooltip(config.lang.tr("debug.tooltip_clear_default"))
 
     imgui.same_line()
 
     local changed = set.checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
+    util_imgui.tooltip(config.lang.tr("debug.tooltip_show_disabled"))
 
     local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
         local gui_elem = this.ace_gui_elements[value]
@@ -279,10 +283,12 @@ function this.draw()
     if imgui.button(gui_util.tr("debug.button_snapshot")) then
         this.snapshot = util_table.deep_copy(keys)
     end
+    util_imgui.tooltip(config.lang.tr("debug.tooltip_snapshot"))
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(this.snapshot))
     changed = set.checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
+    util_imgui.tooltip(config.lang.tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
     if config.current.debug.is_filter and not util_table.empty(this.snapshot) then
@@ -296,8 +302,10 @@ function this.draw()
     imgui.text(config.lang.tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang.tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang.tr("debug.text_states")))
+    imgui.text(config.lang.tr("debug.text_pos_info"))
 
-    this.window_size = imgui.get_cursor_pos().y - pos.y
+    local spacing = 4
+    this.window_size = imgui.get_cursor_pos().y - pos.y - spacing
 
     imgui.unindent(2)
     imgui.end_child_window()

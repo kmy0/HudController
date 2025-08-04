@@ -91,7 +91,7 @@ function this.draw()
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
 
     gui_elements.choice.draw_element()
-    local spacing = 3
+    local spacing = 4
     this.window_size = imgui.get_cursor_pos().y - pos.y - spacing
 
     imgui.end_disabled()
