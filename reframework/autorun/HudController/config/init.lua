@@ -39,6 +39,7 @@
 
 ---@class (exact) GuiSettings
 ---@field main WindowState
+---@field debug WindowState
 ---@field lang GuiLanguage
 
 ---@class (exact) ModSettings
@@ -63,10 +64,16 @@
 ---@field slider_weapon_bind integer
 ---@field slider_key_bind integer
 
+---@class (exact) DebugSettings
+---@field show_disabled boolean
+---@field is_filter boolean
+---@field is_debug boolean
+
 ---@class (exact) Settings
 ---@field version string
 ---@field gui GuiSettings
 ---@field mod ModSettings
+---@field debug DebugSettings
 
 ---@class Config
 ---@field lang Language
@@ -119,6 +126,13 @@ this.default = {
             size_y = 700,
             is_opened = false,
         },
+        debug = {
+            pos_x = 50,
+            pos_y = 50,
+            size_x = 800,
+            size_y = 700,
+            is_opened = false,
+        },
         lang = {
             file = "en-us",
             fallback = true,
@@ -162,6 +176,11 @@ this.default = {
         combo_option_key_bind = 1,
         slider_weapon_bind = 1,
         slider_key_bind = 1,
+    },
+    debug = {
+        show_disabled = false,
+        is_filter = false,
+        is_debug = false,
     },
 }
 

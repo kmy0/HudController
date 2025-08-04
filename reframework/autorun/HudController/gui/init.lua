@@ -19,7 +19,6 @@ local this = {
     window = {
         flags = 1024 | 1 << 3 | 1 << 4,
         condition = 2,
-        font = nil,
     },
 }
 

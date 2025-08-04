@@ -200,7 +200,7 @@ re.on_frame(function()
 
     if not reframework:is_drawing_ui() then
         config.current.gui.main.is_opened = false
-        gui_debug.is_opened = false
+        config.current.gui.debug.is_opened = false
     end
 
     if config.current.gui.main.is_opened then
@@ -211,7 +211,7 @@ re.on_frame(function()
         grid.draw()
     end
 
-    if gui_debug.is_opened then
+    if config.current.gui.debug.is_opened then
         gui_debug.draw()
     end
 

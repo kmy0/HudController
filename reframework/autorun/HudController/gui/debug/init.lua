@@ -1,21 +1,32 @@
+---@class (exact) GuiDebug
+---@field window GuiWindow
+---@field sub_window GuiWindow
+---@field ace_gui_elements table<string, AceGUI>
+---@field sub_window_pos table<string, Vector2f>
+---@field snapshot string[]
+---@field first_frame boolean
+
 local config = require("HudController.config")
 local elem = require("HudController.gui.debug.elem")
 local play_object = require("HudController.hud.play_object")
+local set = require("HudController.gui.set")
 local util_table = require("HudController.util.misc.table")
 
-local this = { is_opened = false, show_disabled = false, is_filter = false }
-local window = {
-    flags = 0,
-    condition = 2,
-    font = nil,
-    pos = { 50, 50 },
-    size = { 800, 700 },
+local this = {
+    window = {
+        flags = 0,
+        condition = 2,
+    },
+    sub_window = {
+        flags = 1 << 1 | 1 << 2 | 1 << 8 | 1 << 6 | 1 << 5,
+        condition = 0,
+    },
+    ace_gui_elements = {},
+    ---@type table<string, Vector2f>
+    sub_window_pos = {},
+    snapshot = {},
+    first_frame = true,
 }
-local ace_gui_elements = {}
----@type table<string, Vector2f>
-local sub_window = {}
-local snapshot = {}
-local first_frame = true
 
 ---@param panel AceElem
 ---@param f fun(panel: AceElem)
@@ -30,22 +41,18 @@ end
 ---@param key string
 local function draw_option_window(panel, key)
     if imgui.is_mouse_clicked(1) and imgui.is_item_hovered() then
-        sub_window = {}
-        sub_window[key] = imgui.get_mouse()
+        this.sub_window_pos = {}
+        this.sub_window_pos[key] = imgui.get_mouse()
     end
 
-    if sub_window[key] then
+    if this.sub_window_pos[key] then
         local button_size = { 100, 20 }
 
-        imgui.set_next_window_pos(sub_window[key])
-        local open = imgui.begin_window(
-            string.format("%s##window_%s", panel.name, key),
-            true,
-            1 << 1 | 1 << 2 | 1 << 8 | 1 << 6 | 1 << 5
-        )
+        imgui.set_next_window_pos(this.sub_window_pos[key])
+        local open = imgui.begin_window(string.format("%s##window_%s", panel.name, key), true, this.sub_window.flags)
 
         if not open then
-            sub_window[key] = nil
+            this.sub_window_pos[key] = nil
             imgui.end_window()
             return
         end
@@ -116,13 +123,13 @@ local function draw_option_window(panel, key)
         if
             lbm
             and (
-                mouse.x < sub_window[key].x
-                or mouse.y < sub_window[key].y
-                or mouse.x > sub_window[key].x + win_size.x
-                or mouse.y > sub_window[key].y + win_size.y
+                mouse.x < this.sub_window_pos[key].x
+                or mouse.y < this.sub_window_pos[key].y
+                or mouse.x > this.sub_window_pos[key].x + win_size.x
+                or mouse.y > this.sub_window_pos[key].y + win_size.y
             )
         then
-            sub_window[key] = nil
+            this.sub_window_pos[key] = nil
         end
 
         imgui.spacing()
@@ -152,7 +159,7 @@ local function draw_panel_tree(panel, key)
     end
 
     if not util_table.empty(panel.children or {}) then
-        if not first_frame then
+        if not this.first_frame then
             imgui.set_next_item_open(panel.chain_state)
         end
 
@@ -187,19 +194,36 @@ local function draw_panel_tree(panel, key)
 end
 
 function this.draw()
-    imgui.set_next_window_pos(window.pos, window.condition)
-    imgui.set_next_window_size(window.size, window.condition)
+    imgui.set_next_window_pos(
+        Vector2f.new(config.current.gui.debug.pos_x, config.current.gui.debug.pos_y),
+        this.window.condition
+    )
+    imgui.set_next_window_size(
+        Vector2f.new(config.current.gui.debug.size_x, config.current.gui.debug.size_y),
+        this.window.condition
+    )
 
-    this.is_opened = imgui.begin_window("HudController Debug", this.is_opened, window.flags)
+    if config.lang.font then
+        imgui.push_font(config.lang.font)
+    end
 
-    if not this.is_opened then
-        ace_gui_elements = {}
+    config.current.gui.debug.is_opened =
+        imgui.begin_window("HudController Debug", config.current.gui.debug.is_opened, this.window.flags)
+
+    if not config.current.gui.debug.is_opened then
+        if config.lang.font then
+            imgui.pop_font()
+        end
+
+        this.sub_window_pos = {}
+        this.snapshot = {}
+        this.ace_gui_elements = {}
         imgui.end_window()
         return
     end
 
-    if util_table.empty(ace_gui_elements) then
-        ace_gui_elements = elem.get_gui()
+    if util_table.empty(this.ace_gui_elements) then
+        this.ace_gui_elements = elem.get_gui()
     end
 
     imgui.spacing()
@@ -211,31 +235,31 @@ function this.draw()
 
     imgui.same_line()
 
-    _, this.show_disabled = imgui.checkbox("Show Disabled", this.show_disabled)
-    local keys = util_table.filter(util_table.sort(util_table.keys(ace_gui_elements)), function(key, value)
-        local gui_elem = ace_gui_elements[value]
-        return this.show_disabled or gui_elem.gui:get_Enabled()
+    local changed = set.checkbox("Show Disabled", "debug.show_disabled")
+
+    local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
+        local gui_elem = this.ace_gui_elements[value]
+        return config.current.debug.show_disabled or gui_elem.gui:get_Enabled()
     end)
     keys = util_table.sort(util_table.values(keys))
 
     if imgui.button("Snapshot") then
-        snapshot = util_table.deep_copy(keys)
+        this.snapshot = util_table.deep_copy(keys)
     end
 
     imgui.same_line()
-    imgui.begin_disabled(util_table.empty(snapshot))
-    _, this.is_filter = imgui.checkbox("Filter", this.is_filter)
+    imgui.begin_disabled(util_table.empty(this.snapshot))
+    changed = set.checkbox("Filter", "debug.is_filter")
     imgui.end_disabled()
 
-    if this.is_filter and not util_table.empty(snapshot) then
+    if config.current.debug.is_filter and not util_table.empty(this.snapshot) then
         keys = util_table.filter(keys, function(key, value)
-            return not util_table.contains(snapshot, value)
+            return not util_table.contains(this.snapshot, value)
         end)
         keys = util_table.sort(util_table.values(keys))
     end
 
-    _, config.is_debug = imgui.checkbox("Enable Debug Log", config.is_debug)
-
+    changed = set.checkbox("Enable Debug Log", "debug.is_debug")
     imgui.text("Right click tree nodes for options")
     imgui.text("H - Hidden")
     imgui.text("S - Has States")
@@ -245,7 +269,7 @@ function this.draw()
 
     for i = 1, #keys do
         local key = keys[i]
-        local gui_elem = ace_gui_elements[key]
+        local gui_elem = this.ace_gui_elements[key]
         ---@diagnostic disable-next-line: missing-fields
         elem.draw_pos({ obj = gui_elem.root }, key, 4278190335)
 
@@ -254,9 +278,16 @@ function this.draw()
         end
     end
 
-    imgui.end_window()
+    if config.lang.font then
+        imgui.pop_font()
+    end
 
-    first_frame = false
+    if changed then
+        config.save()
+    end
+
+    imgui.end_window()
+    this.first_frame = false
 end
 
 return this

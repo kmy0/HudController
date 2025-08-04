@@ -467,7 +467,8 @@ function this.draw()
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
 
     if imgui.button("Debug") then
-        gui_debug.is_opened = not gui_debug.is_opened
+        config.current.gui.debug.is_opened = not config.current.gui.debug.is_opened
+        config.save()
     end
 end
 
