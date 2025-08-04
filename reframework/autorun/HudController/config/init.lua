@@ -87,7 +87,6 @@
 ---@field hud_default_path string
 ---@field option_default_path string
 ---@field config_path string
----@field is_debug boolean
 ---@field default Settings
 ---@field current Settings
 ---@field save_timer Timer
@@ -112,7 +111,6 @@ this.option_default_path = this.name .. "/option_default.json"
 this.grid_size = 160
 this.porter_timeout = 3
 this.handler_timeout = 5
-this.is_debug = false
 
 ---@diagnostic disable-next-line: missing-fields
 this.current = {}

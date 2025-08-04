@@ -1,4 +1,4 @@
----@class (exact) GuiDebug
+---@class GuiDebug
 ---@field window GuiWindow
 ---@field sub_window GuiWindow
 ---@field ace_gui_elements table<string, AceGUI>
@@ -12,6 +12,7 @@ local play_object = require("HudController.hud.play_object")
 local set = require("HudController.gui.set")
 local util_table = require("HudController.util.misc.table")
 
+---@class GuiDebug
 local this = {
     window = {
         flags = 0,
@@ -26,6 +27,7 @@ local this = {
     sub_window_pos = {},
     snapshot = {},
     first_frame = true,
+    window_size = 132,
 }
 
 ---@param panel AceElem
@@ -229,6 +231,9 @@ function this.draw()
     imgui.spacing()
     imgui.indent(2)
 
+    imgui.begin_child_window("debug_child_window", { 0, this.window_size }, false, 1 << 3)
+    local pos = imgui.get_cursor_pos()
+
     if imgui.button("Clear HUD Defaults") then
         play_object.default.clear()
     end
@@ -264,9 +269,13 @@ function this.draw()
     imgui.text("H - Hidden")
     imgui.text("S - Has States")
 
+    this.window_size = imgui.get_cursor_pos().y - pos.y
+
     imgui.unindent(2)
+    imgui.end_child_window()
     imgui.separator()
 
+    imgui.begin_child_window("debug_elements_child_window", { -1, -1 }, false)
     for i = 1, #keys do
         local key = keys[i]
         local gui_elem = this.ace_gui_elements[key]
@@ -277,6 +286,7 @@ function this.draw()
             draw_panel_tree(gui_elem.ctrl, key)
         end
     end
+    imgui.end_child_window()
 
     if config.lang.font then
         imgui.pop_font()
