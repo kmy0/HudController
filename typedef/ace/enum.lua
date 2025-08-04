@@ -51,6 +51,7 @@
 ---@class app.cEmModuleScar.cScarParts.STATE : System.Enum
 ---@class app.GUI020015.DEFAULT_STATUS : System.Enum
 ---@class app.TARGET_ACCESS_KEY.CATEGORY : System.Enum
+---@class app.EnemyDef.ID : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

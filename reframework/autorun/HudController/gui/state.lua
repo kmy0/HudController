@@ -15,6 +15,7 @@
 ---@field option_bind Combo
 ---@field segment Combo
 ---@field page_alignment Combo
+---@field enemy_msg_type Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -81,6 +82,9 @@ local this = {
         end),
         page_alignment = combo:new(nil, function(a, b)
             return a.key < b.key
+        end),
+        enemy_msg_type = combo:new(nil, function(a, b)
+            return a.value < b.value
         end),
     },
     grid_ratio = {
@@ -153,6 +157,7 @@ function this.init()
         return not value:match("RADAR.-")
     end))
     this.combo.page_alignment:swap(ace_enum.page_alignment)
+    this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
     this.tr_combo()
 end
 

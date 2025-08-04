@@ -1,6 +1,7 @@
 local config = require("HudController.config")
 local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
+local m = require("HudController.util.ref.methods")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
@@ -190,6 +191,31 @@ end
 local function draw_notice(elem, elem_config, config_key)
     ---@cast elem_config NoticeConfig
     ---@cast elem Notice
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_tools"))
+    local item_config_key = config_key .. ".tools_enemy_message_type"
+    if not config.get(item_config_key .. "_combo") then
+        config.set(item_config_key .. "_combo", state.combo.item_decide:get_index(config.get(item_config_key)))
+    end
+
+    if
+        set.combo(
+            gui_util.tr("hud_element.entry.category_notice_enemy"),
+            item_config_key .. "_combo",
+            state.combo.enemy_msg_type.values
+        )
+    then
+        local key = state.combo.enemy_msg_type:get_key(config.get(item_config_key .. "_combo"))
+        config.set(item_config_key, key)
+
+        config.save()
+    end
+
+    imgui.same_line()
+
+    if imgui.button(config.lang.tr("hud_element.entry.button_send")) then
+        m.sendEnemyMessage(0, config.get(item_config_key))
+    end
 
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_system"))
     group_things(elem, elem_config.system_log, string.format("%s.%s", config_key, "system_log"), elem.set_system_log)

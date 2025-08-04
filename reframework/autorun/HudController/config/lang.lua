@@ -293,6 +293,8 @@ this.default = {
             category_state_behavior = "State Behavior",
             state = "State",
             box_hide_map_visible = "Hide When Map Visible",
+            category_tools = "Tools",
+            button_send = "Send",
         },
     },
     hud_subelement = {

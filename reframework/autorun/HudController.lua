@@ -29,6 +29,7 @@ m.getPlayObjectFullPath = m.wrap(m.get("app.GUIUtilApp.getFullPath(via.gui.PlayO
 m.getItemNum = m.wrap(m.get("app.ItemUtil.getItemNum(app.ItemDef.ID, app.ItemUtil.STOCK_TYPE)")) --[[@as fun(item_id: app.ItemDef.ID, stock_type: app.ItemUtil.STOCK_TYPE): System.Int32]]
 -- bool is something story related if false
 m.getHandlerNpcIDFixed = m.wrap(m.get("app.NpcPartnerUtil.getCurAdvisorID(System.Boolean)")) --[[@as fun(bool: System.Boolean): app.NpcDef.ID_Fixed]]
+m.sendEnemyMessage = m.wrap(m.get("app.ChatLogUtil.addEnemyLog(app.EnemyDef.ID, app.ChatDef.ENEMY_LOG_TYPE)")) --[[@as fun(em_id: app.EnemyDef.ID, msg_type: app.ChatDef.ENEMY_LOG_TYPE)]]
 
 m.hook("app.cGUIHudDisplayManager.applySetting(app.cGUIHudDisplayControl)", hook.update_pre, hook.update_post)
 m.hook("app.GUI020008.checkOpen()", util.ref.capture_this, hook.hide_radial_post)
