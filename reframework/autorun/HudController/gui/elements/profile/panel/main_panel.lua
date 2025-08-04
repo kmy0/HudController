@@ -383,6 +383,21 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_clock(elem, elem_config, config_key)
+    ---@cast elem_config ClockConfig
+    ---@cast elem Clock
+
+    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_clock_behavior"))
+    local item_config_key = config_key .. ".hide_map_visible"
+    if set.checkbox(gui_util.tr("hud_element.entry.box_hide_map_visible", item_config_key), item_config_key) then
+        elem:set_hide_map_visible(elem_config.hide_map_visible)
+        config.save()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -401,5 +416,6 @@ this.funcs[mod.enum.hud_type.AMMO] = draw_ammo
 this.funcs[mod.enum.hud_type.RADIAL] = draw_radial
 this.funcs[mod.enum.hud_type.SLINGER_RETICLE] = draw_slinger_reticle
 this.funcs[mod.enum.hud_type.SHARPNESS] = draw_sharpness
+this.funcs[mod.enum.hud_type.CLOCK] = draw_clock
 
 return this

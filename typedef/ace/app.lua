@@ -34,6 +34,7 @@
 ---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
 ---@class app.OtomoCharacter : app.CharacterBase
+---@class app.GUI060000 : app.GUIBaseApp
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -52,6 +53,7 @@
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIBack fun(self: app.cGUIMapController): app.GUI060001
+---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
 
 ---@class app.GUI020018Accessor : app.cGUIAppAccessorBase
 ---@field MissionGuideGUI app.GUI020018

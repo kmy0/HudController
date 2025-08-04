@@ -292,6 +292,7 @@ this.default = {
             small = "Small",
             category_state_behavior = "State Behavior",
             state = "State",
+            box_hide_map_visible = "Hide When Map Visible",
         },
     },
     hud_subelement = {

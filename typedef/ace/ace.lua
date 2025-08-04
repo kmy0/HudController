@@ -41,6 +41,7 @@
 ---@field _RootWindow via.gui.Control
 ---@field _PartsList System.Array<ace.cGUIPartsBase>
 ---@field _InputCtrls System.Array<ace.cGUIInputCtrl>
+---@field _GUI via.gui.GUI
 
 ---@class ace.cSafeContinueFlagGroup : via.clr.ManagedObject
 ---@field check fun(self: ace.cSafeContinueFlagGroup, flag: System.UInt32): System.Boolean
