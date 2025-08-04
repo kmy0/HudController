@@ -3,7 +3,7 @@ local elem = require("HudController.gui.debug.elem")
 local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
 
-local this = { is_opened = false, show_disabled = false }
+local this = { is_opened = false, show_disabled = false, is_filter = false }
 local window = {
     flags = 0,
     condition = 2,
@@ -14,6 +14,8 @@ local window = {
 local ace_gui_elements = {}
 ---@type table<string, Vector2f>
 local sub_window = {}
+local snapshot = {}
+local first_frame = true
 
 ---@param panel AceElem
 ---@param f fun(panel: AceElem)
@@ -53,6 +55,7 @@ local function draw_option_window(panel, key)
 
         if imgui.button(string.format("%s##%s", panel.visible and "Hide" or "Show", key), button_size) then
             panel.obj:set_Visible(not panel.visible)
+            panel.obj:set_ForceInvisible(panel.visible)
         end
 
         imgui.same_line()
@@ -149,7 +152,9 @@ local function draw_panel_tree(panel, key)
     end
 
     if not util_table.empty(panel.children or {}) then
-        imgui.set_next_item_open(panel.chain_state)
+        if not first_frame then
+            imgui.set_next_item_open(panel.chain_state)
+        end
 
         local node = imgui.tree_node_str_id(string.format("%s##%s", panel.name, key), name)
         draw_option_window(panel, key)
@@ -207,6 +212,28 @@ function this.draw()
     imgui.same_line()
 
     _, this.show_disabled = imgui.checkbox("Show Disabled", this.show_disabled)
+    local keys = util_table.filter(util_table.sort(util_table.keys(ace_gui_elements)), function(key, value)
+        local gui_elem = ace_gui_elements[value]
+        return this.show_disabled or gui_elem.gui:get_Enabled()
+    end)
+    keys = util_table.sort(util_table.values(keys))
+
+    if imgui.button("Snapshot") then
+        snapshot = util_table.deep_copy(keys)
+    end
+
+    imgui.same_line()
+    imgui.begin_disabled(util_table.empty(snapshot))
+    _, this.is_filter = imgui.checkbox("Filter", this.is_filter)
+    imgui.end_disabled()
+
+    if this.is_filter and not util_table.empty(snapshot) then
+        keys = util_table.filter(keys, function(key, value)
+            return not util_table.contains(snapshot, value)
+        end)
+        keys = util_table.sort(util_table.values(keys))
+    end
+
     _, config.is_debug = imgui.checkbox("Enable Debug Log", config.is_debug)
 
     imgui.text("Right click tree nodes for options")
@@ -216,22 +243,20 @@ function this.draw()
     imgui.unindent(2)
     imgui.separator()
 
-    local keys = util_table.sort(util_table.keys(ace_gui_elements))
     for i = 1, #keys do
         local key = keys[i]
         local gui_elem = ace_gui_elements[key]
+        ---@diagnostic disable-next-line: missing-fields
+        elem.draw_pos({ obj = gui_elem.root }, key, 4278190335)
 
-        if this.show_disabled or gui_elem.gui:get_Enabled() then
-            ---@diagnostic disable-next-line: missing-fields
-            elem.draw_pos({ obj = gui_elem.root }, key, 4278190335)
-
-            if imgui.collapsing_header(key) then
-                draw_panel_tree(gui_elem.ctrl, key)
-            end
+        if imgui.collapsing_header(key) then
+            draw_panel_tree(gui_elem.ctrl, key)
         end
     end
 
     imgui.end_window()
+
+    first_frame = false
 end
 
 return this
