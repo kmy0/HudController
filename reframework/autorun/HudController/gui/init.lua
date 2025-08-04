@@ -20,6 +20,7 @@ local this = {
         flags = 1024 | 1 << 3 | 1 << 4,
         condition = 2,
     },
+    window_size = 46,
 }
 
 function this.draw()
@@ -82,17 +83,16 @@ function this.draw()
         not config.current.mod.enabled or (config.current.mod.enable_fade and fade_manager.is_active())
     )
 
-    local window_size = 48
-    if state.input_action then
-        window_size = window_size + 26
-    end
+    imgui.begin_child_window("hud_child_window", { 0, this.window_size }, false, 1 << 3)
+    local pos = imgui.get_cursor_pos()
 
-    imgui.begin_child_window("hud_child_window", { 0, window_size }, false, 1 << 3)
     gui_elements.choice.draw_hud()
 
     imgui.begin_disabled(util_table.empty(config.current.mod.hud))
 
     gui_elements.choice.draw_element()
+    local spacing = 3
+    this.window_size = imgui.get_cursor_pos().y - pos.y - spacing
 
     imgui.end_disabled()
     imgui.end_child_window()
