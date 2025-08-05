@@ -5,6 +5,7 @@ local m = require("HudController.util.ref.methods")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
+local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -213,8 +214,64 @@ local function draw_notice(elem, elem_config, config_key)
 
     imgui.same_line()
 
-    if imgui.button(config.lang.tr("hud_element.entry.button_send")) then
+    if imgui.button(gui_util.tr("hud_element.entry.button_send", item_config_key)) then
         m.sendEnemyMessage(0, config.get(item_config_key))
+    end
+
+    item_config_key = config_key .. ".cache_msg"
+    if set.checkbox(gui_util.tr("hud_element.entry.box_cache_messages", item_config_key), item_config_key) then
+        elem:set_cache_msg(elem_config.cache_msg)
+        config.save()
+    end
+
+    imgui.same_line()
+    if imgui.button(gui_util.tr("hud_element.entry.button_clear", item_config_key)) then
+        elem.message_log_cache:clear()
+    end
+
+    if elem_config.cache_msg then
+        if
+            imgui.begin_table(
+                "notice_cached_messages",
+                5,
+                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
+                Vector2f.new(0, 4 * 46)
+            )
+        then
+            for _, header in ipairs({
+                config.lang.tr("misc.text_row"),
+                config.lang.tr("misc.text_type"),
+                config.lang.tr("misc.text_sub_type"),
+                config.lang.tr("misc.text_other_type"),
+                config.lang.tr("misc.text_message"),
+            }) do
+                imgui.table_setup_column(header)
+            end
+
+            imgui.table_headers_row()
+            for i = #elem.message_log_cache, 1, -1 do
+                imgui.table_next_row()
+                local entry = elem.message_log_cache[i]
+
+                imgui.table_set_column_index(0)
+                imgui.text(i)
+
+                imgui.table_set_column_index(1)
+                imgui.text(entry.type)
+
+                imgui.table_set_column_index(2)
+                imgui.text(entry.sub_type)
+
+                imgui.table_set_column_index(3)
+                imgui.text(entry.other_type)
+
+                imgui.table_set_column_index(4)
+                imgui.text(util_misc.trunc_string(entry.msg))
+                util_imgui.tooltip(entry.msg)
+            end
+
+            imgui.end_table()
+        end
     end
 
     util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_system"))

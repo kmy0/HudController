@@ -185,6 +185,7 @@ m.hook(
         .. "System.Boolean, System.Action`1<app.GUI020020.DAMAGE_INFO>)",
     hook.update_damage_numbers_static_pre
 )
+m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", hook.cache_message_pre)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then

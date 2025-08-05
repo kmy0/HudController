@@ -83,4 +83,17 @@ function this.round(n, decimals)
     return math.floor(n * mult + 0.5) / mult
 end
 
+---@param str string
+---@param max_len integer?
+---@return string
+function this.trunc_string(str, max_len)
+    max_len = max_len or 25
+
+    if #str > max_len then
+        return string.sub(str, 1, max_len - 3) .. "..."
+    end
+
+    return str
+end
+
 return this

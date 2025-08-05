@@ -531,3 +531,10 @@
 
 ---@class app.GUI000008 : app.GUIBaseApp
 ---@field get_Control fun(self: app.GUI000008): via.gui.Panel
+
+---@class app.cGUI020100PanelBase : ace.cGUIPartsBase
+---@field get_Log fun(self: app.cGUI020100PanelBase): app.ChatDef.MessageElement
+---@field get_LogPanelBase fun(self: app.cGUI020100PanelBase): app.cGUIChatLogPanelBase
+
+---@class app.cGUIChatLogPanelBase : via.clr.ManagedObject
+---@field get_BasePanel fun(self: app.cGUIChatLogPanelBase): via.gui.Control

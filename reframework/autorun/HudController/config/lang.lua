@@ -36,6 +36,14 @@ this.default = {
         text_no = "No",
         text_rusure = "Are you sure?",
         text_drag = "⸽⸽",
+        text_type = "Type",
+        text_other_type = "Other Type",
+        text_sub_type = "Sub Type",
+        text_system = "System",
+        text_lobby = "Lobby",
+        text_unknown = " Unknown",
+        text_row = "Row",
+        text_message = "Message",
     },
     debug = {
         name = "Debug",
@@ -295,6 +303,8 @@ this.default = {
             box_hide_map_visible = "Hide When Map Visible",
             category_tools = "Tools",
             button_send = "Send",
+            box_cache_messages = "Cache Messages",
+            button_clear = "Clear",
         },
     },
     hud_subelement = {
