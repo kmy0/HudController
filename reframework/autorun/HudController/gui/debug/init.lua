@@ -305,7 +305,8 @@ function this.draw()
     imgui.text(config.lang.tr("debug.text_pos_info"))
 
     local spacing = 4
-    this.window_size = imgui.get_cursor_pos().y - pos.y - spacing
+    local size = imgui.get_cursor_pos().y - pos.y - spacing
+    this.window_size = size > 0 and size or this.window_size
 
     imgui.unindent(2)
     imgui.end_child_window()

@@ -92,7 +92,8 @@ function this.draw()
 
     gui_elements.choice.draw_element()
     local spacing = 4
-    this.window_size = imgui.get_cursor_pos().y - pos.y - spacing
+    local size = imgui.get_cursor_pos().y - pos.y - spacing
+    this.window_size = size > 0 and size or this.window_size
 
     imgui.end_disabled()
     imgui.end_child_window()
