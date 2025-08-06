@@ -87,7 +87,7 @@ function this.tr(key, ...)
     local suffix = { ... }
     table.insert(suffix, key)
 
-    local int = key:match("%d+")
+    local int = key:match("%d+$")
     ---@type string
     local msg
     if int then
