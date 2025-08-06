@@ -1542,4 +1542,24 @@ function this.update_menu_button_guide_post(retval)
     hud_elem:write(hudbase, guiid, hudbase:get_Control())
 end
 
+function this.hide_weapon_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_weapon") then
+        -- weapon cant be drawn otherwise
+        ace_player.set_continue_flag(rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"), false)
+    end
+end
+
+function this.hide_weapon_post(retval)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_weapon") then
+        util_misc.try(function()
+            local master_player = ace_player.get_master_char()
+            if master_player and not master_player:get_IsWeaponOn() then
+                ace_player.set_continue_flag(rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"), true)
+            end
+        end)
+    end
+end
+
 return this

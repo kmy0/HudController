@@ -33,6 +33,7 @@
 ---@field hide_wounds boolean
 ---@field show_wounds boolean
 ---@field disable_porter_tracking boolean
+---@field hide_weapon boolean
 
 local data = require("HudController.data")
 local hud_elements = require("HudController.hud.elements")
@@ -86,6 +87,7 @@ function this.get_hud_profile_config(key, name)
         hide_wounds = false,
         show_wounds = false,
         disable_porter_tracking = false,
+        hide_weapon = false,
     }
 end
 

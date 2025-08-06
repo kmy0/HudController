@@ -140,6 +140,14 @@ local function draw_options()
         ),
         "disable_scoutflies"
     ) or changed
+    changed = check_overriden(
+        set.checkbox(
+            gui_util.tr("hud.box_hide_weapon"),
+            string.format("mod.hud.int:%s.hide_weapon", config.current.mod.combo_hud)
+        ),
+        "hide_weapon"
+    ) or changed
+    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_weapon"), true)
 
     util_imgui.separator_text(config.lang.tr("hud.category_npc"))
     changed = check_overriden(

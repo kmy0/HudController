@@ -53,6 +53,22 @@ function this.check_continue_flag(flag)
     return flags:check(flag)
 end
 
+---@param flag app.HunterDef.CONTINUE_FLAG
+---@param value boolean
+function this.set_continue_flag(flag, value)
+    local master_player = this.get_master_char()
+    if not master_player then
+        return false
+    end
+
+    local flags = master_player._HunterContinueFlag
+    if value then
+        flags:on(flag)
+    else
+        flags:off(flag)
+    end
+end
+
 ---@return boolean
 function this.is_combat()
     local master_player = this.get_master_char()

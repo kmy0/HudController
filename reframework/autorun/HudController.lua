@@ -186,6 +186,7 @@ m.hook(
     hook.update_damage_numbers_static_pre
 )
 m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", hook.cache_message_pre)
+m.hook("ace.btable.cManager.updateTable()", hook.hide_weapon_pre, hook.hide_weapon_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then
