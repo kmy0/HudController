@@ -388,7 +388,6 @@ local function draw_elements()
 
         if header then
             panel.draw(elem, elem_config, config_key)
-            imgui.spacing()
         end
 
         if drag == elem_config then
