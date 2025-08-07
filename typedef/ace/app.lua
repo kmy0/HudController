@@ -146,6 +146,7 @@
 ---@field get_WeaponType fun(self: app.HunterCharacter): app.WeaponDef.TYPE
 ---@field get_IsCombat fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsWeaponOn fun(self: app.HunterCharacter): System.Boolean
+---@field get_IsWeaponOnAction fun(self: app.HunterCharacter): System.Boolean
 ---@field get_HunterExtend fun(self: app.HunterCharacter): app.HunterCharacter.cHunterExtendBase
 ---@field get_MeshFadeController fun(self: app.HunterCharacter): app.cMeshFadeController
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator

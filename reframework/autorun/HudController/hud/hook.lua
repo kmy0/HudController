@@ -1554,7 +1554,7 @@ function this.hide_weapon_post(retval)
     if hud_config and hud.get_hud_option("hide_weapon") then
         util_misc.try(function()
             local master_player = ace_player.get_master_char()
-            if master_player and not master_player:get_IsWeaponOn() then
+            if master_player and not master_player:get_IsWeaponOnAction() then
                 ace_player.set_continue_flag(rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"), true)
             end
         end)
