@@ -133,30 +133,39 @@ end
 function this.memoize(func, size, predicate, do_hash, deep_hash_table)
     local _cache = this:new(size)
 
-    return function(...)
-        ---@type any
-        local key
-        if do_hash then
-            key = hash.hash_args(deep_hash_table, ...)
-        else
-            key = { ... }
-            if #key > 0 then
-                ---@diagnostic disable-next-line: no-unknown
-                key = key[1]
+    local wrapped = {
+        clear = function()
+            cache:clear()
+        end,
+    }
+    setmetatable(wrapped, {
+        __call = function(self, ...)
+            ---@type any
+            local key
+            if do_hash then
+                key = hash.hash_args(deep_hash_table, ...)
             else
-                key = 1
+                key = { ... }
+                if #key > 0 then
+                    ---@diagnostic disable-next-line: no-unknown
+                    key = key[1]
+                else
+                    key = 1
+                end
             end
-        end
 
-        local cached = _cache:get(key)
-        if cached ~= nil and (not predicate or (predicate and predicate(cached, key))) then
-            return cached
-        end
+            local cached = _cache:get(key)
+            if cached ~= nil and (not predicate or (predicate and predicate(cached, key))) then
+                return cached
+            end
 
-        local ret = func(...)
-        _cache:set(key, ret)
-        return ret
-    end
+            local ret = func(...)
+            _cache:set(key, ret)
+            return ret
+        end,
+    })
+
+    return wrapped
 end
 
 return this
