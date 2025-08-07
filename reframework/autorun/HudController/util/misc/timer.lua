@@ -8,6 +8,7 @@
 ---@field protected _do_call boolean
 ---@field protected _do_restart boolean
 ---@field protected _instances table<string, Timer>
+---@field protected _restart_on_finish boolean
 
 ---@class Timer
 local this = {}
@@ -18,7 +19,8 @@ this._instances = {}
 ---@param limit integer
 ---@param callback fun()?
 ---@param start_finished boolean?
-function this.new(key, limit, callback, start_finished)
+---@param restart_on_finish boolean?
+function this.new(key, limit, callback, start_finished, restart_on_finish)
     local now = os.clock()
     local o = {
         key = key,
@@ -27,6 +29,7 @@ function this.new(key, limit, callback, start_finished)
         limit = limit,
         callback = callback,
         _finished = start_finished and true or false,
+        _restart_on_finish = restart_on_finish and true or false,
         _do_restart = false,
         _do_call = true,
     }
@@ -83,6 +86,10 @@ function this:update()
         self._do_call = false
     end
 
+    if self._finished and self._restart_on_finish then
+        self._do_restart = true
+    end
+
     return self._finished
 end
 
@@ -96,10 +103,11 @@ end
 ---@param limit integer
 ---@param callback fun()?
 ---@param start_finished boolean?
-function this.check(key, limit, callback, start_finished)
+---@param restart_on_finish boolean?
+function this.check(key, limit, callback, start_finished, restart_on_finish)
     local timer = this._instances[key]
     if not timer then
-        timer = this.new(key, limit, callback, start_finished)
+        timer = this.new(key, limit, callback, start_finished, restart_on_finish)
     end
 
     timer.limit = limit

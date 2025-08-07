@@ -169,15 +169,24 @@ function this.get_npc_id_from_fixed(npc_id_fixed)
     return npc_id:get_field("value__")
 end
 
+this.is_facility = cache.memoize(this.is_facility)
 this.is_talk = cache.memoize(this.is_talk)
 this.get_flags = cache.memoize(this.get_flags)
 this.get_npc_core = cache.memoize(this.get_npc_core, function(cached_value)
     ---@cast cached_value app.NpcCharacterCore
-    return cached_value:get_Valid()
+    return not cached_value:get_Started()
 end)
 this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
     ---@cast cached_value app.CharacterBase
     return cached_value:get_Valid()
 end)
+
+function this.clear_cache()
+    this.is_facility.clear()
+    this.is_talk.clear()
+    this.get_flags.clear()
+    this.get_npc_core.clear()
+    this.get_char_base.clear()
+end
 
 return this
