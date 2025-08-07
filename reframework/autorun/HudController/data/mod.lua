@@ -38,6 +38,7 @@ local this = {
             show_scar = "box_show_scar",
             disable_porter_tracking = "box_disable_porter_tracking",
             hide_weapon = "box_hide_weapon",
+            hide_pet = "box_hide_pet",
         },
     },
     initialized = false,

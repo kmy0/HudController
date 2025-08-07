@@ -192,6 +192,8 @@ this.default = {
         box_disable_porter_tracking = "Disable Monster Tracking",
         box_hide_weapon = "Hide Weapon",
         tooltip_hide_weapon = "Hide weapon when not drawn",
+        box_hide_pet = "Hide Palico",
+        tooltip_hide_pet = "Hides Palico outside of quests",
     },
     hud_element = {
         combo = "Hud Element",

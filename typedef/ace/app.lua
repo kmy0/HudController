@@ -33,7 +33,6 @@
 ---@class app.cEnemyEntrustEffectState : via.clr.ManagedObject
 ---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
----@class app.OtomoCharacter : app.CharacterBase
 ---@class app.GUI060000 : app.GUIBaseApp
 
 ---@class app.ChatManager : ace.GAElement
@@ -151,6 +150,7 @@
 ---@field get_MeshFadeController fun(self: app.HunterCharacter): app.cMeshFadeController
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator
 ---@field get_IsInBaseCamp fun(self: app.HunterCharacter): System.Boolean
+---@field get_IsInTent fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
 ---@field _HunterBTableCommandFlag ace.cSafeContinueFlag
 
@@ -538,3 +538,6 @@
 
 ---@class app.cGUIChatLogPanelBase : via.clr.ManagedObject
 ---@field get_BasePanel fun(self: app.cGUIChatLogPanelBase): via.gui.Control
+
+---@class app.OtomoCharacter : app.CharacterBase
+---@field onOtomoContinueFlag fun(self: app.OtomoCharacter, flag: app.OtomoDef.CONTINUE_FLAG)

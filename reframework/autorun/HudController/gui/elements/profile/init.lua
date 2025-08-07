@@ -159,6 +159,15 @@ local function draw_options()
     ) or changed
     changed = check_overriden(
         set.checkbox(
+            gui_util.tr("hud.box_hide_pet"),
+            string.format("mod.hud.int:%s.hide_pet", config.current.mod.combo_hud)
+        ),
+        "hide_pet"
+    ) or changed
+    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_pet"), true)
+
+    changed = check_overriden(
+        set.checkbox(
             gui_util.tr("hud.box_hide_no_facility_npc"),
             string.format("mod.hud.int:%s.hide_no_facility_npc", config.current.mod.combo_hud)
         ),

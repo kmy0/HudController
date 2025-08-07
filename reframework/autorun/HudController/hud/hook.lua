@@ -1561,4 +1561,23 @@ function this.hide_weapon_post(retval)
     end
 end
 
+function this.hide_pet_pre(args)
+    local hud_config = get_hud()
+    if hud_config and hud.get_hud_option("hide_pet") then
+        local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
+        if quest_dir:isPlayingQuest() or util_game.get_component_any("app.OtomoDoll") then
+            return
+        end
+
+        local master_char = ace_player.get_master_char()
+        if not master_char or master_char:get_IsInTent() then
+            return
+        end
+
+        util_game.do_something(util_game.get_all_components("app.OtomoCharacter"), function(system_array, index, value)
+            value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
+        end)
+    end
+end
+
 return this
