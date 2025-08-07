@@ -181,12 +181,14 @@ this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
     return cached_value:get_Valid()
 end)
 
-function this.clear_cache()
+function this.on_dialogue_update_post(retval)
     this.is_facility.clear()
     this.is_talk.clear()
     this.get_flags.clear()
     this.get_npc_core.clear()
     this.get_char_base.clear()
 end
+
+m.hook("app.NpcManager.requestDialogueUpdate(app.NpcDef.ID)", nil, this.on_dialogue_update_post)
 
 return this
