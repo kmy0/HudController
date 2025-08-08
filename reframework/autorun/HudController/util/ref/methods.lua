@@ -89,6 +89,12 @@ end
 ---@param post_cb (fun(retval?: userdata): any?)?
 ---@param ignore_jmp_object? boolean
 function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
+    if not pre_cb and not post_cb then
+        ---@diagnostic disable-next-line: param-type-mismatch
+        local method_name = type(method) == "string" and method or method:get_name()
+        log.debug("No callbacks: " .. method_name)
+    end
+
     sdk.hook(
         ---@diagnostic disable-next-line: param-type-mismatch
         type(method) == "string" and this.get(method) or method,
