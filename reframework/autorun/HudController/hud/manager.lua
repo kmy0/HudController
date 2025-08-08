@@ -307,6 +307,10 @@ function this.update()
 end
 
 function this.clear()
+    if not data.mod.initialized then
+        return
+    end
+
     fade_manager.abort()
 
     this.by_guiid = {}
