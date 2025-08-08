@@ -25,6 +25,7 @@ local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_opt_default = require("HudController.hud.option_default")
+local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
@@ -216,17 +217,31 @@ function this.update_weapon_bind_state()
     if t["GLOBAL"].enabled then
         weapon_config = t["GLOBAL"]
     else
-        local weapon_name = ace_enum.weapon[ace_player.get_weapon_type()]
+        local weapon_type = ace_player.get_weapon_type()
+        local weapon_name = ace_enum.weapon[weapon_type]
+
         if not weapon_name then
             return
         end
 
         weapon_config = t[weapon_name]
+        if not weapon_config.enabled then
+            if not t["MELEE"].enabled and not t["RANGED"].enabled then
+                return
+            end
+
+            if m.isGunnerWeapon(weapon_type) then
+                weapon_config = t["RANGED"]
+            else
+                weapon_config = t["MELEE"]
+            end
+        end
     end
 
-    local state_config = weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
     if weapon_config.enabled then
+        local state_config = weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
         local hud_config = config.current.mod.hud[state_config.combo]
+
         if
             state_config.hud_key ~= hud_config.key
             or (hud_config.key == this.current_hud.key and not this.requested_hud)

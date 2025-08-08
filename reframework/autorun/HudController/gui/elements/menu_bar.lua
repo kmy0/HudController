@@ -348,7 +348,11 @@ local function draw_weapon_bind_menu()
     local sorted = util_table.sort(
         util_table.values(config.current.mod.bind.weapon[key]) --[=[@as WeaponBindConfig[]]=],
         function(a, b)
-            return a.weapon_id < b.weapon_id
+            local a_id = util_table.index(ace_map.additional_weapon, a.name)
+            local b_id = util_table.index(ace_map.additional_weapon, b.name)
+            a_id = a_id and -a_id or a.weapon_id
+            b_id = b_id and -b_id or b.weapon_id
+            return a_id < b_id
         end
     ) --[[@as table<integer, WeaponBindConfig>]]
 
@@ -414,7 +418,7 @@ local function draw_weapon_bind_menu()
 
             imgui.table_set_column_index(4)
             imgui.text(
-                weapon.name == "GLOBAL" and config.lang.tr("menu.bind.weapon.name_global")
+                weapon.weapon_id < 0 and config.lang.tr("menu.bind.weapon.name_" .. weapon.name:lower())
                     or ace_map.weaponid_name_to_local_name[weapon.name]
             )
             imgui.end_disabled()

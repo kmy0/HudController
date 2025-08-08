@@ -66,6 +66,7 @@
 ---@field guiid_ignore table<string, boolean>
 ---@field wp_action_to_index table<string, {category: integer, index: integer}>
 ---@field key_to_wp_action_name table<string, string>
+---@field additional_weapon string[]
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -149,6 +150,7 @@ local this = {
             "TARGET_RETICLE",
             "MENU_BUTTON_GUIDE",
         },
+        additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
             GUN_RETICLE = "UI020019",

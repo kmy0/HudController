@@ -97,34 +97,29 @@ local function get_weapon_map()
         camp = { hud_key = -1, combo = 1 },
     }
 
+    local function copy_base(name, wp_base)
+        for _, mode in pairs({ "singleplayer", "multiplayer" }) do
+            ---@diagnostic disable-next-line: no-unknown
+            config.current.mod.bind.weapon[mode][name] =
+                util_table.merge_t(util_table.deep_copy(wp_base), config.current.mod.bind.weapon[mode][name] or {})
+        end
+    end
+
     for id, name in pairs(ace_enum.weapon) do
         ace_map.weaponid_name_to_local_name[name] = game_lang.get_message_local(m.getWeaponName(id), lang, true)
         local weapon_base = util_table.deep_copy(base)
         weapon_base.weapon_id = id
         weapon_base.name = name
 
-        config.current.mod.bind.weapon.singleplayer[name] = util_table.merge_t(
-            util_table.deep_copy(weapon_base),
-            config.current.mod.bind.weapon.singleplayer[name] or {}
-        )
-        config.current.mod.bind.weapon.multiplayer[name] = util_table.merge_t(
-            util_table.deep_copy(weapon_base),
-            config.current.mod.bind.weapon.multiplayer[name] or {}
-        )
+        copy_base(name, weapon_base)
     end
 
-    local global_name = "GLOBAL"
-    local weapon_base = util_table.deep_copy(base)
-    weapon_base.name = global_name
-
-    config.current.mod.bind.weapon.singleplayer[global_name] = util_table.merge_t(
-        util_table.deep_copy(weapon_base),
-        config.current.mod.bind.weapon.singleplayer[global_name] or {}
-    )
-    config.current.mod.bind.weapon.multiplayer[global_name] = util_table.merge_t(
-        util_table.deep_copy(weapon_base),
-        config.current.mod.bind.weapon.multiplayer[global_name] or {}
-    )
+    for i, name in pairs(ace_map.additional_weapon) do
+        local weapon_base = util_table.deep_copy(base)
+        weapon_base.name = name
+        weapon_base.weapon_id = -i
+        copy_base(name, weapon_base)
+    end
 end
 
 local function get_option_map()

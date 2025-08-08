@@ -7,5 +7,6 @@ this.table = require("HudController.util.misc.table")
 this.timer = require("HudController.util.misc.timer")
 this.uuid = require("HudController.util.misc.uuid")
 this.circular_buffer = require("HudController.util.misc.circular_buffer")
+this.cache = require("HudController.util.misc.cache")
 
 return this
