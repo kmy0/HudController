@@ -186,7 +186,7 @@ m.hook(
     hook.update_damage_numbers_static_pre
 )
 m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", hook.cache_message_pre)
-m.hook("ace.btable.cManager.updateTable()", hook.hide_weapon_pre, hook.hide_weapon_post)
+m.hook("app.cMasterPlayerControllerEntity.entityUpdate()", hook.hide_weapon_pre, hook.hide_weapon_post)
 m.hook("app.OtomoManager.update()", hook.hide_pet_pre)
 
 re.on_draw_ui(function()
