@@ -195,7 +195,7 @@ this.default = {
         box_hide_weapon = "Hide Weapon",
         tooltip_hide_weapon = "Hide weapon when not drawn",
         box_hide_pet = "Hide Palico",
-        tooltip_hide_pet = "Hides Palico outside of quests",
+        tooltip_hide_pet = "Hide Palico outside of quests",
     },
     hud_element = {
         combo = "Hud Element",
