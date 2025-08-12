@@ -9,15 +9,12 @@ local game_data = require("HudController.util.game.data")
 local game_lang = require("HudController.util.game.lang")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
-local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map
 local ace_enum = this.ace.enum
 local rl = util_game.data.reverse_lookup
-
-local retry_timer = timer.new("data_retry_timer", 3, nil, true)
 
 ---@return boolean
 local function get_hud_setting()
@@ -165,17 +162,12 @@ end
 
 ---@return boolean
 function this.init()
-    if not retry_timer:update() then
-        return false
-    end
-
     if
         not s.get("app.GUIManager")
         or not ace_misc.get_hud_manager()
         or not s.get("app.VariousDataManager")
         or not get_hud_setting()
     then
-        retry_timer:restart()
         return false
     end
 
@@ -230,7 +222,6 @@ function this.init()
             return util_table.empty(value)
         end)
     then
-        retry_timer:restart()
         return false
     end
 
