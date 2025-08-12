@@ -1,5 +1,6 @@
 ---@class Gui
 ---@field window GuiWindow
+---@field state GuiState
 
 ---@class (exact) GuiWindow
 ---@field flags integer
@@ -21,6 +22,7 @@ local this = {
         condition = 2,
     },
     window_size = 49,
+    state = state,
 }
 
 function this.draw()

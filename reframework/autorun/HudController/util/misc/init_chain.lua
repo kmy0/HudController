@@ -2,6 +2,8 @@
 ---@field chain (fun(): boolean)[]
 ---@field ok boolean
 ---@field protected _progress table<fun(): boolean, boolean>
+
+local logger = require("HudController.util.misc.logger").g
 local timer = require("HudController.util.misc.timer")
 local util_misc = require("HudController.util.misc.util")
 
@@ -45,13 +47,16 @@ function this:init()
         util_misc.try(function()
             if not f() then
                 fail = true
+                logger:error(string.format("InitChain func at index %s failed", i))
                 return
             end
 
             local info = debug.getinfo(f, "S")
+            logger:info(string.format("%s initialized.", info.source))
             self._progress[f] = true
         end, function(err)
             fail = true
+            logger:error(string.format("InitChain func at index %s threw: %s", i, err))
         end)
 
         if fail then

@@ -2,7 +2,9 @@
 ---@field methods table<string, REMethodDefinition>
 
 local types = require("HudController.util.ref.types")
+local util_misc = require("HudController.util.misc")
 local util_ref = require("HudController.util.ref.util")
+local logger = require("HudController.util.misc.logger").g
 
 ---@class MethodUtil
 local this = {
@@ -16,7 +18,7 @@ function this.get(name)
     local ret = types.get(type_def):get_method(method) --[[@as REMethodDefinition]]
 
     if not ret then
-        log.debug(string.format('Failed to get "%s" method from "%s" type.', method, type_def))
+        logger:error(string.format('Failed to get "%s" method from "%s" type.', method, type_def))
     end
 
     return ret
@@ -39,7 +41,7 @@ function this.get_by_regex(type_def, regex)
         end
     end
 
-    log.debug(string.format('Failed to get method with "%s" regex from "%s" type.', regex, type_def))
+    logger:error(string.format('Failed to get method with "%s" regex from "%s" type.', regex, type_def))
 end
 
 ---@param type_def RETypeDefinition | string
@@ -62,7 +64,7 @@ function this.t_get(type_def, name)
     end
 
     if not this.methods[key] then
-        log.debug(string.format('Failed to get "%s" method from "%s" type.', name, type_name))
+        logger:error(string.format('Failed to get "%s" method from "%s" type.', name, type_name))
     end
 
     return this.methods[key]
@@ -92,16 +94,22 @@ function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
     if not pre_cb and not post_cb then
         ---@diagnostic disable-next-line: param-type-mismatch
         local method_name = type(method) == "string" and method or method:get_name()
-        log.debug("No callbacks: " .. method_name)
+        logger:error("No callbacks: " .. method_name)
     end
 
-    sdk.hook(
+    util_misc.try(function()
+        sdk.hook(
+            ---@diagnostic disable-next-line: param-type-mismatch
+            type(method) == "string" and this.get(method) or method,
+            pre_cb or function(args) end,
+            post_cb and util_ref.hook_ret(post_cb) or nil,
+            ignore_jmp_object
+        )
+    end, function(err)
         ---@diagnostic disable-next-line: param-type-mismatch
-        type(method) == "string" and this.get(method) or method,
-        pre_cb or function(args) end,
-        post_cb and util_ref.hook_ret(post_cb) or nil,
-        ignore_jmp_object
-    )
+        local method_name = type(method) == "string" and method or method:get_name()
+        logger:error(string.format("Failed to hook %s: %s", method_name, err))
+    end)
 end
 
 return this

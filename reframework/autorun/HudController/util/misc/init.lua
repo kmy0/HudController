@@ -8,5 +8,6 @@ this.timer = require("HudController.util.misc.timer")
 this.uuid = require("HudController.util.misc.uuid")
 this.circular_buffer = require("HudController.util.misc.circular_buffer")
 this.cache = require("HudController.util.misc.cache")
+this.logger = require("HudController.util.misc.logger")
 
 return this

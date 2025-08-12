@@ -38,6 +38,7 @@ local config = require("HudController.config")
 local hud_base = require("HudController.hud.def.hud_base")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
+local logger = require("HudController.util.misc.logger").g
 
 ---@class HudChild
 local this = {}
@@ -86,9 +87,9 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
 
         if not res then
             if config.current.debug.is_debug then
-                log.debug(
+                logger:debug(
                     string.format(
-                        "Ctrl getter failed!\nGame Class: %s,\nName Chain: %s,\nClass Chain: %s,\nCtrl: %s\n",
+                        "Ctrl getter failed!\nGame Class: %s,\nName Chain: %s,\nClass Chain: %s,\nCtrl: %s",
                         util_ref.whoami(hudbase),
                         self:whoami(),
                         self:whoami_cls(),

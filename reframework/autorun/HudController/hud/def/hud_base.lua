@@ -102,6 +102,7 @@ local game_data = require("HudController.util.game.data")
 local m = require("HudController.util.ref.methods")
 local option_default = require("HudController.hud.option_default")
 local play_object = require("HudController.hud.play_object")
+local logger = require("HudController.util.misc.logger").g
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud"
@@ -453,9 +454,9 @@ function this:get_all_ctrl()
         local hudbase = util_table.values(ret, function(o)
             return util_ref.whoami(o.hud_base)
         end) --[=[@as string[]]=]
-        log.debug(
+        logger:debug(
             string.format(
-                "More than one Game Class\nGame Classes: %s,\nName Chain: %s,\nClass Chain: %s,\nHud Type: %s\n",
+                "More than one Game Class\nGame Classes: %s,\nName Chain: %s,\nClass Chain: %s,\nHud Type: %s",
                 table.concat(hudbase, ", "),
                 self:whoami(),
                 self:whoami_cls(),

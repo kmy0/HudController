@@ -6,6 +6,7 @@ local gui_debug = require("HudController.gui.debug")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud")
 local util = require("HudController.util")
+local logger = util.misc.logger.g
 
 local init = util.misc.init_chain:new(
     config.init,
@@ -277,6 +278,13 @@ m.hook("app.GUIManager.resetTitleApp()", nil, hook.misc.reset_hud_default_post)
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) then
         config.current.gui.main.is_opened = not config.current.gui.main.is_opened
+    end
+
+    local errors = logger:format_errors()
+    if errors then
+        imgui.same_line()
+        imgui.text_colored("Error!", config_menu.state.colors.bad)
+        util.imgui.tooltip(errors, true)
     end
 end)
 
