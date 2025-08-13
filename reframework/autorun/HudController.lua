@@ -9,6 +9,7 @@ local util = require("HudController.util")
 local logger = util.misc.logger.g
 
 local init = util.misc.init_chain:new(
+    "MAIN",
     config.init,
     data.init,
     util.game.bind.init,
@@ -276,15 +277,23 @@ m.hook("app.GUIManager.resetTitleApp()", nil, hook.misc.reset_hud_default_post)
 --#endregion
 
 re.on_draw_ui(function()
-    if imgui.button(string.format("%s %s", config.name, config.commit)) then
+    if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then
         config.current.gui.main.is_opened = not config.current.gui.main.is_opened
     end
 
-    local errors = logger:format_errors()
-    if errors then
+    if not init.failed then
+        local errors = logger:format_errors()
+        if errors then
+            imgui.same_line()
+            imgui.text_colored("Error!", config_menu.state.colors.bad)
+            util.imgui.tooltip(errors, true)
+        elseif not init.ok then
+            imgui.same_line()
+            imgui.text_colored("Initializing...", config_menu.state.colors.info)
+        end
+    else
         imgui.same_line()
-        imgui.text_colored("Error!", config_menu.state.colors.bad)
-        util.imgui.tooltip(errors, true)
+        imgui.text_colored("Init failed!", config_menu.state.colors.bad)
     end
 end)
 
