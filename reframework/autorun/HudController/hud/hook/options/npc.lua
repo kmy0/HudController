@@ -15,7 +15,10 @@ local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup
 
 local this = {}
-local handler_key = "handler_touch_timer"
+local handler = {
+    timer_key = "handler_touch_timer",
+    hidden = false,
+}
 
 function this.hide_handler_post(retval)
     local hud_config = common.get_hud()
@@ -23,9 +26,9 @@ function this.hide_handler_post(retval)
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
         local handler_id = ace_npc.get_npc_id_from_fixed(handler_id_fixed)
 
-        if ace_npc.is_touch(handler_id) then
-            timer.restart_key(handler_key)
-        elseif timer.check(handler_key, config.handler_timeout) then
+        if ace_npc.is_touch(handler_id) and not handler.hidden then
+            timer.restart_key(handler.timer_key)
+        elseif timer.check(handler.timer_key, config.handler_timeout) then
             local char_base = ace_npc.get_char_base(handler_id)
             if not char_base then
                 return
@@ -33,6 +36,7 @@ function this.hide_handler_post(retval)
 
             ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "DISABLE_TALK"), true)
             ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "ALPHA_ZERO"), true)
+            handler.hidden = true
 
             local handler_porter = ace_porter.get_porter(char_base)
             if not handler_porter then
@@ -41,8 +45,11 @@ function this.hide_handler_post(retval)
 
             ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"), true)
             ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"), true)
+            return
         end
     end
+
+    handler.hidden = false
 end
 
 function this.hide_no_talk_npc_pre(args)
