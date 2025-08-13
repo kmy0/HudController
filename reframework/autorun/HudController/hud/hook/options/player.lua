@@ -3,6 +3,7 @@ local common = require("HudController.hud.hook.common")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud")
+local m = require("HudController.util.ref.methods")
 local util_misc = require("HudController.util.misc")
 
 local ace_enum = data.ace.enum
@@ -22,7 +23,11 @@ end
 --#region disable_focus_turn
 function this.disable_focus_turn_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("disable_focus_turn") then
+    if
+        hud_config
+        and hud.get_hud_option("disable_focus_turn")
+        and not m.isGunnerWeapon(ace_player.get_weapon_type())
+    then
         local action_id = sdk.to_valuetype(args[4], "ace.ACTION_ID") --[[@as ace.ACTION_ID]]
         data.get_wp_action()
         local key = string.format("%s:%s", action_id._Category, action_id._Index)
