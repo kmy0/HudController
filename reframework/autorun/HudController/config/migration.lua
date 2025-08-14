@@ -135,10 +135,11 @@ local function get_funcs(from, to)
     return sorted
 end
 
----@param from string
+---@param from string?
 ---@param to string
 ---@return boolean
 function this.need_migrate(from, to)
+    from = from or "0.0.0"
     return Version.new(from) < Version.new(to)
 end
 
