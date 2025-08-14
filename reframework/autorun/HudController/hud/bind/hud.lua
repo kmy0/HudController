@@ -34,12 +34,13 @@ local function action(bind)
         hud = require("HudController.hud")
     end
 
+    local config_mod = config.current.mod
     local hud_config = hud.operations.get_hud_by_key(bind.key)
     hud.request_hud(hud_config)
-    config.current.mod.combo_hud = util_table.index(config.current.mod.hud, function(o)
+    config_mod.combo_hud = util_table.index(config_mod.hud, function(o)
         return o.key == bind.key
     end) --[[@as integer]]
-    config.save()
+    config.save_global()
 end
 
 ---@return HudBindManager

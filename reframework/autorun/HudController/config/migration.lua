@@ -69,7 +69,7 @@ function Version:__tostring()
     return string.format("Version(%d.%d.%d)", self.major, self.minor, self.patch)
 end
 
----@param config Settings
+---@param config MainSettings
 local function to_0_0_5_weapon_binds_camp(config)
     for _, binds in pairs({ config.mod.bind.weapon.multiplayer, config.mod.bind.weapon.singleplayer }) do
         for _, b in pairs(binds) do
@@ -80,7 +80,7 @@ local function to_0_0_5_weapon_binds_camp(config)
     end
 end
 
----@param config Settings
+---@param config MainSettings
 local function to_0_0_6_objectives(config)
     for _, profile in pairs(config.mod.hud) do
         for key, elem in pairs(profile.elements or {}) do
@@ -98,12 +98,23 @@ local function to_0_0_6_objectives(config)
     end
 end
 
+---@param config table
+local function to_0_0_9_5_lang(config)
+    if config.gui.lang then
+        ---@diagnostic disable-next-line: no-unknown
+        config.mod.lang = util_table.deep_copy(config.gui.lang)
+    end
+end
+
 this.migrations = {
     ["0.0.5"] = function(config)
         to_0_0_5_weapon_binds_camp(config)
     end,
     ["0.0.6"] = function(config)
         to_0_0_6_objectives(config)
+    end,
+    ["0.0.9-5"] = function(config)
+        to_0_0_9_5_lang(config)
     end,
 }
 
@@ -145,7 +156,7 @@ end
 
 ---@param from string?
 ---@param to string
----@param config Settings
+---@param config MainSettings
 function this.migrate(from, to, config)
     local sorted = get_funcs(from, to)
     for i = 1, #sorted do

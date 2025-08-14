@@ -73,7 +73,7 @@ local function draw_control_child(elem, elem_config, config_key)
 
         if changed then
             elem:set_size_x(elem_config.enabled_size_x and elem_config.size_x or nil)
-            config.save()
+            config.save_global()
         end
 
         separator_control_child:draw()
@@ -92,7 +92,7 @@ local function draw_control_child(elem, elem_config, config_key)
 
         if changed then
             elem:set_size_y(elem_config.enabled_size_y and elem_config.size_y or nil)
-            config.save()
+            config.save_global()
         end
 
         separator_control_child:draw()
@@ -108,7 +108,7 @@ local function draw_control_child(elem, elem_config, config_key)
 
         if changed then
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -148,7 +148,7 @@ local function draw_material(elem, elem_config, config_key)
             if changed then
                 ---@cast elem Material
                 elem:set_var(elem_config["enabled_" .. var_key] and elem_config[var_key].value or nil, var_key)
-                config.save()
+                config.save_global()
             end
 
             separator_material:draw()
@@ -181,10 +181,10 @@ local function draw_scale9(elem, elem_config, config_key)
         imgui.begin_disabled(not elem_config.enabled_control_point)
 
         item_config_key = config_key .. ".control_point"
-        if not config.get(item_config_key .. "_combo") then
-            config.set(
+        if not config:get(item_config_key .. "_combo") then
+            config:set(
                 item_config_key .. "_combo",
-                state.combo.control_point:get_index(nil, config.get(item_config_key))
+                state.combo.control_point:get_index(nil, config:get(item_config_key))
             )
         end
 
@@ -195,10 +195,10 @@ local function draw_scale9(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.control_point:get_value(config.get(item_config_key .. "_combo"))
+            local value = state.combo.control_point:get_value(config:get(item_config_key .. "_combo"))
             elem:set_control_point(value)
-            config.set(item_config_key, value)
-            config.save()
+            config:set(item_config_key, value)
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -215,18 +215,18 @@ local function draw_scale9(elem, elem_config, config_key)
         imgui.begin_disabled(not elem_config.enabled_blend)
 
         item_config_key = config_key .. ".blend"
-        if not config.get(item_config_key .. "_combo") then
-            config.set(item_config_key .. "_combo", state.combo.blend:get_index(nil, config.get(item_config_key)))
+        if not config:get(item_config_key .. "_combo") then
+            config:set(item_config_key .. "_combo", state.combo.blend:get_index(nil, config:get(item_config_key)))
         end
 
         changed = set.combo("##" .. item_config_key .. "_combo", item_config_key .. "_combo", state.combo.blend.values)
             or changed
 
         if changed then
-            local value = state.combo.blend:get_value(config.get(item_config_key .. "_combo"))
+            local value = state.combo.blend:get_value(config:get(item_config_key .. "_combo"))
             elem:set_blend(value)
-            config.set(item_config_key, value)
-            config.save()
+            config:set(item_config_key, value)
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -243,10 +243,10 @@ local function draw_scale9(elem, elem_config, config_key)
         imgui.begin_disabled(not elem_config.enabled_alpha_channel)
 
         item_config_key = config_key .. ".alpha_channel"
-        if not config.get(item_config_key .. "_combo") then
-            config.set(
+        if not config:get(item_config_key .. "_combo") then
+            config:set(
                 item_config_key .. "_combo",
-                state.combo.alpha_channel:get_index(nil, config.get(item_config_key))
+                state.combo.alpha_channel:get_index(nil, config:get(item_config_key))
             )
         end
 
@@ -257,10 +257,10 @@ local function draw_scale9(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.alpha_channel:get_value(config.get(item_config_key .. "_combo"))
+            local value = state.combo.alpha_channel:get_value(config:get(item_config_key .. "_combo"))
             elem:set_alpha_channel(value)
-            config.set(item_config_key, value)
-            config.save()
+            config:set(item_config_key, value)
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -323,7 +323,7 @@ local function draw_text(elem, elem_config, config_key)
 
         if changed then
             elem:set_font_size(elem_config.enabled_font_size and elem_config.font_size or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -338,10 +338,10 @@ local function draw_text(elem, elem_config, config_key)
         imgui.begin_disabled(not elem_config.enabled_page_alignment)
 
         item_config_key = config_key .. ".page_alignment"
-        if not config.get(item_config_key .. "_combo") then
-            config.set(
+        if not config:get(item_config_key .. "_combo") then
+            config:set(
                 item_config_key .. "_combo",
-                state.combo.page_alignment:get_index(nil, config.get(item_config_key))
+                state.combo.page_alignment:get_index(nil, config:get(item_config_key))
             )
         end
 
@@ -352,10 +352,10 @@ local function draw_text(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.page_alignment:get_value(config.get(item_config_key .. "_combo"))
+            local value = state.combo.page_alignment:get_value(config:get(item_config_key .. "_combo"))
             elem:set_page_alignment(value)
-            config.set(item_config_key, value)
-            config.save()
+            config:set(item_config_key, value)
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -388,7 +388,7 @@ local function draw_text(elem, elem_config, config_key)
 
         if changed then
             elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -418,7 +418,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
             w = elem_config.box.w,
             h = elem_config.box.h,
         } or nil)
-        config.save()
+        config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("hud_element.entry.tooltip_numbers_box"), true)
 
@@ -426,15 +426,15 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     imgui.same_line()
 
     item_config_key = config_key .. ".preview_box"
-    if config.get(item_config_key) == nil then
-        config.set(item_config_key, false)
+    if config:get(item_config_key) == nil then
+        config:set(item_config_key, false)
     end
 
     if imgui.button(gui_util.tr("hud_element.entry.box_preview_box", item_config_key)) then
-        config.set(item_config_key, not config.get(item_config_key))
+        config:set(item_config_key, not config:get(item_config_key))
     end
 
-    if elem_config.enabled_box and config.get(item_config_key) then
+    if elem_config.enabled_box and config:get(item_config_key) then
         local ss = util_game.get_screen_size()
         ss.x = ss.x / 1920
         ss.y = ss.y / 1080
@@ -480,7 +480,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
             w = elem_config.box.w,
             h = elem_config.box.h,
         })
-        config.save()
+        config.save_global()
     end
 
     imgui.end_disabled()
@@ -515,7 +515,7 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         if changed then
             elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
-            config.save()
+            config.save_global()
         end
 
         separator_progress_part:draw()
@@ -536,7 +536,7 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         if changed then
             elem:set_clock_offset_x(elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -558,7 +558,7 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         if changed then
             elem:set_num_offset_x(elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()
@@ -591,7 +591,7 @@ local function draw_progress_text(elem, elem_config, config_key)
     if elem_config.align_left ~= nil then
         if set.checkbox(gui_util.tr("hud_element.entry.box_align_left"), config_key .. ".align_left") then
             elem:set_align_left(elem_config.align_left)
-            config.save()
+            config.save_global()
         end
 
         separator_progress_text:draw()

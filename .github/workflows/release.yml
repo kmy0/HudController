@@ -1,7 +1,6 @@
 name: Release
 on:
   workflow_dispatch:
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -9,20 +8,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - run: |
-          RELEASE_VERSION=$(git describe --tags --always)
+          BASE_VERSION=$(git describe --tags --always)
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          CLEAN_BRANCH=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g')
+
+          if [ "$BRANCH_NAME" != "main" ]; then
+            RELEASE_VERSION="${BASE_VERSION}+${CLEAN_BRANCH}"
+            COMMIT_VERSION="${BASE_VERSION}+${BRANCH_NAME}"
+          else
+            RELEASE_VERSION="$BASE_VERSION"
+            COMMIT_VERSION="$BASE_VERSION"
+          fi
+
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
           cat > reframework/autorun/HudController/config/version.lua << EOF
           return {
               version = "$(git describe --tags --abbrev=0)",
-              commit = "$RELEASE_VERSION",
+              commit = "$COMMIT_VERSION",
           }
           EOF
 
           zip -r "HudController-${RELEASE_VERSION}.zip" reframework/
-
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:

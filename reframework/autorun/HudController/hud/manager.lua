@@ -170,16 +170,17 @@ function this.update_weapon_bind_state()
         return
     end
 
-    local in_quest = config.current.mod.bind.weapon.quest_in_combat
-        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
-    local is_riding = config.current.mod.bind.weapon.ride_ignore_combat and ace_porter.is_master_riding()
+    local config_mod = config.current.mod
+    local bind_weapon = config_mod.bind.weapon
+    local in_quest = bind_weapon.quest_in_combat and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
+    local is_riding = bind_weapon.ride_ignore_combat and ace_porter.is_master_riding()
     local is_village = ace_player.is_in_village()
 
     if not in_quest and not is_village then
         if this.combat_state_frame and not is_combat and this.combat_state then
-            timer.new(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil)
+            timer.new(out_of_combat_delay_key, bind_weapon.out_of_combat_delay, nil)
         elseif not this.combat_state_frame and is_combat and not this.combat_state then
-            timer.new(in_combat_delay_key, config.current.mod.bind.weapon.in_combat_delay, nil)
+            timer.new(in_combat_delay_key, bind_weapon.in_combat_delay, nil)
         end
 
         if not is_combat and timer.remaining_key(in_combat_delay_key) > 0 then
@@ -189,8 +190,8 @@ function this.update_weapon_bind_state()
         end
 
         if
-            timer.check(in_combat_delay_key, config.current.mod.bind.weapon.in_combat_delay, nil, true)
-            and timer.check(out_of_combat_delay_key, config.current.mod.bind.weapon.out_of_combat_delay, nil, true)
+            timer.check(in_combat_delay_key, bind_weapon.in_combat_delay, nil, true)
+            and timer.check(out_of_combat_delay_key, bind_weapon.out_of_combat_delay, nil, true)
         then
             if is_riding and is_combat and not this.combat_state then
                 this.combat_state = false
@@ -210,7 +211,7 @@ function this.update_weapon_bind_state()
 
     this.combat_state_frame = is_combat
 
-    local t = config.current.mod.bind.weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
+    local t = bind_weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
     ---@type WeaponBindConfig
     local weapon_config
 
@@ -240,7 +241,7 @@ function this.update_weapon_bind_state()
 
     if weapon_config.enabled then
         local state_config = weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
-        local hud_config = config.current.mod.hud[state_config.combo]
+        local hud_config = config_mod.hud[state_config.combo]
 
         if
             state_config.hud_key ~= hud_config.key
@@ -250,20 +251,21 @@ function this.update_weapon_bind_state()
             return
         end
 
-        config.current.mod.combo_hud = state_config.combo
+        config_mod.combo_hud = state_config.combo
         this.request_hud(hud_config)
-        config.save()
+        config.save_global()
     end
 end
 
 function this.update()
-    if not config.current.mod.enabled or not mod.is_ok() then
+    local config_mod = config.current.mod
+    if not config_mod.enabled or not mod.is_ok() then
         this.clear()
         return
     end
 
     if not this.current_hud and not this.requested_hud then
-        local hud_config = config.current.mod.hud[config.current.mod.combo_hud]
+        local hud_config = config_mod.hud[config_mod.combo_hud]
         if hud_config then
             this.request_hud(hud_config)
         end
@@ -272,11 +274,11 @@ function this.update()
     fade_manager.update()
 
     local is_held = false
-    if config.current.mod.enable_key_binds then
+    if config_mod.enable_key_binds then
         bind_manager.option_manager:monitor()
 
-        if bind_manager.hud_manager:monitor() and config.current.mod.disable_weapon_binds_timed then
-            if config.current.mod.disable_weapon_binds_held then
+        if bind_manager.hud_manager:monitor() and config_mod.disable_weapon_binds_timed then
+            if config_mod.disable_weapon_binds_held then
                 bind_manager.hud_manager:register_on_release_callback(bind_manager.hud_manager:get_held(), function()
                     timer.restart_key(timer_key)
                 end)
@@ -285,22 +287,19 @@ function this.update()
             end
         end
 
-        if config.current.mod.enable_weapon_binds and config.current.mod.disable_weapon_binds_held then
+        if config_mod.enable_weapon_binds and config_mod.disable_weapon_binds_held then
             is_held = bind_manager.hud_manager:is_held()
         end
 
-        if
-            not config.current.mod.disable_weapon_binds_timed
-            and (not config.current.mod.disable_weapon_binds_held or not is_held)
-        then
+        if not config_mod.disable_weapon_binds_timed and (not config_mod.disable_weapon_binds_held or not is_held) then
             timer.reset_key(timer_key)
         end
     end
 
     if
-        config.current.mod.enable_weapon_binds
-        and timer.check(timer_key, config.current.mod.disable_weapon_binds_time, nil, true)
-        and (not config.current.mod.disable_weapon_binds_held or not is_held)
+        config_mod.enable_weapon_binds
+        and timer.check(timer_key, config_mod.disable_weapon_binds_time, nil, true)
+        and (not config_mod.disable_weapon_binds_held or not is_held)
     then
         this.update_weapon_bind_state()
     end
@@ -332,9 +331,10 @@ function this.init()
     play_object.default.init()
     bind_manager.init()
 
-    for i = 1, #config.current.mod.hud do
-        config.current.mod.hud[i] = factory.verify_hud(config.current.mod.hud[i])
-        local hud = config.current.mod.hud[i]
+    local config_mod = config.current.mod
+    for i = 1, #config_mod.hud do
+        config_mod.hud[i] = factory.verify_hud(config_mod.hud[i])
+        local hud = config_mod.hud[i]
         hud.elements = factory.verify_elements(hud.elements or {})
     end
 

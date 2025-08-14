@@ -450,7 +450,7 @@ function this:get_all_ctrl()
         ::continue::
     end
 
-    if config.current.debug.is_debug and #ret > 1 then
+    if config.debug.current.debug.is_debug and #ret > 1 then
         local hudbase = util_table.values(ret, function(o)
             return util_ref.whoami(o.hud_base)
         end) --[=[@as string[]]=]

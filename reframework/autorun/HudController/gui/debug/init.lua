@@ -10,7 +10,7 @@ local config = require("HudController.config")
 local elem = require("HudController.gui.debug.elem")
 local gui_util = require("HudController.gui.util")
 local play_object = require("HudController.hud.play_object")
-local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
@@ -222,34 +222,53 @@ local function draw_panel_tree(panel, key)
     end
 end
 
+function this.close()
+    local gui_debug = config.gui.current.gui.debug
+    gui_debug.is_opened = false
+
+    this.sub_window_pos = {}
+    this.snapshot = {}
+    this.ace_gui_elements = {}
+    config.gui:save()
+end
+
 function this.draw()
+    local changed = false
+    local gui_debug = config.gui.current.gui.debug
+    local config_debug = config.debug.current.debug
+
     imgui.set_next_window_pos(
-        Vector2f.new(config.current.gui.debug.pos_x, config.current.gui.debug.pos_y),
-        this.window.condition
+        Vector2f.new(gui_debug.pos_x, gui_debug.pos_y),
+        not state.redo_win_pos.debug and this.window.condition or nil
     )
     imgui.set_next_window_size(
-        Vector2f.new(config.current.gui.debug.size_x, config.current.gui.debug.size_y),
-        this.window.condition
+        Vector2f.new(gui_debug.size_x, gui_debug.size_y),
+        not state.redo_win_pos.debug and this.window.condition or nil
     )
+    state.redo_win_pos.debug = false
 
     if config.lang.font then
         imgui.push_font(config.lang.font)
     end
 
-    config.current.gui.debug.is_opened = imgui.begin_window(
+    gui_debug.is_opened = imgui.begin_window(
         string.format("%s %s", config.name, config.lang.tr("debug.name")),
-        config.current.gui.debug.is_opened,
+        gui_debug.is_opened,
         this.window.flags
     )
 
-    if not config.current.gui.debug.is_opened then
+    local pos = imgui.get_window_pos()
+    local size = imgui.get_window_size()
+
+    gui_debug.pos_x, gui_debug.pos_y = pos.x, pos.y
+    gui_debug.size_x, gui_debug.size_y = size.x, size.y
+
+    if not gui_debug.is_opened then
         if config.lang.font then
             imgui.pop_font()
         end
 
-        this.sub_window_pos = {}
-        this.snapshot = {}
-        this.ace_gui_elements = {}
+        this.close()
         imgui.end_window()
         return
     end
@@ -271,12 +290,13 @@ function this.draw()
 
     imgui.same_line()
 
-    local changed = set.checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
+    changed, config_debug.show_disabled =
+        imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
     util_imgui.tooltip(config.lang.tr("debug.tooltip_show_disabled"))
 
     local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
         local gui_elem = this.ace_gui_elements[value]
-        return config.current.debug.show_disabled or gui_elem.gui:get_Enabled()
+        return config_debug.show_disabled or gui_elem.gui:get_Enabled()
     end)
     keys = util_table.sort(util_table.values(keys))
 
@@ -287,18 +307,18 @@ function this.draw()
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(this.snapshot))
-    changed = set.checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
+    changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
     util_imgui.tooltip(config.lang.tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
-    if config.current.debug.is_filter and not util_table.empty(this.snapshot) then
+    if config_debug.is_filter and not util_table.empty(this.snapshot) then
         keys = util_table.filter(keys, function(key, value)
             return not util_table.contains(this.snapshot, value)
         end)
         keys = util_table.sort(util_table.values(keys))
     end
 
-    changed = set.checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
+    changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
     imgui.text(config.lang.tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang.tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang.tr("debug.text_states")))
@@ -330,7 +350,7 @@ function this.draw()
     end
 
     if changed then
-        config.save()
+        config.save_global()
     end
 
     imgui.end_window()
