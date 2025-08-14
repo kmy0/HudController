@@ -98,10 +98,10 @@ local function get_weapon_map()
     }
 
     local function copy_base(name, wp_base)
+        local bind_weapon = config.current.mod.bind.weapon
         for _, mode in pairs({ "singleplayer", "multiplayer" }) do
             ---@diagnostic disable-next-line: no-unknown
-            config.current.mod.bind.weapon[mode][name] =
-                util_table.merge_t(util_table.deep_copy(wp_base), config.current.mod.bind.weapon[mode][name] or {})
+            bind_weapon[mode][name] = util_table.merge_t(util_table.deep_copy(wp_base), bind_weapon[mode][name] or {})
         end
     end
 

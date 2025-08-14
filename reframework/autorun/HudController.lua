@@ -278,7 +278,8 @@ m.hook("app.GUIManager.resetTitleApp()", nil, hook.misc.reset_hud_default_post)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then
-        config.current.gui.main.is_opened = not config.current.gui.main.is_opened
+        local gui_main = config.gui.current.gui.main
+        gui_main.is_opened = not gui_main.is_opened
     end
 
     if not init.failed then
@@ -304,20 +305,23 @@ re.on_frame(function()
 
     hud.update()
 
+    local config_gui = config.gui.current.gui
+    local config_mod = config.current.mod
+
     if not reframework:is_drawing_ui() then
-        config.current.gui.main.is_opened = false
-        config.current.gui.debug.is_opened = false
+        config_gui.main.is_opened = false
+        config_gui.debug.is_opened = false
     end
 
-    if config.current.gui.main.is_opened then
+    if config_gui.main.is_opened then
         config_menu.draw()
     end
 
-    if config.current.mod.grid.draw then
+    if config_mod.grid.draw then
         grid.draw()
     end
 
-    if config.current.gui.debug.is_opened then
+    if config_gui.debug.is_opened then
         gui_debug.draw()
     end
 
@@ -326,7 +330,7 @@ end)
 
 re.on_config_save(function()
     if data.mod.initialized then
-        config.save_no_timer()
+        config.save_no_timer_global()
     end
 end)
 re.on_script_reset(hud.clear)

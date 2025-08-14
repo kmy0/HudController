@@ -1,5 +1,5 @@
 ---@class Language
----@field ref Config
+---@field ref MainConfig
 ---@field files table<string, LanguageFile>
 ---@field sorted string[]
 ---@field font integer?
@@ -35,7 +35,7 @@ this.default = {
         text_yes = "Yes",
         text_no = "No",
         text_rusure = "Are you sure?",
-        text_drag = "⸽⸽",
+        text_drag = " ",
         text_type = "Type",
         text_other_type = "Other Type",
         text_sub_type = "Sub Type",
@@ -68,6 +68,16 @@ this.default = {
         tooltip_snapshot = "Save all element keys to be used with the filter",
         tooltip_filter = "Filter out elements present in the snapshot",
         tooltip_copy_args = "Copy arguments for use with hud.play_object.control.get\nor hud.play_object.child.get functions",
+    },
+    selector = {
+        name = "Config Select",
+        combo_config = "Config File",
+        button_close = "Close",
+        button_new = "New",
+        button_remove = "Remove",
+        button_rename = "Rename",
+        tooltip_remove = "Move config file to recycle bin",
+        button_duplicate = "Duplicate",
     },
     menu = {
         config = {
@@ -124,6 +134,7 @@ this.default = {
                 name = "Key",
                 hud = "Hud",
                 option = "Option",
+                slider_bind_type = "Bind Type",
                 text_default = "Press any key...",
                 button_add = "Add",
                 button_save = "Save",
@@ -422,15 +433,15 @@ this.default = {
     },
 }
 
----@param config_ref Config
+---@param config_ref MainConfig
 ---@return boolean
 function this.init(config_ref)
     this.ref = config_ref
     this.load()
 
-    local t = this.files[this.ref.current.gui.lang.file]
+    local t = this.files[this.ref.current.mod.lang.file]
     if not t then
-        this.ref.current.gui.lang.file = this.ref.default.gui.lang.file
+        this.ref.current.mod.lang.file = this.ref.default.mod.lang.file
     end
 
     this.change()
@@ -443,8 +454,7 @@ function this.load()
     local files = fs.glob(string.format([[%s\\lang\\.*json]], this.ref.name))
     for i = 1, #files do
         local file = files[i]
-        local fn = file:match("([^/\\]+)$") --[[@as string]]
-        local name = fn:match("(.+)%..+$") --[[@as string]]
+        local name = util_misc.get_file_name(file, false)
         this.files[name] = json.load_file(file)
         table.insert(this.sorted, name)
     end
@@ -453,7 +463,7 @@ function this.load()
 end
 
 function this.change()
-    local t = this.files[this.ref.current.gui.lang.file]
+    local t = this.files[this.ref.current.mod.lang.file]
     local font = t._font or {}
 
     this.font =
@@ -475,7 +485,7 @@ function this._tr(t, key, fallback)
         ret = util_table.get_nested_value(t, util_misc.split_string(key, "%."))
     end
 
-    if not ret and fallback and this.ref.current.gui.lang.file ~= this.ref.default.gui.lang.file then
+    if not ret and fallback and this.ref.current.mod.lang.file ~= this.ref.default.mod.lang.file then
         return this._tr(this.default, key)
     elseif not ret then
         return string.format("Bad key: %s", key)
@@ -487,7 +497,7 @@ end
 ---@param key string
 ---@return string
 function this.tr(key)
-    return this._tr(this.files[this.ref.current.gui.lang.file], key, this.ref.current.gui.lang.fallback)
+    return this._tr(this.files[this.ref.current.mod.lang.file], key, this.ref.current.mod.lang.fallback)
 end
 
 return this

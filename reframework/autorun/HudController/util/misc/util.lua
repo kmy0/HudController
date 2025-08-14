@@ -96,4 +96,37 @@ function this.trunc_string(str, max_len)
     return str
 end
 
+---@param path string
+---@param ext boolean? by default, true
+---@return string
+function this.get_file_name(path, ext)
+    ext = ext == nil and true or ext
+    local ret = path:match("([^/\\]+)$")
+
+    if not ext then
+        ret = ret:match("(.+)%..+$") --[[@as string]]
+    end
+
+    return ret
+end
+
+---@param path string
+---@return boolean
+function this.file_exists(path)
+    local handle = io.open(path, "r")
+    if handle then
+        handle:close()
+        return true
+    end
+    return false
+end
+
+---@param ... string
+---@return string
+function this.join_paths(...)
+    local res = table.concat({ ... }, "/"):gsub("\\", "/")
+    res = res:gsub("/+", "/")
+    return res
+end
+
 return this
