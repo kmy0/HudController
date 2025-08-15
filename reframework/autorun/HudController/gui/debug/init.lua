@@ -10,7 +10,7 @@ local config = require("HudController.config")
 local elem = require("HudController.gui.debug.elem")
 local gui_util = require("HudController.gui.util")
 local play_object = require("HudController.hud.play_object")
-local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
@@ -223,10 +223,13 @@ local function draw_panel_tree(panel, key)
 end
 
 function this.close()
-    config.gui.current.gui.debug.is_opened = false
+    local gui_debug = config.gui.current.gui.debug
+    gui_debug.is_opened = false
+
     this.sub_window_pos = {}
     this.snapshot = {}
     this.ace_gui_elements = {}
+    config.gui:save()
 end
 
 function this.draw()
@@ -234,8 +237,15 @@ function this.draw()
     local gui_debug = config.gui.current.gui.debug
     local config_debug = config.debug.current.debug
 
-    imgui.set_next_window_pos(Vector2f.new(gui_debug.pos_x, gui_debug.pos_y), this.window.condition)
-    imgui.set_next_window_size(Vector2f.new(gui_debug.size_x, gui_debug.size_y), this.window.condition)
+    imgui.set_next_window_pos(
+        Vector2f.new(gui_debug.pos_x, gui_debug.pos_y),
+        not state.redo_win_pos.debug and this.window.condition or nil
+    )
+    imgui.set_next_window_size(
+        Vector2f.new(gui_debug.size_x, gui_debug.size_y),
+        not state.redo_win_pos.debug and this.window.condition or nil
+    )
+    state.redo_win_pos.debug = false
 
     if config.lang.font then
         imgui.push_font(config.lang.font)
@@ -247,14 +257,18 @@ function this.draw()
         this.window.flags
     )
 
+    local pos = imgui.get_window_pos()
+    local size = imgui.get_window_size()
+
+    gui_debug.pos_x, gui_debug.pos_y = pos.x, pos.y
+    gui_debug.size_x, gui_debug.size_y = size.x, size.y
+
     if not gui_debug.is_opened then
         if config.lang.font then
             imgui.pop_font()
         end
 
-        this.sub_window_pos = {}
-        this.snapshot = {}
-        this.ace_gui_elements = {}
+        this.close()
         imgui.end_window()
         return
     end
