@@ -86,7 +86,7 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
         local res = self:ctrl_getter(hudbase, gui_id, ctrl)
 
         if not res then
-            if config.current.debug.is_debug then
+            if config.debug.current.debug.is_debug then
                 logger:debug(
                     string.format(
                         "Ctrl getter failed!\nGame Class: %s,\nName Chain: %s,\nClass Chain: %s,\nCtrl: %s",
