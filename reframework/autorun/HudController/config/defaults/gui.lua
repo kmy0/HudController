@@ -16,11 +16,8 @@
 ---@field current GuiSettings
 ---@field default GuiSettings
 
-local config_base = require("HudController.util.misc.config")
-
-local this = {}
 ---@type GuiSettings
-local default = {
+return {
     gui = {
         main = {
             pos_x = 50,
@@ -38,10 +35,3 @@ local default = {
         },
     },
 }
-
----@return GuiConfig
-function this.new(path)
-    return config_base:new(default, path) --[[@as GuiConfig]]
-end
-
-return this

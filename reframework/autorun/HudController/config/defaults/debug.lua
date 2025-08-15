@@ -9,20 +9,11 @@
 ---@field current DebugSettings
 ---@field default DebugSettings
 
-local config_base = require("HudController.util.misc.config")
-
-local this = {}
-local default = {
+---@type DebugSettings
+return {
     debug = {
         show_disabled = false,
         is_filter = false,
         is_debug = false,
     },
 }
-
----@return DebugConfig
-function this.new(path)
-    return config_base:new(default, path) --[[@as DebugConfig]]
-end
-
-return this
