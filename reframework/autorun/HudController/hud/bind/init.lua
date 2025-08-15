@@ -92,11 +92,12 @@ end
 
 ---@return boolean
 function this.init()
+    local bind_key = config.current.mod.bind.key
     this.option_manager = option_bind_manager:new()
     this.hud_manager = hud_bind_manager:new()
 
-    this.option_manager:load(config.current.mod.bind.key.option)
-    this.hud_manager:load(config.current.mod.bind.key.hud)
+    this.option_manager:load(bind_key.option)
+    this.hud_manager:load(bind_key.hud)
     return true
 end
 

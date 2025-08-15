@@ -231,27 +231,23 @@ end
 
 function this.draw()
     local changed = false
+    local gui_debug = config.gui.current.gui.debug
+    local config_debug = config.debug.current.debug
 
-    imgui.set_next_window_pos(
-        Vector2f.new(config.gui.current.gui.debug.pos_x, config.gui.current.gui.debug.pos_y),
-        this.window.condition
-    )
-    imgui.set_next_window_size(
-        Vector2f.new(config.gui.current.gui.debug.size_x, config.gui.current.gui.debug.size_y),
-        this.window.condition
-    )
+    imgui.set_next_window_pos(Vector2f.new(gui_debug.pos_x, gui_debug.pos_y), this.window.condition)
+    imgui.set_next_window_size(Vector2f.new(gui_debug.size_x, gui_debug.size_y), this.window.condition)
 
     if config.lang.font then
         imgui.push_font(config.lang.font)
     end
 
-    config.gui.current.gui.debug.is_opened = imgui.begin_window(
+    gui_debug.is_opened = imgui.begin_window(
         string.format("%s %s", config.name, config.lang.tr("debug.name")),
-        config.gui.current.gui.debug.is_opened,
+        gui_debug.is_opened,
         this.window.flags
     )
 
-    if not config.gui.current.gui.debug.is_opened then
+    if not gui_debug.is_opened then
         if config.lang.font then
             imgui.pop_font()
         end
@@ -280,13 +276,13 @@ function this.draw()
 
     imgui.same_line()
 
-    changed, config.debug.current.debug.show_disabled =
-        imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config.debug.current.debug.show_disabled)
+    changed, config_debug.show_disabled =
+        imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
     util_imgui.tooltip(config.lang.tr("debug.tooltip_show_disabled"))
 
     local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
         local gui_elem = this.ace_gui_elements[value]
-        return config.debug.current.debug.show_disabled or gui_elem.gui:get_Enabled()
+        return config_debug.show_disabled or gui_elem.gui:get_Enabled()
     end)
     keys = util_table.sort(util_table.values(keys))
 
@@ -297,20 +293,18 @@ function this.draw()
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(this.snapshot))
-    changed, config.debug.current.debug.is_filter =
-        imgui.checkbox(gui_util.tr("debug.box_filter"), config.debug.current.debug.is_filter)
+    changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
     util_imgui.tooltip(config.lang.tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
-    if config.debug.current.debug.is_filter and not util_table.empty(this.snapshot) then
+    if config_debug.is_filter and not util_table.empty(this.snapshot) then
         keys = util_table.filter(keys, function(key, value)
             return not util_table.contains(this.snapshot, value)
         end)
         keys = util_table.sort(util_table.values(keys))
     end
 
-    changed, config.debug.current.debug.is_debug =
-        imgui.checkbox(gui_util.tr("debug.box_enable_log"), config.debug.current.debug.is_debug)
+    changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
     imgui.text(config.lang.tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang.tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang.tr("debug.text_states")))

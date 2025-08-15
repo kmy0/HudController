@@ -26,13 +26,15 @@ end
 
 ---@param new_hud HudProfileConfig?
 function this.new(new_hud)
-    table.insert(config.current.mod.hud, new_hud or this._new())
-    state.combo.hud:swap(config.current.mod.hud)
+    local config_mod = config.current.mod
+    table.insert(config_mod.hud, new_hud or this._new())
+    state.combo.hud:swap(config_mod.hud)
 end
 
 ---@param hud_config HudProfileConfig
 function this.remove(hud_config)
-    local i = util_table.key(config.current.mod.hud, function(key, value)
+    local config_mod = config.current.mod
+    local i = util_table.key(config_mod.hud, function(key, value)
         return value.key == hud_config.key
     end)
 
@@ -40,19 +42,19 @@ function this.remove(hud_config)
         return
     end
 
-    config.current.mod.hud = util_table.remove(config.current.mod.hud, function(t, i2, j)
+    config_mod.hud = util_table.remove(config_mod.hud, function(t, i2, j)
         return i ~= i2
     end)
-    state.combo.hud:swap(config.current.mod.hud)
-    config.current.mod.combo_hud = math.max(config.current.mod.combo_hud - 1, 1)
+    state.combo.hud:swap(config_mod.hud)
+    config_mod.combo_hud = math.max(config_mod.combo_hud - 1, 1)
 
-    if util_table.empty(config.current.mod.hud) then
+    if util_table.empty(config_mod.hud) then
         hud_manager.clear()
     end
 
     for _, key in pairs({ "singleplayer", "multiplayer" }) do
         for _, weapon in
-            pairs(config.current.mod.bind.weapon[key] --[[@as table<string, WeaponBindConfig>]])
+            pairs(config_mod.bind.weapon[key] --[[@as table<string, WeaponBindConfig>]])
         do
             for _, key2 in pairs({ "combat_in", "combat_out" }) do
                 local t = weapon[key2] --[[@as WeaponBindConfigData]]
@@ -71,8 +73,8 @@ function this.remove(hud_config)
         end
     end
 
-    config.current.mod.combo_hud_key_bind = 1
-    config.current.mod.bind.key.hud = bind_manager.hud_manager:get_base_binds()
+    config_mod.combo_hud_key_bind = 1
+    config_mod.bind.key.hud = bind_manager.hud_manager:get_base_binds()
 end
 
 ---@param name string

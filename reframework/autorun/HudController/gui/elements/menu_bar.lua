@@ -40,30 +40,32 @@ local function draw_menu(label, draw_func, enabled_obj)
 end
 
 local function draw_mod_menu()
-    if imgui.menu_item(gui_util.tr("menu.config.enabled"), nil, config.current.mod.enabled) then
-        config.current.mod.enabled = not config.current.mod.enabled
+    local config_mod = config.current.mod
+
+    if imgui.menu_item(gui_util.tr("menu.config.enabled"), nil, config_mod.enabled) then
+        config_mod.enabled = not config_mod.enabled
         hud.reset_elements()
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_fade"), nil, config.current.mod.enable_fade) then
-        config.current.mod.enable_fade = not config.current.mod.enable_fade
+    if imgui.menu_item(gui_util.tr("menu.config.enable_fade"), nil, config_mod.enable_fade) then
+        config_mod.enable_fade = not config_mod.enable_fade
         fade_manager.abort()
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_notification"), nil, config.current.mod.enable_notification) then
-        config.current.mod.enable_notification = not config.current.mod.enable_notification
+    if imgui.menu_item(gui_util.tr("menu.config.enable_notification"), nil, config_mod.enable_notification) then
+        config_mod.enable_notification = not config_mod.enable_notification
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), nil, config.current.mod.enable_weapon_binds) then
-        config.current.mod.enable_weapon_binds = not config.current.mod.enable_weapon_binds
+    if imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), nil, config_mod.enable_weapon_binds) then
+        config_mod.enable_weapon_binds = not config_mod.enable_weapon_binds
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), nil, config.current.mod.enable_key_binds) then
-        config.current.mod.enable_key_binds = not config.current.mod.enable_key_binds
+    if imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), nil, config_mod.enable_key_binds) then
+        config_mod.enable_key_binds = not config_mod.enable_key_binds
         config.save_global()
     end
 
@@ -73,15 +75,15 @@ local function draw_mod_menu()
         imgui.menu_item(
             gui_util.tr("menu.config.disable_weapon_binds_timed"),
             nil,
-            config.current.mod.disable_weapon_binds_timed
+            config_mod.disable_weapon_binds_timed
         )
     then
-        config.current.mod.disable_weapon_binds_timed = not config.current.mod.disable_weapon_binds_timed
+        config_mod.disable_weapon_binds_timed = not config_mod.disable_weapon_binds_timed
         config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_timed_tooltip"))
 
-    imgui.begin_disabled(not config.current.mod.disable_weapon_binds_timed)
+    imgui.begin_disabled(not config_mod.disable_weapon_binds_timed)
     local item_config_key = "mod.disable_weapon_binds_time"
     local item_value = config:get(item_config_key)
     if
@@ -98,23 +100,21 @@ local function draw_mod_menu()
     imgui.end_disabled()
 
     if
-        imgui.menu_item(
-            gui_util.tr("menu.config.disable_weapon_binds_held"),
-            nil,
-            config.current.mod.disable_weapon_binds_held
-        )
+        imgui.menu_item(gui_util.tr("menu.config.disable_weapon_binds_held"), nil, config_mod.disable_weapon_binds_held)
     then
-        config.current.mod.disable_weapon_binds_held = not config.current.mod.disable_weapon_binds_held
+        config_mod.disable_weapon_binds_held = not config_mod.disable_weapon_binds_held
         config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_held_tooltip"))
 end
 
 local function draw_lang_menu()
+    local config_lang = config.current.mod.lang
+
     for i = 1, #config.lang.sorted do
         local menu_item = config.lang.sorted[i]
-        if imgui.menu_item(menu_item, nil, config.current.mod.lang.file == menu_item) then
-            config.current.mod.lang.file = menu_item
+        if imgui.menu_item(menu_item, nil, config_lang.file == menu_item) then
+            config_lang.file = menu_item
             config.lang.change()
             state.tr_combo()
             config.save_global()
@@ -123,21 +123,23 @@ local function draw_lang_menu()
 
     imgui.separator()
 
-    if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config.current.mod.lang.fallback) then
-        config.current.mod.lang.fallback = not config.current.mod.lang.fallback
+    if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config_lang.fallback) then
+        config_lang.fallback = not config_lang.fallback
         config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.language.fallback_tooltip"))
 end
 
 local function draw_key_bind_menu()
+    local config_mod = config.current.mod
+
     if
         set.slider_int(
             "##mod.slider_key_bind",
             "mod.slider_key_bind",
             1,
             2,
-            config.current.mod.slider_key_bind == 1 and config.lang.tr("menu.bind.key.hud")
+            config_mod.slider_key_bind == 1 and config.lang.tr("menu.bind.key.hud")
                 or config.lang.tr("menu.bind.key.option")
         )
     then
@@ -149,7 +151,7 @@ local function draw_key_bind_menu()
     local manager_type
     ---@type string
     local config_key
-    if config.current.mod.slider_key_bind == 1 then
+    if config_mod.slider_key_bind == 1 then
         manager_type = bind_manager.manager_type.HUD
         config_key = "mod.bind.key.hud"
         set.combo("##bind_hud_combo", "mod.combo_hud_key_bind", state.combo.hud.values)
@@ -163,13 +165,12 @@ local function draw_key_bind_menu()
 
     if imgui.button(gui_util.tr("menu.bind.key.button_add")) then
         if
-            (manager_type == bind_manager.manager_type.HUD and not util_table.empty(config.current.mod.hud))
+            (manager_type == bind_manager.manager_type.HUD and not util_table.empty(config_mod.hud))
             or manager_type == bind_manager.manager_type.OPTION
         then
             state.listener = {
-                opt = manager_type == bind_manager.manager_type.HUD
-                        and config.current.mod.hud[config.current.mod.combo_hud_key_bind]
-                    or state.combo.option_bind:get_key(config.current.mod.combo_option_key_bind),
+                opt = manager_type == bind_manager.manager_type.HUD and config_mod.hud[config_mod.combo_hud_key_bind]
+                    or state.combo.option_bind:get_key(config_mod.combo_option_key_bind),
                 listener = util_bind.listener:new(),
             }
         end
@@ -209,7 +210,7 @@ local function draw_key_bind_menu()
                 local type = col.manager_type == bind_manager.manager_type.HUD and config.lang.tr("menu.bind.key.hud")
                     or config.lang.tr("menu.bind.key.option")
                 local name = col.manager_type == bind_manager.manager_type.HUD
-                        and util_table.value(config.current.mod.hud, function(key, value)
+                        and util_table.value(config_mod.hud, function(key, value)
                             return col.bind.key == value.key
                         end).name
                     or config.lang.tr("hud." .. mod.map.hud_options[col.bind.key])
@@ -305,7 +306,9 @@ local function draw_key_bind_menu()
 end
 
 local function draw_weapon_bind_menu()
-    imgui.begin_disabled(util_table.empty(config.current.mod.hud))
+    local config_mod = config.current.mod
+
+    imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     local changed = false
     changed = set.checkbox(gui_util.tr("menu.bind.weapon.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
@@ -317,16 +320,16 @@ local function draw_weapon_bind_menu()
         "mod.bind.weapon.out_of_combat_delay",
         0,
         600,
-        config.current.mod.bind.weapon.out_of_combat_delay == 0 and config.lang.tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(config.current.mod.bind.weapon.out_of_combat_delay, nil, true)
+        config_mod.bind.weapon.out_of_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.out_of_combat_delay, nil, true)
     ) or changed
     changed = set.slider_int(
         gui_util.tr("menu.bind.weapon.in_combat_delay"),
         "mod.bind.weapon.in_combat_delay",
         0,
         600,
-        config.current.mod.bind.weapon.in_combat_delay == 0 and config.lang.tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(config.current.mod.bind.weapon.in_combat_delay, nil, true)
+        config_mod.bind.weapon.in_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+            or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.in_combat_delay, nil, true)
     ) or changed
 
     if changed then
@@ -340,13 +343,13 @@ local function draw_weapon_bind_menu()
         "mod.slider_weapon_bind",
         1,
         2,
-        config.current.mod.slider_weapon_bind == 1 and config.lang.tr("menu.bind.weapon.singleplayer")
+        config_mod.slider_weapon_bind == 1 and config.lang.tr("menu.bind.weapon.singleplayer")
             or config.lang.tr("menu.bind.weapon.multiplayer")
     )
 
-    local key = config.current.mod.slider_weapon_bind == 1 and "singleplayer" or "multiplayer"
+    local key = config_mod.slider_weapon_bind == 1 and "singleplayer" or "multiplayer"
     local sorted = util_table.sort(
-        util_table.values(config.current.mod.bind.weapon[key]) --[=[@as WeaponBindConfig[]]=],
+        util_table.values(config_mod.bind.weapon[key]) --[=[@as WeaponBindConfig[]]=],
         function(a, b)
             local a_id = util_table.index(ace_map.additional_weapon, a.name)
             local b_id = util_table.index(ace_map.additional_weapon, b.name)
@@ -398,7 +401,7 @@ local function draw_weapon_bind_menu()
                 if changed then
                     config:set(
                         string.format("mod.bind.weapon.%s.%s.%s.hud_key", key, weapon.name, sub_key),
-                        config.current.mod.hud[config:get(config_key)].key
+                        config_mod.hud[config:get(config_key)].key
                     )
                     config.save_global()
                 end

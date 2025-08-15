@@ -26,24 +26,21 @@ local this = {
 }
 
 function this.draw()
-    imgui.set_next_window_pos(
-        Vector2f.new(config.gui.current.gui.main.pos_x, config.gui.current.gui.main.pos_y),
-        this.window.condition
-    )
-    imgui.set_next_window_size(
-        Vector2f.new(config.gui.current.gui.main.size_x, config.gui.current.gui.main.size_y),
-        this.window.condition
-    )
+    local gui_main = config.gui.current.gui.main
+    local config_mod = config.current.mod
+
+    imgui.set_next_window_pos(Vector2f.new(gui_main.pos_x, gui_main.pos_y), this.window.condition)
+    imgui.set_next_window_size(Vector2f.new(gui_main.size_x, gui_main.size_y), this.window.condition)
 
     if config.lang.font then
         imgui.push_font(config.lang.font)
     end
 
-    config.gui.current.gui.main.is_opened = imgui.begin_window(
+    gui_main.is_opened = imgui.begin_window(
         this.window.flags
     )
 
-    if not config.gui.current.gui.main.is_opened then
+    if not gui_main.is_opened then
         if config.lang.font then
             imgui.pop_font()
         end
@@ -52,8 +49,8 @@ function this.draw()
 
         local pos = imgui.get_window_pos()
         local size = imgui.get_window_size()
-        config.gui.current.gui.main.pos_x, config.gui.current.gui.main.pos_y = pos.x, pos.y
-        config.gui.current.gui.main.size_x, config.gui.current.gui.main.size_y = size.x, size.y
+        gui_main.pos_x, gui_main.pos_y = pos.x, pos.y
+        gui_main.size_x, gui_main.size_y = size.x, size.y
         config.save_global()
         return
     end
@@ -81,14 +78,14 @@ function this.draw()
 
     imgui.begin_disabled(
         not config.current.mod.enabled or (config.current.mod.enable_fade and fade_manager.is_active())
-    )
+    imgui.begin_disabled(not config_mod.enabled or (config_mod.enable_fade and fade_manager.is_active()))
 
     imgui.begin_child_window("hud_child_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
     gui_elements.choice.draw_hud()
 
-    imgui.begin_disabled(util_table.empty(config.current.mod.hud))
+    imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     gui_elements.choice.draw_element()
     local spacing = 4
