@@ -27,7 +27,7 @@ function this.draw_options(option_keys, config_key, callback)
         local key = option_keys[i]
         local option_data = ace_map.option[key]
         local option_config_key = string.format("%s.%s", config_key, key)
-        local config_value = config.get(option_config_key)
+        local config_value = config:get(option_config_key)
 
         if
             set.slider_int(
@@ -55,14 +55,14 @@ function this.draw_step_buttons(config_key, min, max, step)
 
     if imgui.button("-##button_minus_" .. config_key, { 20, 20 }) then
         changed = true
-        config.set(config_key, math.max(config.get(config_key) - step, min))
+        config:set(config_key, math.max(config:get(config_key) - step, min))
     end
 
     imgui.same_line()
 
     if imgui.button("+##button_plus_" .. config_key, { 20, 20 }) then
         changed = true
-        config.set(config_key, math.min(config.get(config_key) + step, max))
+        config:set(config_key, math.min(config:get(config_key) + step, max))
     end
 
     return changed
@@ -80,7 +80,7 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
 
     if checkbox then
         changed = set.checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
-        imgui.begin_disabled(not config.get(checkbox.config_key))
+        imgui.begin_disabled(not config:get(checkbox.config_key))
     else
         imgui.begin_disabled(false)
     end
@@ -139,7 +139,7 @@ function this.draw(elem, elem_config, config_key)
 
         if changed then
             elem:set_scale(elem_config.enabled_scale and elem_config.scale or nil)
-            config.save()
+            config.save_global()
         end
 
         this.separator:draw()
@@ -162,7 +162,7 @@ function this.draw(elem, elem_config, config_key)
 
         if changed then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
-            config.save()
+            config.save_global()
         end
 
         this.separator:draw()
@@ -181,7 +181,7 @@ function this.draw(elem, elem_config, config_key)
 
         if changed then
             elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
-            config.save()
+            config.save_global()
         end
 
         this.separator:draw()
@@ -200,7 +200,7 @@ function this.draw(elem, elem_config, config_key)
 
         if changed then
             elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
-            config.save()
+            config.save_global()
         end
 
         this.separator:draw()
@@ -213,11 +213,11 @@ function this.draw(elem, elem_config, config_key)
             checkbox_key
         )
 
-        imgui.begin_disabled(not config.get(checkbox_key))
+        imgui.begin_disabled(not config:get(checkbox_key))
 
         local item_config_key = config_key .. ".segment"
-        if not config.get(item_config_key .. "_combo") then
-            config.set(item_config_key .. "_combo", state.combo.segment:get_index(nil, config.get(item_config_key)))
+        if not config:get(item_config_key .. "_combo") then
+            config:set(item_config_key .. "_combo", state.combo.segment:get_index(nil, config:get(item_config_key)))
         end
 
         changed = set.combo(
@@ -227,9 +227,9 @@ function this.draw(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            config.set(item_config_key, state.combo.segment:get_value(config.get(item_config_key .. "_combo")))
+            config:set(item_config_key, state.combo.segment:get_value(config:get(item_config_key .. "_combo")))
             elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
-            config.save()
+            config.save_global()
         end
 
         imgui.end_disabled()

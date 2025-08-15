@@ -1,9 +1,10 @@
----@class (exact) WindowState
----@field pos_x integer
----@field pos_y integer
----@field size_x integer
----@field size_y integer
----@field is_opened boolean
+---@class (exact) MainSettings : SettingsBase
+---@field version string
+---@field mod ModSettings
+
+---@class (exact) ModLanguage
+---@field file string
+---@field fallback boolean
 
 ---@class (exact) GridConfig
 ---@field draw boolean
@@ -33,15 +34,6 @@
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
 
----@class (exact) GuiLanguage
----@field file string
----@field fallback boolean
-
----@class (exact) GuiSettings
----@field main WindowState
----@field debug WindowState
----@field lang GuiLanguage
-
 ---@class (exact) ModSettings
 ---@field enabled boolean
 ---@field enable_fade boolean
@@ -63,59 +55,40 @@
 ---@field combo_option_key_bind integer
 ---@field slider_weapon_bind integer
 ---@field slider_key_bind integer
+---@field lang ModLanguage
 
----@class (exact) DebugSettings
----@field show_disabled boolean
----@field is_filter boolean
----@field is_debug boolean
-
----@class (exact) Settings
----@field version string
----@field gui GuiSettings
----@field mod ModSettings
----@field debug DebugSettings
-
----@class Config
+---@class MainConfig : ConfigBase
+---@field current MainSettings
+---@field default MainSettings
+---
 ---@field lang Language
+---@field gui GuiConfig
+---@field debug DebugConfig
+---
 ---@field version string
 ---@field commit string
 ---@field name string
----@field grid_size integer
----@field porter_timeout number
----@field handler_timeout number
+---
 ---@field default_lang_path string
 ---@field hud_default_path string
 ---@field option_default_path string
----@field config_path string
----@field default Settings
----@field current Settings
----@field save_timer Timer
+---@field default_config_path string
+---
+---@field grid_size integer
+---@field porter_timeout number
+---@field handler_timeout number
 
+local config_base = require("HudController.util.misc.config")
+local debug_config = require("HudController.config.debug")
+local gui_config = require("HudController.config.gui")
 local migration = require("HudController.config.migration")
-local timer = require("HudController.util.misc.timer")
+local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 local version = require("HudController.config.version")
 
----@class Config
-local this = {
-    lang = require("HudController.config.lang"),
-}
-
-this.version = version.version
-this.commit = version.commit
-this.name = "HudController"
-this.config_path = this.name .. "/config.json"
-this.default_lang_path = this.name .. "/lang/en-us.json"
-this.hud_default_path = this.name .. "/default/hud_default.json"
-this.option_default_path = this.name .. "/default/option_default.json"
-this.grid_size = 160
-this.porter_timeout = 3
-this.handler_timeout = 5
-
----@diagnostic disable-next-line: missing-fields
-this.current = {}
-this.default = {
-    version = this.version,
+---@type MainSettings
+local default = {
+    version = version.version,
     gui = {
         main = {
             pos_x = 50,
@@ -131,12 +104,12 @@ this.default = {
             size_y = 700,
             is_opened = false,
         },
+    },
+    mod = {
         lang = {
             file = "en-us",
             fallback = true,
         },
-    },
-    mod = {
         enabled = true,
         enable_fade = true,
         enable_notification = true,
@@ -181,70 +154,68 @@ this.default = {
         is_debug = false,
     },
 }
+local mod_name = "HudController"
+local config_path = util_misc.join_paths(mod_name, "config.json")
 
----@param key string
----@return any
-function this.get(key)
-    return util_table.get_by_key(this.current, key)
-end
+---@class MainConfig
+local this = config_base:new(default, config_path)
 
----@param key string
----@param value any
-function this.set(key, value)
-    util_table.set_by_key(this.current, key, value)
-end
+this.version = version.version
+this.commit = version.commit
+this.name = mod_name
 
-function this.load()
-    local loaded_config = json.load_file(this.config_path) --[[@as Settings?]]
+this.default_lang_path = util_misc.join_paths(this.name, "lang", "en-us.json")
+this.default_config_path = config_path
+this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
+this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
+
+this.lang = require("HudController.config.lang")
+this.gui = gui_config.new(util_misc.join_paths(this.name, "other_configs", "gui.json"))
+this.debug = debug_config.new(util_misc.join_paths(this.name, "other_configs", "debug.json"))
+
+this.grid_size = 160
+this.porter_timeout = 3
+this.handler_timeout = 5
+
+function this:load()
+    local loaded_config = json.load_file(self.path) --[[@as MainSettings?]]
     ---@type string?
     local current_version
     if loaded_config then
         current_version = loaded_config.version
-        this.current = util_table.merge_t(this.default, loaded_config)
+        self.current = util_table.merge_t(self.default, loaded_config)
     else
-        current_version = this.commit
-        this.current = util_table.deep_copy(this.default)
+        current_version = self.commit
+        self.current = util_table.deep_copy(self.default)
+        self:save_no_timer()
     end
 
-    if migration.need_migrate(current_version, this.commit) then
-        this.backup()
-        migration.migrate(current_version, this.commit, this.current)
-        this.save_no_timer()
+    if migration.need_migrate(current_version, self.commit) then
+        self:backup()
+        migration.migrate(current_version, self.commit, self.current)
+        self:save_no_timer()
     end
 end
 
-function this.backup()
-    json.dump_file(
-        string.format("%s/%s_backup_v%s_config.json", this.name, os.time(), this.current.version),
-        this.current
+---@return string
+function this.get_backup_path()
+    return util_misc.join_paths(
+        this.name,
+        string.format("%s_backup_v%s_%s", os.time(), this.current.version, util_misc.get_file_name(this.path))
     )
 end
 
-function this.save()
-    this.save_timer:restart()
-end
-
-function this.save_no_timer()
-    json.dump_file(this.config_path, this.current)
-end
-
-function this.run_save()
-    this.save_timer:update()
-end
-
-function this.restore()
-    this.current = util_table.deep_copy(this.default)
-    this.save_no_timer()
-    this.lang.change()
+function this:backup()
+    self:save_no_timer(this.get_backup_path())
 end
 
 ---@return boolean
 function this.init()
-    this.load()
+    this:load()
+    this.gui:load()
+    this.debug:load()
     this.lang.init(this)
     return true
 end
-
-this.save_timer = timer.new("config_save_timer", 0.5, this.save_no_timer, true)
 
 return this

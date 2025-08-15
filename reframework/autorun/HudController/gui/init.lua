@@ -27,11 +27,11 @@ local this = {
 
 function this.draw()
     imgui.set_next_window_pos(
-        Vector2f.new(config.current.gui.main.pos_x, config.current.gui.main.pos_y),
+        Vector2f.new(config.gui.current.gui.main.pos_x, config.gui.current.gui.main.pos_y),
         this.window.condition
     )
     imgui.set_next_window_size(
-        Vector2f.new(config.current.gui.main.size_x, config.current.gui.main.size_y),
+        Vector2f.new(config.gui.current.gui.main.size_x, config.gui.current.gui.main.size_y),
         this.window.condition
     )
 
@@ -39,13 +39,11 @@ function this.draw()
         imgui.push_font(config.lang.font)
     end
 
-    config.current.gui.main.is_opened = imgui.begin_window(
-        string.format("%s %s", config.name, config.commit),
-        config.current.gui.main.is_opened,
+    config.gui.current.gui.main.is_opened = imgui.begin_window(
         this.window.flags
     )
 
-    if not config.current.gui.main.is_opened then
+    if not config.gui.current.gui.main.is_opened then
         if config.lang.font then
             imgui.pop_font()
         end
@@ -54,9 +52,9 @@ function this.draw()
 
         local pos = imgui.get_window_pos()
         local size = imgui.get_window_size()
-        config.current.gui.main.pos_x, config.current.gui.main.pos_y = pos.x, pos.y
-        config.current.gui.main.size_x, config.current.gui.main.size_y = size.x, size.y
-        config.save()
+        config.gui.current.gui.main.pos_x, config.gui.current.gui.main.pos_y = pos.x, pos.y
+        config.gui.current.gui.main.size_x, config.gui.current.gui.main.size_y = size.x, size.y
+        config.save_global()
         return
     end
 

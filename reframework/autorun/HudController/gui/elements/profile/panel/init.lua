@@ -41,15 +41,15 @@ local function draw_panel(elem, elem_config, config_key, tree)
         imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
 
         item_config_key = config_key .. ".options"
-        local options = config.get(item_config_key)
+        local options = config:get(item_config_key)
         if options and not util_table.empty(options) then
             util_imgui.separator_text(config.lang.tr("hud_element.entry.category_ingame_settings"))
 
             ---@cast options table<string, integer>
             local sorted = util_table.sort(util_table.keys(options))
             generic.draw_options(sorted, item_config_key, function(option_key, option_config_key)
-                elem:set_option(option_key, config.get(option_config_key))
-                config.save()
+                elem:set_option(option_key, config:get(option_config_key))
+                config.save_global()
             end)
         end
 

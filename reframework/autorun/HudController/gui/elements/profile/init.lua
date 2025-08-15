@@ -36,7 +36,7 @@ local function boxes_to_slider(label, boxes)
     local value = 0
     local display = config.lang.tr("hud.option_disable")
     for i = 1, #boxes do
-        if config.get(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i])) then
+        if config:get(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i])) then
             value = i
             display = config.lang.tr("hud.box_" .. boxes[i])
             break
@@ -46,12 +46,12 @@ local function boxes_to_slider(label, boxes)
     local changed, value = imgui.slider_int(label, value, 0, #boxes, display)
     if changed then
         for i = 1, #boxes do
-            config.set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i]), false)
+            config:set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[i]), false)
             hud.clear_overridden(boxes[i])
         end
 
         if value ~= 0 then
-            config.set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[value]), true)
+            config:set(string.format("mod.hud.int:%s.%s", config.current.mod.combo_hud, boxes[value]), true)
         end
     end
 
@@ -306,7 +306,7 @@ local function draw_options()
     ) or changed
 
     imgui.same_line()
-    imgui.begin_disabled(not config.get(string.format("mod.hud.int:%s.fade_opacity", config.current.mod.combo_hud)))
+    imgui.begin_disabled(not config:get(string.format("mod.hud.int:%s.fade_opacity", config.current.mod.combo_hud)))
 
     changed = set.checkbox(
         gui_util.tr("hud.box_fade_opacity_both"),
@@ -317,7 +317,7 @@ local function draw_options()
     util_imgui.tooltip(config.lang.tr("hud.tooltip_fade_opacity_both"), true)
 
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config.current.mod.combo_hud)
-    local item_value = config.get(item_config_key)
+    local item_value = config:get(item_config_key)
     changed = set.slider_float(
         gui_util.tr("hud.slider_fade_in"),
         item_config_key,
@@ -328,7 +328,7 @@ local function draw_options()
     ) or changed
 
     item_config_key = string.format("mod.hud.int:%s.fade_out", config.current.mod.combo_hud)
-    item_value = config.get(item_config_key)
+    item_value = config:get(item_config_key)
     changed = set.slider_float(
         gui_util.tr("hud.slider_fade_out"),
         item_config_key,
@@ -339,7 +339,7 @@ local function draw_options()
     ) or changed
 
     if changed then
-        config.save()
+        config.save_global()
     end
 
     if not util_table.empty(config.current.mod.hud[config.current.mod.combo_hud].options) then
@@ -351,8 +351,8 @@ local function draw_options()
             sorted,
             string.format("mod.hud.int:%s.options", config.current.mod.combo_hud),
             function(option_key, option_config_key)
-                hud.apply_option(option_key, config.get(option_config_key))
-                config.save()
+                hud.apply_option(option_key, config:get(option_config_key))
+                config.save_global()
             end
         )
     end
@@ -420,7 +420,7 @@ local function draw_elements()
 
     if drag and imgui.is_mouse_released(0) then
         drag = nil
-        config.save()
+        config.save_global()
     elseif drag then
         for i, elem in
             pairs(util_table.sort(util_table.values(elements), function(a, b)
@@ -437,7 +437,7 @@ local function draw_elements()
         end
 
         hud.update_elements(elements)
-        config.save()
+        config.save_global()
     end
 end
 

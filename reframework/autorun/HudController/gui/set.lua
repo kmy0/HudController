@@ -8,9 +8,9 @@ local this = {}
 ---@return boolean
 function this.generic_config(name, config_key, func, ...)
     local changed, value
-    changed, value = func(name, config.get(config_key), ...)
+    changed, value = func(name, config:get(config_key), ...)
     if changed then
-        config.set(config_key, value)
+        config:set(config_key, value)
     end
     return changed
 end

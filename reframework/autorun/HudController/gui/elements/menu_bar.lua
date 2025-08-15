@@ -43,28 +43,28 @@ local function draw_mod_menu()
     if imgui.menu_item(gui_util.tr("menu.config.enabled"), nil, config.current.mod.enabled) then
         config.current.mod.enabled = not config.current.mod.enabled
         hud.reset_elements()
-        config.save()
+        config.save_global()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_fade"), nil, config.current.mod.enable_fade) then
         config.current.mod.enable_fade = not config.current.mod.enable_fade
         fade_manager.abort()
-        config.save()
+        config.save_global()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_notification"), nil, config.current.mod.enable_notification) then
         config.current.mod.enable_notification = not config.current.mod.enable_notification
-        config.save()
+        config.save_global()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), nil, config.current.mod.enable_weapon_binds) then
         config.current.mod.enable_weapon_binds = not config.current.mod.enable_weapon_binds
-        config.save()
+        config.save_global()
     end
 
     if imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), nil, config.current.mod.enable_key_binds) then
         config.current.mod.enable_key_binds = not config.current.mod.enable_key_binds
-        config.save()
+        config.save_global()
     end
 
     imgui.separator()
@@ -77,13 +77,13 @@ local function draw_mod_menu()
         )
     then
         config.current.mod.disable_weapon_binds_timed = not config.current.mod.disable_weapon_binds_timed
-        config.save()
+        config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_timed_tooltip"))
 
     imgui.begin_disabled(not config.current.mod.disable_weapon_binds_timed)
     local item_config_key = "mod.disable_weapon_binds_time"
-    local item_value = config.get(item_config_key)
+    local item_value = config:get(item_config_key)
     if
         set.slider_int(
             "##" .. item_config_key,
@@ -93,7 +93,7 @@ local function draw_mod_menu()
             gui_util.seconds_to_minutes_string(item_value, "%.0f")
         )
     then
-        config.save()
+        config.save_global()
     end
     imgui.end_disabled()
 
@@ -105,7 +105,7 @@ local function draw_mod_menu()
         )
     then
         config.current.mod.disable_weapon_binds_held = not config.current.mod.disable_weapon_binds_held
-        config.save()
+        config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_held_tooltip"))
 end
@@ -113,19 +113,19 @@ end
 local function draw_lang_menu()
     for i = 1, #config.lang.sorted do
         local menu_item = config.lang.sorted[i]
-        if imgui.menu_item(menu_item, nil, config.current.gui.lang.file == menu_item) then
-            config.current.gui.lang.file = menu_item
+        if imgui.menu_item(menu_item, nil, config.current.mod.lang.file == menu_item) then
+            config.current.mod.lang.file = menu_item
             config.lang.change()
             state.tr_combo()
-            config.save()
+            config.save_global()
         end
     end
 
     imgui.separator()
 
-    if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config.current.gui.lang.fallback) then
-        config.current.gui.lang.fallback = not config.current.gui.lang.fallback
-        config.save()
+    if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config.current.mod.lang.fallback) then
+        config.current.mod.lang.fallback = not config.current.mod.lang.fallback
+        config.save_global()
     end
     util_imgui.tooltip(config.lang.tr("menu.language.fallback_tooltip"))
 end
@@ -232,9 +232,9 @@ local function draw_key_bind_menu()
             bind.key = manager_type == bind_manager.manager_type.HUD and state.listener.opt.key or state.listener.opt
 
             bind_manager.register(manager_type, bind)
-            config.set(config_key, bind_manager.get_base_binds(manager_type))
+            config:set(config_key, bind_manager.get_base_binds(manager_type))
 
-            config.save()
+            config.save_global()
             state.listener = nil
             bind_manager.set_pause(false)
         end
@@ -265,12 +265,12 @@ local function draw_key_bind_menu()
         imgui.separator()
     end
 
-    if not util_table.empty(config.get(config_key)) and imgui.begin_table("keybind_state", 3, 1 << 9) then
+    if not util_table.empty(config:get(config_key)) and imgui.begin_table("keybind_state", 3, 1 << 9) then
         imgui.separator()
 
         ---@type HudBindKey[]
         local remove = {}
-        local binds = config.get(config_key) --[=[@as HudBindKey[]]=]
+        local binds = config:get(config_key) --[=[@as HudBindKey[]]=]
         for i = 1, #binds do
             local bind = binds[i]
             imgui.table_next_row()
@@ -296,8 +296,8 @@ local function draw_key_bind_menu()
                 bind_manager.unregister(manager_type, bind)
             end
 
-            config.set(config_key, bind_manager.get_base_binds(manager_type))
-            config.save()
+            config:set(config_key, bind_manager.get_base_binds(manager_type))
+            config.save_global()
         end
 
         imgui.end_table()
@@ -330,7 +330,7 @@ local function draw_weapon_bind_menu()
     ) or changed
 
     if changed then
-        config.save()
+        config.save_global()
     end
 
     imgui.separator()
@@ -376,7 +376,7 @@ local function draw_weapon_bind_menu()
             local weapon = sorted[i]
 
             imgui.begin_disabled(
-                weapon.name ~= "GLOBAL" and config.get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
+                weapon.name ~= "GLOBAL" and config:get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
             )
 
             changed = false
@@ -396,18 +396,18 @@ local function draw_weapon_bind_menu()
                 ) or changed
 
                 if changed then
-                    config.set(
+                    config:set(
                         string.format("mod.bind.weapon.%s.%s.%s.hud_key", key, weapon.name, sub_key),
-                        config.current.mod.hud[config.get(config_key)].key
+                        config.current.mod.hud[config:get(config_key)].key
                     )
-                    config.save()
+                    config.save_global()
                 end
 
                 imgui.pop_item_width()
             end
 
             imgui.table_set_column_index(1)
-            imgui.begin_disabled(not config.get(config_key))
+            imgui.begin_disabled(not config:get(config_key))
             draw_combo("combat_in")
 
             imgui.table_set_column_index(2)
@@ -452,7 +452,7 @@ local function draw_grid_menu()
         "mod.grid.combo_grid_ratio",
         1,
         #state.grid_ratio,
-        state.grid_ratio[config.get("mod.grid.combo_grid_ratio")]
+        state.grid_ratio[config:get("mod.grid.combo_grid_ratio")]
     ) or changed
     changed = set.color_edit(gui_util.tr("menu.grid.color_center"), "mod.grid.color_center") or changed
     changed = set.color_edit(gui_util.tr("menu.grid.color_grid"), "mod.grid.color_grid") or changed
@@ -460,7 +460,7 @@ local function draw_grid_menu()
     changed = set.slider_float(gui_util.tr("menu.grid.fade_alpha"), "mod.grid.fade_alpha", 0, 1, "%.2f") or changed
 
     if changed then
-        config.save()
+        config.save_global()
     end
 end
 
@@ -471,8 +471,8 @@ function this.draw()
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
 
     if imgui.button(gui_util.tr("debug.name")) then
-        config.current.gui.debug.is_opened = not config.current.gui.debug.is_opened
-        config.save()
+        config.gui.current.gui.debug.is_opened = not config.gui.current.gui.debug.is_opened
+        config.save_global()
     end
 end
 

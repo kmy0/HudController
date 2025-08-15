@@ -252,7 +252,7 @@ function this.update_weapon_bind_state()
 
         config.current.mod.combo_hud = state_config.combo
         this.request_hud(hud_config)
-        config.save()
+        config.save_global()
     end
 end
 
