@@ -5,7 +5,6 @@
 ---@field now integer
 ---@field callback fun()?
 ---@field protected _finished boolean
----@field protected _do_call boolean
 ---@field protected _do_restart boolean
 ---@field protected _instances table<string, Timer>
 ---@field protected _restart_on_finish boolean
@@ -31,7 +30,6 @@ function this.new(key, limit, callback, start_finished, restart_on_finish)
         _finished = start_finished and true or false,
         _restart_on_finish = restart_on_finish and true or false,
         _do_restart = false,
-        _do_call = true,
     }
     setmetatable(o, this)
     ---@cast o Timer
@@ -50,7 +48,6 @@ end
 function this:_restart()
     self._finished = false
     self.start_time = os.clock()
-    self._do_call = true
     self._do_restart = false
 end
 
@@ -81,9 +78,8 @@ function this:update()
     self:_update()
     self._finished = self:elapsed() >= self.limit
 
-    if self._finished and self.callback and self._do_call then
+    if self._finished and self.callback then
         self.callback()
-        self._do_call = false
     end
 
     if self._finished and self._restart_on_finish then
@@ -91,6 +87,17 @@ function this:update()
     end
 
     return self._finished
+end
+
+function this:abort()
+    self._finished = true
+end
+
+function this:abort_and_execute()
+    if not self._finished and self.callback then
+        self.callback()
+    end
+    self._finished = true
 end
 
 function this.iter()
