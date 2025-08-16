@@ -85,7 +85,8 @@ local function set_additional_hud()
     end
 end
 
-local function get_weapon_map()
+---@param config_table MainSettings
+function this.get_weapon_bind_map(config_table)
     local lang = game_lang.get_language()
     ---@type WeaponBindConfig
     local base = {
@@ -98,7 +99,7 @@ local function get_weapon_map()
     }
 
     local function copy_base(name, wp_base)
-        local bind_weapon = config.current.mod.bind.weapon
+        local bind_weapon = config_table.mod.bind.weapon
         for _, mode in pairs({ "singleplayer", "multiplayer" }) do
             ---@diagnostic disable-next-line: no-unknown
             bind_weapon[mode][name] = util_table.merge_t(util_table.deep_copy(wp_base), bind_weapon[mode][name] or {})
@@ -227,7 +228,7 @@ function this.init()
 
     get_hud_map()
     set_additional_hud()
-    get_weapon_map()
+    this.get_weapon_bind_map(config.current)
     get_option_map()
 
     util_table.do_something(

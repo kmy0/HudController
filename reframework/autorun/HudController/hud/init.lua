@@ -106,8 +106,9 @@ function this.clear_overridden(key)
 end
 
 ---@param new_hud HudProfileConfig
-function this.request_hud(new_hud)
-    this.manager.request_hud(new_hud)
+---@param force boolean?
+function this.request_hud(new_hud, force)
+    this.manager.request_hud(new_hud, force)
 end
 
 function this.clear()

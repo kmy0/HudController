@@ -1,10 +1,13 @@
 local config = require("HudController.config")
+local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
+
+local mod = data.mod
 
 local this = {}
 
@@ -85,10 +88,8 @@ function this.draw_hud()
         config:save_no_timer()
     end
 
-    if state.input_action then
-        local changed = false
-        changed, state.input_action = imgui.input_text(gui_util.tr("hud.input"), state.input_action, 1 << 6)
-
+    if state.input_action and not mod.pause then
+        local changed, _ = state.get_input()
         if changed then
             hud.operations.rename(config_mod.hud[config_mod.combo_hud], state.input_action)
             state.input_action = nil

@@ -118,9 +118,11 @@ function this.apply_options(options)
 end
 
 ---@param new_hud HudProfileConfig
-function this.request_hud(new_hud)
+---@param force boolean?
+function this.request_hud(new_hud, force)
     if
-        this.current_hud
+        not force
+        and this.current_hud
         and this.current_hud.key == new_hud.key
         and not fade_manager.is_active(fade_manager.type.fade_out)
     then
@@ -273,6 +275,10 @@ function this.update()
 
     fade_manager.update()
 
+    if mod.pause then
+        return
+    end
+
     local is_held = false
     if config_mod.enable_key_binds then
         bind_manager.option_manager:monitor()
@@ -329,6 +335,12 @@ end
 function this.init()
     hud_opt_default.init()
     play_object.default.init()
+    this.reinit()
+
+    return true
+end
+
+function this.reinit()
     bind_manager.init()
 
     local config_mod = config.current.mod
@@ -337,8 +349,6 @@ function this.init()
         local hud = config_mod.hud[i]
         hud.elements = factory.verify_elements(hud.elements or {})
     end
-
-    return true
 end
 
 this.overridden_options_func["hide_scar"] = override_scar_option

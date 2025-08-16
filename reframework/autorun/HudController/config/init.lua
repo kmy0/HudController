@@ -5,6 +5,7 @@
 ---@field lang Language
 ---@field gui GuiConfig
 ---@field debug DebugConfig
+---@field selector SelectorConfig
 ---
 ---@field version string
 ---@field commit string
@@ -21,6 +22,7 @@
 
 local config_base = require("HudController.util.misc.config")
 local migration = require("HudController.config.migration")
+local selector_config = require("HudController.config.selector")
 local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 local version = require("HudController.config.version")
@@ -30,15 +32,6 @@ local config_path = util_misc.join_paths(mod_name, "config.json")
 
 ---@class MainConfig
 local this = config_base:new(require("HudController.config.defaults.mod"), config_path)
-this.gui = config_base:new(
-    require("HudController.config.defaults.gui"),
-    util_misc.join_paths(this.name, "other_configs", "gui.json")
-) --[[@as GuiConfig]]
-this.debug = config_base:new(
-    require("HudController.config.defaults.debug"),
-    util_misc.join_paths(this.name, "other_configs", "debug.json")
-) --[[@as DebugConfig]]
-this.lang = require("HudController.config.lang")
 
 this.version = version.version
 this.commit = version.commit
@@ -53,6 +46,21 @@ this.grid_size = 160
 this.porter_timeout = 3
 this.handler_timeout = 5
 
+this.gui = config_base:new(
+    require("HudController.config.defaults.gui"),
+    util_misc.join_paths(this.name, "other_configs", "gui.json")
+) --[[@as GuiConfig]]
+this.debug = config_base:new(
+    require("HudController.config.defaults.debug"),
+    util_misc.join_paths(this.name, "other_configs", "debug.json")
+) --[[@as DebugConfig]]
+this.selector = selector_config:new(
+    require("HudController.config.defaults.selector"),
+    util_misc.join_paths(this.name, "other_configs", "selector.json"),
+    this
+)
+this.lang = require("HudController.config.lang")
+
 function this:load()
     local loaded_config = json.load_file(self.path) --[[@as MainSettings?]]
     ---@type string?
@@ -64,6 +72,7 @@ function this:load()
         current_version = self.commit
         self.current = util_table.deep_copy(self.default)
         self:save_no_timer()
+        self.selector:load()
     end
 
     if migration.need_migrate(current_version, self.commit) then
@@ -88,6 +97,7 @@ end
 
 ---@return boolean
 function this.init()
+    this.selector:load()
     this:load()
     this.gui:load()
     this.debug:load()
