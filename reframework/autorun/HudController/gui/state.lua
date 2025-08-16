@@ -5,6 +5,9 @@
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
 ---@field redo_win_pos RedoWinPos
+---@field state {
+--- l1_pressed: boolean,
+--- }
 
 ---@class (exact) GuiCombo
 ---@field hud_elem Combo
@@ -28,6 +31,7 @@
 ---@field main boolean
 ---@field debug boolean
 
+local ace_player = require("HudController.util.ace.player")
 local combo = require("HudController.gui.combo")
 local config = require("HudController.config")
 local data = require("HudController.data")
@@ -134,6 +138,9 @@ local this = {
         main = false,
         debug = false,
     },
+    state = {
+        l1_pressed = false,
+    },
 }
 ---@enum GuiColors
 this.colors = {
@@ -168,6 +175,10 @@ function this.get_input()
     local changed = false
     changed, this.input_action = imgui.input_text(gui_util.tr("hud.input"), this.input_action, 1 << 6)
     return changed, this.input_action
+end
+
+function this.update_state()
+    this.state.l1_pressed = ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
 end
 
 function this.init()

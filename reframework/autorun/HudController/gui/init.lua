@@ -28,6 +28,7 @@ local this = {
 function this.draw()
     local gui_main = config.gui.current.gui.main
     local config_mod = config.current.mod
+    state.update_state()
 
     imgui.set_next_window_pos(
         Vector2f.new(gui_main.pos_x, gui_main.pos_y),
