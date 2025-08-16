@@ -74,15 +74,16 @@ function this:load()
 end
 
 ---@return string
-function this.get_backup_path()
+function this:get_backup_path()
     return util_misc.join_paths(
-        this.name,
-        string.format("%s_backup_v%s_%s", os.time(), this.current.version, util_misc.get_file_name(this.path))
+        self.name,
+        "backups",
+        string.format("%s_backup_v%s_%s", os.time(), self.current.version, util_misc.get_file_name(self.path))
     )
 end
 
 function this:backup()
-    self:save_no_timer(this.get_backup_path())
+    self:save_no_timer(self:get_backup_path())
 end
 
 ---@return boolean
