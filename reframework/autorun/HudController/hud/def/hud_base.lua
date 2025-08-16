@@ -187,7 +187,11 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         o:set_option(option, value)
     end
 
-    if o.hud_id and ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)] == "HIDDEN" then
+    if
+        o.hud_id
+        and not o.hide
+        and ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)] == "HIDDEN"
+    then
         ---@diagnostic disable-next-line: param-type-mismatch
         o:change_visibility(nil, true, "DEFAULT")
     end
@@ -534,6 +538,7 @@ function this:reset(key)
     end
 
     for _, args in pairs(self:get_all_ctrl()) do
+        print(args.ctrl)
         self:reset_ctrl(args.ctrl, key)
         self:reset_children(args.hud_base, args.gui_id, args.ctrl, key)
     end
