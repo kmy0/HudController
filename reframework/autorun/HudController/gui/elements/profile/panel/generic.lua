@@ -3,6 +3,7 @@ local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
+local util_imgui = require("HudController.util.imgui")
 
 local ace_map = data.ace.map
 
@@ -112,6 +113,7 @@ function this.draw(elem, elem_config, config_key)
     local changed = false
     this.separator:refresh(elem_config)
 
+    imgui.begin_disabled(state.state.l1_pressed)
     if elem_config.hide ~= nil then
         if set.checkbox(gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"), config_key .. ".hide") then
             elem:set_hide(elem_config.hide)
@@ -119,6 +121,7 @@ function this.draw(elem, elem_config, config_key)
 
         this.separator:draw()
     end
+    imgui.end_disabled()
 
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
 
