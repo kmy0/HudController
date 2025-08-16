@@ -4,6 +4,7 @@
 ---@field grid_ratio string[]
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
+---@field redo_win_pos RedoWinPos
 
 ---@class (exact) GuiCombo
 ---@field hud_elem Combo
@@ -16,16 +17,22 @@
 ---@field segment Combo
 ---@field page_alignment Combo
 ---@field enemy_msg_type Combo
+---@field config Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
 ---@field listener BindListener
 ---@field collision string?
 
+---@class (exact) RedoWinPos
+---@field main boolean
+---@field debug boolean
+
 local combo = require("HudController.gui.combo")
 local config = require("HudController.config")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
+local gui_util = require("HudController.gui.util")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -86,6 +93,7 @@ local this = {
         enemy_msg_type = combo:new(nil, function(a, b)
             return a.value < b.value
         end),
+        config = combo:new(),
     },
     grid_ratio = {
         "1",
@@ -122,6 +130,10 @@ local this = {
         ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
         ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
     },
+    redo_win_pos = {
+        main = false,
+        debug = false,
+    },
 }
 ---@enum GuiColors
 this.colors = {
@@ -146,6 +158,18 @@ function this.tr_combo()
     this.combo.hud_elem:tr()
 end
 
+function this.reapply_win_pos()
+    this.redo_win_pos.main = true
+    this.redo_win_pos.debug = true
+end
+
+---@return boolean, string
+function this.get_input()
+    local changed = false
+    changed, this.input_action = imgui.input_text(gui_util.tr("hud.input"), this.input_action, 1 << 6)
+    return changed, this.input_action
+end
+
 function this.init()
     this.combo.hud_elem:swap(ace_map.hudid_name_to_local_name)
     this.combo.hud:swap(config.current.mod.hud)
@@ -158,6 +182,7 @@ function this.init()
     end))
     this.combo.page_alignment:swap(ace_enum.page_alignment)
     this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
+    this.combo.config:swap(config.selector.sorted)
     this.tr_combo()
 end
 

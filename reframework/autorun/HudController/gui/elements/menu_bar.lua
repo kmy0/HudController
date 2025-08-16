@@ -3,6 +3,7 @@ local config = require("HudController.config")
 local data = require("HudController.data")
 local fade_manager = require("HudController.hud.fade")
 local gui_debug = require("HudController.gui.debug")
+local gui_selector = require("HudController.gui.elements.selector")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local set = require("HudController.gui.set")
@@ -477,6 +478,15 @@ function this.draw()
         local config_debug = config.gui.current.gui.debug
         config_debug.is_opened = not config_debug.is_opened
         config.save_global()
+    end
+
+    if imgui.button(gui_util.tr("selector.name")) then
+        mod.pause = true
+        gui_selector.is_opened = true
+        gui_debug.close()
+        config.save_global()
+        config.selector:reload()
+        state.combo.config:swap(config.selector.sorted)
     end
 end
 

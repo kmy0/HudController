@@ -28,6 +28,11 @@ end
 function this.new(new_hud)
     local config_mod = config.current.mod
     table.insert(config_mod.hud, new_hud or this._new())
+    this.reload()
+end
+
+function this.reload()
+    local config_mod = config.current.mod
     state.combo.hud:swap(config_mod.hud)
 end
 
