@@ -7,9 +7,9 @@
 ---@field first_frame boolean
 
 local config = require("HudController.config")
+local defaults = require("HudController.hud.defaults")
 local elem = require("HudController.gui.debug.elem")
 local gui_util = require("HudController.gui.util")
-local play_object = require("HudController.hud.play_object")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
@@ -284,7 +284,7 @@ function this.draw()
     local pos = imgui.get_cursor_pos()
 
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
-        play_object.default.clear()
+        defaults.play_object.clear()
     end
     util_imgui.tooltip(config.lang.tr("debug.tooltip_clear_default"))
 

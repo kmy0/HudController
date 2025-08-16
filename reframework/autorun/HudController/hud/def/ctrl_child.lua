@@ -76,7 +76,7 @@
 ---@alias CtrlChildWriteKey CtrlChildProperty | "dummy"?
 
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object_defualts = require("HudController.hud.defaults.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 
@@ -178,7 +178,7 @@ end
 ---@param obj ControlChild
 ---@param key CtrlChildWriteKey
 function this:reset_ctrl(obj, key)
-    local default = play_object.default.get_default(obj) --[[@as CtrlChildDefault]]
+    local default = play_object_defualts.get_default(obj) --[[@as CtrlChildDefault]]
     if default then
         default = util_table.merge_t(default, self.default_overwrite or {})
     else
@@ -275,7 +275,7 @@ end
 ---@param obj ControlChild
 ---@return boolean
 function this:_write(obj)
-    play_object.default.check(obj)
+    play_object_defualts.check(obj)
 
     if self.hide then
         obj:set_ForceInvisible(self.hide)

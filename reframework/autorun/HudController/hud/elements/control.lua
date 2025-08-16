@@ -24,6 +24,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local play_object_defaults = require("HudController.hud.defaults.play_object")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -128,7 +129,7 @@ end
 function this:_store_pat00_default(ctrl)
     -- required to reset button guide position when hunting horn is used
     local pat00 = play_object.control.get(ctrl, ctrl_args.pat00) --[[@as via.gui.Control]]
-    play_object.default.check(pat00)
+    play_object_defaults.check(pat00)
 end
 
 ---@return ControlConfig

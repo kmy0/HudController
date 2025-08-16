@@ -35,6 +35,7 @@
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local play_object_defaults = require("HudController.hud.defaults.play_object")
 local util_table = require("HudController.util.misc.table")
 
 ---@class ItembarSlider
@@ -163,7 +164,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
             play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_animation)
         )
     end, function(s, ctrl)
-        play_object.default.check(ctrl)
+        play_object_defaults.check(ctrl)
 
         if s.hide then
             if ctrl:get_PlayState() ~= "DEFAULT" then
@@ -196,7 +197,7 @@ function this:_init_slider_appear_open(args)
     self.children.slider_state = hud_child:new(args.children.slider_state, self, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_state)
     end, function(s, ctrl)
-        play_object.default.check(ctrl)
+        play_object_defaults.check(ctrl)
 
         if s.play_state then
             ctrl:set_PlayState("SELECT")
@@ -212,7 +213,7 @@ function this:_init_slider_appear_open(args)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_animation)
         end,
         function(s, ctrl)
-            play_object.default.check(ctrl)
+            play_object_defaults.check(ctrl)
 
             if s.play_state then
                 local state = ctrl:get_PlayState()
@@ -235,7 +236,7 @@ function this:_init_slider_appear_open(args)
         ctrl = play_object.control.get_parent(ctrl, "PNL_Scale") --[[@as via.gui.Control]]
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.mantle_state)
     end, function(s, ctrl)
-        play_object.default.check(ctrl)
+        play_object_defaults.check(ctrl)
 
         if s.play_state then
             if
@@ -254,7 +255,7 @@ function this:_init_slider_appear_open(args)
     self.children.cursor_state = hud_child:new(args.children.cursor_state, self, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.cursor_state)
     end, function(s, ctrl)
-        play_object.default.check(ctrl)
+        play_object_defaults.check(ctrl)
 
         if s.play_state and not self.parent:get_GUI020006():get_getIsItemSliderMode() then
             ctrl:set_ForceInvisible(true)
