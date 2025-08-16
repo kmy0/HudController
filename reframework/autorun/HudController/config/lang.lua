@@ -134,6 +134,7 @@ this.default = {
                 name = "Key",
                 hud = "Hud",
                 option = "Option",
+                slider_bind_type = "Bind Type",
                 text_default = "Press any key...",
                 button_add = "Add",
                 button_save = "Save",

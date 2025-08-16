@@ -135,7 +135,7 @@ local function draw_key_bind_menu()
 
     if
         set.slider_int(
-            "##mod.slider_key_bind",
+            gui_util.tr("menu.bind.key.slider_bind_type"),
             "mod.slider_key_bind",
             1,
             2,
