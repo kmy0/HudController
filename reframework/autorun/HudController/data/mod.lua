@@ -1,5 +1,7 @@
 ---@class ModData
 ---@field map ModMap
+---@field pause boolean
+---@field initialized boolean
 
 ---@class (exact) ModMap
 ---@field hud_options string[]
@@ -42,6 +44,7 @@ local this = {
         },
     },
     initialized = false,
+    pause = false,
 }
 ---@enum HudType
 this.enum.hud_type = {

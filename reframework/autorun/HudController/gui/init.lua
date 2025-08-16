@@ -65,6 +65,8 @@ function this.draw()
             imgui.pop_font()
         end
 
+        gui_elements.selector.close()
+        state.input_action = nil
         config.save_global()
         imgui.end_window()
         return

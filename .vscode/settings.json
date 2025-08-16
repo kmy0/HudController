@@ -1,7 +1,8 @@
 {
     "Lua.workspace.library": [
         "typedef/reframework/dist/library/*",
-        "typedef/ace/*"
+        "typedef/ace/*",
+        "typedef/configops/*"
     ],
     "Lua.workspace.ignoreSubmodules": false,
     "Lua.diagnostics.groupFileStatus": {
