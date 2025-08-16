@@ -21,12 +21,11 @@ local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config")
 local data = require("HudController.data")
+local defaults = require("HudController.hud.defaults")
 local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade")
 local hud_base = require("HudController.hud.def.hud_base")
-local hud_opt_default = require("HudController.hud.option_default")
 local m = require("HudController.util.ref.methods")
-local play_object = require("HudController.hud.play_object")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 
@@ -61,10 +60,12 @@ local function override_scar_option(key, value)
 end
 
 function fade_callbacks.switch_profile()
-    this.overridden_options = {}
-    this.apply_options(this.requested_hud.options)
-    this.update_elements(this.requested_hud.elements)
-    this.current_hud = this.requested_hud
+    defaults.with_dump(function()
+        this.overridden_options = {}
+        this.apply_options(this.requested_hud.options)
+        this.update_elements(this.requested_hud.elements)
+        this.current_hud = this.requested_hud
+    end)
 end
 
 function fade_callbacks.finish()
@@ -333,8 +334,7 @@ end
 
 ---@return boolean
 function this.init()
-    hud_opt_default.init()
-    play_object.default.init()
+    defaults.init()
     this.reinit()
 
     return true

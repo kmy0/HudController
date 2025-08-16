@@ -48,7 +48,7 @@
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
-local play_object = require("HudController.hud.play_object")
+local play_object_defaults = require("HudController.hud.defaults.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 
@@ -152,7 +152,7 @@ end
 ---@param obj via.gui.Text
 ---@param key TextWriteKey
 function this:reset_ctrl(obj, key)
-    local default = play_object.default.get_default(obj) --[[@as TextDefault]]
+    local default = play_object_defaults.get_default(obj) --[[@as TextDefault]]
     if default then
         default = util_table.merge_t(default, self.default_overwrite or {}) --[[@as TextDefault]]
     else

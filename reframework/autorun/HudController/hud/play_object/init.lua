@@ -6,7 +6,6 @@ local util_table = require("HudController.util.misc.table")
 local this = {
     control = require("HudController.hud.play_object.control"),
     child = require("HudController.hud.play_object.child"),
-    default = require("HudController.hud.play_object.default"),
 }
 
 ---@param func fun(ctrl: via.gui.Control, ...): PlayObject[] | PlayObject?

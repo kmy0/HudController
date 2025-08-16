@@ -26,6 +26,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local mantle = require("HudController.hud.elements.itembar.mantle")
 local play_object = require("HudController.hud.play_object")
+local play_object_defaults = require("HudController.hud.defaults.play_object")
 local s = require("HudController.util.ref.singletons")
 local slider = require("HudController.hud.elements.itembar.slider")
 
@@ -105,7 +106,7 @@ function this:new(args, default_overwrite)
     o.children.slider_part = hud_child:new(args.children.slider, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider)
     end, function(s, ctrl)
-        play_object.default.check(ctrl)
+        play_object_defaults.check(ctrl)
 
         if s.hide then
             if self:get_GUI020006():get_IsAllSliderMode() or ctrl:get_PlayState() == "FADE_OUT" then

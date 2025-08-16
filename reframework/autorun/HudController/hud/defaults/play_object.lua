@@ -16,6 +16,8 @@ local this = {
     ---@type table<string, PlayObject>
     path_to_obj = {},
     boot_time = util_misc.get_boot_time(),
+    ---@class DefaultsState
+    state = {},
 }
 
 ---@param obj PlayObject
@@ -117,7 +119,7 @@ end
 function this.clear()
     this.by_path = {}
     this.by_obj = {}
-    json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
+    this.dump()
 end
 
 ---@param path string
@@ -133,7 +135,7 @@ function this.clear_obj(path)
         end
     end
 
-    json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
+    this.dump()
 end
 
 ---@param obj PlayObject
@@ -153,6 +155,12 @@ function this.check(obj)
     this.by_path[path] = default
     this.by_obj[obj] = default
 
+    if this.state.do_dump then
+        this.dump()
+    end
+end
+
+function this.dump()
     json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
 end
 
@@ -162,8 +170,11 @@ function this.get_default(obj)
     return this.by_obj[obj]
 end
 
+---@param state DefaultsState
 ---@return boolean
-function this.init()
+function this.init(state)
+    this.state = state
+
     local j = json.load_file(config.hud_default_path)
     if j and math.abs(this.boot_time - j.boot_time) < 5 then
         this.by_path = j.cache or {}
