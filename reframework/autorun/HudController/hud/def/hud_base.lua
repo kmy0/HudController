@@ -538,7 +538,6 @@ function this:reset(key)
     end
 
     for _, args in pairs(self:get_all_ctrl()) do
-        print(args.ctrl)
         self:reset_ctrl(args.ctrl, key)
         self:reset_children(args.hud_base, args.gui_id, args.ctrl, key)
     end

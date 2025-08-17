@@ -135,7 +135,9 @@ function this.clear_obj(path)
         end
     end
 
-    this.dump()
+    if this.state.do_dump then
+        this.dump()
+    end
 end
 
 ---@param obj PlayObject
