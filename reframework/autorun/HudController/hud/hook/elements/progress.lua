@@ -9,6 +9,7 @@ function this.reset_progress_default_pre(args)
     if progress then
         if do_reset or progress:get_GUI020018()._MissionDuplicatePanelDataList:get_Count() > 0 then
             progress:reset()
+            progress:reset_defaults()
             do_reset = false
         end
     end
