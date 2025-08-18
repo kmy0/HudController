@@ -36,7 +36,7 @@ function this.draw_options(option_keys, config_key, callback)
                 option_config_key,
                 -1,
                 #option_data.items - 1,
-                (config_value == -1 and config.lang.tr("hud.option_disable"))
+                (config_value == -1 and config.lang:tr("hud.option_disable"))
                     or option_data.items[config_value + 1].name_local
             ) and callback
         then

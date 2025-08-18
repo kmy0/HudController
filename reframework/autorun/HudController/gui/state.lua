@@ -56,7 +56,7 @@ local this = {
             function(key)
                 local val = ace_map.hudid_name_to_local_name[key]
                 if val == ace_map.hud_tr_flag then
-                    return config.lang.tr("hud_element.name." .. key)
+                    return config.lang:tr("hud_element.name." .. key)
                 end
                 return val
             end
@@ -85,7 +85,7 @@ local this = {
             end,
             nil,
             function(key)
-                return config.lang.tr("hud." .. mod.map.hud_options[key])
+                return config.lang:tr("hud." .. mod.map.hud_options[key])
             end
         ),
         segment = combo:new(nil, function(a, b)
@@ -154,7 +154,7 @@ this.combo.item_decide.sort = function(a, b)
 end
 this.combo.item_decide._tr = function(key)
     if key == "option_disable" then
-        return config.lang.tr("hud.option_disable")
+        return config.lang:tr("hud.option_disable")
     end
     return this.item_decide[key].value
 end

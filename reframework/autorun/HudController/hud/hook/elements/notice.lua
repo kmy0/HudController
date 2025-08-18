@@ -60,13 +60,13 @@ function this.cache_message_pre(args)
 
         ---@type CachedMessage
         local cached_msg = {
-            type = config.lang.tr("misc.text_unknown"),
+            type = config.lang:tr("misc.text_unknown"),
             msg = table.concat(msgs, ", "),
         }
 
         if util_ref.is_a(message_elem, "app.ChatDef.SystemMessage") then
             ---@cast message_elem app.ChatDef.SystemMessage
-            cached_msg.type = config.lang.tr("misc.text_system")
+            cached_msg.type = config.lang:tr("misc.text_system")
             cached_msg.sub_type = ace_enum.system_msg[message_elem:get_SystemMsgType()]
 
             if util_ref.is_a(message_elem, "app.ChatDef.EnemyMessage") then
@@ -78,7 +78,7 @@ function this.cache_message_pre(args)
             end
         elseif util_ref.is_a(message_elem, "app.ChatDef.ChatBase") then
             ---@cast message_elem app.ChatDef.ChatBase
-            cached_msg.type = config.lang.tr("misc.text_lobby")
+            cached_msg.type = config.lang:tr("misc.text_lobby")
             cached_msg.sub_type = ace_enum.chat_log[message_elem:get_MsgType()]
             cached_msg.other_type = ace_enum.send_target[message_elem:get_SendTarget()]
         end

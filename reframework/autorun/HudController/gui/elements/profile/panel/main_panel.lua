@@ -37,7 +37,7 @@ local function group_things(elem, t, t_config_key, f)
 
             if
                 set.checkbox(
-                    string.format("%s %s##%s", config.lang.tr("hud_element.entry.box_hide"), key, item_config_key),
+                    string.format("%s %s##%s", config.lang:tr("hud_element.entry.box_hide"), key, item_config_key),
                     item_config_key
                 )
             then
@@ -59,7 +59,7 @@ end
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 local function draw_weapon(elem, elem_config, config_key)
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_weapon_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_weapon_behavior"))
 
     ---@cast elem Weapon
     ---@cast elem_config WeaponConfig
@@ -75,7 +75,7 @@ end
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 local function draw_itembar(elem, elem_config, config_key)
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_itembar_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_itembar_behavior"))
 
     ---@cast elem Itembar
     ---@cast elem_config ItembarConfig
@@ -91,7 +91,7 @@ local function draw_itembar(elem, elem_config, config_key)
         elem.children.slider:set_move_next(elem_config.children.slider.move_next)
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("hud_element.entry.tooltip_itembar_move_next"), true)
+    util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_itembar_move_next"), true)
 
     item_config_key = config_key .. ".start_expanded"
     if set.checkbox(gui_util.tr("hud_element.entry.box_start_expanded", item_config_key), item_config_key) then
@@ -99,7 +99,7 @@ local function draw_itembar(elem, elem_config, config_key)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_mantle_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_mantle_behavior"))
 
     item_config_key = config_key .. ".children.mantle.always_visible"
     if set.checkbox(gui_util.tr("hud_element.entry.box_always_visible", item_config_key), item_config_key) then
@@ -107,7 +107,7 @@ local function draw_itembar(elem, elem_config, config_key)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_expanded_itembar_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_expanded_itembar_behavior"))
 
     item_config_key = config_key .. ".children.all_slider.appear_open"
     if
@@ -159,8 +159,8 @@ local function draw_itembar(elem, elem_config, config_key)
             item_config_key,
             -1,
             #state.expanded_itembar_control - 1,
-            (config_value == -1 and config.lang.tr("hud.option_disable"))
-                or config.lang.tr("hud_element.entry." .. state.expanded_itembar_control[config_value + 1])
+            (config_value == -1 and config.lang:tr("hud.option_disable"))
+                or config.lang:tr("hud_element.entry." .. state.expanded_itembar_control[config_value + 1])
         )
     then
         elem.children.all_slider:set_control(elem_config.children.all_slider.control)
@@ -193,7 +193,7 @@ local function draw_notice(elem, elem_config, config_key)
     ---@cast elem_config NoticeConfig
     ---@cast elem Notice
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_tools"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
     local item_config_key = config_key .. ".tools_enemy_message_type"
     if not config:get(item_config_key .. "_combo") then
         config:set(item_config_key .. "_combo", state.combo.item_decide:get_index(config:get(item_config_key)))
@@ -239,11 +239,11 @@ local function draw_notice(elem, elem_config, config_key)
             )
         then
             for _, header in ipairs({
-                config.lang.tr("misc.text_row"),
-                config.lang.tr("misc.text_type"),
-                config.lang.tr("misc.text_sub_type"),
-                config.lang.tr("misc.text_other_type"),
-                config.lang.tr("misc.text_message"),
+                config.lang:tr("misc.text_row"),
+                config.lang:tr("misc.text_type"),
+                config.lang:tr("misc.text_sub_type"),
+                config.lang:tr("misc.text_other_type"),
+                config.lang:tr("misc.text_message"),
             }) do
                 imgui.table_setup_column(header)
             end
@@ -274,23 +274,23 @@ local function draw_notice(elem, elem_config, config_key)
         end
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_system"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system"))
     group_things(elem, elem_config.system_log, string.format("%s.%s", config_key, "system_log"), elem.set_system_log)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_enemy"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_enemy"))
     imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
     group_things(elem, elem_config.enemy_log, string.format("%s.%s", config_key, "enemy_log"), elem.set_enemy_log)
     imgui.end_disabled()
 
     imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.CAMP)
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_camp"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_camp"))
     group_things(elem, elem_config.camp_log, string.format("%s.%s", config_key, "camp_log"), elem.set_camp_log)
     imgui.end_disabled()
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_lobby"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby"))
     group_things(elem, elem_config.chat_log, string.format("%s.%s", config_key, "chat_log"), elem.set_chat_log)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_notice_lobby_target"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby_target"))
     group_things(elem, elem_config.lobby_log, string.format("%s.%s", config_key, "lobby_log"), elem.set_lobby_log)
 end
 
@@ -301,7 +301,7 @@ local function draw_name_access(elem, elem_config, config_key)
     ---@cast elem_config NameAccessConfig
     ---@cast elem NameAccess
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_npc_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_behavior"))
     local item_config_key = config_key .. ".npc_draw_distance"
     local config_value = config:get(item_config_key)
     if
@@ -310,14 +310,14 @@ local function draw_name_access(elem, elem_config, config_key)
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang.tr("hud.option_disable")) or "%.1f"
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
         )
     then
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_object_category"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_object_category"))
     group_things(
         elem,
         elem_config.object_category,
@@ -325,16 +325,16 @@ local function draw_name_access(elem, elem_config, config_key)
         elem.set_object_category
     )
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_npc_type"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_type"))
     group_things(elem, elem_config.npc_type, string.format("%s.%s", config_key, "npc_type"), elem.set_npc_type)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_enemy_type"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_enemy_type"))
     group_things(elem, elem_config.enemy_type, string.format("%s.%s", config_key, "enemy_type"), elem.set_enemy_type)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_panel_type"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_panel_type"))
     group_things(elem, elem_config.panel_type, string.format("%s.%s", config_key, "panel_type"), elem.set_panel_type)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_gossip_type"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_gossip_type"))
     group_things(elem, elem_config.gossip_type, string.format("%s.%s", config_key, "gossip_type"), elem.set_gossip_type)
 end
 
@@ -345,7 +345,7 @@ local function draw_name_other(elem, elem_config, config_key)
     ---@cast elem_config NameOtherConfig
     ---@cast elem NameOther
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_pl_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pl_behavior"))
     local item_config_key = config_key .. ".pl_draw_distance"
     local config_value = config:get(item_config_key)
     if
@@ -354,14 +354,14 @@ local function draw_name_other(elem, elem_config, config_key)
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang.tr("hud.option_disable")) or "%.1f"
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
         )
     then
         elem:set_pl_draw_distance(elem_config.pl_draw_distance)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_pet_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pet_behavior"))
     item_config_key = config_key .. ".pet_draw_distance"
     config_value = config:get(item_config_key)
     if
@@ -370,14 +370,14 @@ local function draw_name_other(elem, elem_config, config_key)
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang.tr("hud.option_disable")) or "%.1f"
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
         )
     then
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_nameplate_type"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_nameplate_type"))
     group_things(
         elem,
         elem_config.nameplate_type,
@@ -393,7 +393,7 @@ local function draw_ammo(elem, elem_config, config_key)
     ---@cast elem_config AmmoConfig
     ---@cast elem Ammo
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_parts_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_parts_behavior"))
     local item_config_key = config_key .. ".no_hide_parts"
     if set.checkbox(gui_util.tr("hud_element.entry.box_no_hide", item_config_key), item_config_key) then
         elem:set_no_hide_parts(elem_config.no_hide_parts)
@@ -408,14 +408,14 @@ local function draw_radial(elem, elem_config, config_key)
     ---@cast elem_config RadialConfig
     ---@cast elem Radial
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_radial_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_radial_behavior"))
     local item_config_key = config_key .. ".expanded"
     if set.checkbox(gui_util.tr("hud_element.entry.box_always_expanded", item_config_key), item_config_key) then
         elem:set_expanded(elem_config.expanded)
         config.save_global()
     end
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_pallet_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pallet_behavior"))
     item_config_key = config_key .. ".children.pallet.expanded"
     if set.checkbox(gui_util.tr("hud_element.entry.box_always_expanded", item_config_key), item_config_key) then
         elem.children.pallet:set_expanded(elem_config.children.pallet.expanded)
@@ -430,7 +430,7 @@ local function draw_slinger_reticle(elem, elem_config, config_key)
     ---@cast elem_config SlingerReticleConfig
     ---@cast elem SlingerReticle
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_slinger_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_slinger_behavior"))
     local item_config_key = config_key .. ".children.slinger.hide_slinger_empty"
     if set.checkbox(gui_util.tr("hud_element.entry.box_hide_slinger_empty", item_config_key), item_config_key) then
         elem.children.slinger:set_hide_slinger_empty(elem_config.children.slinger.hide_slinger_empty)
@@ -445,7 +445,7 @@ local function draw_sharpness(elem, elem_config, config_key)
     ---@cast elem_config SharpnessConfig
     ---@cast elem Sharpness
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_state_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_state_behavior"))
     local item_config_key = config_key .. ".state"
     local config_value = config:get(item_config_key)
     if
@@ -454,8 +454,8 @@ local function draw_sharpness(elem, elem_config, config_key)
             item_config_key,
             -1,
             #state.sharpnes_state - 1,
-            (config_value == -1 and config.lang.tr("hud.option_disable"))
-                or config.lang.tr("hud_element.entry." .. state.sharpnes_state[config_value + 1])
+            (config_value == -1 and config.lang:tr("hud.option_disable"))
+                or config.lang:tr("hud_element.entry." .. state.sharpnes_state[config_value + 1])
         )
     then
         elem:set_state(elem_config.state)
@@ -470,7 +470,7 @@ local function draw_clock(elem, elem_config, config_key)
     ---@cast elem_config ClockConfig
     ---@cast elem Clock
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_clock_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_clock_behavior"))
     local item_config_key = config_key .. ".hide_map_visible"
     if set.checkbox(gui_util.tr("hud_element.entry.box_hide_map_visible", item_config_key), item_config_key) then
         elem:set_hide_map_visible(elem_config.hide_map_visible)

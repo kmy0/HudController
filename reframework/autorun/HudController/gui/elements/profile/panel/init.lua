@@ -31,7 +31,7 @@ local function draw_panel(elem, elem_config, config_key, tree)
                         or (ace_map.no_lang_key[elem.name_key] and elem.name_key)
                         or gui_util.tr_int("hud_subelement." .. elem.name_key)
                     ),
-                elem:any_gui() and string.format(" (%s)", config.lang.tr("misc.text_changed")) or ""
+                elem:any_gui() and string.format(" (%s)", config.lang:tr("misc.text_changed")) or ""
             )
         )
 
@@ -43,7 +43,7 @@ local function draw_panel(elem, elem_config, config_key, tree)
         item_config_key = config_key .. ".options"
         local options = config:get(item_config_key)
         if options and not util_table.empty(options) then
-            util_imgui.separator_text(config.lang.tr("hud_element.entry.category_ingame_settings"))
+            util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
 
             ---@cast options table<string, integer>
             local sorted = util_table.sort(util_table.keys(options))
@@ -113,9 +113,9 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                     set.checkbox(
                         string.format(
                             "%s %s##%s",
-                            config.lang.tr("hud_element.entry.box_" .. var_key),
+                            config.lang:tr("hud_element.entry.box_" .. var_key),
                             ace_map.weaponid_name_to_local_name[child_config.name_key]
-                                or config.lang.tr("hud_subelement." .. child_config.name_key),
+                                or config.lang:tr("hud_subelement." .. child_config.name_key),
                             string.format("%s.%s", child_config_key, var_key)
                         ),
                         string.format("%s.%s", child_config_key, var_key)
@@ -238,7 +238,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
             end)
 
             if not util_table.empty(children) then
-                util_imgui.separator_text(config.lang.tr("hud_element.entry.category_children"))
+                util_imgui.separator_text(config.lang:tr("hud_element.entry.category_children"))
                 draw_panel_child(child, child_config, children, child_config_key)
             end
 
@@ -264,7 +264,7 @@ function this.draw(elem, elem_config, config_key)
 
     if not util_table.empty(children) then
         if not elem.gui_ignore then
-            util_imgui.separator_text(config.lang.tr("hud_element.entry.category_children"))
+            util_imgui.separator_text(config.lang:tr("hud_element.entry.category_children"))
         end
 
         if elem.gui_header_children then

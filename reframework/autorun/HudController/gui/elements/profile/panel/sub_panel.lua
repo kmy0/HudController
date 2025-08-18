@@ -125,7 +125,7 @@ local function draw_material(elem, elem_config, config_key)
     for i = 0, 4 do
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then
-            util_imgui.separator_text(config.lang.tr("hud_element.entry.category_animation"))
+            util_imgui.separator_text(config.lang:tr("hud_element.entry.category_animation"))
             separator_material:refresh(elem_config)
             break
         end
@@ -162,7 +162,7 @@ end
 local function draw_scale9(elem, elem_config, config_key)
     draw_control_child(elem, elem_config, config_key)
 
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_texture"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_texture"))
 
     ---@cast elem_config Scale9Config
     ---@cast elem Scale9
@@ -402,7 +402,7 @@ end
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 local function draw_damage_numbers(elem, elem_config, config_key)
-    util_imgui.separator_text(config.lang.tr("hud_element.entry.category_numbers_behavior"))
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_numbers_behavior"))
 
     ---@cast elem DamageNumbersDamageState
     ---@cast elem_config DamageNumbersDamageStateConfig
@@ -420,7 +420,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
         } or nil)
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("hud_element.entry.tooltip_numbers_box"), true)
+    util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_numbers_box"), true)
 
     imgui.begin_disabled(not elem_config.enabled_box)
     imgui.same_line()

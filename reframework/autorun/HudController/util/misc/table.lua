@@ -574,6 +574,9 @@ function this.get_by_key(t, key)
 
     local keys = this.split_key(key)
     for i = 1, #keys do
+        if not ret then
+            return
+        end
         ret = ret[this.parse_key(keys[i])] --[[@as any]]
     end
     return ret

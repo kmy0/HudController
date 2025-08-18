@@ -89,7 +89,7 @@ function this.draw()
 
     if not mod.is_ok() then
         imgui.indent(3)
-        imgui.text_colored(config.lang.tr("misc.text_no_hud"), state.colors.bad)
+        imgui.text_colored(config.lang:tr("misc.text_no_hud"), state.colors.bad)
         imgui.unindent(3)
 
         if config.lang.font then

@@ -16,6 +16,7 @@ local this = {
 local function reinit()
     local config_mod = config.current.mod
 
+    config.lang:change()
     data.get_weapon_bind_map(config.current)
     state.tr_combo()
     hud.manager.reinit()
@@ -82,9 +83,9 @@ function this.draw()
     if
         util_imgui.popup_yesno(
             "config_remove",
-            config.lang.tr("misc.text_rusure"),
-            config.lang.tr("misc.text_yes"),
-            config.lang.tr("misc.text_no")
+            config.lang:tr("misc.text_rusure"),
+            config.lang:tr("misc.text_yes"),
+            config.lang:tr("misc.text_no")
         )
     then
         if config.selector:delete_current_file() then
@@ -93,7 +94,7 @@ function this.draw()
         end
     else
         -- popup position breakes if there is a tooltip before it
-        util_imgui.tooltip(config.lang.tr("selector.tooltip_remove"))
+        util_imgui.tooltip(config.lang:tr("selector.tooltip_remove"))
     end
 
     imgui.same_line()

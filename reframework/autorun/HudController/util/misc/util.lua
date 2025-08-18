@@ -129,4 +129,13 @@ function this.join_paths(...)
     return res
 end
 
+-- backslashes
+---@param ... string
+---@return string
+function this.join_paths_b(...)
+    local res = this.join_paths(...)
+    res = res:gsub("/", "\\\\")
+    return res
+end
+
 return this

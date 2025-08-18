@@ -92,9 +92,9 @@ function this.tr(key, ...)
     local msg
     if int then
         key = string.gsub(key, "%d", "")
-        msg = string.format("%s %s", config.lang.tr(key), int)
+        msg = string.format("%s %s", config.lang:tr(key), int)
     else
-        msg = config.lang.tr(key)
+        msg = config.lang:tr(key)
     end
 
     return string.format("%s##%s", msg, table.concat(suffix, "_"))
@@ -108,9 +108,9 @@ function this.tr_int(key)
     local msg
     if int then
         key = string.gsub(key, "%d", "")
-        msg = string.format("%s %s", config.lang.tr(key), int)
+        msg = string.format("%s %s", config.lang:tr(key), int)
     else
-        msg = config.lang.tr(key)
+        msg = config.lang:tr(key)
     end
 
     return msg
@@ -157,18 +157,18 @@ function this.seconds_to_minutes_string(n, n_format, pad)
         return string.format(
             format,
             pad and this.pad_zero(minutes_f) or minutes_f,
-            minutes == 1 and config.lang.tr("misc.text_minute") or config.lang.tr("misc.text_minute_plural"),
+            minutes == 1 and config.lang:tr("misc.text_minute") or config.lang:tr("misc.text_minute_plural"),
             pad and this.pad_zero(seconds_f) or seconds_f,
-            util_misc.round(seconds, 1) == 1 and config.lang.tr("misc.text_second")
-                or config.lang.tr("misc.text_second_plural")
+            util_misc.round(seconds, 1) == 1 and config.lang:tr("misc.text_second")
+                or config.lang:tr("misc.text_second_plural")
         )
     end
 
     return string.format(
         format,
         pad and this.pad_zero(seconds_f) or seconds_f,
-        util_misc.round(seconds, 1) == 1 and config.lang.tr("misc.text_second")
-            or config.lang.tr("misc.text_second_plural")
+        util_misc.round(seconds, 1) == 1 and config.lang:tr("misc.text_second")
+            or config.lang:tr("misc.text_second_plural")
     )
 end
 

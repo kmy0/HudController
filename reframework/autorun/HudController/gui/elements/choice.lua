@@ -50,9 +50,9 @@ function this.draw_hud()
     if
         util_imgui.popup_yesno(
             "hud_remove",
-            config.lang.tr("misc.text_rusure"),
-            config.lang.tr("misc.text_yes"),
-            config.lang.tr("misc.text_no")
+            config.lang:tr("misc.text_rusure"),
+            config.lang:tr("misc.text_yes"),
+            config.lang:tr("misc.text_no")
         )
     then
         hud.operations.remove(config_mod.hud[config_mod.combo_hud])
@@ -66,7 +66,7 @@ function this.draw_hud()
     imgui.same_line()
 
     local button = imgui.button(gui_util.tr("hud.button_export"))
-    util_imgui.tooltip(config.lang.tr("hud.button_export_tooltip"))
+    util_imgui.tooltip(config.lang:tr("hud.button_export_tooltip"))
     if button then
         hud.operations.export(config_mod.hud[config_mod.combo_hud])
     end
@@ -75,7 +75,7 @@ function this.draw_hud()
     imgui.end_disabled()
 
     button = imgui.button(gui_util.tr("hud.button_import"))
-    util_imgui.tooltip(config.lang.tr("hud.button_import_tooltip"))
+    util_imgui.tooltip(config.lang:tr("hud.button_import_tooltip"))
     if button then
         hud.operations.import()
         config.save_global()
@@ -120,7 +120,7 @@ function this.draw_element()
         hud.operations.sort_elements(util_table.values(elements))
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("hud_element.button_sort_tooltip"))
+    util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))
 end
 
 return this
