@@ -71,7 +71,7 @@ end
 function fade_callbacks.finish()
     if this.notify and config.current.mod.enable_notification and this.current_hud.show_notification then
         ace_misc.send_message(
-            string.format("%s %s", this.current_hud.name, config.lang.tr("misc.text_notification_message"))
+            string.format("%s %s", this.current_hud.name, config.lang:tr("misc.text_notification_message"))
         )
     end
 

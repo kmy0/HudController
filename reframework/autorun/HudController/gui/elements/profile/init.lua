@@ -24,7 +24,7 @@ local function check_overriden(changed, key)
     local val = hud.get_overridden(key)
     if val ~= nil then
         imgui.same_line()
-        imgui.text(string.format("(%s %s)", config.lang.tr("misc.text_overridden"), val))
+        imgui.text(string.format("(%s %s)", config.lang:tr("misc.text_overridden"), val))
     end
     return changed
 end
@@ -35,11 +35,11 @@ end
 local function boxes_to_slider(label, boxes)
     local config_mod = config.current.mod
     local value = 0
-    local display = config.lang.tr("hud.option_disable")
+    local display = config.lang:tr("hud.option_disable")
     for i = 1, #boxes do
         if config:get(string.format("mod.hud.int:%s.%s", config_mod.combo_hud, boxes[i])) then
             value = i
-            display = config.lang.tr("hud.box_" .. boxes[i])
+            display = config.lang:tr("hud.box_" .. boxes[i])
             break
         end
     end
@@ -76,8 +76,8 @@ local function boxes_to_slider(label, boxes)
         imgui.text(
             string.format(
                 "(%s %s)",
-                config.lang.tr("misc.text_overridden"),
-                config.lang.tr("hud.box_" .. boxes[any_true])
+                config.lang:tr("misc.text_overridden"),
+                config.lang:tr("hud.box_" .. boxes[any_true])
             )
         )
     elseif
@@ -88,7 +88,7 @@ local function boxes_to_slider(label, boxes)
     then
         imgui.same_line()
         imgui.text(
-            string.format("(%s %s)", config.lang.tr("misc.text_overridden"), config.lang.tr("hud.option_disable"))
+            string.format("(%s %s)", config.lang:tr("misc.text_overridden"), config.lang:tr("hud.option_disable"))
         )
     end
 
@@ -98,7 +98,7 @@ end
 local function draw_options()
     local config_mod = config.current.mod
 
-    util_imgui.separator_text(config.lang.tr("hud.category_general"))
+    util_imgui.separator_text(config.lang:tr("hud.category_general"))
     local changed = check_overriden(
         set.checkbox(gui_util.tr("hud.box_mute_gui"), string.format("mod.hud.int:%s.mute_gui", config_mod.combo_hud)),
         "mute_gui"
@@ -119,7 +119,7 @@ local function draw_options()
         "disable_area_intro"
     ) or changed
 
-    util_imgui.separator_text(config.lang.tr("hud.category_player"))
+    util_imgui.separator_text(config.lang:tr("hud.category_player"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_disable_focus_turn"),
@@ -131,7 +131,7 @@ local function draw_options()
         gui_util.tr("hud.box_hide_danger"),
         string.format("mod.hud.int:%s.hide_danger", config_mod.combo_hud)
     )
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_danger"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_danger"), true)
     changed = check_overriden(box, "hide_danger") or changed
     changed = check_overriden(
         set.checkbox(
@@ -147,9 +147,9 @@ local function draw_options()
         ),
         "hide_weapon"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_weapon"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_weapon"), true)
 
-    util_imgui.separator_text(config.lang.tr("hud.category_npc"))
+    util_imgui.separator_text(config.lang:tr("hud.category_npc"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_hide_handler"),
@@ -161,7 +161,7 @@ local function draw_options()
         set.checkbox(gui_util.tr("hud.box_hide_pet"), string.format("mod.hud.int:%s.hide_pet", config_mod.combo_hud)),
         "hide_pet"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_pet"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_pet"), true)
 
     changed = check_overriden(
         set.checkbox(
@@ -181,7 +181,7 @@ local function draw_options()
     ) or changed
     imgui.end_disabled()
 
-    util_imgui.separator_text(config.lang.tr("hud.category_monster"))
+    util_imgui.separator_text(config.lang:tr("hud.category_monster"))
     changed = boxes_to_slider(gui_util.tr("hud.slider_wound_state"), { "hide_scar", "show_scar", "disable_scar" })
         or changed
     changed = check_overriden(
@@ -198,7 +198,7 @@ local function draw_options()
         ),
         "monster_ignore_camp"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_monster_ignore_camp"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_monster_ignore_camp"), true)
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_hide_monster_icon"),
@@ -206,7 +206,7 @@ local function draw_options()
         ),
         "hide_monster_icon"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_monster_icon"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_monster_icon"), true)
 
     imgui.begin_disabled(not hud.get_hud_option("hide_monster_icon"))
 
@@ -217,11 +217,11 @@ local function draw_options()
         ),
         "hide_lock_target"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_hide_lock_target"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_lock_target"), true)
 
     imgui.end_disabled()
 
-    util_imgui.separator_text(config.lang.tr("hud.category_quest"))
+    util_imgui.separator_text(config.lang:tr("hud.category_quest"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_disable_quest_intro"),
@@ -264,9 +264,9 @@ local function draw_options()
         ),
         "skip_quest_result"
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_skip_quest_result"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_skip_quest_result"), true)
 
-    util_imgui.separator_text(config.lang.tr("hud.category_porter"))
+    util_imgui.separator_text(config.lang:tr("hud.category_porter"))
     changed = check_overriden(
         set.checkbox(
             gui_util.tr("hud.box_disable_porter_call"),
@@ -289,14 +289,14 @@ local function draw_options()
         "disable_porter_tracking"
     ) or changed
 
-    util_imgui.separator_text(config.lang.tr("hud.category_profile"))
+    util_imgui.separator_text(config.lang:tr("hud.category_profile"))
     changed = set.checkbox(
         gui_util.tr("hud.box_show_notification"),
         string.format("mod.hud.int:%s.show_notification", config_mod.combo_hud)
     ) or changed
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_show_notification"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_show_notification"), true)
 
-    util_imgui.separator_text(config.lang.tr("hud.category_fade"))
+    util_imgui.separator_text(config.lang:tr("hud.category_fade"))
     changed = set.checkbox(
         gui_util.tr("hud.box_fade_opacity"),
         string.format("mod.hud.int:%s.fade_opacity", config_mod.combo_hud)
@@ -311,7 +311,7 @@ local function draw_options()
     ) or changed
 
     imgui.end_disabled()
-    util_imgui.tooltip(config.lang.tr("hud.tooltip_fade_opacity_both"), true)
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_fade_opacity_both"), true)
 
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config_mod.combo_hud)
     local item_value = config:get(item_config_key)
@@ -320,7 +320,7 @@ local function draw_options()
         item_config_key,
         0,
         10,
-        item_value == 0 and config.lang.tr("misc.text_disabled")
+        item_value == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed
 
@@ -331,7 +331,7 @@ local function draw_options()
         item_config_key,
         0,
         10,
-        item_value == 0 and config.lang.tr("misc.text_disabled")
+        item_value == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed
 
@@ -340,7 +340,7 @@ local function draw_options()
     end
 
     if not util_table.empty(config_mod.hud[config_mod.combo_hud].options) then
-        util_imgui.separator_text(config.lang.tr("hud_element.entry.category_ingame_settings"))
+        util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
 
         local sorted = util_table.sort(util_table.keys(config_mod.hud[config_mod.combo_hud].options))
         ---@cast sorted string[]

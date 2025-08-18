@@ -11,7 +11,6 @@
 ---@field commit string
 ---@field name string
 ---
----@field default_lang_path string
 ---@field hud_default_path string
 ---@field option_default_path string
 ---@field default_config_path string
@@ -21,6 +20,7 @@
 ---@field handler_timeout number
 
 local config_base = require("HudController.util.misc.config_base")
+local lang = require("HudController.config.lang")
 local migration = require("HudController.config.migration")
 local selector_config = require("HudController.config.selector")
 local util_misc = require("HudController.util.misc")
@@ -37,7 +37,6 @@ this.version = version.version
 this.commit = version.commit
 this.name = mod_name
 
-this.default_lang_path = util_misc.join_paths(this.name, "lang", "en-us.json")
 this.default_config_path = config_path
 this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
 this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
@@ -59,7 +58,8 @@ this.selector = selector_config:new(
     util_misc.join_paths(this.name, "other_configs", "selector.json"),
     this
 )
-this.lang = require("HudController.config.lang")
+this.lang =
+    lang:new(require("HudController.config.defaults.lang"), util_misc.join_paths(this.name, "lang"), "en-us.json", this)
 
 function this:load()
     local loaded_config = json.load_file(self.path) --[[@as MainSettings?]]
@@ -101,7 +101,8 @@ function this.init()
     this:load()
     this.gui:load()
     this.debug:load()
-    this.lang.init(this)
+    this.lang:load()
+
     return true
 end
 

@@ -82,7 +82,7 @@ local function draw_mod_menu()
         config_mod.disable_weapon_binds_timed = not config_mod.disable_weapon_binds_timed
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_timed_tooltip"))
+    util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_timed_tooltip"))
 
     imgui.begin_disabled(not config_mod.disable_weapon_binds_timed)
     local item_config_key = "mod.disable_weapon_binds_time"
@@ -106,7 +106,7 @@ local function draw_mod_menu()
         config_mod.disable_weapon_binds_held = not config_mod.disable_weapon_binds_held
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("menu.config.disable_weapon_binds_held_tooltip"))
+    util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_held_tooltip"))
 end
 
 local function draw_lang_menu()
@@ -116,7 +116,7 @@ local function draw_lang_menu()
         local menu_item = config.lang.sorted[i]
         if imgui.menu_item(menu_item, nil, config_lang.file == menu_item) then
             config_lang.file = menu_item
-            config.lang.change()
+            config.lang:change()
             state.tr_combo()
             config.save_global()
         end
@@ -128,7 +128,7 @@ local function draw_lang_menu()
         config_lang.fallback = not config_lang.fallback
         config.save_global()
     end
-    util_imgui.tooltip(config.lang.tr("menu.language.fallback_tooltip"))
+    util_imgui.tooltip(config.lang:tr("menu.language.fallback_tooltip"))
 end
 
 local function draw_key_bind_menu()
@@ -140,8 +140,8 @@ local function draw_key_bind_menu()
             "mod.slider_key_bind",
             1,
             2,
-            config_mod.slider_key_bind == 1 and config.lang.tr("menu.bind.key.hud")
-                or config.lang.tr("menu.bind.key.option")
+            config_mod.slider_key_bind == 1 and config.lang:tr("menu.bind.key.hud")
+                or config.lang:tr("menu.bind.key.option")
         )
     then
         state.listener = nil
@@ -189,7 +189,7 @@ local function draw_key_bind_menu()
         if bind.name ~= "" then
             bind_name = { bind.name, "..." }
         else
-            bind_name = { config.lang.tr("menu.bind.key.text_default") }
+            bind_name = { config.lang:tr("menu.bind.key.text_default") }
         end
 
         imgui.begin_table("keybind_listener", 2, 1 << 9)
@@ -200,7 +200,7 @@ local function draw_key_bind_menu()
 
         imgui.text(
             manager_type == bind_manager.manager_type.HUD and state.listener.opt.name
-                or config.lang.tr("hud." .. mod.map.hud_options[state.listener.opt])
+                or config.lang:tr("hud." .. mod.map.hud_options[state.listener.opt])
         )
         imgui.table_set_column_index(1)
 
@@ -208,16 +208,16 @@ local function draw_key_bind_menu()
             local is_col, col = bind_manager.is_collision(bind)
 
             if is_col and col then
-                local type = col.manager_type == bind_manager.manager_type.HUD and config.lang.tr("menu.bind.key.hud")
-                    or config.lang.tr("menu.bind.key.option")
+                local type = col.manager_type == bind_manager.manager_type.HUD and config.lang:tr("menu.bind.key.hud")
+                    or config.lang:tr("menu.bind.key.option")
                 local name = col.manager_type == bind_manager.manager_type.HUD
                         and util_table.value(config_mod.hud, function(key, value)
                             return col.bind.key == value.key
                         end).name
-                    or config.lang.tr("hud." .. mod.map.hud_options[col.bind.key])
+                    or config.lang:tr("hud." .. mod.map.hud_options[col.bind.key])
 
                 state.listener.collision =
-                    string.format("%s %s %s", config.lang.tr("menu.bind.tooltip_bound"), type, name)
+                    string.format("%s %s %s", config.lang:tr("menu.bind.tooltip_bound"), type, name)
             else
                 state.listener.collision = nil
             end
@@ -287,7 +287,7 @@ local function draw_key_bind_menu()
             imgui.text(
                 ---@diagnostic disable-next-line: param-type-mismatch
                 manager_type == bind_manager.manager_type.HUD and hud.operations.get_hud_by_key(bind.key).name
-                    or config.lang.tr("hud." .. mod.map.hud_options[bind.key])
+                    or config.lang:tr("hud." .. mod.map.hud_options[bind.key])
             )
             imgui.table_set_column_index(2)
             imgui.text(bind.name)
@@ -315,13 +315,13 @@ local function draw_weapon_bind_menu()
     changed = set.checkbox(gui_util.tr("menu.bind.weapon.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
     changed = set.checkbox(gui_util.tr("menu.bind.weapon.ride_ignore_combat"), "mod.bind.weapon.ride_ignore_combat")
         or changed
-    util_imgui.tooltip(config.lang.tr("menu.bind.weapon.ride_ignore_combat_tooltip"), true)
+    util_imgui.tooltip(config.lang:tr("menu.bind.weapon.ride_ignore_combat_tooltip"), true)
     changed = set.slider_int(
         gui_util.tr("menu.bind.weapon.out_of_combat_delay"),
         "mod.bind.weapon.out_of_combat_delay",
         0,
         600,
-        config_mod.bind.weapon.out_of_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+        config_mod.bind.weapon.out_of_combat_delay == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.out_of_combat_delay, nil, true)
     ) or changed
     changed = set.slider_int(
@@ -329,7 +329,7 @@ local function draw_weapon_bind_menu()
         "mod.bind.weapon.in_combat_delay",
         0,
         600,
-        config_mod.bind.weapon.in_combat_delay == 0 and config.lang.tr("misc.text_disabled")
+        config_mod.bind.weapon.in_combat_delay == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.in_combat_delay, nil, true)
     ) or changed
 
@@ -344,8 +344,8 @@ local function draw_weapon_bind_menu()
         "mod.slider_weapon_bind",
         1,
         2,
-        config_mod.slider_weapon_bind == 1 and config.lang.tr("menu.bind.weapon.singleplayer")
-            or config.lang.tr("menu.bind.weapon.multiplayer")
+        config_mod.slider_weapon_bind == 1 and config.lang:tr("menu.bind.weapon.singleplayer")
+            or config.lang:tr("menu.bind.weapon.multiplayer")
     )
 
     local key = config_mod.slider_weapon_bind == 1 and "singleplayer" or "multiplayer"
@@ -422,7 +422,7 @@ local function draw_weapon_bind_menu()
 
             imgui.table_set_column_index(4)
             imgui.text(
-                weapon.weapon_id < 0 and config.lang.tr("menu.bind.weapon.name_" .. weapon.name:lower())
+                weapon.weapon_id < 0 and config.lang:tr("menu.bind.weapon.name_" .. weapon.name:lower())
                     or ace_map.weaponid_name_to_local_name[weapon.name]
             )
             imgui.end_disabled()

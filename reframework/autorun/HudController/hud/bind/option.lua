@@ -39,8 +39,8 @@ local function action(bind)
         ace_misc.send_message(
             string.format(
                 "%s %s %s",
-                config.lang.tr("hud." .. mod.map.hud_options[bind.key]),
-                config.lang.tr("misc.text_override_notifcation_message"),
+                config.lang:tr("hud." .. mod.map.hud_options[bind.key]),
+                config.lang:tr("misc.text_override_notifcation_message"),
                 val
             )
         )

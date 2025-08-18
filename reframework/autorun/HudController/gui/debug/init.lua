@@ -68,7 +68,7 @@ local function draw_option_window(panel, key)
             imgui.button(
                 string.format(
                     "%s##%s",
-                    panel.visible and config.lang.tr("debug.button_hide") or config.lang.tr("debug.button_show"),
+                    panel.visible and config.lang:tr("debug.button_hide") or config.lang:tr("debug.button_show"),
                     key
                 ),
                 button_size
@@ -84,8 +84,8 @@ local function draw_option_window(panel, key)
             imgui.button(
                 string.format(
                     "%s##%s",
-                    panel.draw_name and config.lang.tr("debug.button_hide_pos")
-                        or config.lang.tr("debug.button_draw_pos"),
+                    panel.draw_name and config.lang:tr("debug.button_hide_pos")
+                        or config.lang:tr("debug.button_draw_pos"),
                     key
                 ),
                 button_size
@@ -102,8 +102,8 @@ local function draw_option_window(panel, key)
             and imgui.button(
                 string.format(
                     "%s##%s",
-                    not panel.chain_state and config.lang.tr("debug.button_open_chain")
-                        or config.lang.tr("debug.button_close_chain"),
+                    not panel.chain_state and config.lang:tr("debug.button_open_chain")
+                        or config.lang:tr("debug.button_close_chain"),
                     key
                 ),
                 button_size
@@ -117,10 +117,10 @@ local function draw_option_window(panel, key)
 
         imgui.same_line()
 
-        if imgui.button(string.format("%s##%s", config.lang.tr("debug.button_copy_args"), key), button_size) then
+        if imgui.button(string.format("%s##%s", config.lang:tr("debug.button_copy_args"), key), button_size) then
             imgui.set_clipboard(elem.get_chain(panel))
         end
-        util_imgui.tooltip(config.lang.tr("debug.tooltip_copy_args"))
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_copy_args"))
 
         if panel.states and #panel.states > 1 then
             imgui.separator()
@@ -252,7 +252,7 @@ function this.draw()
     end
 
     gui_debug.is_opened = imgui.begin_window(
-        string.format("%s %s", config.name, config.lang.tr("debug.name")),
+        string.format("%s %s", config.name, config.lang:tr("debug.name")),
         gui_debug.is_opened,
         this.window.flags
     )
@@ -286,13 +286,13 @@ function this.draw()
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
         defaults.play_object.clear()
     end
-    util_imgui.tooltip(config.lang.tr("debug.tooltip_clear_default"))
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
 
     imgui.same_line()
 
     changed, config_debug.show_disabled =
         imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
-    util_imgui.tooltip(config.lang.tr("debug.tooltip_show_disabled"))
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
 
     local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
         local gui_elem = this.ace_gui_elements[value]
@@ -303,12 +303,12 @@ function this.draw()
     if imgui.button(gui_util.tr("debug.button_snapshot")) then
         this.snapshot = util_table.deep_copy(keys)
     end
-    util_imgui.tooltip(config.lang.tr("debug.tooltip_snapshot"))
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(this.snapshot))
     changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
-    util_imgui.tooltip(config.lang.tr("debug.tooltip_filter"))
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
     if config_debug.is_filter and not util_table.empty(this.snapshot) then
@@ -319,10 +319,10 @@ function this.draw()
     end
 
     changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
-    imgui.text(config.lang.tr("debug.text_option_info"))
-    imgui.text(string.format("H - %s", config.lang.tr("debug.text_hidden")))
-    imgui.text(string.format("S - %s", config.lang.tr("debug.text_states")))
-    imgui.text(config.lang.tr("debug.text_pos_info"))
+    imgui.text(config.lang:tr("debug.text_option_info"))
+    imgui.text(string.format("H - %s", config.lang:tr("debug.text_hidden")))
+    imgui.text(string.format("S - %s", config.lang:tr("debug.text_states")))
+    imgui.text(config.lang:tr("debug.text_pos_info"))
 
     local spacing = 4
     local size = imgui.get_cursor_pos().y - pos.y - spacing
