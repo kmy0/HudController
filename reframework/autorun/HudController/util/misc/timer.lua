@@ -89,6 +89,15 @@ function this:update()
     return self._finished
 end
 
+---@return boolean
+function this:finished()
+    if self._finished then
+        return self._finished
+    end
+    self._finished = self:elapsed() >= self.limit
+    return self._finished
+end
+
 function this:abort()
     self._finished = true
 end
@@ -145,7 +154,7 @@ end
 function this.reset_key(key)
     local timer = this._instances[key]
     if timer then
-        timer._finished = true
+        timer:abort()
     end
 end
 

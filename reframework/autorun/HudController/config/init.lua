@@ -20,7 +20,7 @@
 ---@field porter_timeout number
 ---@field handler_timeout number
 
-local config_base = require("HudController.util.misc.config")
+local config_base = require("HudController.util.misc.config_base")
 local migration = require("HudController.config.migration")
 local selector_config = require("HudController.config.selector")
 local util_misc = require("HudController.util.misc")
