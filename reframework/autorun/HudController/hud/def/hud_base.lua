@@ -9,6 +9,7 @@
 ---@field opacity number?
 ---@field color_scale via.Float4?
 ---@field hide boolean?
+---@field hide_write boolean? write other settings when hidden
 ---@field play_state string?
 ---@field segment app.GUIDefApp.DRAW_SEGMENT?
 ---@field default_overwrite HudBaseDefaultOverwrite?
@@ -154,6 +155,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
     ---@cast o HudBase
 
     o.root = o:get_root()
+
     o:set_hide(args.hide)
     if args.enabled_scale then
         o:set_scale(args.scale)
@@ -426,6 +428,7 @@ end
 ---@param hud_display string?
 function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
+    if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
         if not visible then
             ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
         elseif visible and hud_display then
@@ -686,8 +689,9 @@ function this:_write(ctrl)
 
     if self.hide and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
         self:change_visibility(ctrl, not self.hide)
-
-        return false
+        if not self.hide_write then
+            return false
+        end
     end
 
     if self.offset then

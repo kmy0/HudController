@@ -340,6 +340,7 @@ function this:new(args)
         end
     )
 
+    o.hide_write = true
     if args.no_hide_parts then
         o:set_no_hide_parts(args.no_hide_parts)
     end
