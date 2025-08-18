@@ -612,4 +612,14 @@ function this.insert_front(t, ...)
     return t
 end
 
+---@generic T
+---@param t T[]?
+---@return T?
+function this.normalize(t)
+    if type(t) == "table" then
+        return t[1]
+    end
+    return t
+end
+
 return this

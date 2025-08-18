@@ -174,6 +174,9 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
                     ctrl:set_PlayState("DEFAULT")
                 end
             end
+
+            parent:keep_mantle_in_place()
+            parent:keep_akuma_in_place()
             return false
         end
 
@@ -203,6 +206,7 @@ function this:_init_slider_appear_open(args)
             ctrl:set_PlayState("SELECT")
         end
 
+        self.parent:keep_akuma_in_place()
         return true
     end, nil, true)
     -- slide animation on input
