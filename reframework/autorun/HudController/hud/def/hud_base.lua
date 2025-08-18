@@ -319,6 +319,7 @@ function this:whoami()
     return table.concat(ret, ".")
 end
 
+---@return string
 function this:whoami_cls()
     local function get_cls_file(cls)
         local info = debug.getinfo(cls.new, "S")

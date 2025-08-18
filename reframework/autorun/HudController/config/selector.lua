@@ -16,7 +16,7 @@
 
 ---@class ConfigOps
 local configops = package.loadlib("reframework/autorun/HudController/config/configops.dll", "luaopen_configops")()
-local config_base = require("HudController.util.misc.config")
+local config_base = require("HudController.util.misc.config_base")
 local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 
