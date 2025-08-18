@@ -120,6 +120,7 @@ function this:new(args, default_overwrite)
         return true
     end, nil, true)
 
+    o.hide_write = true
     if args.start_expanded then
         o:set_start_expanded(args.start_expanded)
     end

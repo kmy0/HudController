@@ -3,7 +3,6 @@ local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
 
 local ace_map = data.ace.map
 
@@ -123,7 +122,7 @@ function this.draw(elem, elem_config, config_key)
     end
     imgui.end_disabled()
 
-    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
+    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
     if elem_config.enabled_scale ~= nil then
         changed = this.draw_slider_settings({
