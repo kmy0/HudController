@@ -74,17 +74,26 @@ function this.get_hud_option(key)
 end
 
 ---@param key string
----@return boolean?
-function this.overwrite_hud_option(key)
+---@param new_value boolean? nil for toggle
+---@return boolean? -- changed value
+function this.overwrite_hud_option(key, new_value)
     local current_hud = this.get_current()
     if not current_hud then
         return
     end
 
-    if this.manager.overridden_options[key] ~= nil then
-        this.manager.overridden_options[key] = not this.manager.overridden_options[key]
+    if new_value == nil then
+        if this.manager.overridden_options[key] ~= nil then
+            this.manager.overridden_options[key] = not this.manager.overridden_options[key]
+        else
+            this.manager.overridden_options[key] = not current_hud[key]
+        end
     else
-        this.manager.overridden_options[key] = not current_hud[key]
+        if this.manager.overridden_options[key] ~= new_value then
+            this.manager.overridden_options[key] = new_value
+        else
+            return
+        end
     end
 
     local func = this.manager.overridden_options_func[key]

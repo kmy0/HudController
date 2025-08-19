@@ -18,7 +18,7 @@ local function reinit()
 
     config.lang:change()
     data.get_weapon_bind_map(config.current)
-    state.tr_combo()
+    state.translate_combo()
     hud.manager.reinit()
     hud.operations.reload()
     state.reapply_win_pos()

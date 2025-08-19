@@ -1,11 +1,15 @@
 ---@class (exact) BindListener
----@field protected _current_keys BindPad | BindKb
+---@field protected _bind_base BindBase
 ---@field protected _last_device string
 
 local ace_misc = require("HudController.util.ace.misc")
 local enum = require("HudController.util.game.bind.enum")
+local game_data = require("HudController.util.game.data")
 local s = require("HudController.util.ref.singletons")
+local util_misc = require("HudController.util.misc.util")
 local util_table = require("HudController.util.misc.table")
+
+local rl = game_data.reverse_lookup
 
 ---@class BindListener
 local this = {}
@@ -20,16 +24,103 @@ function this:new()
 end
 
 function this:clear()
-    if self._current_keys.device == "PAD" then
-        self._current_keys.bit = 0
-    elseif self._current_keys.device == "KEYBOARD" then
-        self._current_keys.keys = {}
-    end
-
-    self._current_keys.name = ""
+    self._bind_base.keys = {}
+    self._bind_base.name = ""
 end
 
----@return BindPad | BindKb
+---@param type string
+---@return BindBase
+function this:bind_base_ctor(type)
+    return {
+        keys = {},
+        name = "",
+        device = type,
+        bound_value = -1,
+    }
+end
+
+---@param bind_base BindBase
+---@return string
+function this:get_name_ordered(bind_base)
+    local btn_enum = bind_base.device == "KEYBOARD" and enum.kb_btn or enum.pad_btn
+    ---@type string[]
+    local names = {}
+
+    for i = 1, #bind_base.keys do
+        local btn = bind_base.keys[i]
+        table.insert(names, btn_enum[btn])
+    end
+
+    return table.concat(names, " + ")
+end
+
+---@protected
+---@param names string[]
+function this:_concat_key_names(names)
+    if self._bind_base.name ~= "" then
+        table.insert(names, 1, self._bind_base.name)
+    end
+    self._bind_base.name = table.concat(names, " + ")
+end
+
+---@return BindBase
+function this:listen_keyboard()
+    if not self._bind_base or self._bind_base.device ~= "KEYBOARD" then
+        self._bind_base = self:bind_base_ctor("KEYBOARD")
+    end
+
+    local kb = ace_misc.get_kb()
+    ---@type string[]
+    local btn_names = {}
+    local sorted = util_table.sort(util_table.keys(enum.kb_btn))
+
+    for i = 1, #sorted do
+        local index = sorted[i]
+        local name = enum.kb_btn[index]
+
+        if not name:match("CLICK") and kb:isOn(index) and not util_table.contains(self._bind_base.keys, index) then
+            table.insert(self._bind_base.keys, index)
+            table.insert(btn_names, enum.kb_btn[index])
+        end
+    end
+
+    table.sort(btn_names, function(a, b)
+        return rl(enum.kb_btn, a) < rl(enum.kb_btn, b)
+    end)
+    self:_concat_key_names(btn_names)
+    return self._bind_base
+end
+
+---@return BindBase
+function this:listen_pad()
+    if not self._bind_base or self._bind_base.device ~= "PAD" then
+        self._bind_base = self:bind_base_ctor("PAD")
+    end
+
+    local pad = ace_misc.get_pad()
+    local btn = pad:get_KeyOn()
+
+    if btn == 0 then
+        return self._bind_base
+    end
+
+    ---@type string[]
+    local btn_names = {}
+    for _, bit in pairs(util_misc.extract_bits(btn)) do
+        if enum.pad_btn[bit] and not util_table.contains(self._bind_base.keys, bit) then
+            table.insert(btn_names, enum.pad_btn[bit])
+            table.insert(self._bind_base.keys, bit)
+        end
+    end
+
+    table.sort(btn_names, function(a, b)
+        return rl(enum.pad_btn, a) < rl(enum.pad_btn, b)
+    end)
+    self:_concat_key_names(btn_names)
+    return self._bind_base
+end
+
+---@return BindBase
 function this:listen()
     local device = enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
     if device == "KEYBOARD" or device == "PAD" then
@@ -37,73 +128,12 @@ function this:listen()
     end
 
     if self._last_device == "KEYBOARD" then
-        if not self._current_keys or self._current_keys.device ~= "KEYBOARD" then
-            self._current_keys = {
-                keys = {},
-                name = "",
-                device = "KEYBOARD",
-            }
-        end
-
-        local kb = ace_misc.get_kb()
-        local btn_names = {}
-        local sorted = util_table.sort(util_table.keys(enum.kb_btn))
-
-        if self._current_keys.name ~= "" then
-            table.insert(btn_names, self._current_keys.name)
-        end
-
-        for i = 1, #sorted do
-            local index = sorted[i]
-            local name = enum.kb_btn[index]
-
-            if
-                not name:match("CLICK")
-                and kb:isOn(index)
-                and not util_table.contains(self._current_keys.keys, index)
-            then
-                table.insert(self._current_keys.keys, index)
-                table.insert(btn_names, enum.kb_btn[index])
-            end
-        end
-
-        table.sort(self._current_keys.keys)
-        self._current_keys.name = table.concat(btn_names, " + ")
-        return self._current_keys
+        self._bind_base = self:listen_keyboard()
+    elseif self._last_device == "PAD" then
+        self._bind_base = self:listen_pad()
     end
 
-    if not self._current_keys or self._current_keys.device ~= "PAD" then
-        self._current_keys = {
-            bit = 0,
-            name = "",
-            device = "PAD",
-        }
-    end
-
-    local pad = ace_misc.get_pad()
-    local btn = pad:get_KeyOn()
-
-    if btn == 0 then
-        return self._current_keys
-    end
-
-    local btn_names = {}
-    local sorted = util_table.sort(util_table.keys(enum.pad_btn))
-
-    if self._current_keys.name ~= "" then
-        table.insert(btn_names, self._current_keys.name)
-    end
-
-    for i = 1, #sorted do
-        local bit = sorted[i]
-        if bit & self._current_keys.bit ~= bit and btn & bit == bit then
-            table.insert(btn_names, enum.pad_btn[bit])
-            self._current_keys.bit = self._current_keys.bit | bit
-        end
-    end
-
-    self._current_keys.name = table.concat(btn_names, " + ")
-    return self._current_keys
+    return self._bind_base
 end
 
 return this

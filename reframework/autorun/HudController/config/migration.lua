@@ -4,7 +4,11 @@
 ---@field patch number
 ---@field commit number
 
+local game_data = require("HudController.util.game.data")
+local util_misc = require("HudController.util.misc.util")
 local util_table = require("HudController.util.misc.table")
+
+local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -106,6 +110,74 @@ local function to_0_0_9_5_lang(config)
     end
 end
 
+---@param config table
+local function to_0_0_9_35_keybinds(config)
+    ---@type table<ace.ACE_PAD_KEY.BITS, string>
+    local pad_enum = {}
+    game_data.get_enum("ace.ACE_PAD_KEY.BITS", pad_enum)
+
+    if util_table.empty(pad_enum) then
+        error("Pad Enum, not found. Please press Reset Scripts button.")
+    end
+
+    if config.mod.combo_hud then
+        ---@diagnostic disable-next-line: no-unknown
+        config.mod.combo.hud = config.mod.combo_hud
+        ---@diagnostic disable-next-line: no-unknown
+        config.mod.combo_hud = nil
+    end
+
+    if config.mod.bind.key.option then
+        ---@diagnostic disable-next-line: no-unknown
+        config.mod.bind.key.option_hud = config.mod.bind.key.option
+        ---@diagnostic disable-next-line: no-unknown
+        config.mod.bind.key.option = nil
+    end
+
+    for _, bind in
+        pairs(config.mod.bind.key.hud --[==[@as ModBind[]]==])
+    do
+        bind.action_type = "NONE"
+        ---@diagnostic disable-next-line: undefined-field
+        bind.bound_value = bind.key
+    end
+
+    for _, bind in
+        pairs(config.mod.bind.key.option_hud--[==[@as ModBind[]]==])
+    do
+        bind.action_type = "TOGGLE"
+        ---@diagnostic disable-next-line: undefined-field
+        bind.bound_value = bind.key
+    end
+
+    for _, name in pairs({ "hud", "option_hud" }) do
+        for _, bind in
+            pairs(config.mod.bind.key[name] --[==[@as Bind[]]==])
+        do
+            if bind.device == "PAD" then
+                bind.keys = {}
+                ---@type string[]
+                local names = {}
+
+                for _, key in
+                    pairs(util_misc.extract_bits(bind.bit --[[@as integer]]))
+                do
+                    table.insert(bind.keys, key)
+                    table.insert(names, pad_enum[key])
+                end
+
+                ---@diagnostic disable-next-line: no-unknown, inject-field
+                bind.bit = nil
+                table.sort(bind.keys, function(a, b)
+                    return rl(pad_enum, a) < rl(pad_enum, b)
+                end)
+
+                bind.name = table.concat(names, " + ")
+            end
+        end
+    end
+end
+
 this.migrations = {
     ["0.0.5"] = function(config)
         to_0_0_5_weapon_binds_camp(config)
@@ -115,6 +187,9 @@ this.migrations = {
     end,
     ["0.0.9-5"] = function(config)
         to_0_0_9_5_lang(config)
+    end,
+    ["0.0.9-35"] = function(config)
+        to_0_0_9_35_keybinds(config)
     end,
 }
 

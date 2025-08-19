@@ -51,7 +51,7 @@ function this.remove(hud_config)
         return i ~= i2
     end)
     state.combo.hud:swap(config_mod.hud)
-    config_mod.combo_hud = math.max(config_mod.combo_hud - 1, 1)
+    config_mod.combo.hud = math.max(config_mod.combo.hud - 1, 1)
 
     if util_table.empty(config_mod.hud) then
         hud_manager.clear()
@@ -72,14 +72,14 @@ function this.remove(hud_config)
         end
     end
 
-    for _, bind in pairs(bind_manager.hud_manager.binds) do
-        if bind.key == hud_config.key then
-            bind_manager.hud_manager:unregister(bind)
+    for _, bind in pairs(bind_manager.hud.binds) do
+        if bind.bound_value == hud_config.key then
+            bind_manager.hud:unregister(bind)
         end
     end
 
-    config_mod.combo_hud_key_bind = 1
-    config_mod.bind.key.hud = bind_manager.hud_manager:get_base_binds()
+    config_mod.combo.key_bind.hud = 1
+    config_mod.bind.key.hud = bind_manager.hud:get_base_binds()
 end
 
 ---@param name string
@@ -115,7 +115,7 @@ end
 
 ---@param name_key string
 function this.add_element(name_key)
-    local _hud = config.current.mod.hud[config.current.mod.combo_hud]
+    local _hud = config.current.mod.hud[config.current.mod.combo.hud]
     _hud.elements = _hud.elements or {}
 
     if _hud.elements[name_key] then

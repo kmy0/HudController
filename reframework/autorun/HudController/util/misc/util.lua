@@ -138,4 +138,18 @@ function this.join_paths_b(...)
     return res
 end
 
+---@param bit integer
+---@return integer[]
+function this.extract_bits(bit)
+    local ret = {}
+
+    while bit ~= 0 do
+        local lowest_bit = bit & -bit --[[@as integer]]
+        table.insert(ret, lowest_bit)
+        bit = bit & (bit - 1) --[[@as integer]]
+    end
+
+    return ret
+end
+
 return this
