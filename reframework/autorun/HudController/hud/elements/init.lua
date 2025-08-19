@@ -30,6 +30,7 @@ local this = {
     slinger_reticle = require("HudController.hud.elements.slinger_reticle"),
     menu_button_guide = require("HudController.hud.elements.menu_button_guide"),
     target_reticle = require("HudController.hud.elements.target_reticle"),
+    shortcut_keyboard = require("HudController.hud.elements.shortcut_keyboard"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.VITAL] = require("HudController.hud.def.vital_base"),
@@ -60,6 +61,7 @@ local this = {
     [hud_enum.SLINGER_RETICLE] = require("HudController.hud.elements.slinger_reticle"),
     [hud_enum.MENU_BUTTON_GUIDE] = require("HudController.hud.elements.menu_button_guide"),
     [hud_enum.TARGET_RETICLE] = require("HudController.hud.elements.target_reticle"),
+    [hud_enum.SHORTCUT_KEYBOARD] = require("HudController.hud.elements.shortcut_keyboard"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -88,6 +90,7 @@ local this = {
     SlingerReticle = "SLINGER_RETICLE",
     MenuButtonGuide = "MENU_BUTTON_GUIDE",
     TargetReticle = "TARGET_RETICLE",
+    ShortcutKeyboard = "SHORTCUT_KEYBOARD",
     --
     HEALTH = require("HudController.hud.elements.health"),
     WEAPON = require("HudController.hud.elements.weapon"),
@@ -116,6 +119,7 @@ local this = {
     SLINGER_RETICLE = require("HudController.hud.elements.slinger_reticle"),
     MENU_BUTTON_GUIDE = require("HudController.hud.elements.menu_button_guide"),
     TARGET_RETICLE = require("HudController.hud.elements.target_reticle"),
+    SHORTCUT_KEYBOARD = require("HudController.hud.elements.shortcut_keyboard"),
 }
 
 return this
