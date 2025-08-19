@@ -307,6 +307,7 @@ return {
     },
     hud_subelement = {
         background = "Background",
+        background_blur = "Background Blur",
         frame = "Frame",
         frame_max = "Frame Max",
         frame_base = "Frame Base",
@@ -411,5 +412,8 @@ return {
         edge = "Edge",
         tooltip = "Tooltip",
         group = "Group",
+        item = "Item",
+        tab = "Tab",
+        cursor_background = "Cursor Background",
     },
 }

@@ -77,6 +77,7 @@ this.enum.hud_type = {
     TRAINING_ROOM_HUD = 27,
     MENU_BUTTON_GUIDE = 28,
     TARGET_RETICLE = 29,
+    SHORTCUT_KEYBOARD = 30,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = {
