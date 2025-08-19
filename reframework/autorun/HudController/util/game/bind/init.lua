@@ -3,6 +3,7 @@ local enum = require("HudController.util.game.bind.enum")
 local this = {
     listener = require("HudController.util.game.bind.listener"),
     manager = require("HudController.util.game.bind.manager"),
+    monitor = require("HudController.util.game.bind.monitor"),
 }
 
 ---@return boolean

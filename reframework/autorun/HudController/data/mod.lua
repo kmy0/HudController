@@ -4,7 +4,8 @@
 ---@field initialized boolean
 
 ---@class (exact) ModMap
----@field hud_options string[]
+---@field options_hud string[]
+---@field options_mod string[]
 
 local ace_misc = require("HudController.util.ace.misc")
 local s = require("HudController.util.ref.singletons")
@@ -13,7 +14,7 @@ local s = require("HudController.util.ref.singletons")
 local this = {
     enum = {},
     map = {
-        hud_options = {
+        options_hud = {
             mute_gui = "box_mute_gui",
             hide_subtitles = "box_hide_subtitles",
             disable_scoutflies = "box_disable_scoutflies",
@@ -41,6 +42,14 @@ local this = {
             disable_porter_tracking = "box_disable_porter_tracking",
             hide_weapon = "box_hide_weapon",
             hide_pet = "box_hide_pet",
+        },
+        options_mod = {
+            enable_fade = "enable_fade",
+            enable_notification = "enable_notification",
+            enable_key_binds = "enable_key_binds",
+            disable_weapon_binds_timed = "disable_weapon_binds_timed",
+            disable_weapon_binds_held = "disable_weapon_binds_held",
+            enable_weapon_binds = "enable_weapon_binds",
         },
     },
     initialized = false,

@@ -17,6 +17,8 @@
 ---@field blend Combo
 ---@field alpha_channel Combo
 ---@field option_bind Combo
+---@field option_mod_bind Combo
+---@field bind_action_type Combo
 ---@field segment Combo
 ---@field page_alignment Combo
 ---@field enemy_msg_type Combo
@@ -24,6 +26,7 @@
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
+---@field opt_name string
 ---@field listener BindListener
 ---@field collision string?
 
@@ -32,6 +35,7 @@
 ---@field debug boolean
 
 local ace_player = require("HudController.util.ace.player")
+local bind_manager = require("HudController.hud.bind")
 local combo = require("HudController.gui.combo")
 local config = require("HudController.config")
 local data = require("HudController.data")
@@ -79,13 +83,23 @@ local this = {
             return a.key < b.key
         end),
         option_bind = combo:new(
-            mod.map.hud_options,
+            mod.map.options_hud,
             function(a, b)
                 return a.key < b.key
             end,
             nil,
             function(key)
-                return config.lang:tr("hud." .. mod.map.hud_options[key])
+                return config.lang:tr("hud." .. mod.map.options_hud[key])
+            end
+        ),
+        option_mod_bind = combo:new(
+            mod.map.options_mod,
+            function(a, b)
+                return a.key < b.key
+            end,
+            nil,
+            function(key)
+                return config.lang:tr("menu.config." .. mod.map.options_mod[key])
             end
         ),
         segment = combo:new(nil, function(a, b)
@@ -98,6 +112,18 @@ local this = {
             return a.value < b.value
         end),
         config = combo:new(),
+        bind_action_type = combo:new(
+            util_table.filter(bind_manager.action_type, function(key, value)
+                return value ~= bind_manager.action_type.NONE
+            end),
+            function(a, b)
+                return a.key < b.key
+            end,
+            nil,
+            function(key)
+                return config.lang:tr("menu.bind.key.action_type." .. key)
+            end
+        ),
     },
     grid_ratio = {
         "1",
@@ -152,17 +178,19 @@ this.colors = {
 this.combo.item_decide.sort = function(a, b)
     return this.item_decide[a.key].sort < this.item_decide[b.key].sort
 end
-this.combo.item_decide._tr = function(key)
+this.combo.item_decide._translate = function(key)
     if key == "option_disable" then
         return config.lang:tr("hud.option_disable")
     end
     return this.item_decide[key].value
 end
 
-function this.tr_combo()
-    this.combo.item_decide:tr()
-    this.combo.option_bind:tr()
-    this.combo.hud_elem:tr()
+function this.translate_combo()
+    this.combo.item_decide:translate()
+    this.combo.option_bind:translate()
+    this.combo.option_mod_bind:translate()
+    this.combo.hud_elem:translate()
+    this.combo.bind_action_type:translate()
 end
 
 function this.reapply_win_pos()
@@ -194,7 +222,7 @@ function this.init()
     this.combo.page_alignment:swap(ace_enum.page_alignment)
     this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
     this.combo.config:swap(config.selector.sorted)
-    this.tr_combo()
+    this.translate_combo()
 end
 
 return this

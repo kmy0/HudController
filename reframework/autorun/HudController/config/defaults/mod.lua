@@ -46,15 +46,28 @@
 ---@field hud HudProfileConfig[]
 ---@field bind {
 --- weapon: WeaponStateBindConfig,
---- key: {hud: HudBindBase[], option: OptionBindBase[]},
---- }
+--- key: {
+---     hud: BindBase[],
+---     option_hud: BindBase[],
+---     option_mod: BindBase[],
+---     buffer: integer,
+---  },
+--- slider: {
+---     weapon_bind: integer,
+---     key_bind: integer,
+---     },
+--- },
 ---@field grid GridConfig
----@field combo_hud_key_bind integer
----@field combo_hud integer
----@field combo_hud_elem integer
----@field combo_option_key_bind integer
----@field slider_weapon_bind integer
----@field slider_key_bind integer
+---@field combo {
+--- hud: integer,
+--- hud_elem: integer,
+--- key_bind: {
+---     hud: integer,
+---     option_hud: integer,
+---     option_mod: integer,
+---     action_type: integer,
+---     },
+--- }
 ---@field lang ModLanguage
 
 local version = require("HudController.config.version")
@@ -102,7 +115,9 @@ return {
         bind = {
             key = {
                 hud = {},
-                option = {},
+                option_hud = {},
+                option_mod = {},
+                buffer = 2,
             },
             weapon = {
                 quest_in_combat = false,
@@ -112,14 +127,22 @@ return {
                 singleplayer = {},
                 multiplayer = {},
             },
+            slider = {
+                weapon_bind = 1,
+                key_bind = 1,
+            },
         },
         hud = {},
-        combo_hud = 1,
-        combo_hud_elem = 1,
-        combo_hud_key_bind = 1,
-        combo_option_key_bind = 1,
-        slider_weapon_bind = 1,
-        slider_key_bind = 1,
+        combo = {
+            hud = 1,
+            hud_elem = 1,
+            key_bind = {
+                hud = 1,
+                option_hud = 1,
+                option_mod = 1,
+                action_type = 1,
+            },
+        },
     },
     debug = {
         show_disabled = false,

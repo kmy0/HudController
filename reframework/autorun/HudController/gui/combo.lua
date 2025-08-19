@@ -3,7 +3,7 @@
 ---@field map ComboMap[]
 ---@field sort (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@field mapper (fun(value: any): string)?
----@field _tr (fun(key: any): string)?
+---@field _translate (fun(key: any): string)?
 
 ---@alias ComboMap {key: any, value: string}
 
@@ -17,13 +17,13 @@ this.__index = this
 ---@param key_to_value table?
 ---@param sort (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@param mapper (fun(value: any): string)?
----@param tr (fun(key: any): string)?
+---@param translate (fun(key: any): string)?
 ---@return Combo
-function this:new(key_to_value, sort, mapper, tr)
+function this:new(key_to_value, sort, mapper, translate)
     local o = {
         sort = sort,
         mapper = mapper,
-        _tr = tr,
+        _translate = translate,
     }
 
     if key_to_value then
@@ -52,8 +52,8 @@ function this:swap(key_to_value, current_index)
 end
 
 ---@param current_index integer?
-function this:tr(current_index)
-    if not self._tr then
+function this:translate(current_index)
+    if not self._translate then
         return
     end
 
@@ -61,7 +61,7 @@ function this:tr(current_index)
     local current_key = self.map[current_index or 1].key
 
     for _, v in pairs(self.map) do
-        v.value = self._tr(v.key)
+        v.value = self._translate(v.key)
     end
 
     if self.sort then

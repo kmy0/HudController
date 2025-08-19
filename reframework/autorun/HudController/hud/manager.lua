@@ -254,7 +254,7 @@ function this.update_weapon_bind_state()
             return
         end
 
-        config_mod.combo_hud = state_config.combo
+        config_mod.combo.hud = state_config.combo
         this.request_hud(hud_config)
         config.save_global()
     end
@@ -268,7 +268,7 @@ function this.update()
     end
 
     if not this.current_hud and not this.requested_hud then
-        local hud_config = config_mod.hud[config_mod.combo_hud]
+        local hud_config = config_mod.hud[config_mod.combo.hud]
         if hud_config then
             this.request_hud(hud_config)
         end
@@ -282,11 +282,11 @@ function this.update()
 
     local is_held = false
     if config_mod.enable_key_binds then
-        bind_manager.option_manager:monitor()
+        bind_manager.monitor:monitor()
 
-        if bind_manager.hud_manager:monitor() and config_mod.disable_weapon_binds_timed then
+        if bind_manager.monitor:is_triggered("hud") and config_mod.disable_weapon_binds_timed then
             if config_mod.disable_weapon_binds_held then
-                bind_manager.hud_manager:register_on_release_callback(bind_manager.hud_manager:get_held(), function()
+                bind_manager.monitor:register_on_release_callback(bind_manager.monitor:get_held("hud", true), function()
                     timer.restart_key(timer_key)
                 end)
             else
@@ -295,7 +295,7 @@ function this.update()
         end
 
         if config_mod.enable_weapon_binds and config_mod.disable_weapon_binds_held then
-            is_held = bind_manager.hud_manager:is_held()
+            is_held = bind_manager.monitor:is_held("hud")
         end
 
         if not config_mod.disable_weapon_binds_timed and (not config_mod.disable_weapon_binds_held or not is_held) then
