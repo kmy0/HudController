@@ -2,7 +2,7 @@
     "Lua.workspace.library": [
         "typedef/reframework/dist/library/*",
         "typedef/ace/*",
-        "typedef/configops/*"
+        "deps/HudController_util/typedef/*"
     ],
     "Lua.workspace.ignoreSubmodules": false,
     "Lua.diagnostics.groupFileStatus": {

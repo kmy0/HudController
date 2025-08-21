@@ -14,8 +14,6 @@
 ---@field file_name string
 ---@field path string
 
----@class ConfigOps
-local configops = package.loadlib("reframework/autorun/HudController/config/configops.dll", "luaopen_configops")()
 local config_base = require("HudController.util.misc.config_base")
 local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
@@ -157,7 +155,7 @@ function this:rename_current_file(new_name)
     if not util_misc.file_exists(old_path) then
         self.ref:save_no_timer()
     else
-        configops.rename(old_path, file.path)
+        hudcontroller_util.rename(old_path, file.path)
     end
 
     self.files[old_key] = nil
@@ -173,7 +171,7 @@ end
 ---@return boolean
 function this:delete_current_file()
     local file = self.files[self.sorted[self.current.combo_file]]
-    if not util_misc.file_exists(file.path) or configops.remove(file.path) then
+    if not util_misc.file_exists(file.path) or hudcontroller_util.remove(file.path) then
         self.files[file.display_name] = nil
         self.sorted = self:sort_files(self.files)
         self.current.combo_file = math.max(self.current.combo_file - 1, 1)
