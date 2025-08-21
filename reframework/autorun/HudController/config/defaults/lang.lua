@@ -60,6 +60,11 @@ return {
         button_rename = "Rename",
         tooltip_remove = "Move config file to recycle bin",
         button_duplicate = "Duplicate",
+        button_restore = "Restore",
+        combo_backup = "Backup File",
+        button_remove_backup = "Remove",
+        tooltip_remove_backup = "Move backup file to recycle bin",
+        tooltip_restore = "Make backup file selectable in the Combo File combo box",
     },
     menu = {
         config = {
@@ -144,6 +149,7 @@ return {
         button_import_tooltip = "Import hud json string from clipboard",
         button_export = "Export",
         button_export_tooltip = "Export hud json string to clipboard",
+        tooltip_save = "Save config and create backup. Config is also saved on each action.",
         combo = "Hud",
         input = "New Name",
         option_disable = "Do Not Change",

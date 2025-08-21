@@ -561,6 +561,7 @@ function this.draw()
         config.save_global()
         config.selector:reload()
         state.combo.config:swap(config.selector.sorted)
+        state.combo.config_backup:swap(config.selector.sorted_backup)
     end
 
     if imgui.button(gui_util.tr("debug.name")) then

@@ -21,7 +21,7 @@ local this = {
         flags = 1024 | 1 << 3 | 1 << 4,
         condition = 2,
     },
-    window_size = 49,
+    window_size = 48,
     state = state,
 }
 

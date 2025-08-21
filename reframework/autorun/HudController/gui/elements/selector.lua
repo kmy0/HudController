@@ -10,7 +10,7 @@ local mod = data.mod
 
 local this = {
     is_opened = false,
-    window_size = 22,
+    window_size = 48,
 }
 
 local function reinit()
@@ -23,7 +23,7 @@ local function reinit()
     hud.operations.reload()
     state.reapply_win_pos()
 
-    local new_hud = config_mod.hud[config_mod.combo_hud]
+    local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then
         hud.request_hud(new_hud, true)
     else
@@ -118,6 +118,47 @@ function this.draw()
             state.input_action = nil
             state.reapply_win_pos()
         end
+    end
+
+    imgui.push_item_width(200)
+    changed, config.selector.combo_file_backup = imgui.combo(
+        gui_util.tr("selector.combo_backup"),
+        config.selector.combo_file_backup,
+        state.combo.config_backup.values
+    )
+    imgui.pop_item_width()
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("selector.button_restore")) then
+        state.input_action = nil
+        if config.selector:restore_backup() then
+            state.combo.config:swap(config.selector.sorted)
+            state.combo.config_backup:swap(config.selector.sorted_backup)
+        end
+    end
+    util_imgui.tooltip(config.lang:tr("selector.tooltip_restore"))
+
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("selector.button_remove_backup")) then
+        state.input_action = nil
+        util_imgui.open_popup("config_remove_backup", 62, 30)
+    end
+
+    if
+        util_imgui.popup_yesno(
+            "config_remove_backup",
+            config.lang:tr("misc.text_rusure"),
+            config.lang:tr("misc.text_yes"),
+            config.lang:tr("misc.text_no")
+        )
+    then
+        if config.selector:delete_current_backup() then
+            state.combo.config_backup:swap(config.selector.sorted_backup)
+        end
+    else
+        -- popup position breakes if there is a tooltip before it
+        util_imgui.tooltip(config.lang:tr("selector.tooltip_remove_backup"))
     end
 
     local spacing = 4
