@@ -2,6 +2,7 @@
 ---@field name string
 ---@field binds Bind[]
 ---@field sorted Bind[]
+---@field owner BindMonitor
 ---@field protected _on_data_changed fun(o: BindManager)[]
 
 ---@class (exact) BindBase
@@ -35,10 +36,28 @@ function this:new(name)
 end
 
 ---@param binds Bind[]
+---@return boolean -- wether all binds passed validation
 function this:load(binds)
-    self.binds = binds
+    self.binds = {}
+    local ret = true
+    for i = 1, #binds do
+        local b = binds[i]
+        if not self:is_valid(b) then
+            ret = false
+        else
+            table.insert(self.binds, b)
+        end
+    end
+
     self.sorted = self:_sort_binds()
     self:_execute_on_data_changed_callback()
+
+    return ret
+end
+
+---@param monitor BindMonitor
+function this:set_owner(monitor)
+    self.owner = monitor
 end
 
 ---@param bind Bind
