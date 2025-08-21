@@ -87,6 +87,7 @@ function this.draw_hud()
         config:backup()
         config:save_no_timer()
     end
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_save"))
 
     if state.input_action and not mod.pause then
         local changed, _ = state.get_input()

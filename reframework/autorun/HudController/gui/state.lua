@@ -23,6 +23,7 @@
 ---@field page_alignment Combo
 ---@field enemy_msg_type Combo
 ---@field config Combo
+---@field config_backup Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -112,6 +113,7 @@ local this = {
             return a.value < b.value
         end),
         config = combo:new(),
+        config_backup = combo:new(),
         bind_action_type = combo:new(
             util_table.filter(bind_manager.action_type, function(key, value)
                 return value ~= bind_manager.action_type.NONE
@@ -222,6 +224,7 @@ function this.init()
     this.combo.page_alignment:swap(ace_enum.page_alignment)
     this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
     this.combo.config:swap(config.selector.sorted)
+    this.combo.config_backup:swap(config.selector.sorted_backup)
     this.translate_combo()
 end
 
