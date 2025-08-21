@@ -1,3 +1,6 @@
 [submodule "typedef/reframework"]
 	path = typedef/reframework
 	url = https://github.com/kmy0/REFrameworkLuaTypedef.git
+[submodule "deps/HudController_util"]
+	path = deps/HudController_util
+	url = https://github.com/kmy0/HudController_util.git
