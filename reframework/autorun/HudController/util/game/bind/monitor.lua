@@ -97,6 +97,7 @@ function this:add_manager(manager)
 
     on_data_changed(manager)
     manager:register_on_data_changed_callback(on_data_changed)
+    manager:set_owner(self)
 
     table.insert(self.execute_order, manager.name)
 end

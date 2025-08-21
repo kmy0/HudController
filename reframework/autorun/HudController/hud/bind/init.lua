@@ -135,9 +135,17 @@ function this.init()
     this.option_mod = mod_bind_manager:new("option_mod", action_option_mod)
     this.hud = mod_bind_manager:new("hud", action_hud)
 
-    this.option_hud:load(bind_key.option_hud)
-    this.option_mod:load(bind_key.option_mod)
-    this.hud:load(bind_key.hud)
+    if not this.option_hud:load(bind_key.option_hud) then
+        bind_key.option_hud = this.option_hud:get_base_binds()
+    end
+
+    if not this.option_mod:load(bind_key.option_mod) then
+        bind_key.option_mod = this.option_mod:get_base_binds()
+    end
+
+    if not this.hud:load(bind_key.hud) then
+        bind_key.hud = this.hud:get_base_binds()
+    end
 
     this.monitor = bind_monitor:new(this.option_mod, this.hud, this.option_hud)
     this.monitor:set_max_buffer_frame(bind_key.buffer)
