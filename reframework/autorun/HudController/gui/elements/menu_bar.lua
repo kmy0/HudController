@@ -140,8 +140,12 @@ local function draw_key_bind_menu()
             "mod.bind.key.buffer",
             1,
             11,
-            config_mod.bind.key.buffer - 1 == 1
-                    and string.format("%s %s", config_mod.bind.key.buffer - 1, config.lang:tr("misc.text_frame"))
+            config_mod.bind.key.buffer - 1 == 0 and config.lang:tr("misc.text_disabled")
+                or config_mod.bind.key.buffer - 1 == 1 and string.format(
+                    "%s %s",
+                    config_mod.bind.key.buffer - 1,
+                    config.lang:tr("misc.text_frame")
+                )
                 or string.format("%s %s", config_mod.bind.key.buffer - 1, config.lang:tr("misc.text_frame_plural"))
         )
     then
