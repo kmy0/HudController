@@ -286,9 +286,12 @@ function this.update()
 
         if bind_manager.monitor:is_triggered("hud") and config_mod.disable_weapon_binds_timed then
             if config_mod.disable_weapon_binds_held then
-                bind_manager.monitor:register_on_release_callback(bind_manager.monitor:get_held("hud", true), function()
-                    timer.restart_key(timer_key)
-                end)
+                bind_manager.monitor:register_on_release_callback(
+                    bind_manager.monitor:get_held_key_names("hud"),
+                    function()
+                        timer.restart_key(timer_key)
+                    end
+                )
             else
                 timer.restart_key(timer_key)
             end

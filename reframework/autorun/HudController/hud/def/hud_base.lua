@@ -428,7 +428,6 @@ end
 ---@param hud_display string?
 function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
-    if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
         if not visible then
             ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
         elseif visible and hud_display then
