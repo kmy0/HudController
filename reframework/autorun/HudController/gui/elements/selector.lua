@@ -132,6 +132,8 @@ function this.draw()
     imgui.pop_item_width()
     imgui.same_line()
 
+    imgui.begin_disabled(state.combo.config_backup:empty())
+
     if imgui.button(gui_util.tr("selector.button_restore")) then
         state.input_action = nil
         if config.selector:restore_backup() then
@@ -147,6 +149,8 @@ function this.draw()
         state.input_action = nil
         util_imgui.open_popup("config_remove_backup", 62, 30)
     end
+
+    imgui.end_disabled()
 
     if
         util_imgui.popup_yesno(

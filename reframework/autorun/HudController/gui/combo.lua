@@ -107,6 +107,14 @@ function this:get_index(key, value)
     end
 end
 
+function this:size()
+    return #self.values
+end
+
+function this:empty()
+    return util_table.empty(self.values)
+end
+
 ---@protected
 ---@param key_to_value table
 function this:_map(key_to_value)
