@@ -30,6 +30,7 @@
 --- }
 
 local data = require("HudController.data")
+local frame_cache = require("HudController.hud.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -169,6 +170,11 @@ local radial_expanded_states = {
     radial_state = "SELECT",
 }
 
+---@param ctrl via.gui.Control
+local function get_icons(ctrl)
+    return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+end
+
 ---@param args RadialConfig
 ---@return Radial
 function this:new(args)
@@ -181,7 +187,7 @@ function this:new(args)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
         local ret = {}
-        for _, icon in pairs(play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)) do
+        for _, icon in pairs(get_icons(ctrl)) do
             ---@cast icon via.gui.Control
             util_table.array_merge_t(
                 ret,
@@ -203,7 +209,7 @@ function this:new(args)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         local ret = {}
-        for _, icon in pairs(play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)) do
+        for _, icon in pairs(get_icons(ctrl)) do
             ---@cast icon via.gui.Control
             util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.frame_icon))
         end
@@ -212,7 +218,7 @@ function this:new(args)
     end)
     o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
         local ret = {}
-        for _, icon in pairs(play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)) do
+        for _, icon in pairs(get_icons(ctrl)) do
             ---@cast icon via.gui.Control
             util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.select_icon))
         end
@@ -221,7 +227,7 @@ function this:new(args)
     end)
     o.children.select_base = hud_child:new(args.children.select_base, o, function(s, hudbase, gui_id, ctrl)
         local ret = {}
-        for _, icon in pairs(play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)) do
+        for _, icon in pairs(get_icons(ctrl)) do
             ---@cast icon via.gui.Control
             util_table.array_merge_t(
                 ret,
@@ -233,7 +239,7 @@ function this:new(args)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         local ret = {}
-        for _, icon in pairs(play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)) do
+        for _, icon in pairs(get_icons(ctrl)) do
             ---@cast icon via.gui.Control
             util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.frame_icon))
         end
@@ -312,5 +318,7 @@ function this.get_config()
 
     return base
 end
+
+get_icons = frame_cache.memoize(get_icons)
 
 return this

@@ -1,6 +1,4 @@
----@class (exact) Cache
----@field memoize fun(func: (fun(...): any), predicate: (fun(cached_value: any, key: any?): boolean)?, do_hash: boolean?, deep_hash_table: boolean?): any
----@field clear_all fun()
+---@class Cache
 ---@field protected _map table<any, any>
 
 local hash = require("HudController.util.misc.hash")
@@ -49,11 +47,12 @@ function this:clear()
     self._map = {}
 end
 
----@param func fun(...): any
+---@generic T: fun(...): any
+---@param func T
 ---@param predicate (fun(cached_value: any, key: any?): boolean)?
 ---@param do_hash boolean?
 ---@param deep_hash_table boolean?
----@return fun(...): any
+---@return T
 function this.memoize(func, predicate, do_hash, deep_hash_table)
     local cache = this:new()
 
@@ -84,6 +83,7 @@ function this.memoize(func, predicate, do_hash, deep_hash_table)
                 return cached
             end
 
+            ---@diagnostic disable-next-line: no-unknown
             local ret = func(...)
             cache:set(key, ret)
 

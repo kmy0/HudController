@@ -11,5 +11,6 @@ this.cache = require("HudController.util.misc.cache")
 this.logger = require("HudController.util.misc.logger")
 this.config_base = require("HudController.util.misc.config_base")
 this.lang_base = require("HudController.util.misc.lang_base")
+this.perf = require("HudController.util.misc.perf")
 
 return this

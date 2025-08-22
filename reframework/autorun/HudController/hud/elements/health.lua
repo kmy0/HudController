@@ -58,6 +58,7 @@
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data")
+local frame_cache = require("HudController.hud.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
@@ -258,6 +259,11 @@ local ctrl_args = {
     },
 }
 
+---@param ctrl via.gui.Control
+local function get_icons(ctrl)
+    return play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"])
+end
+
 ---@class Health
 local this = {}
 ---@diagnostic disable-next-line: inject-field
@@ -282,8 +288,8 @@ function this:new(args)
         o.children.skill_list,
         function(s, hudbase, gui_id, ctrl)
             return util_table.array_merge_t(
-                play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"]),
-                play_object.iter_args(play_object.control.get, ctrl, ctrl_args["skill_list.virus"])
+                play_object.iter_args(play_object.control.get, ctrl, ctrl_args["skill_list.virus"]),
+                get_icons(ctrl)
             )
         end
     )
@@ -292,7 +298,7 @@ function this:new(args)
         o.children.skill_list,
         function(s, hudbase, gui_id, ctrl)
             local ret = {}
-            local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args["skill_list.icon"])
+            local icons = get_icons(ctrl)
             for _, icon in pairs(icons) do
                 ---@cast icon via.gui.Control
                 util_table.array_merge_t(
@@ -509,5 +515,7 @@ function this.get_config()
 
     return base
 end
+
+get_icons = frame_cache.memoize(get_icons)
 
 return this
