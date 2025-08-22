@@ -52,7 +52,7 @@ return {
         tooltip_copy_args = "Copy arguments for use with hud.play_object.control.get\nor hud.play_object.child.get functions",
     },
     selector = {
-        name = "Config Select",
+        name = "Config Manager",
         combo_config = "Config File",
         button_close = "Close",
         button_new = "New",
