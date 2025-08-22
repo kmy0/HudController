@@ -113,10 +113,13 @@ function this.draw()
     if state.input_action then
         changed, _ = state.get_input()
         if changed then
-            config.selector:rename_current_file(state.input_action)
-            state.combo.config:swap(config.selector.sorted)
+            if state.input_action ~= config.selector.sorted[config_sel.combo_file] then
+                config.selector:rename_current_file(state.input_action)
+                state.combo.config:swap(config.selector.sorted)
+                state.reapply_win_pos()
+            end
+
             state.input_action = nil
-            state.reapply_win_pos()
         end
     end
 
