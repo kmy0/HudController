@@ -187,6 +187,10 @@ local function draw_panel_tree(panel, key)
         name = string.format("%s - %s", name, table.concat(keys, ", "))
     end
 
+    if panel.states and #panel.states > 1 then
+        name = string.format("%s / %s", name, panel.obj:get_PlayState())
+    end
+
     if not util_table.empty(panel.children or {}) then
         if not this.first_frame then
             imgui.set_next_item_open(panel.chain_state)
