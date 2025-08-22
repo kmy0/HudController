@@ -1,4 +1,4 @@
----@class (exact) Subtitles : HudBase
+---@class Subtitles : HudBase
 ---@field get_config fun(): SubtitlesConfig
 ---@field previous_category string?
 ---@field children table<string, HudChild> | {
@@ -11,6 +11,7 @@
 --- }
 
 local data = require("HudController.data")
+local frame_cache = require("HudController.hud.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -132,5 +133,8 @@ function this.get_config()
 
     return base
 end
+
+---@diagnostic disable-next-line: inject-field
+this.get_scale_panel = frame_cache.memoize(this.get_scale_panel)
 
 return this

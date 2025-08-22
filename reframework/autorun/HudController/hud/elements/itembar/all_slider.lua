@@ -75,6 +75,7 @@
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
+local frame_cache = require("HudController.hud.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -212,6 +213,11 @@ local appear_open_states = {
     appear_open = "dummy",
 }
 
+---@param ctrl via.gui.Control
+local function get_icons(ctrl)
+    return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+end
+
 ---@param args ItembarAllSliderConfig
 ---@param parent Itembar
 ---@param ctrl_getter fun(self: ItembarAllSlider, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
@@ -238,7 +244,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
         return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
     end)
     o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+        local icons = get_icons(ctrl)
         local ret = {}
         util_table.do_something(icons, function(t, key, value)
             util_table.array_merge_t(
@@ -297,7 +303,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- makes icons visible when expanded itembar is hidden
     self.children.icon_state = hud_child:new(args.children.icon_state, self, function(s, hudbase, gui_id, ctrl)
-        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+        local icons = get_icons(ctrl)
         local ret = {}
         util_table.do_something(icons, function(t, key, value)
             util_table.array_merge_t(
@@ -317,7 +323,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- hides cursor select when expanded itembar is hidden
     self.children.cursor_state = hud_child:new(args.children.cursor_state, self, function(s, hudbase, gui_id, ctrl)
-        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+        local icons = get_icons(ctrl)
         local ret = {}
         util_table.do_something(icons, function(t, key, value)
             util_table.array_merge_t(
@@ -383,7 +389,7 @@ function this:_init_appear_open(args)
         args.children.icon_color_scale,
         self,
         function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+            return get_icons(ctrl)
         end,
         function(s, ctrl)
             play_object_defaults.check(ctrl)
@@ -749,5 +755,7 @@ function this.get_config()
 
     return base
 end
+
+get_icons = frame_cache.memoize(get_icons)
 
 return this
