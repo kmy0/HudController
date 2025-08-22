@@ -27,6 +27,7 @@
 ---@field children {
 --- background: CtrlChild,
 --- keybind: HudChild,
+--- icon: HudChild,
 --- cursor_background: HudChild,
 --- frame: CtrlChild,
 --- }
@@ -35,6 +36,7 @@
 ---@field children {
 --- background: CtrlChildConfig,
 --- keybind: HudChildConfig,
+--- icon: HudChildConfig,
 --- cursor_background: HudChildConfig,
 --- frame: CtrlChildConfig,
 --- }
@@ -171,6 +173,15 @@ local ctrl_args = {
                 "PNL_ItemIcon",
                 "PNL_EachItem00",
                 "PNL_ref_Key_S00",
+            },
+        },
+    },
+    tab_icon = {
+        {
+            {
+                "PNL_ItemIcon",
+                "PNL_EachItem00",
+                "PNL_ref_icon00",
             },
         },
     },
@@ -312,6 +323,13 @@ function this:new(args)
             return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.tab_cursor_background)
         end
     )
+    o.children.tab.children.icon = hud_child:new(
+        args.children.tab.children.icon,
+        o.children.tab,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.tab_icon)
+        end
+    )
 
     o.children.item = hud_child:new(args.children.item, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.item)
@@ -395,6 +413,10 @@ function this.get_config()
             },
             cursor_background = {
                 name_key = "cursor_background",
+                hide = false,
+            },
+            icon = {
+                name_key = "icon",
                 hide = false,
             },
         },
