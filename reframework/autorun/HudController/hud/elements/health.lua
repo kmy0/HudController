@@ -58,7 +58,7 @@
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data")
-local frame_cache = require("HudController.hud.frame_cache")
+local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")

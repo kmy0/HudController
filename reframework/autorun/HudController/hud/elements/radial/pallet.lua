@@ -28,7 +28,7 @@
 ---@class (exact) RadialPalletTextConfig : HudChildConfig
 ---@field children table<string, HudChildConfig>
 
-local frame_cache = require("HudController.hud.frame_cache")
+local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
