@@ -34,6 +34,7 @@ function this:bind_base_ctor(type)
     return {
         keys = {},
         name = "",
+        name_display = "",
         device = type,
         bound_value = -1,
     }
@@ -45,22 +46,26 @@ function this:get_name_ordered(bind_base)
     local btn_enum = bind_base.device == "KEYBOARD" and enum.kb_btn or enum.pad_btn
     ---@type string[]
     local names = {}
-
     for i = 1, #bind_base.keys do
         local btn = bind_base.keys[i]
         table.insert(names, btn_enum[btn])
     end
 
+    table.sort(names, function(a, b)
+        return rl(btn_enum, a) < rl(btn_enum, b)
+    end)
     return table.concat(names, " + ")
 end
 
 ---@protected
 ---@param names string[]
 function this:_concat_key_names(names)
-    if self._bind_base.name ~= "" then
-        table.insert(names, 1, self._bind_base.name)
+    if self._bind_base.name_display ~= "" then
+        table.insert(names, 1, self._bind_base.name_display)
     end
-    self._bind_base.name = table.concat(names, " + ")
+
+    self._bind_base.name = self:get_name_ordered(self._bind_base)
+    self._bind_base.name_display = table.concat(names, " + ")
 end
 
 ---@return BindBase

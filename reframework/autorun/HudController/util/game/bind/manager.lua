@@ -7,6 +7,7 @@
 
 ---@class (exact) BindBase
 ---@field name string
+---@field name_display string
 ---@field device string
 ---@field bound_value any
 ---@field keys integer[]
@@ -42,7 +43,7 @@ function this:load(binds)
     local ret = true
     for i = 1, #binds do
         local b = binds[i]
-        if not self:is_valid(b) then
+        if not self:is_valid(b) or self:is_collision(b) then
             ret = false
         else
             table.insert(self.binds, b)

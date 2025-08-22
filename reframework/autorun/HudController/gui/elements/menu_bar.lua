@@ -248,8 +248,8 @@ local function draw_key_bind_menu()
         ---@type string[]
         local bind_name
 
-        if bind.name ~= "" then
-            bind_name = { state.listener.listener:get_name_ordered(bind), "..." }
+        if bind.name_display ~= "" then
+            bind_name = { bind.name_display, "..." }
         else
             bind_name = { config.lang:tr("menu.bind.key.text_default") }
         end
@@ -363,7 +363,7 @@ local function draw_key_bind_menu()
             imgui.table_set_column_index(1)
             imgui.text(opt_name)
             imgui.table_set_column_index(2)
-            imgui.text(bind.name)
+            imgui.text(bind.name_display)
             imgui.table_set_column_index(3)
 
             imgui.text(

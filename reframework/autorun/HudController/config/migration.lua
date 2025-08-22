@@ -103,7 +103,7 @@ local function to_0_0_6_objectives(config)
 end
 
 ---@param config table
-local function to_0_0_9_5_lang(config)
+local function to_0_1_0_lang(config)
     if config.gui.lang then
         ---@diagnostic disable-next-line: no-unknown
         config.mod.lang = util_table.deep_copy(config.gui.lang)
@@ -111,13 +111,15 @@ local function to_0_0_9_5_lang(config)
 end
 
 ---@param config table
-local function to_0_0_9_35_keybinds(config)
+local function to_0_1_0_keybinds(config)
     ---@type table<ace.ACE_PAD_KEY.BITS, string>
     local pad_enum = {}
+    local kb_enum = {}
     game_data.get_enum("ace.ACE_PAD_KEY.BITS", pad_enum)
+    game_data.get_enum("ace.ACE_MKB_KEY.INDEX", kb_enum)
 
-    if util_table.empty(pad_enum) then
-        error("Pad Enum, not found. Please press Reset Scripts button.")
+    if util_table.empty(pad_enum) or util_table.empty(kb_enum) then
+        error("Bind Enum, not found. Please press Reset Scripts button.")
     end
 
     if config.mod.combo_hud then
@@ -154,11 +156,11 @@ local function to_0_0_9_35_keybinds(config)
         for _, bind in
             pairs(config.mod.bind.key[name] --[==[@as Bind[]]==])
         do
+            ---@type string[]
+            local names = {}
+
             if bind.device == "PAD" then
                 bind.keys = {}
-                ---@type string[]
-                local names = {}
-
                 for _, key in
                     pairs(util_misc.extract_bits(bind.bit --[[@as integer]]))
                 do
@@ -166,14 +168,24 @@ local function to_0_0_9_35_keybinds(config)
                     table.insert(names, pad_enum[key])
                 end
 
+                bind.name_display = table.concat(names, " + ")
                 ---@diagnostic disable-next-line: no-unknown, inject-field
                 bind.bit = nil
                 table.sort(bind.keys, function(a, b)
-                    return rl(pad_enum, a) < rl(pad_enum, b)
+                    return pad_enum[a] < pad_enum[b]
                 end)
+            else
+                for i = 1, #bind.keys do
+                    table.insert(names, kb_enum[bind.keys[i]])
+                end
 
-                bind.name = table.concat(names, " + ")
+                bind.name_display = bind.name
+                table.sort(bind.keys, function(a, b)
+                    return kb_enum[a] < kb_enum[b]
+                end)
             end
+
+            bind.name = table.concat(names, " + ")
         end
     end
 end
@@ -185,11 +197,9 @@ this.migrations = {
     ["0.0.6"] = function(config)
         to_0_0_6_objectives(config)
     end,
-    ["0.0.9-5"] = function(config)
-        to_0_0_9_5_lang(config)
-    end,
-    ["0.0.9-35"] = function(config)
-        to_0_0_9_35_keybinds(config)
+    ["0.1.0"] = function(config)
+        to_0_1_0_lang(config)
+        to_0_1_0_keybinds(config)
     end,
 }
 
