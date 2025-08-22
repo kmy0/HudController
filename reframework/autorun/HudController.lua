@@ -274,6 +274,11 @@ m.hook(
 
 --#region misc
 m.hook("app.GUIManager.resetTitleApp()", nil, hook.misc.reset_hud_default_post)
+m.hook(
+    "app.HunterCharacter.warp(via.vec3, System.Nullable`1<via.Quaternion>, System.Boolean)",
+    nil,
+    hook.misc.reset_cache_post
+)
 --#endregion
 
 re.on_draw_ui(function()
