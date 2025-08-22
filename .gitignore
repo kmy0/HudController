@@ -39,3 +39,4 @@ luac.out
 *.hex
 
 /.vscode/HudController.code-workspace
+bin/
