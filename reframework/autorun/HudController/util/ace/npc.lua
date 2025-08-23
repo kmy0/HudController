@@ -182,10 +182,15 @@ this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
 end)
 
 function this.on_dialogue_update_post(retval)
+    ---@diagnostic disable-next-line: undefined-field
     this.is_facility.clear()
+    ---@diagnostic disable-next-line: undefined-field
     this.is_talk.clear()
+    ---@diagnostic disable-next-line: undefined-field
     this.get_flags.clear()
+    ---@diagnostic disable-next-line: undefined-field
     this.get_npc_core.clear()
+    ---@diagnostic disable-next-line: undefined-field
     this.get_char_base.clear()
 end
 

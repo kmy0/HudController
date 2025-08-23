@@ -4,6 +4,7 @@ local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
 local config = require("HudController.config")
 local data = require("HudController.data")
+local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud")
 local m = require("HudController.util.ref.methods")
@@ -19,6 +20,21 @@ local handler = {
     timer_key = "handler_touch_timer",
     hidden = false,
 }
+
+---@return System.Array<app.OtomoCharacter>?
+local function get_pets()
+    local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
+    if quest_dir:isPlayingQuest() or util_game.get_component_any("app.OtomoDoll") then
+        return
+    end
+
+    local master_char = ace_player.get_master_char()
+    if not master_char or master_char:get_IsInTent() then
+        return
+    end
+
+    return util_game.get_all_components("app.OtomoCharacter"):add_ref()
+end
 
 function this.hide_handler_post(retval)
     local hud_config = common.get_hud()
@@ -75,20 +91,15 @@ end
 function this.hide_pet_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_pet") then
-        local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
-        if quest_dir:isPlayingQuest() or util_game.get_component_any("app.OtomoDoll") then
-            return
+        local pets = get_pets()
+        if pets then
+            util_game.do_something(pets, function(system_array, index, value)
+                value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
+            end)
         end
-
-        local master_char = ace_player.get_master_char()
-        if not master_char or master_char:get_IsInTent() then
-            return
-        end
-
-        util_game.do_something(util_game.get_all_components("app.OtomoCharacter"), function(system_array, index, value)
-            value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
-        end)
     end
 end
+
+get_pets = frame_cache.memoize(get_pets, 120)
 
 return this
