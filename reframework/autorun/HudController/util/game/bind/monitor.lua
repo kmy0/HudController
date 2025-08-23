@@ -378,6 +378,8 @@ function this:_resolve_buffer()
                 this_frame[bind.name] = true
                 m.held.by_key[bind_key] = bind
                 m.held.by_name[bind.name] = true
+                m.triggered.by_key[bind_key] = bind
+                m.triggered.by_name[bind.name] = true
             end
         end
     end
