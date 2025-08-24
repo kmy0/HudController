@@ -5,6 +5,7 @@ local grid = require("HudController.gui.elements.grid")
 local gui_debug = require("HudController.gui.debug")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud")
+local user = require("HudController.hud.user")
 local util = require("HudController.util")
 local logger = util.misc.logger.g
 
