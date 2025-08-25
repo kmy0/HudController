@@ -34,6 +34,7 @@
 ---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
 ---@class app.GUI060000 : app.GUIBaseApp
+---@class app.CONTEXT_HANDLE : System.ValueType
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -356,12 +357,14 @@
 
 ---@class app.cGUIBeaconEM : app.cGUIBeaconBase
 ---@field getGameContext fun(self: app.cGUIBeaconEM): app.cEnemyContext
+---@field get_ContextHolder fun(self: app.cGUIBeaconEM): app.cEnemyContextHolder
 
 ---@class app.cGUIBeaconBase : via.clr.ManagedObject
 ---@field getGameContext fun(self: app.cGUIBeaconBase): app.cGameContext
 
 ---@class app.cEnemyContextHolder : app.cGameContextHolder
 ---@field get_Em fun(self: app.cEnemyContextHolder): app.cEnemyContext
+---@field get_Handle fun(self: app.cEnemyContextHolder): app.CONTEXT_HANDLE
 
 ---@class app.GUI020201 : app.GUIBaseApp
 ---@field _StampPanels System.Array<via.gui.Panel>
@@ -542,3 +545,6 @@
 
 ---@class app.OtomoCharacter : app.CharacterBase
 ---@field onOtomoContinueFlag fun(self: app.OtomoCharacter, flag: app.OtomoDef.CONTINUE_FLAG)
+
+---@class app.ContextManager : ace.GAElement
+---@field requestRemoveContext_Enemy fun(self: app.ContextManager, handle: app.CONTEXT_HANDLE)

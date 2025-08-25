@@ -178,12 +178,7 @@ function this.hide_small_monsters_pre(args)
         local beacons = beacon_man:get_EmZakoBeaconContainer()
 
         util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
-            ace_em.set_continue_flags(
-                value:getGameContext(),
-                true,
-                rl(data.ace.enum.enemy_continue_flag, "DRAW_OFF"),
-                rl(data.ace.enum.enemy_continue_flag, "HIDE_MAP_WITH_DISABLE_PIN")
-            )
+            ace_em.destroy_em_ctx(value:get_ContextHolder())
         end)
     end
 end

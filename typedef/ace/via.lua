@@ -60,6 +60,7 @@
 ---@class via.GameObject : via.clr.ManagedObject
 ---@field get_Name fun(self: via.GameObject): System.String
 ---@field get_Transform fun(self: via.GameObject): via.Transform
+---@field destroy fun(self: via.GameObject, object: via.GameObject)
 
 ---@class via.Transform : via.Component
 ---@field get_GameObject fun(self: via.Transform): via.GameObject

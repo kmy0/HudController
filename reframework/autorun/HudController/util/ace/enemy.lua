@@ -1,4 +1,5 @@
 local cache = require("HudController.util.misc.cache")
+local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game")
 local util_misc = require("HudController.util.misc")
 
@@ -77,6 +78,38 @@ function this.get_flags(char_base)
 end
 
 ---@param char_base app.EnemyCharacter
+---@return boolean
+function this.destroy_em_char(char_base)
+    local ret = false
+
+    util_misc.try(function()
+        local game_object = char_base:get_GameObject()
+        if not game_object then
+            return
+        end
+
+        game_object:destroy(game_object)
+        ret = true
+    end)
+
+    return ret
+end
+
+---@param em_ctx_holder app.cEnemyContextHolder
+---@return boolean
+function this.destroy_em_ctx(em_ctx_holder)
+    local ret = false
+
+    util_misc.try(function()
+        local handle = em_ctx_holder:get_Handle()
+        s.get("app.ContextManager"):requestRemoveContext_Enemy(handle)
+        ret = true
+    end)
+
+    return ret
+end
+
+---@param char_base app.EnemyCharacter
 ---@param flag app.EnemyDef.CONTINUE_FLAG
 ---@param value boolean
 function this.set_continue_flag(char_base, flag, value)
@@ -90,21 +123,6 @@ function this.set_continue_flag(char_base, flag, value)
         flags:on(flag)
     else
         flags:off(flag)
-    end
-end
-
----@param ctx app.cEnemyContext
----@param value boolean
----@param ... app.EnemyDef.CONTINUE_FLAG
-function this.set_continue_flags(ctx, value, ...)
-    local flag_group = ctx:get_ContinueFlag()
-
-    for _, f in pairs({ ... }) do
-        if value then
-            flag_group:on(f)
-        else
-            flag_group:off(f)
-        end
     end
 end
 
