@@ -21,12 +21,21 @@
 --- edge: HudChildConfig,
 --- }
 
+---@class (exact) SharpnessChangedProperties : HudChildChangedProperties
+---@field state boolean?
+
+---@class (exact) SharpnessProperties : {[SharpnessProperty]: boolean}, HudChildProperties
+---@field state boolean
+
+---@alias SharpnessProperty HudChildProperty | "state"
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -120,6 +129,9 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Sharpness
 
+    o.properties = util_table.merge_t(o.properties, {
+        state = true,
+    })
     o.children.anim_max = hud_child:new(args.children.anim_max, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.anim_max)
     end)
