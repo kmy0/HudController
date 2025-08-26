@@ -58,8 +58,8 @@ function this:new(...)
     setmetatable(o, self)
     ---@cast o BindMonitor
     local managers = { ... }
-    for _, m in pairs(managers) do
-        o:add_manager(m)
+    for i = 1, #managers do
+        o:add_manager(managers[i])
     end
 
     return o
