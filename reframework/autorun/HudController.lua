@@ -5,6 +5,7 @@ local grid = require("HudController.gui.elements.grid")
 local gui_debug = require("HudController.gui.debug")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud")
+local sorter = require("HudController.gui.elements.sorter")
 local user = require("HudController.hud.user")
 local util = require("HudController.util")
 local logger = util.misc.logger.g
@@ -329,6 +330,10 @@ re.on_frame(function()
 
     if config_gui.debug.is_opened then
         gui_debug.draw()
+    end
+
+    if sorter.is_opened then
+        sorter.draw()
     end
 
     config.run_save()

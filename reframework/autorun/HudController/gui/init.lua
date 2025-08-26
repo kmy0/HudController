@@ -66,6 +66,7 @@ function this.draw()
             imgui.pop_font()
         end
 
+        gui_elements.sorter.close()
         gui_elements.selector.close()
         state.input_action = nil
         config.save_global()
@@ -73,7 +74,7 @@ function this.draw()
         return
     end
 
-    imgui.begin_disabled(gui_elements.selector.is_opened)
+    imgui.begin_disabled(gui_elements.selector.is_opened or gui_elements.sorter.is_opened)
 
     if imgui.begin_menu_bar() then
         gui_elements.menu_bar.draw()
@@ -108,6 +109,7 @@ function this.draw()
     imgui.begin_disabled(
         not config_mod.enabled
             or gui_elements.selector.is_opened
+            or gui_elements.sorter.is_opened
             or (config_mod.enable_fade and fade_manager.is_active())
     )
 
