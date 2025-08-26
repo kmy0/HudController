@@ -66,7 +66,11 @@
 ---@field guiid_ignore table<string, boolean>
 ---@field wp_action_to_index table<string, {category: integer, index: integer}>
 ---@field key_to_wp_action_name table<string, string>
----@field additional_weapon string[]
+---@field weapon_binds {
+--- additional_weapon: string[],
+--- game_mode: string[],
+--- pl_state: string[],
+--- }
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -150,7 +154,11 @@ local this = {
             "TARGET_RETICLE",
             "MENU_BUTTON_GUIDE",
         },
-        additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
+        weapon_binds = {
+            additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
+            game_mode = { "singleplayer", "multiplayer" },
+            pl_state = { "combat_in", "combat_out", "camp" },
+        },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
             GUN_RETICLE = "UI020019",

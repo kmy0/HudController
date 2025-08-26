@@ -432,8 +432,8 @@ local function draw_weapon_bind_menu()
     local sorted = util_table.sort(
         util_table.values(config_mod.bind.weapon[key]) --[=[@as WeaponBindConfig[]]=],
         function(a, b)
-            local a_id = util_table.index(ace_map.additional_weapon, a.name)
-            local b_id = util_table.index(ace_map.additional_weapon, b.name)
+            local a_id = util_table.index(ace_map.weapon_binds.additional_weapon, a.name)
+            local b_id = util_table.index(ace_map.weapon_binds.additional_weapon, b.name)
             a_id = a_id and -a_id or a.weapon_id
             b_id = b_id and -b_id or b.weapon_id
             return a_id < b_id

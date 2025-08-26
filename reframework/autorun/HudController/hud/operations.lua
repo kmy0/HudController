@@ -47,6 +47,20 @@ function this.remove(hud_config)
         return
     end
 
+    ---@type table<string, string>
+    local hud_names = {}
+    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
+        for wp_name, wp_config in
+            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
+        do
+            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
+                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
+                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
+                hud_names[key] = config_mod.hud[state_config.combo].name
+            end
+        end
+    end
+
     config_mod.hud = util_table.remove(config_mod.hud, function(t, i2, j)
         return i ~= i2
     end)
@@ -57,16 +71,23 @@ function this.remove(hud_config)
         hud_manager.clear()
     end
 
-    for _, key in pairs({ "singleplayer", "multiplayer" }) do
-        for _, weapon in
-            pairs(config_mod.bind.weapon[key] --[[@as table<string, WeaponBindConfig>]])
+    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
+        for wp_name, wp_config in
+            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
         do
-            for _, key2 in pairs({ "combat_in", "combat_out" }) do
-                local t = weapon[key2] --[[@as WeaponBindConfigData]]
-                if t.hud_key == hud_config.key then
-                    t.hud_key = -1
-                    t.combo = 1
-                    weapon.enabled = false
+            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
+                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
+                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
+                local index = util_table.index(config_mod.hud, function(o)
+                    return o.name == hud_names[key]
+                end)
+
+                if not index then
+                    state_config.hud_key = -1
+                    state_config.combo = 1
+                    wp_config.enabled = false
+                else
+                    state_config.combo = index
                 end
             end
         end
