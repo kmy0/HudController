@@ -3,6 +3,7 @@ local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local set = require("HudController.gui.set")
+local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
@@ -10,6 +11,7 @@ local util_table = require("HudController.util.misc.table")
 local mod = data.mod
 
 local this = {}
+local reverse_sort = false
 
 function this.draw_hud()
     local config_mod = config.current.mod
@@ -89,6 +91,17 @@ function this.draw_hud()
     end
     util_imgui.tooltip(config.lang:tr("hud.tooltip_save"))
 
+    imgui.same_line()
+    imgui.begin_disabled(util_table.empty(config_mod.hud))
+
+    if imgui.button(gui_util.tr("hud.button_sort")) then
+        state.input_action = nil
+        sorter.is_opened = true
+        mod.pause = true
+    end
+
+    imgui.end_disabled()
+
     if state.input_action and not mod.pause then
         local changed, _ = state.get_input()
         if changed then
@@ -115,13 +128,20 @@ function this.draw_element()
     end
 
     imgui.same_line()
+    imgui.begin_disabled(
+        not config_mod.hud[config_mod.combo.hud]
+            or util_table.empty(config_mod.hud[config_mod.combo.hud].elements or {})
+    )
 
     if imgui.button(gui_util.tr("hud_element.button_sort")) then
         local elements = config_mod.hud[config_mod.combo.hud].elements or {}
-        hud.operations.sort_elements(util_table.values(elements))
+        hud.operations.sort_elements(util_table.values(elements), reverse_sort)
         config.save_global()
+        reverse_sort = not reverse_sort
     end
     util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))
+
+    imgui.end_disabled()
 end
 
 return this

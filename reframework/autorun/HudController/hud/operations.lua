@@ -13,6 +13,54 @@ local ace_map = data.ace.map
 
 local this = {}
 
+---@return table<string, string>
+local function get_weapon_bind_hud_names()
+    local config_mod = config.current.mod
+    ---@type table<string, string>
+    local hud_names = {}
+
+    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
+        for wp_name, wp_config in
+            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
+        do
+            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
+                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
+                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
+                hud_names[key] = config_mod.hud[state_config.combo].name
+            end
+        end
+    end
+
+    return hud_names
+end
+
+---@param hud_names table<string, string>
+local function restore_weapon_bind_indexes(hud_names)
+    local config_mod = config.current.mod
+
+    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
+        for wp_name, wp_config in
+            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
+        do
+            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
+                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
+                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
+                local index = util_table.index(config_mod.hud, function(o)
+                    return o.name == hud_names[key]
+                end)
+
+                if not index then
+                    state_config.hud_key = -1
+                    state_config.combo = 1
+                    wp_config.enabled = false
+                else
+                    state_config.combo = index
+                end
+            end
+        end
+    end
+end
+
 ---@protected
 ---@return HudProfileConfig
 function this._new()
@@ -36,6 +84,25 @@ function this.reload()
     state.combo.hud:swap(config_mod.hud)
 end
 
+---@param ordered_names string[]
+function this.sort(ordered_names)
+    local config_mod = config.current.mod
+    local indexes = util_table.array_to_map(ordered_names)
+    local hud_names = get_weapon_bind_hud_names()
+    local current_hud = config_mod.hud[config_mod.combo.hud].name
+
+    table.sort(config_mod.hud, function(a, b)
+        return indexes[a.name] < indexes[b.name]
+    end)
+
+    state.combo.hud:swap(config_mod.hud)
+    config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
+        return o.name == current_hud
+    end) or 1
+    restore_weapon_bind_indexes(hud_names)
+    config_mod.combo.key_bind.hud = 1
+end
+
 ---@param hud_config HudProfileConfig
 function this.remove(hud_config)
     local config_mod = config.current.mod
@@ -47,20 +114,7 @@ function this.remove(hud_config)
         return
     end
 
-    ---@type table<string, string>
-    local hud_names = {}
-    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
-        for wp_name, wp_config in
-            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
-        do
-            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
-                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
-                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
-                hud_names[key] = config_mod.hud[state_config.combo].name
-            end
-        end
-    end
-
+    local hud_names = get_weapon_bind_hud_names()
     config_mod.hud = util_table.remove(config_mod.hud, function(t, i2, j)
         return i ~= i2
     end)
@@ -71,27 +125,7 @@ function this.remove(hud_config)
         hud_manager.clear()
     end
 
-    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
-        for wp_name, wp_config in
-            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
-        do
-            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
-                local key = string.format("%s|%s|%s", game_mode, wp_name, pl_state)
-                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
-                local index = util_table.index(config_mod.hud, function(o)
-                    return o.name == hud_names[key]
-                end)
-
-                if not index then
-                    state_config.hud_key = -1
-                    state_config.combo = 1
-                    wp_config.enabled = false
-                else
-                    state_config.combo = index
-                end
-            end
-        end
-    end
+    restore_weapon_bind_indexes(hud_names)
 
     for _, bind in pairs(bind_manager.hud.binds) do
         if bind.bound_value == hud_config.key then
@@ -183,8 +217,12 @@ function this.get_hud_by_key(key)
 end
 
 ---@param elements HudBaseConfig[]
-function this.sort_elements(elements)
+---@param reverse boolean
+function this.sort_elements(elements, reverse)
     table.sort(elements, function(a, b)
+        if reverse then
+            return this.tr_element(a) < this.tr_element(b)
+        end
         return this.tr_element(a) > this.tr_element(b)
     end)
     for i, elem in pairs(elements) do

@@ -622,4 +622,15 @@ function this.normalize(t)
     return t
 end
 
+---@generic T
+---@param t table<integer, T>
+---@return table<T, integer>
+function this.array_to_map(t)
+    local ret = {}
+    for k, v in pairs(t) do
+        ret[v] = k
+    end
+    return ret
+end
+
 return this

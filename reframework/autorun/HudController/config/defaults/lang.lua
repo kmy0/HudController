@@ -66,6 +66,12 @@ return {
         tooltip_remove_backup = "Move backup file to recycle bin",
         tooltip_restore = "Make backup file selectable in the Combo File combo box",
     },
+    sorter = {
+        name = "Profile Sorter",
+        button_apply = "Apply",
+        button_sort = "Sort",
+        button_sort_tooltip = "Sort profiles alphabetically",
+    },
     menu = {
         config = {
             name = "Mod",
@@ -78,7 +84,6 @@ return {
             disable_weapon_binds_timed = "Disable Weapon Binds Timed",
             disable_weapon_binds_held_tooltip = "Disable Weapon Binds while Hud key bind is held",
             disable_weapon_binds_timed_tooltip = "Disable Weapon Binds for n seconds after Hud key bind is pressed",
-            show_order_buttons = "Enable Manual Sorting",
             show_order_buttons_tooltip = "Display sorting buttons for manual element reordering",
         },
         language = {
@@ -149,6 +154,7 @@ return {
         button_import_tooltip = "Import hud json string from clipboard",
         button_export = "Export",
         button_export_tooltip = "Export hud json string to clipboard",
+        button_sort = "Sort",
         tooltip_save = "Save config and create backup. Config is also saved on each action.",
         combo = "Hud",
         input = "New Name",

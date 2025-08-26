@@ -3,7 +3,7 @@
 ---@field default SelectorSettings
 ---
 ---@field ref MainConfig
----@field path string
+---@field data_path string
 ---@field path_backup string
 ---@field files table<string, ConfigFile>
 ---@field files_backup table<string, ConfigFile>
@@ -45,8 +45,8 @@ function this:new(default_settings, path, ref)
     o.sorted = {}
     o.files_backup = {}
     o.sorted_backup = {}
-    o.path = o.ref.name
-    o.path_backup = util_misc.join_paths_b(o.path, "backups")
+    o.data_path = o.ref.name
+    o.path_backup = util_misc.join_paths_b(o.data_path, "backups")
     o.combo_file_backup = 1
     return o
 end
@@ -92,7 +92,7 @@ function this:sort_files(files)
 end
 
 function this:load()
-    self.files = self:get_files(self.path, true)
+    self.files = self:get_files(self.data_path, true)
     self.sorted = self:sort_files(self.files)
     self.files_backup = self:get_files(self.path_backup)
     self.sorted_backup = self:sort_files(self.files_backup)
@@ -114,7 +114,7 @@ function this:reload()
     self.sorted_backup = self:sort_files(self.files_backup)
 
     local file = self.files[self.sorted[self.current.combo_file]]
-    self.files = self:get_files(self.path, true)
+    self.files = self:get_files(self.data_path, true)
 
     if not self.files[file.display_name] then
         self.ref:save_no_timer()
