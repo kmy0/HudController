@@ -11,6 +11,7 @@
 
 ---@class (exact) FadeCallbacks
 ---@field switch_profile fun()
+---@field switch_profile_partial fun()
 ---@field finish fun()
 
 local ace_misc = require("HudController.util.ace.misc")
@@ -68,6 +69,15 @@ function fade_callbacks.switch_profile()
     end)
 end
 
+function fade_callbacks.switch_profile_partial()
+    defaults.with_dump(function()
+        this.overridden_options = {}
+        this.apply_options(this.requested_hud.options)
+        this._update_elements_partial(this.requested_hud.elements)
+        this.current_hud = this.requested_hud
+    end)
+end
+
 function fade_callbacks.finish()
     if this.notify and config.current.mod.enable_notification and this.current_hud.show_notification then
         ace_misc.send_message(
@@ -80,7 +90,7 @@ function fade_callbacks.finish()
 end
 
 ---@param elements table<string, HudBaseConfig>
-function this.update_elements(elements)
+function this.update_elements(elements, visible_only)
     this.by_guiid = {}
 
     for _, elem in pairs(this.by_hudid) do
@@ -95,6 +105,31 @@ function this.update_elements(elements)
 
         for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
             this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
+        end
+    end
+end
+
+---@protected
+---@param elements table<string, HudBaseConfig>
+function this._update_elements_partial(elements)
+    this.by_guiid = {}
+
+    for _, elem in pairs(this.by_hudid) do
+        if not elements[elem.name_key] or (not elem.hide and not elem.opacity == 0) then
+            call_queue.queue_func(elem.hud_id, function()
+                elem:reset()
+            end)
+        end
+    end
+
+    this.by_hudid = {}
+    for _, elem in pairs(elements) do
+        if not elem.hide and (not elem.enabled_opacity or elem.opacity > 0) then
+            this.by_hudid[elem.hud_id] = factory.new_elem(elem)
+
+            for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
+                this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
+            end
         end
     end
 end
@@ -145,8 +180,11 @@ function this.request_hud(new_hud, force)
             and new_hud.fade_opacity
             and (not new_hud.fade_opacity_both or this.current_hud.fade_opacity)
         then
-            fade_callbacks.switch_profile()
-            fade_manager.fade_partial(this.current_hud, this.requested_hud, fade_callbacks.finish)
+            fade_callbacks.switch_profile_partial()
+            fade_manager.fade_partial(this.current_hud, this.requested_hud, function()
+                this.update_elements(this.current_hud.elements)
+                fade_callbacks.finish()
+            end)
         elseif this.current_hud then
             if fade_manager.is_active(fade_manager.type.fade_out) then
                 fade_manager.clear()
