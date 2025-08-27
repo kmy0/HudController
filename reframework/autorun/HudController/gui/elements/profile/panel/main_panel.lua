@@ -305,12 +305,13 @@ local function draw_name_access(elem, elem_config, config_key)
     local item_config_key = config_key .. ".npc_draw_distance"
     local config_value = config:get(item_config_key)
     if
-        set.slider_float(
+        set.slider_float_step(
             gui_util.tr("hud_element.entry.slider_draw_distance"),
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
+            0.1,
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or string.format("%.1f", config_value)
         )
     then
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
@@ -349,12 +350,13 @@ local function draw_name_other(elem, elem_config, config_key)
     local item_config_key = config_key .. ".pl_draw_distance"
     local config_value = config:get(item_config_key)
     if
-        set.slider_float(
+        set.slider_float_step(
             gui_util.tr("hud_element.entry.slider_draw_distance", item_config_key),
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
+            0.1,
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or string.format("%.1f", config_value)
         )
     then
         elem:set_pl_draw_distance(elem_config.pl_draw_distance)
@@ -365,12 +367,13 @@ local function draw_name_other(elem, elem_config, config_key)
     item_config_key = config_key .. ".pet_draw_distance"
     config_value = config:get(item_config_key)
     if
-        set.slider_float(
+        set.slider_float_step(
             gui_util.tr("hud_element.entry.slider_draw_distance", item_config_key),
             item_config_key,
             0,
             50,
-            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
+            0.1,
+            (config_value == 0 and config.lang:tr("hud.option_disable")) or string.format("%.1f", config_value)
         )
     then
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
