@@ -10,6 +10,7 @@
 ---@field color_scale via.Float4?
 ---@field hide boolean?
 ---@field hide_write boolean? write other settings when hidden
+---@field hide_changed boolean
 ---@field play_state string?
 ---@field segment app.GUIDefApp.DRAW_SEGMENT?
 ---@field default_overwrite HudBaseDefaultOverwrite?
@@ -25,6 +26,7 @@
 ---@field children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
+---@field restore_all_force_invis fun()
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -104,6 +106,8 @@ local game_data = require("HudController.util.game.data")
 local m = require("HudController.util.ref.methods")
 local play_object_defaults = require("HudController.hud.defaults.play_object")
 local logger = require("HudController.util.misc.logger").g
+local call_queue = require("HudController.hud.call_queue")
+local play_object = require("HudController.hud.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud"
@@ -189,6 +193,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         o:set_option(option, value)
     end
 
+    o.hide_changed = true
     if
         o.hud_id
         and not o.hide
@@ -274,6 +279,7 @@ end
 
 ---@param hide boolean
 function this:set_hide(hide)
+    self.hide_changed = hide ~= self.hide
     self:reset("hide")
 
     if self.hide and not hide then
@@ -436,9 +442,30 @@ function this:change_visibility(ctrl, visible, hud_display)
         else
             ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "DEFAULT"))
         end
+
+        -- hiding root till FADE_IN or FADE_OUT finishes, there doesn't seem to be a way to instantly finish those
+        -- specific playstates without breaking everything
+        if ctrl and self.hide_changed then
+            local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
+            if root_window then
+                root_window:set_ForceInvisible(true)
+
+                local function restore_vis()
+                    if self:_is_fade_state_finished(root_window) then
+                        root_window:set_ForceInvisible(false)
+                    else
+                        call_queue.queue_func_next(self.hud_id, restore_vis)
+                    end
+                end
+
+                call_queue.queue_func(self.hud_id, restore_vis)
+            end
+        end
     else
         ctrl:set_ForceInvisible(not visible)
     end
+
+    self.hide_changed = false
 end
 
 ---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
@@ -681,6 +708,14 @@ function this:reset_play_states(child_to_play_state)
 end
 
 ---@protected
+---@param root_window via.gui.Control
+---@return boolean
+function this:_is_fade_state_finished(root_window)
+    local play_state = self.hide and "DISABLE" or "DEFAULT"
+    return root_window:get_PlayState() == play_state
+end
+
+---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
@@ -782,6 +817,24 @@ function this:get_current_config()
         parent = parent.parent --[[@as HudBase]]
     end
     return util_table.get_by_key(current_hud.elements, table.concat(keys, "."))
+end
+
+function this.restore_all_force_invis()
+    local all_hud = play_object.control.get_all_hud_control()
+    for hud_id, ctrls in pairs(all_hud) do
+        if not ace_map.hudid_to_can_hide[hud_id] then
+            goto continue
+        end
+
+        for _, ctrl in pairs(ctrls) do
+            local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
+            if root_window then
+                root_window:set_ForceInvisible(false)
+            end
+        end
+
+        ::continue::
+    end
 end
 
 ---@param hud_id app.GUIHudDef.TYPE

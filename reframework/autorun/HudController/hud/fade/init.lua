@@ -5,13 +5,12 @@
 ---@field callback fun()?
 ---@field step_mod number
 
-local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data")
 local fader = require("HudController.hud.fade.fader")
+local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
-local ace_map = data.ace.map
 
 ---@class FadeManager
 local this = {
@@ -59,39 +58,6 @@ local function get_new_opacity(hud_config, hud_id)
     return 1
 end
 
----@param hud_id app.GUIHudDef.TYPE
----@return via.gui.Control[]
-local function get_element(hud_id)
-    ---@type via.gui.Control[]
-    local ret = {}
-    local hudman = ace_misc.get_hud_manager()
-    for _, gui_id in pairs(ace_map.hudid_to_guiid[hud_id]) do
-        local disp_ctrl = hudman:findDisplayControl(gui_id)
-        if not disp_ctrl then
-            goto continue
-        end
-
-        table.insert(ret, disp_ctrl._TargetControl)
-        ::continue::
-    end
-
-    return ret
-end
-
----@return table<app.GUIHudDef.TYPE, via.gui.Control[]>
-local function get_all_elements()
-    ---@type table<app.GUIHudDef.TYPE, via.gui.Control[]>
-    local ret = {}
-    for hud_id, _ in pairs(ace_enum.hud) do
-        local elements = get_element(hud_id)
-        if not util_table.empty(elements) then
-            ret[hud_id] = elements
-        end
-    end
-
-    return ret
-end
-
 ---@param hud_config HudProfileConfig
 ---@param type FadeType
 ---@param callback fun()?
@@ -100,7 +66,7 @@ local function fade(hud_config, type, callback)
         this.step_mod = this.step_mod + 1
     end
 
-    local elements = get_all_elements()
+    local elements = play_object.control.get_all_hud_control()
     this.faders = {}
     this.current_fade = { hud_key = hud_config.key, type = type }
     this.callback = callback
@@ -140,7 +106,7 @@ function this.fade_partial(from_hud_config, to_hud_config, callback)
         this.step_mod = this.step_mod + 1
     end
 
-    local elements = get_all_elements()
+    local elements = play_object.control.get_all_hud_control()
     this.faders = {}
     this.current_fade = { hud_key = to_hud_config.key, type = this.type.fade_partial }
     this.callback = callback
@@ -171,7 +137,7 @@ end
 function this.abort()
     this.clear(true)
 
-    local elements = get_all_elements()
+    local elements = play_object.control.get_all_hud_control()
     this.faders = {}
     this.to_restore = {}
     for _, ctrls in pairs(elements) do
