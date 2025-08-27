@@ -162,4 +162,41 @@ function this.extract_bits(bit)
     return ret
 end
 
+---@param text string
+---@param width integer
+function this.wrap_text(text, width)
+    local lines = {}
+    local cur_line = ""
+
+    for word in text:gmatch("%S+") do
+        while #word > width do
+            if #cur_line > 0 then
+                table.insert(lines, cur_line)
+                cur_line = ""
+            end
+
+            local part = word:sub(1, width)
+            table.insert(lines, part)
+            word = word:sub(width + 1)
+        end
+
+        if #word > 0 then
+            if #cur_line == 0 then
+                cur_line = word
+            elseif #cur_line + 1 + #word <= width then
+                cur_line = cur_line .. " " .. word
+            else
+                table.insert(lines, cur_line)
+                cur_line = word
+            end
+        end
+    end
+
+    if #cur_line > 0 then
+        table.insert(lines, cur_line)
+    end
+
+    return table.concat(lines, "\n")
+end
+
 return this

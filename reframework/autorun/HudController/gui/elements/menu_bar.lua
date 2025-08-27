@@ -8,6 +8,7 @@ local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
+local user = require("HudController.hud.user")
 local util_ace = require("HudController.util.ace")
 local util_bind = require("HudController.util.game.bind")
 local util_imgui = require("HudController.util.imgui")
@@ -21,11 +22,18 @@ local this = {}
 ---@param label string
 ---@param draw_func fun()
 ---@param enabled_obj boolean?
+---@param text_color integer?
 ---@return boolean
-local function draw_menu(label, draw_func, enabled_obj)
+local function draw_menu(label, draw_func, enabled_obj, text_color)
     enabled_obj = enabled_obj == nil and true or enabled_obj
 
+    if text_color then
+        imgui.push_style_color(0, text_color)
+    end
     local menu = imgui.begin_menu(label, enabled_obj)
+    if text_color then
+        imgui.pop_style_color(1)
+    end
     if menu then
         imgui.spacing()
         imgui.indent(2)
@@ -38,6 +46,38 @@ local function draw_menu(label, draw_func, enabled_obj)
     end
 
     return menu
+end
+
+local function draw_user_scripts_menu()
+    local config_mod = config.current.mod
+
+    local sorted = util_table.sort(util_table.keys(config_mod.user_scripts))
+    for i = 1, #sorted do
+        local name = sorted[i]
+        local pop_color = false
+
+        if user.failed[name] ~= nil then
+            imgui.push_style_color(0, state.colors.bad)
+            pop_color = true
+        elseif config_mod.user_scripts[name] ~= (user.loaded[name] ~= nil) then
+            imgui.push_style_color(0, state.colors.info)
+            pop_color = true
+        end
+
+        if set.checkbox(name, "mod.user_scripts." .. name) then
+            config:save()
+        end
+
+        if pop_color then
+            imgui.pop_style_color(1)
+        end
+
+        if user.failed[name] ~= nil then
+            util_imgui.tooltip(user.failed[name])
+        elseif config_mod.user_scripts[name] ~= (user.loaded[name] ~= nil) then
+            util_imgui.tooltip(config.lang:tr("misc.text_reset_required"))
+        end
+    end
 end
 
 local function draw_mod_menu()
@@ -564,6 +604,18 @@ function this.draw()
     draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
     draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
+
+    local enabled = not util_table.empty(config.current.mod.user_scripts)
+    draw_menu(
+        gui_util.tr("menu.user_scripts.name"),
+        draw_user_scripts_menu,
+        enabled,
+        user.is_need_attention() and state.colors.info or nil
+    )
+
+    if not enabled then
+        util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
+    end
 
     if imgui.button(gui_util.tr("selector.name")) then
         mod.pause = true

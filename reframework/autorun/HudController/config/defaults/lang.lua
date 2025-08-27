@@ -26,6 +26,7 @@ return {
         text_message = "Message",
         text_frame = "Frame",
         text_frame_plural = "Frames",
+        text_reset_required = "Script reset required",
     },
     debug = {
         name = "Debug",
@@ -143,6 +144,9 @@ return {
                 },
                 tooltip_action_type = "Bind Action",
             },
+        },
+        user_scripts = {
+            name = "User Scripts",
         },
     },
     hud = {

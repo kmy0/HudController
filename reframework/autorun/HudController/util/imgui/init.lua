@@ -17,14 +17,20 @@ end
 
 ---@param text string
 ---@param seperate boolean?
-function this.tooltip(text, seperate)
+---@param seperate_text string? by_default (?)
+function this.tooltip(text, seperate, seperate_text)
     if seperate then
+        seperate_text = seperate_text or "(?)"
         imgui.same_line()
-        imgui.text("(?)")
+        imgui.text(seperate_text)
     end
     if imgui.is_item_hovered() then
         imgui.set_tooltip(text)
     end
+end
+
+function this.tooltip_exclamation(text)
+    this.tooltip(text, true, "(!)")
 end
 
 ---@param label string

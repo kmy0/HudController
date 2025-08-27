@@ -43,6 +43,7 @@
 ---@field disable_weapon_binds_timed boolean
 ---@field disable_weapon_binds_held boolean
 ---@field disable_weapon_binds_time number
+---@field user_scripts table<string, boolean>
 ---@field hud HudProfileConfig[]
 ---@field bind {
 --- weapon: WeaponStateBindConfig,
@@ -104,6 +105,7 @@ return {
         disable_weapon_binds_held = false,
         disable_weapon_binds_timed = false,
         disable_weapon_binds_time = 30,
+        user_scripts = {},
         grid = {
             draw = false,
             color_center = 4278190335,

@@ -3,6 +3,7 @@ local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local state = require("HudController.gui.state")
+local user = require("HudController.hud.user")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
@@ -22,6 +23,7 @@ local function reinit()
     hud.manager.reinit()
     hud.operations.reload()
     state.reapply_win_pos()
+    user.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then
