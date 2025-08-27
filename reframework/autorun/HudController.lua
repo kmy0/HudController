@@ -20,7 +20,8 @@ local init = util.misc.init_chain:new(
     util.ace.porter.init,
     config_menu.init,
     hud.manager.init,
-    data.mod.init
+    data.mod.init,
+    user.init
 )
 ---@class MethodUtil
 local m = util.ref.methods
@@ -295,7 +296,7 @@ re.on_draw_ui(function()
         if errors then
             imgui.same_line()
             imgui.text_colored("Error!", config_menu.state.colors.bad)
-            util.imgui.tooltip(errors, true)
+            util.imgui.tooltip_exclamation(errors)
         elseif not init.ok then
             imgui.same_line()
             imgui.text_colored("Initializing...", config_menu.state.colors.info)
@@ -306,8 +307,12 @@ re.on_draw_ui(function()
     end
 end)
 
+re.on_application_entry("BeginRendering", function()
+    init:init() -- reframework does not like nested re.on_frame
+end)
+
 re.on_frame(function()
-    if not init:init() then
+    if not init.ok then
         return
     end
 

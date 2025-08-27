@@ -66,10 +66,13 @@ function this:init()
 
             local info = debug.getinfo(f, "S")
             logger:info(string.format("%s initialized.", info.source))
+
             self._progress[f] = true
         end, function(err)
             fail = true
-            logger:error(string.format("InitChain (%s) func at index %s threw: %s", self.name, i, err))
+            logger:error(
+                util_misc.wrap_text(string.format("InitChain (%s) func at index %s threw: %s", self.name, i, err), 100)
+            )
         end)
 
         if fail then
@@ -80,7 +83,9 @@ function this:init()
             end
 
             if self._retries[i] >= self.max_retries then
-                logger:error(string.format("InitChain (%s) func at index %s failed", self.name, i))
+                logger:error(
+                    util_misc.wrap_text(string.format("InitChain (%s) func at index %s failed", self.name, i), 100)
+                )
                 self.failed = true
             end
 
