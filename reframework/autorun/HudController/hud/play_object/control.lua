@@ -1,6 +1,11 @@
+local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
+local data = require("HudController.data")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
+
+local ace_enum = data.ace.enum
+local ace_map = data.ace.map
 
 local this = {}
 
@@ -148,6 +153,39 @@ function this.get_parent(ctrl, parent_name, strict)
     end
 
     ---@cast ret via.gui.Control
+    return ret
+end
+
+---@param hud_id app.GUIHudDef.TYPE
+---@return via.gui.Control[]
+function this.get_hud_control(hud_id)
+    ---@type via.gui.Control[]
+    local ret = {}
+    local hudman = ace_misc.get_hud_manager()
+    for _, gui_id in pairs(ace_map.hudid_to_guiid[hud_id]) do
+        local disp_ctrl = hudman:findDisplayControl(gui_id)
+        if not disp_ctrl then
+            goto continue
+        end
+
+        table.insert(ret, disp_ctrl._TargetControl)
+        ::continue::
+    end
+
+    return ret
+end
+
+---@return table<app.GUIHudDef.TYPE, via.gui.Control[]>
+function this.get_all_hud_control()
+    ---@type table<app.GUIHudDef.TYPE, via.gui.Control[]>
+    local ret = {}
+    for hud_id, _ in pairs(ace_enum.hud) do
+        local elements = this.get_hud_control(hud_id)
+        if not util_table.empty(elements) then
+            ret[hud_id] = elements
+        end
+    end
+
     return ret
 end
 
