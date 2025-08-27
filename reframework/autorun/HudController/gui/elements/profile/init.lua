@@ -371,28 +371,28 @@ local function draw_elements()
     for i = 1, #sorted do
         local elem_config = sorted[i]
         local elem = hud.get_element(elem_config.hud_id)
-
-        if not elem then
-            goto continue
-        end
-
         local config_key = string.format("mod.hud.int:%s.elements.%s", config_mod.combo.hud, elem_config.name_key)
 
         drag:draw_drag_button(config_key, elem_config)
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("hud_element.button_remove", elem.name_key)) then
-            table.insert(remove, elem.name_key)
+        if imgui.button(gui_util.tr("hud_element.button_remove", elem_config.name_key)) then
+            table.insert(remove, elem_config.name_key)
         end
 
         imgui.same_line()
 
         local name = operations.tr_element(elem_config)
-        local header = imgui.collapsing_header(string.format("%s##%s_header", name, elem.name_key))
+
+        if not elem then
+            imgui.set_next_item_open(false)
+        end
+
+        local header = imgui.collapsing_header(string.format("%s##%s_header", name, elem_config.name_key))
 
         drag:check_drag_pos(elem_config)
 
-        if header then
+        if header and elem then
             panel.draw(elem, elem_config, config_key)
         end
 
