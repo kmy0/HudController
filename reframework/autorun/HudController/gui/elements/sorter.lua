@@ -1,8 +1,8 @@
 local config = require("HudController.config")
 local data = require("HudController.data")
+local drag_util = require("HudController.gui.drag")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
-local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
@@ -18,15 +18,11 @@ local this = {
 }
 ---@type string[]
 local hud_names = {}
----@type table<string, number>
-local name_pos = {}
----@type string?
-local drag
 local reverse_sort = false
+local drag = drag_util:new()
 
 function this.close()
     hud_names = {}
-    name_pos = {}
     this.is_opened = false
     mod.pause = false
 end
@@ -95,36 +91,20 @@ function this.draw()
 
     imgui.begin_child_window("hud_profile_sort_elements_child_window", { -1, -1 }, false)
 
+    drag:clear()
     for i = 1, #hud_names do
         local hud_name = hud_names[i]
-        local start_pos = imgui.get_cursor_screen_pos().y
 
-        util_imgui.dummy_button(gui_util.tr("misc.text_drag", hud_name))
-        if not drag and imgui.is_item_hovered() and imgui.is_mouse_down(0) then
-            drag = hud_name
-        end
-
+        drag:draw_drag_button(hud_name, hud_name)
         imgui.same_line()
         util_imgui.dummy_button(hud_name, { -1, 0 })
 
-        local end_pos = imgui.get_cursor_screen_pos().y
-
-        if drag == hud_name then
-            util_imgui.highlight(state.colors.info, 0, -(end_pos - start_pos))
-        end
-
-        if drag == hud_name then
-            name_pos[hud_name] = imgui.get_mouse().y
-        else
-            name_pos[hud_name] = start_pos
-        end
+        drag:check_drag_pos(hud_name)
     end
 
-    if drag and imgui.is_mouse_released(0) then
-        drag = nil
-    elseif drag then
+    if not drag:is_released() and drag:is_drag() then
         table.sort(hud_names, function(a, b)
-            return name_pos[a] < name_pos[b]
+            return drag.item_pos[a] < drag.item_pos[b]
         end)
     end
 
