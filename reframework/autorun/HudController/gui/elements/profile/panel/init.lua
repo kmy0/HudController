@@ -38,7 +38,7 @@ local function draw_panel(elem, elem_config, config_key, tree)
     if not tree or node then
         generic.draw(elem, elem_config, config_key)
 
-        imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
+        imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
         item_config_key = config_key .. ".options"
         local options = config:get(item_config_key)
@@ -256,7 +256,7 @@ function this.draw(elem, elem_config, config_key)
         draw_panel(elem, elem_config, config_key, false)
     end
 
-    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide)
+    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
     local children = util_table.remove(elem_config.children or {}, function(t, i, j)
         return not t[i].ignore
