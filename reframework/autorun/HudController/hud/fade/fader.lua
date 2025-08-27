@@ -23,6 +23,8 @@ this.__index = this
 ---@return Fader
 function this:new(hud_type, from, to, time, ctrl)
     local dir = to > from and 1 or -1
+    local dist = math.abs(from - to)
+
     local o = {
         hud_type = hud_type,
         dir = dir,
@@ -30,7 +32,7 @@ function this:new(hud_type, from, to, time, ctrl)
         to = to,
         ctrl = ctrl,
         step = (
-            time > 0 and 1 / (time / util_game.get_time_delta()) or 1 --[[@as number]]
+            time > 0 and dist / (time / util_game.get_time_delta()) or 1 --[[@as number]]
         ) * dir,
         progress = 0,
         current_opacity = from,
