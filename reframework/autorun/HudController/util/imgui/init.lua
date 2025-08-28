@@ -1,4 +1,5 @@
 local util_game = require("HudController.util.game")
+local util_misc = require("HudController.util.misc")
 local uuid = require("HudController.util.misc.uuid")
 
 local this = {}
@@ -96,8 +97,22 @@ function this.dummy_button(label, size_object)
     imgui.push_style_color(21, 4282400832)
     imgui.push_style_color(22, 4282400832)
     imgui.push_style_color(23, 4282400832)
-    imgui.button(label, size_object)
+    local ret = imgui.button(label, size_object)
     imgui.pop_style_color(3)
+    return ret
+end
+
+---@param label string
+---@param size_object Vector2f|Vector3f|Vector4f|number[]?
+---@return boolean
+function this.dummy_button2(label, size_object)
+    imgui.push_style_color(21, 0x00000000)
+    imgui.push_style_color(23, 0xff4f4e4d)
+    imgui.push_style_var(11, Vector2f.new(0, 0))
+    local ret = imgui.button(label, size_object)
+    imgui.pop_style_color(2)
+    imgui.pop_style_var(1)
+    return ret
 end
 
 ---@param str_id string
@@ -146,6 +161,67 @@ function this.popup_yesno(str_id, text, button_yes, button_no)
         imgui.end_popup()
     end
 
+    return ret
+end
+
+---@param x number
+---@param y number
+---@param size integer
+---@param color integer? by default, 0xFFFFFFFF
+function this.draw_checkmark(x, y, size, color)
+    local thickness = math.max(size / 5.0, 1.0)
+    local third = size / 3.0
+    color = color or 0xFFFFFFFF
+    local bx = x - size
+    local by = y + size - third * 0.5
+
+    imgui.draw_list_path_line_to({ bx - third, by - third })
+    imgui.draw_list_path_line_to({ bx, by })
+    imgui.draw_list_path_line_to({ bx + third * 2, by - third * 2 })
+    imgui.draw_list_path_stroke(color, false, thickness)
+end
+
+---@param label string
+---@param selected_obj? boolean
+---@param enabled_obj? boolean
+---@return boolean
+function this.menu_item(label, selected_obj, enabled_obj)
+    local pos_screen = imgui.get_cursor_screen_pos()
+    local pos = imgui.get_cursor_pos()
+    local win_size = imgui.get_window_size()
+    local win_pos = imgui.get_window_pos()
+    local checkmark_padding = string.rep(" ", 10)
+    local padding = pos_screen.x - win_pos.x
+    local disabled = enabled_obj ~= nil and enabled_obj or false
+    local id = label
+
+    imgui.begin_disabled(disabled)
+
+    label, id = table.unpack(util_misc.split_string(label, "##"))
+    label = label .. checkmark_padding
+    if not id then
+        id = label
+    end
+
+    local text_size = imgui.calc_text_size(label)
+    local ret = this.dummy_button2("##" .. id, { win_size.x - padding * 2, text_size.y + padding * 2 })
+
+    pos.y = pos.y + padding
+    pos.x = pos.x + padding
+
+    imgui.set_cursor_pos(pos)
+    imgui.text(label)
+
+    if selected_obj then
+        this.draw_checkmark(
+            pos_screen.x + win_size.x - padding,
+            pos_screen.y + padding,
+            text_size.y - padding,
+            disabled and 0xff9d9d9d or nil
+        )
+    end
+
+    imgui.end_disabled()
     return ret
 end
 
