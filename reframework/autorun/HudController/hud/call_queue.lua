@@ -43,4 +43,9 @@ function this.consume(id)
     end
 end
 
+function this.clear()
+    this.fns = {}
+    this.pending_fns = {}
+end
+
 return this
