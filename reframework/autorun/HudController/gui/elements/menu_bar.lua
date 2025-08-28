@@ -51,6 +51,11 @@ local function draw_user_scripts_menu()
     local config_mod = config.current.mod
 
     local sorted = util_table.sort(util_table.keys(config_mod.user_scripts))
+
+    if util_table.empty(sorted) then
+        imgui.text(config.lang:tr("menu.user_scripts.text_no_scripts"))
+    end
+
     for i = 1, #sorted do
         local name = sorted[i]
         local pop_color = false
@@ -638,17 +643,14 @@ function this.draw()
     draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
 
-    local enabled = not util_table.empty(config.current.mod.user_scripts)
     draw_menu(
         gui_util.tr("menu.user_scripts.name"),
         draw_user_scripts_menu,
-        enabled,
+        nil,
         user.is_need_attention() and state.colors.info or nil
     )
 
-    if not enabled then
-        util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
-    end
+    util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
 
     if imgui.button(gui_util.tr("selector.name")) then
         mod.pause = true

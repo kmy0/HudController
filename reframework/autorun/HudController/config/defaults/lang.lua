@@ -147,6 +147,7 @@ return {
         },
         user_scripts = {
             name = "User Scripts",
+            text_no_scripts = "Scripts will be listed here...",
         },
     },
     hud = {
