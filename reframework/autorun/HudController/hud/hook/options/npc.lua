@@ -11,6 +11,7 @@ local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game")
+local util_misc = require("HudController.util.misc")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup
@@ -91,12 +92,14 @@ end
 function this.hide_pet_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_pet") then
-        local pets = get_pets()
-        if pets then
-            util_game.do_something(pets, function(system_array, index, value)
-                value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
-            end)
-        end
+        util_misc.try(function()
+            local pets = get_pets()
+            if pets then
+                util_game.do_something(pets, function(system_array, index, value)
+                    value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
+                end)
+            end
+        end)
     end
 end
 
