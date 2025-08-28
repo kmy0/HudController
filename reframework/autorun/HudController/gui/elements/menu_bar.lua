@@ -30,18 +30,15 @@ local function draw_menu(label, draw_func, enabled_obj, text_color)
     if text_color then
         imgui.push_style_color(0, text_color)
     end
+
     local menu = imgui.begin_menu(label, enabled_obj)
+
     if text_color then
         imgui.pop_style_color(1)
     end
+
     if menu then
-        imgui.spacing()
-        imgui.indent(2)
-
         draw_func()
-
-        imgui.unindent(2)
-        imgui.spacing()
         imgui.end_menu()
     end
 
@@ -49,6 +46,8 @@ local function draw_menu(label, draw_func, enabled_obj, text_color)
 end
 
 local function draw_user_scripts_menu()
+    imgui.push_style_var(14, Vector2f.new(0, 2))
+
     local config_mod = config.current.mod
 
     local sorted = util_table.sort(util_table.keys(config_mod.user_scripts))
@@ -64,7 +63,8 @@ local function draw_user_scripts_menu()
             pop_color = true
         end
 
-        if set.checkbox(name, "mod.user_scripts." .. name) then
+        if util_imgui.menu_item(name, config_mod.user_scripts[name]) then
+            config_mod.user_scripts[name] = not config_mod.user_scripts[name]
             config:save()
         end
 
@@ -78,34 +78,37 @@ local function draw_user_scripts_menu()
             util_imgui.tooltip(config.lang:tr("misc.text_reset_required"))
         end
     end
+
+    imgui.pop_style_var(1)
 end
 
 local function draw_mod_menu()
     local config_mod = config.current.mod
+    imgui.push_style_var(14, Vector2f.new(0, 2))
 
-    if imgui.menu_item(gui_util.tr("menu.config.enabled"), nil, config_mod.enabled) then
+    if util_imgui.menu_item(gui_util.tr("menu.config.enabled"), config_mod.enabled) then
         config_mod.enabled = not config_mod.enabled
         hud.reset_elements()
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_fade"), nil, config_mod.enable_fade) then
+    if util_imgui.menu_item(gui_util.tr("menu.config.enable_fade"), config_mod.enable_fade) then
         config_mod.enable_fade = not config_mod.enable_fade
         fade_manager.abort()
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_notification"), nil, config_mod.enable_notification) then
+    if util_imgui.menu_item(gui_util.tr("menu.config.enable_notification"), config_mod.enable_notification) then
         config_mod.enable_notification = not config_mod.enable_notification
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), nil, config_mod.enable_weapon_binds) then
+    if util_imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), config_mod.enable_weapon_binds) then
         config_mod.enable_weapon_binds = not config_mod.enable_weapon_binds
         config.save_global()
     end
 
-    if imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), nil, config_mod.enable_key_binds) then
+    if util_imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), config_mod.enable_key_binds) then
         config_mod.enable_key_binds = not config_mod.enable_key_binds
         config.save_global()
     end
@@ -113,9 +116,8 @@ local function draw_mod_menu()
     imgui.separator()
 
     if
-        imgui.menu_item(
+        util_imgui.menu_item(
             gui_util.tr("menu.config.disable_weapon_binds_timed"),
-            nil,
             config_mod.disable_weapon_binds_timed
         )
     then
@@ -125,6 +127,7 @@ local function draw_mod_menu()
     util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_timed_tooltip"))
 
     imgui.begin_disabled(not config_mod.disable_weapon_binds_timed)
+    imgui.indent(2)
     local item_config_key = "mod.disable_weapon_binds_time"
     local item_value = config:get(item_config_key)
     if
@@ -139,22 +142,26 @@ local function draw_mod_menu()
         config.save_global()
     end
     imgui.end_disabled()
+    imgui.unindent(2)
 
     if
-        imgui.menu_item(gui_util.tr("menu.config.disable_weapon_binds_held"), nil, config_mod.disable_weapon_binds_held)
+        util_imgui.menu_item(gui_util.tr("menu.config.disable_weapon_binds_held"), config_mod.disable_weapon_binds_held)
     then
         config_mod.disable_weapon_binds_held = not config_mod.disable_weapon_binds_held
         config.save_global()
     end
     util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_held_tooltip"))
+
+    imgui.pop_style_var(1)
 end
 
 local function draw_lang_menu()
     local config_lang = config.current.mod.lang
+    imgui.push_style_var(14, Vector2f.new(0, 2))
 
     for i = 1, #config.lang.sorted do
         local menu_item = config.lang.sorted[i]
-        if imgui.menu_item(menu_item, nil, config_lang.file == menu_item) then
+        if util_imgui.menu_item(menu_item, config_lang.file == menu_item) then
             config_lang.file = menu_item
             config.lang:change()
             state.translate_combo()
@@ -164,14 +171,19 @@ local function draw_lang_menu()
 
     imgui.separator()
 
-    if imgui.menu_item(gui_util.tr("menu.language.fallback"), nil, config_lang.fallback) then
+    if util_imgui.menu_item(gui_util.tr("menu.language.fallback"), config_lang.fallback) then
         config_lang.fallback = not config_lang.fallback
         config.save_global()
     end
     util_imgui.tooltip(config.lang:tr("menu.language.fallback_tooltip"))
+
+    imgui.pop_style_var(1)
 end
 
 local function draw_key_bind_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
     local config_mod = config.current.mod
 
     if
@@ -424,9 +436,15 @@ local function draw_key_bind_menu()
 
         imgui.end_table()
     end
+
+    imgui.unindent(2)
+    imgui.spacing()
 end
 
 local function draw_weapon_bind_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
     local config_mod = config.current.mod
 
     imgui.begin_disabled(util_table.empty(config_mod.hud))
@@ -553,18 +571,30 @@ local function draw_weapon_bind_menu()
     end
 
     imgui.end_disabled()
+
+    imgui.unindent(2)
+    imgui.spacing()
 end
 
 local function draw_bind_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
     if not draw_menu(gui_util.tr("menu.bind.key.name"), draw_key_bind_menu) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
 
     draw_menu(gui_util.tr("menu.bind.weapon.name"), draw_weapon_bind_menu)
+
+    imgui.unindent(2)
+    imgui.spacing()
 end
 
 local function draw_grid_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
     local changed = false
     if set.checkbox(gui_util.tr("menu.grid.box_draw"), "mod.grid.draw") then
         util_ace.scene_fade.reset()
@@ -597,6 +627,9 @@ local function draw_grid_menu()
     if changed then
         config.save_global()
     end
+
+    imgui.unindent(2)
+    imgui.spacing()
 end
 
 function this.draw()
