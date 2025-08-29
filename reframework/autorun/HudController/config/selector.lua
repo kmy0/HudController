@@ -131,7 +131,6 @@ end
 function this:swap()
     self.ref.save_timer:abort()
     local file = self.files[self.sorted[self.current.combo_file]]
-    print(file.file_name)
     self.current.file = file.file_name
     self:_swap_config_path(file.file_name)
     self.ref:load()

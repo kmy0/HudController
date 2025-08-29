@@ -98,10 +98,12 @@
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
 local ace_misc = require("HudController.util.ace.misc")
+local ace_player = require("HudController.util.ace.player")
 local config = require("HudController.config")
 local data = require("HudController.data")
 local defaults = require("HudController.hud.defaults")
 local fade_manager = require("HudController.hud.fade")
+local frame_counter = require("HudController.util.misc.frame_counter")
 local game_data = require("HudController.util.game.data")
 local m = require("HudController.util.ref.methods")
 local play_object_defaults = require("HudController.hud.defaults.play_object")
@@ -445,13 +447,25 @@ function this:change_visibility(ctrl, visible, hud_display)
 
         -- hiding root till FADE_IN or FADE_OUT finishes, there doesn't seem to be a way to instantly finish those
         -- specific playstates without breaking everything
-        if ctrl and self.hide_changed then
+        if
+            ctrl
+            and self.hide_changed
+            -- ignore when game is force revealing item bar or ammo bar
+
+            and not (
+                (self.name_key == "SLIDER_BULLET" or self.name_key == "SLIDER_ITEM")
+                and ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+            )
+        then
             local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
+
             if root_window then
                 root_window:set_ForceInvisible(true)
+                local frame = frame_counter.frame
+                local frame_max = 6
 
                 local function restore_vis()
-                    if self:_is_fade_state_finished(root_window) then
+                    if self:_is_fade_state_finished(root_window) or frame_counter.frame - frame >= frame_max then
                         root_window:set_ForceInvisible(false)
                     else
                         call_queue.queue_func_next(self.hud_id, restore_vis)
@@ -611,6 +625,7 @@ function this:reset_ctrl(ctrl, key)
     end
 
     if self.hide and (not key or key == "hide") and default.hide ~= nil then
+        --FIXME: hide_changed = true here?
         self:change_visibility(ctrl, not default.hide, default.display)
 
         if self.hud_id and not fade_manager.is_active() then
