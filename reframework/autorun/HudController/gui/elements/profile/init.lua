@@ -314,24 +314,22 @@ local function draw_options()
 
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config_mod.combo.hud)
     local item_value = config:get(item_config_key)
-    changed = set.slider_float_step(
+    changed = set.slider_float(
         gui_util.tr("hud.slider_fade_in"),
         item_config_key,
         0,
         10,
-        0.1,
         item_value == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed
 
     item_config_key = string.format("mod.hud.int:%s.fade_out", config_mod.combo.hud)
     item_value = config:get(item_config_key)
-    changed = set.slider_float_step(
+    changed = set.slider_float(
         gui_util.tr("hud.slider_fade_out"),
         item_config_key,
         0,
         10,
-        0.1,
         item_value == 0 and config.lang:tr("misc.text_disabled")
             or gui_util.seconds_to_minutes_string(item_value, "%.1f")
     ) or changed

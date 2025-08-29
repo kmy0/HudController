@@ -87,13 +87,12 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
 
     for i = 1, #sliders do
         local slider = sliders[i]
-        changed = set.slider_float_step(
+        changed = set.slider_float(
             string.format("%s##%s", slider.label, slider.config_key),
             slider.config_key,
             min,
             max,
-            step,
-            string.format(format, config:get(slider.config_key))
+            format
         ) or changed
 
         imgui.same_line()

@@ -83,16 +83,6 @@ function this.round(n, decimals)
     return math.floor(n * mult + 0.5) / mult
 end
 
----@param n number
----@return integer
-function this.get_decimals(n)
-    local s = this.split_string(tostring(n), ".")[2]
-    if s then
-        return #s
-    end
-    return 0
-end
-
 ---@param str string
 ---@param max_len integer?
 ---@return string

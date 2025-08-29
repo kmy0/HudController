@@ -616,18 +616,7 @@ local function draw_grid_menu()
     changed = set.color_edit(gui_util.tr("menu.grid.color_center"), "mod.grid.color_center") or changed
     changed = set.color_edit(gui_util.tr("menu.grid.color_grid"), "mod.grid.color_grid") or changed
     changed = set.color_edit(gui_util.tr("menu.grid.color_fade"), "mod.grid.color_fade") or changed
-
-    local config_key = "mod.grid.fade_alpha"
-    local config_value = config:get(config_key)
-
-    changed = set.slider_float_step(
-        gui_util.tr("menu.grid.fade_alpha"),
-        config_key,
-        0,
-        1,
-        0.01,
-        string.format("%.2f", config_value)
-    ) or changed
+    changed = set.slider_float(gui_util.tr("menu.grid.fade_alpha"), "mod.grid.fade_alpha", 0, 1, "%.2f") or changed
 
     if changed then
         config.save_global()
