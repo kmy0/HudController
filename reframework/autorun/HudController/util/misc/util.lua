@@ -21,14 +21,28 @@ end
 ---@param sep string?
 ---@return string[]
 function this.split_string(s, sep)
+    local ret = {}
+
     if not sep then
-        sep = "%s"
+        for w in s:gmatch("%S+") do
+            table.insert(ret, w)
+        end
+
+        return ret
     end
 
-    local ret = {}
-    for i in string.gmatch(s, "([^" .. sep .. "]+)") do
-        table.insert(ret, i)
+    local pos = 1
+    while true do
+        local found = s:find(sep, pos, true)
+        if not found then
+            table.insert(ret, s:sub(pos))
+            break
+        end
+
+        table.insert(ret, s:sub(pos, found - 1))
+        pos = found + #sep
     end
+
     return ret
 end
 
