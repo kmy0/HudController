@@ -539,6 +539,9 @@
 ---@class app.cGUI020100PanelBase : ace.cGUIPartsBase
 ---@field get_Log fun(self: app.cGUI020100PanelBase): app.ChatDef.MessageElement
 ---@field get_LogPanelBase fun(self: app.cGUI020100PanelBase): app.cGUIChatLogPanelBase
+---@field get_BasePanel fun(self: app.cGUI020100PanelBase): via.gui.Control
+---@field get_IsFix fun(self: app.cGUI020100PanelBase): System.Boolean
+---@field get__Timer fun(self: app.cGUI020100PanelBase): System.Single
 
 ---@class app.cGUIChatLogPanelBase : via.clr.ManagedObject
 ---@field get_BasePanel fun(self: app.cGUIChatLogPanelBase): via.gui.Control
@@ -548,3 +551,6 @@
 
 ---@class app.ContextManager : ace.GAElement
 ---@field requestRemoveContext_Enemy fun(self: app.ContextManager, handle: app.CONTEXT_HANDLE)
+
+---@class app.GUI020100 : app.GUIHudBase
+---@field get__LogPanels  fun(self: app.GUI020100): System.Array<app.cGUI020100PanelBase>

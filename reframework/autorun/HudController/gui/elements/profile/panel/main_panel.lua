@@ -233,7 +233,7 @@ local function draw_notice(elem, elem_config, config_key)
         if
             imgui.begin_table(
                 "notice_cached_messages",
-                5,
+                6,
                 1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
                 Vector2f.new(0, 4 * 46)
             )
@@ -243,6 +243,7 @@ local function draw_notice(elem, elem_config, config_key)
                 config.lang:tr("misc.text_type"),
                 config.lang:tr("misc.text_sub_type"),
                 config.lang:tr("misc.text_other_type"),
+                config.lang:tr("misc.text_child_element"),
                 config.lang:tr("misc.text_message"),
             }) do
                 imgui.table_setup_column(header)
@@ -266,6 +267,9 @@ local function draw_notice(elem, elem_config, config_key)
                 imgui.text(entry.other_type)
 
                 imgui.table_set_column_index(4)
+                imgui.text(entry.cls)
+
+                imgui.table_set_column_index(5)
                 imgui.text(util_misc.trunc_string(entry.msg))
                 util_imgui.tooltip(entry.msg)
             end

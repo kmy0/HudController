@@ -62,6 +62,7 @@ function this.cache_message_pre(args)
         local cached_msg = {
             type = config.lang:tr("misc.text_unknown"),
             msg = table.concat(msgs, ", "),
+            cls = notice.get_cls_name_short(util_ref.whoami(panel_base)),
         }
 
         if util_ref.is_a(message_elem, "app.ChatDef.SystemMessage") then
