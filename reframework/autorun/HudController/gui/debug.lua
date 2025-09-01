@@ -1,15 +1,13 @@
 ---@class GuiDebug
 ---@field window GuiWindow
 ---@field sub_window GuiWindow
----@field ace_gui_elements table<string, AceGUI>
 ---@field sub_window_pos table<string, Vector2f>
----@field snapshot string[]
 ---@field first_frame boolean
 
 local config = require("HudController.config")
 local defaults = require("HudController.hud.defaults")
-local elem = require("HudController.gui.debug.elem")
 local gui_util = require("HudController.gui.util")
+local hud_debug = require("HudController.hud.debug")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
@@ -24,10 +22,8 @@ local this = {
         flags = 1 << 1 | 1 << 2 | 1 << 8 | 1 << 6 | 1 << 5,
         condition = 0,
     },
-    ace_gui_elements = {},
     ---@type table<string, Vector2f>
     sub_window_pos = {},
-    snapshot = {},
     first_frame = true,
     window_size = 170,
 }
@@ -118,7 +114,7 @@ local function draw_option_window(panel, key)
         imgui.same_line()
 
         if imgui.button(string.format("%s##%s", config.lang:tr("debug.button_copy_args"), key), button_size) then
-            imgui.set_clipboard(elem.get_chain(panel))
+            imgui.set_clipboard(hud_debug.get_chain(panel))
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_copy_args"))
 
@@ -220,7 +216,7 @@ local function draw_panel_tree(panel, key)
     end
 
     if panel.draw_name then
-        if not elem.draw_pos(panel, panel.name, 0xFFFFFFFF) then
+        if not hud_debug.draw_pos(panel, panel.name, 0xFFFFFFFF) then
             panel.draw_name = false
         end
     end
@@ -231,8 +227,7 @@ function this.close()
     gui_debug.is_opened = false
 
     this.sub_window_pos = {}
-    this.snapshot = {}
-    this.ace_gui_elements = {}
+    hud_debug.clear()
     config.gui:save()
 end
 
@@ -277,9 +272,7 @@ function this.draw()
         return
     end
 
-    if util_table.empty(this.ace_gui_elements) then
-        this.ace_gui_elements = elem.get_gui()
-    end
+    hud_debug.init()
 
     imgui.spacing()
     imgui.indent(2)
@@ -298,28 +291,21 @@ function this.draw()
         imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
     util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
 
-    local keys = util_table.filter(util_table.sort(util_table.keys(this.ace_gui_elements)), function(key, value)
-        local gui_elem = this.ace_gui_elements[value]
-        return config_debug.show_disabled or gui_elem.gui:get_Enabled()
-    end)
-    keys = util_table.sort(util_table.values(keys))
+    local keys = hud_debug.get_keys(not config_debug.show_disabled)
 
     if imgui.button(gui_util.tr("debug.button_snapshot")) then
-        this.snapshot = util_table.deep_copy(keys)
+        hud_debug.make_snapshot(keys)
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
 
     imgui.same_line()
-    imgui.begin_disabled(util_table.empty(this.snapshot))
+    imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
     changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
     util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
-    if config_debug.is_filter and not util_table.empty(this.snapshot) then
-        keys = util_table.filter(keys, function(key, value)
-            return not util_table.contains(this.snapshot, value)
-        end)
-        keys = util_table.sort(util_table.values(keys))
+    if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
+        keys = hud_debug.filter(keys)
     end
 
     changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
@@ -339,9 +325,9 @@ function this.draw()
     imgui.begin_child_window("debug_elements_child_window", { -1, -1 }, false)
     for i = 1, #keys do
         local key = keys[i]
-        local gui_elem = this.ace_gui_elements[key]
+        local gui_elem = hud_debug.elements[key]
         ---@diagnostic disable-next-line: missing-fields
-        elem.draw_pos({ obj = gui_elem.root }, key, 4278190335)
+        hud_debug.draw_pos({ obj = gui_elem.root }, key, 4278190335)
 
         if imgui.collapsing_header(key) then
             draw_panel_tree(gui_elem.ctrl, key)

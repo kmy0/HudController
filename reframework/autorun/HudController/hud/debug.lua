@@ -1,3 +1,8 @@
+---@class HudDebug
+---@field elements table<string, AceGUI>
+---@field snapshot string[]
+---@field initialized boolean
+
 ---@class (exact) AceBase
 ---@field obj any
 ---@field name string
@@ -26,11 +31,16 @@ local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
 
-local this = {}
+---@class HudDebug
+local this = {
+    elements = {},
+    snapshot = {},
+    initialized = false,
+}
 
 ---@param ctrl via.gui.Control
 ---@return AceControl
-function this.get_ctrl(ctrl)
+local function get_ctrl(ctrl)
     ---@type AceControl
     local ret = {
         obj = ctrl,
@@ -59,7 +69,7 @@ function this.get_ctrl(ctrl)
         local obj
         if type:is_a("via.gui.Control") then
             ---@cast child via.gui.Control
-            obj = this.get_ctrl(child)
+            obj = get_ctrl(child)
         else
             obj = {
                 obj = child,
@@ -155,7 +165,7 @@ function this.draw_pos(elem, text, color)
 end
 
 ---@return table<string, AceGUI>
-function this.get_gui()
+function this.get_components()
     ---@type table<string, AceGUI>
     local ret = {}
     local gui_elems = util_game.get_all_components("via.gui.GUI")
@@ -176,12 +186,54 @@ function this.get_gui()
                 gui = elem,
                 root = root,
                 view = view,
-                ctrl = this.get_ctrl(view),
+                ctrl = get_ctrl(view),
             }
         end
         ::continue::
     end
     return ret
+end
+
+---@param enabled_only boolean? by default, true
+---@return string[]
+function this.get_keys(enabled_only)
+    enabled_only = enabled_only == nil and true or enabled_only
+    local keys = util_table.filter(util_table.sort(util_table.keys(this.elements)), function(key, value)
+        local gui_elem = this.elements[value]
+        return not enabled_only or gui_elem.gui:get_Enabled()
+    end)
+    return util_table.sort(util_table.values(keys))
+end
+
+---@param keys string[]
+function this.make_snapshot(keys)
+    this.snapshot = util_table.deep_copy(keys)
+end
+
+---@param keys string[]
+---@return string[]
+function this.filter(keys)
+    keys = util_table.filter(keys, function(key, value)
+        return not util_table.contains(this.snapshot, value)
+    end)
+    return util_table.sort(util_table.values(keys))
+end
+
+function this.clear()
+    this.snapshot = {}
+    this.elements = {}
+    this.initialized = false
+end
+
+---@return boolean
+function this.init()
+    if this.initialized then
+        return true
+    end
+
+    this.elements = this.get_components()
+    this.initialized = true
+    return true
 end
 
 return this
