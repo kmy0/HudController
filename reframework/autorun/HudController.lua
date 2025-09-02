@@ -151,7 +151,7 @@ m.hook(
 )
 --#endregion
 --#region porter
-m.hook("app.PorterManager.update()", hook.options.porter.hide_porter_post)
+m.hook("app.PorterManager.update()", nil, hook.options.porter.hide_porter_post)
 m.hook(
     "app.PlayerCommonSubAction.cCallPorter.doEnter()",
     hook.options.porter.disable_porter_call_cmd_pre,
