@@ -12,6 +12,11 @@
 --- rank: ProgressPartBaseConfig,
 --- }
 
+---@class (exact) ProgressTimerControlArguments
+---@field timer PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field rank PlayObjectGetterFn[]
+
 local part_base = require("HudController.hud.elements.progress.part_base")
 local play_object = require("HudController.hud.play_object")
 
@@ -21,9 +26,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
-local ctrl_args = {
+---@type ProgressTimerControlArguments
+local control_arguments = {
     timer = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
             },
@@ -31,9 +38,10 @@ local ctrl_args = {
             true,
         },
     },
-    -- ctrl = PNL_time
+    -- PNL_time
     text = {
         {
+            play_object.control.get,
             {
                 "PNL_txt_time",
             },
@@ -41,6 +49,7 @@ local ctrl_args = {
     },
     rank = {
         {
+            play_object.control.get,
             {
                 "PNL_ref_arenaRankIcon00",
             },
@@ -54,16 +63,16 @@ local ctrl_args = {
 ---@return ProgressTimer
 function this:new(args, parent, ctrl_getter)
     local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.timer)
+        return play_object.iter_args(ctrl, control_arguments.timer)
     end)
     setmetatable(o, self)
     ---@cast o ProgressTimer
 
     o.children.text = part_base:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end, nil, { hide = false })
     o.children.rank = part_base:new(args.children.rank, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.rank)
+        return play_object.iter_args(ctrl, control_arguments.rank)
     end, nil, { hide = false })
 
     return o

@@ -17,6 +17,13 @@
 --- gauge: HudChildConfig,
 --- }
 
+---@class (exact) GunLanceControlArguments
+---@field background PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field ammo PlayObjectGetterFn[]
+---@field pile PlayObjectGetterFn[]
+---@field gauge PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -31,10 +38,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type GunLanceControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_UnderBase",
@@ -43,6 +52,7 @@ local ctrl_args = {
     },
     frame = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_frame",
@@ -51,6 +61,7 @@ local ctrl_args = {
     },
     ammo = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ammoSet",
@@ -59,6 +70,7 @@ local ctrl_args = {
     },
     pile = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_pile",
@@ -67,6 +79,7 @@ local ctrl_args = {
     },
     gauge = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_gaugeFire",
@@ -90,19 +103,19 @@ function this:new(args, parent)
     ---@cast o GunLance
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame)
+        return play_object.iter_args(ctrl, control_arguments.frame)
     end)
     o.children.ammo = hud_child:new(args.children.ammo, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.ammo)
+        return play_object.iter_args(ctrl, control_arguments.ammo)
     end)
     o.children.pile = hud_child:new(args.children.pile, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.pile)
+        return play_object.iter_args(ctrl, control_arguments.pile)
     end)
     o.children.gauge = hud_child:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.gauge)
+        return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
     return o
 end

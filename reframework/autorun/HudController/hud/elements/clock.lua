@@ -15,6 +15,11 @@
 
 ---@alias ClockWriteKey HudChildWriteKey | "hide_map_visible"
 
+---@class (exact) ClockControlArguments
+---@field text PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -34,15 +39,18 @@ this.__index = this
 setmetatable(this, { __index = hud_base })
 
 -- ctrl = PNL_Scale
-local ctrl_args = {
+---@type ClockControlArguments
+local control_arguments = {
     text = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
                 "PNL_EnvName",
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
                 "PNL_TimeName",
@@ -51,6 +59,7 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
                 "PNL_Base",
@@ -59,6 +68,7 @@ local ctrl_args = {
     },
     frame = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
                 "PNL_Frame",
@@ -78,13 +88,13 @@ function this:new(args)
     ---@cast o Clock
 
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame)
+        return play_object.iter_args(ctrl, control_arguments.frame)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
 
     if args.hide_map_visible then

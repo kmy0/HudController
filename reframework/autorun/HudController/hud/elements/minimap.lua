@@ -12,13 +12,17 @@
 --- out_frame_icon: HudChildConfig,
 --- }
 
+---@class (exact) MinimapControlArguments
+---@field background PlayObjectGetterFn[]
+---@field out_frame_icon PlayObjectGetterFn[]
+---@field out_frame_icon_rot PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local s = require("HudController.util.ref.singletons")
-local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -30,9 +34,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
-local ctrl_args = {
+---@type MinimapControlArguments
+local control_arguments = {
+    -- RootWindow
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_All",
                 "PNL_BackLayer",
@@ -40,8 +47,10 @@ local ctrl_args = {
             },
         },
     },
+    -- PNL_Scale
     out_frame_icon = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_Radar",
@@ -51,8 +60,10 @@ local ctrl_args = {
             true,
         },
     },
-    ["out_frame_icon.rot"] = {
+    -- PNL_OutFrameIcon00
+    out_frame_icon_rot = {
         {
+            play_object.control.get,
             {
                 "PNL_OutFrame_rot",
                 "PNL_OutFrame_pos",
@@ -77,23 +88,13 @@ function this:new(args, default_overwrite)
             if not hudbase:get_IsActive() then
                 s:reset()
             else
-                return play_object.iter_args(play_object.control.get, root, ctrl_args.background)
+                return play_object.iter_args(root, control_arguments.background)
             end
         end
     end)
     o.children.out_frame_icon = hud_child:new(args.children.out_frame_icon, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.out_frame_icon)
-
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, icon, ctrl_args["out_frame_icon.rot"])
-            )
-        end
-
-        return ret
+        local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
+        return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
     end)
 
     return o

@@ -14,6 +14,12 @@
 --- limit: HudChildConfig,
 --- }
 
+---@class (exact) ProgressClockControlArguments
+---@field clock PlayObjectGetterFn[]
+---@field frame_base PlayObjectGetterFn[]
+---@field frame_main PlayObjectGetterFn[]
+---@field limit PlayObjectGetterFn[]
+
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 
@@ -23,18 +29,21 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
-local ctrl_args = {
+---@type ProgressClockControlArguments
+local control_arguments = {
     clock = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_questTimer",
             },
         },
     },
-    -- ctrl = PNL_questTimer
+    -- PNL_questTimer
     frame_base = {
         {
+            play_object.control.get,
             {
                 "PNL_ref_questTimer",
                 "PNL_TimerAnim",
@@ -44,6 +53,7 @@ local ctrl_args = {
     },
     frame_main = {
         {
+            play_object.control.get,
             {
                 "PNL_ref_questTimer",
                 "PNL_TimerAnim",
@@ -53,6 +63,7 @@ local ctrl_args = {
     },
     limit = {
         {
+            play_object.control.get,
             {
                 "PNL_ref_questTimer",
                 "PNL_TimerAnim",
@@ -67,19 +78,19 @@ local ctrl_args = {
 ---@return ProgressClock
 function this:new(args, parent)
     local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.clock)
+        return play_object.iter_args(ctrl, control_arguments.clock)
     end, nil, { hide = false })
     setmetatable(o, self)
     ---@cast o ProgressClock
 
     o.children.frame_base = hud_child:new(args.children.frame_base, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame_base)
+        return play_object.iter_args(ctrl, control_arguments.frame_base)
     end, nil, { hide = false })
     o.children.frame_main = hud_child:new(args.children.frame_main, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame_main)
+        return play_object.iter_args(ctrl, control_arguments.frame_main)
     end, nil, { hide = false })
     o.children.limit = hud_child:new(args.children.limit, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.limit)
+        return play_object.iter_args(ctrl, control_arguments.limit)
     end, nil, { hide = false })
 
     return o

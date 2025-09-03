@@ -13,6 +13,9 @@
 
 ---@alias SlingerReticleSlingerWriteKey HudChildWriteKey | "hide_slinger_empty"
 
+---@class (exact) SlingerReticleSlingerControlArguments
+---@field slinger PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -28,10 +31,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SlingerReticleSlingerControlArguments
+local control_arguments = {
     slinger = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_slinger",
@@ -81,7 +86,8 @@ end
 ---@return via.gui.Control
 function this:get_slinger_pnl()
     local pnl = self.root:get_GUI020000_pnl()
-    return play_object.control.get(pnl, ctrl_args.slinger[1][1]) --[[@as via.gui.Control]]
+    local res = play_object.iter_args(pnl, control_arguments.slinger) --[==[@as via.gui.Control[]]==]
+    return res[1]
 end
 
 ---@protected

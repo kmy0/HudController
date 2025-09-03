@@ -11,6 +11,11 @@
 --- gauge: ProgressPartBaseConfig,
 --- }
 
+---@class (exact) ProgressPartGaugeControlArguments
+---@field gauge_part PlayObjectGetterFn[]
+---@field gauge PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+
 local part_base = require("HudController.hud.elements.progress.part_base")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.elements.progress.text")
@@ -21,9 +26,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
-local ctrl_args = {
-    gauge = {
+---@type ProgressPartGaugeControlArguments
+local control_arguments = {
+    gauge_part = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
             },
@@ -31,8 +38,9 @@ local ctrl_args = {
         },
     },
     -- PNL_gauge
-    gauge_ = {
+    gauge = {
         {
+            play_object.control.get,
             {
                 "PNL_guideAssign",
                 "PNL_txt_guide",
@@ -42,6 +50,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_txt_gauge",
             },
@@ -56,16 +65,16 @@ local ctrl_args = {
 ---@return ProgressPartGauge
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.gauge)
+        return play_object.iter_args(ctrl, control_arguments.gauge_part)
     end)
     setmetatable(o, self)
     ---@cast o ProgressPartGauge
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.gauge = part_base:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.gauge_)
+        return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
 
     return o

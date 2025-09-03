@@ -16,13 +16,6 @@
 --- bow_icon: HudChild,
 --- }
 
----@class (exact) AmmoBowPhial : HudChild
----@field children {
---- light: HudChild,
---- arrow: CtrlChild,
---- phial: HudChild,
---- }
-
 ---@class (exact) AmmoConfig : HudBaseConfig
 ---@field no_hide_parts boolean
 ---@field children {
@@ -40,13 +33,23 @@
 --- bow_icon: HudChildConfig,
 --- }
 
----@class (exact) AmmoBowPhialConfig : HudChildConfig
----@field children {
---- light: HudChildConfig,
---- arrow: CtrlChildConfig,
---- phial: HudChildConfig,
---- }
+---@class (exact) AmmoControlArguments
+---@field keys PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field icons PlayObjectGetterFn[]
+---@field energy PlayObjectGetterFn[]
+---@field sp_ammo1 PlayObjectGetterFn[]
+---@field sp_ammo2 PlayObjectGetterFn[]
+---@field sp_ammo_frame PlayObjectGetterFn[]
+---@field reload PlayObjectGetterFn[]
+---@field mode_icon1 PlayObjectGetterFn[]
+---@field mode_icon2 PlayObjectGetterFn[]
+---@field bow_phials PlayObjectGetterFn[]
+---@field bow_seperate PlayObjectGetterFn[]
+---@field bow_icon_active PlayObjectGetterFn[]
+---@field bow_icon_disable PlayObjectGetterFn[]
 
+local bow_phials = require("HudController.hud.elements.ammo.bow_phials")
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
@@ -65,10 +68,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type AmmoControlArguments
+local control_arguments = {
     keys = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_bulletSlider",
@@ -77,6 +82,7 @@ local ctrl_args = {
             "PNL_ref_Key",
         },
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_BSActive1",
@@ -84,6 +90,7 @@ local ctrl_args = {
             "PNL_ref_Key",
         },
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_change",
@@ -91,8 +98,9 @@ local ctrl_args = {
             "PNL_ref_Key",
         },
     },
-    text1 = {
+    icons = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_bulletSlider",
@@ -102,13 +110,15 @@ local ctrl_args = {
             "PNL_icon",
         },
     },
-    text2 = {
+    text = {
         {
+            play_object.control.get,
             { "PNL_itemName" },
         },
     },
     energy = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_energy",
@@ -117,6 +127,7 @@ local ctrl_args = {
     },
     sp_ammo1 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_SPAmmoSet",
@@ -125,6 +136,7 @@ local ctrl_args = {
     },
     sp_ammo2 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_SPAmmoSet2_2",
@@ -133,6 +145,7 @@ local ctrl_args = {
     },
     sp_ammo_frame = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_SPAmmoSet2_2",
@@ -142,6 +155,7 @@ local ctrl_args = {
     },
     reload = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_bulletSlider",
@@ -152,6 +166,7 @@ local ctrl_args = {
     },
     mode_icon1 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_change",
@@ -161,6 +176,7 @@ local ctrl_args = {
     },
     mode_icon2 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_change",
@@ -170,6 +186,7 @@ local ctrl_args = {
     },
     bow_phials = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_energy",
@@ -179,33 +196,9 @@ local ctrl_args = {
             },
         },
     },
-    -- ctrl = PNL_BowBottlePlus
-    ["bow_phials.arrow"] = {
-        {
-            {
-                "PNL_BowBottleAnim",
-            },
-            "tex_arrow",
-            "via.gui.Texture",
-        },
-    },
-    ["bow_phials.light"] = {
-        {
-            {
-                "PNL_light",
-            },
-        },
-    },
-    ["bow_phials.phial"] = {
-        {
-            {
-                "PNL_BowBottleAnim",
-                "PNL_icon00",
-            },
-        },
-    },
     bow_seperate = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_energy",
@@ -216,9 +209,10 @@ local ctrl_args = {
             true,
         },
     },
-    -- ctrl = PNL_bowSepaXX
+    -- PNL_bowSepaXX
     bow_icon_active = {
         {
+            play_object.control.get,
             {
                 "PNL_BowSP00",
                 "PNL_iconActiveBow",
@@ -227,6 +221,7 @@ local ctrl_args = {
     },
     bow_icon_disable = {
         {
+            play_object.child.get,
             {
                 "PNL_BowSP00",
             },
@@ -244,39 +239,32 @@ function this:new(args)
     ---@cast o Ammo
 
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.keys)
+        return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.text = ctrl_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.text1)
-        local ret = {}
-        util_table.do_something(icons, function(t, key, value)
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, value --[[@as via.gui.Control]], ctrl_args.text2)
-            )
-        end)
-        return ret
+        local icons = play_object.iter_args(ctrl, control_arguments.icons)
+        return play_object.iter_args(icons, control_arguments.text)
     end)
     o.children.energy = hud_child:new(args.children.energy, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.energy)
+        return play_object.iter_args(ctrl, control_arguments.energy)
     end)
     o.children.sp_ammo1 = hud_child:new(args.children.sp_ammo1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.sp_ammo1)
+        return play_object.iter_args(ctrl, control_arguments.sp_ammo1)
     end)
     o.children.sp_ammo2 = hud_child:new(args.children.sp_ammo2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.sp_ammo2)
+        return play_object.iter_args(ctrl, control_arguments.sp_ammo2)
     end)
     o.children.sp_ammo_frame = hud_child:new(args.children.sp_ammo_frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.sp_ammo_frame)
+        return play_object.iter_args(ctrl, control_arguments.sp_ammo_frame)
     end)
     o.children.reload = hud_child:new(args.children.reload, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reload)
+        return play_object.iter_args(ctrl, control_arguments.reload)
     end)
     o.children.mode_icon1 = hud_child:new(args.children.mode_icon1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.mode_icon1)
+        return play_object.iter_args(ctrl, control_arguments.mode_icon1)
     end)
     o.children.mode_icon2 = hud_child:new(args.children.mode_icon2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.mode_icon2)
+        return play_object.iter_args(ctrl, control_arguments.mode_icon2)
     end)
     o.children.no_hide_parts = hud_child:new(args.children.no_hide_parts, o, function(s, hudbase, gui_id, ctrl)
         return ctrl
@@ -300,45 +288,16 @@ function this:new(args)
         return true
     end, nil, true)
     o.children.bow_icon = hud_child:new(args.children.bow_icon, o, function(s, hudbase, gui_id, ctrl)
-        local separators = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.bow_seperate)
+        local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
         local ret = {}
-
-        for _, sep in pairs(separators) do
-            ---@cast sep via.gui.Control
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, sep, ctrl_args.bow_icon_active)
-            )
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.child.get, sep, ctrl_args.bow_icon_disable))
-        end
-
+        util_table.array_merge_t(ret, play_object.iter_args(separators, control_arguments.bow_icon_active))
+        util_table.array_merge_t(ret, play_object.iter_args(separators, control_arguments.bow_icon_disable))
         return ret
     end)
 
-    o.children.bow_phials = hud_child:new(args.children.bow_phials, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.bow_phials)
-    end) --[[@as AmmoBowPhial]]
-    o.children.bow_phials.children.arrow = ctrl_child:new(
-        args.children.bow_phials.children.arrow,
-        o.children.bow_phials,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.child.get, ctrl, ctrl_args["bow_phials.arrow"])
-        end
-    )
-    o.children.bow_phials.children.light = hud_child:new(
-        args.children.bow_phials.children.light,
-        o.children.bow_phials,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["bow_phials.light"])
-        end
-    )
-    o.children.bow_phials.children.phial = hud_child:new(
-        args.children.bow_phials.children.phial,
-        o.children.bow_phials,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args["bow_phials.phial"])
-        end
-    )
+    o.children.bow_phials = bow_phials:new(args.children.bow_phials, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.bow_phials)
+    end)
 
     o.hide_write = true
     if args.no_hide_parts then
@@ -377,12 +336,7 @@ function this.get_config()
     children.mode_icon2 = hud_child.get_config("mode_icon2")
     children.bow_icon = { name_key = "bow_icon", hide = false }
     children.no_hide_parts = { name_key = "__no_hide_parts", enabled_play_state = false, play_state = "" }
-
-    children.bow_phials = hud_child.get_config("bow_phials") --[[@as AmmoBowPhialConfig]]
-    local phial_children = children.bow_phials.children
-    phial_children.light = { name_key = "light", hide = false }
-    phial_children.arrow = { name_key = "arrow", hide = false }
-    phial_children.phial = { name_key = "phial", hide = false }
+    children.bow_phials = bow_phials.get_config()
 
     return base
 end

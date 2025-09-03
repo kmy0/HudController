@@ -11,6 +11,11 @@
 --- base: ProgressPartBaseConfig,
 --- }
 
+---@class (exact) ProgressPartNameMainControlArguments
+---@field name_main PlayObjectGetterFn[]
+---@field base PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+
 local part_base = require("HudController.hud.elements.progress.part_base")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.elements.progress.text")
@@ -21,9 +26,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
-local ctrl_args = {
+---@type ProgressPartNameMainControlArguments
+local control_arguments = {
     name_main = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
             },
@@ -33,6 +40,7 @@ local ctrl_args = {
     -- PNL_name_main
     base = {
         {
+            play_object.control.get,
             {
                 "PNL_base_NM",
             },
@@ -40,6 +48,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_txt_NM",
             },
@@ -54,16 +63,16 @@ local ctrl_args = {
 ---@return ProgressPartNameMain
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.name_main)
+        return play_object.iter_args(ctrl, control_arguments.name_main)
     end)
     setmetatable(o, self)
     ---@cast o ProgressPartNameMain
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.base = part_base:new(args.children.base, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.base)
+        return play_object.iter_args(ctrl, control_arguments.base)
     end)
 
     return o

@@ -15,6 +15,12 @@
 --- buff: HudChildConfig,
 --- }
 
+---@class (exact) RodControlArguments
+---@field background PlayObjectGetterFn[]
+---@field stamina PlayObjectGetterFn[]
+---@field insect PlayObjectGetterFn[]
+---@field buff PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -29,10 +35,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Base",
@@ -41,6 +48,7 @@ local ctrl_args = {
     },
     stamina = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Stamina",
@@ -49,6 +57,7 @@ local ctrl_args = {
     },
     insect = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Insects",
@@ -57,6 +66,7 @@ local ctrl_args = {
     },
     buff = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Signal",
@@ -80,16 +90,16 @@ function this:new(args, parent)
     ---@cast o Rod
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.stamina = hud_child:new(args.children.stamina, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.stamina)
+        return play_object.iter_args(ctrl, control_arguments.stamina)
     end)
     o.children.insect = hud_child:new(args.children.insect, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.insect)
+        return play_object.iter_args(ctrl, control_arguments.insect)
     end)
     o.children.buff = hud_child:new(args.children.buff, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.buff)
+        return play_object.iter_args(ctrl, control_arguments.buff)
     end)
 
     return o

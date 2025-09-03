@@ -16,6 +16,11 @@
 --- group3: HudChildConfig,
 --- }
 
+---@class (exact) MenuButtonGuideControlArguments
+---@field group1 PlayObjectGetterFn[]
+---@field group2 PlayObjectGetterFn[]
+---@field group3 PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -27,9 +32,12 @@ local ace_enum = data.ace.enum
 local mod = data.mod
 local rl = game_data.reverse_lookup
 
-local ctrl_args = {
+-- RootWindow
+---@type MenuButtonGuideControlArguments
+local control_arguments = {
     group1 = {
         {
+            play_object.control.get,
             {
                 "PNL_All",
             },
@@ -37,6 +45,7 @@ local ctrl_args = {
     },
     group2 = {
         {
+            play_object.control.get,
             {
                 "PNL_All_1",
             },
@@ -44,6 +53,7 @@ local ctrl_args = {
     },
     group3 = {
         {
+            play_object.control.get,
             {
                 "PNL_All_2",
             },
@@ -71,13 +81,13 @@ function this:new(args)
         end
     end)
     o.children.group1 = hud_child:new(args.children.group1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.group1)
+        return play_object.iter_args(ctrl, control_arguments.group1)
     end)
     o.children.group2 = hud_child:new(args.children.group2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.group2)
+        return play_object.iter_args(ctrl, control_arguments.group2)
     end)
     o.children.group3 = hud_child:new(args.children.group3, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.group3)
+        return play_object.iter_args(ctrl, control_arguments.group3)
     end)
     return o
 end

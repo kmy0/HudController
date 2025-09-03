@@ -32,6 +32,15 @@
 --- cursor_state: HudChildConfig,
 --- }
 
+---@class (exact) ItembarSliderControlArguments
+---@field keys PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field slider_state PlayObjectGetterFn[]
+---@field slider_animation PlayObjectGetterFn[]
+---@field mantle_state PlayObjectGetterFn[]
+---@field cursor_state PlayObjectGetterFn[]
+
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -44,10 +53,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_itemSlider
-local ctrl_args = {
+-- PNL_itemSlider
+---@type ItembarSliderControlArguments
+local control_arguments = {
     keys = {
         {
+            play_object.control.all,
             {
                 "PNL_ISActive",
             },
@@ -56,6 +67,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -66,6 +78,7 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.child.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -74,6 +87,7 @@ local ctrl_args = {
             "via.gui.Texture",
         },
         {
+            play_object.child.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -81,9 +95,8 @@ local ctrl_args = {
             "tex_base02",
             "via.gui.Texture",
         },
-    },
-    blur = {
         {
+            play_object.control.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -93,6 +106,7 @@ local ctrl_args = {
     },
     slider_state = {
         {
+            play_object.control.get,
             {
                 "PNL_ISActive",
             },
@@ -100,6 +114,7 @@ local ctrl_args = {
     },
     slider_animation = {
         {
+            play_object.control.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -108,6 +123,7 @@ local ctrl_args = {
     },
     mantle_state = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_mantleSet",
@@ -117,6 +133,7 @@ local ctrl_args = {
     },
     cursor_state = {
         {
+            play_object.child.get,
             {
                 "PNL_ISActive",
                 "PNL_ISList",
@@ -146,22 +163,19 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     ---@cast o ItembarSlider
 
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.keys)
+        return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.text = ctrl_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return util_table.array_merge_t(
-            play_object.iter_args(play_object.child.get, ctrl, ctrl_args.background),
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.blur)
-        )
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.slider_part = hud_child:new(args.children.slider_part, o, function(s, hudbase, gui_id, ctrl)
         return util_table.array_merge_t(
             { ctrl },
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_state),
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_animation)
+            play_object.iter_args(ctrl, control_arguments.slider_state),
+            play_object.iter_args(ctrl, control_arguments.slider_animation)
         )
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
@@ -198,7 +212,7 @@ end
 function this:_init_slider_appear_open(args)
     -- show slider
     self.children.slider_state = hud_child:new(args.children.slider_state, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_state)
+        return play_object.iter_args(ctrl, control_arguments.slider_state)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -214,7 +228,7 @@ function this:_init_slider_appear_open(args)
         args.children.slider_animation,
         self,
         function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.slider_animation)
+            return play_object.iter_args(ctrl, control_arguments.slider_animation)
         end,
         function(s, ctrl)
             play_object_defaults.check(ctrl)
@@ -238,7 +252,7 @@ function this:_init_slider_appear_open(args)
     -- stops input animations for mantle
     self.children.mantle_state = hud_child:new(args.children.mantle_state, self, function(s, hudbase, gui_id, ctrl)
         ctrl = play_object.control.get_parent(ctrl, "PNL_Scale") --[[@as via.gui.Control]]
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.mantle_state)
+        return play_object.iter_args(ctrl, control_arguments.mantle_state)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -257,7 +271,7 @@ function this:_init_slider_appear_open(args)
     end, nil, true)
     -- hides cursor select thing when appear open is enabled
     self.children.cursor_state = hud_child:new(args.children.cursor_state, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.cursor_state)
+        return play_object.iter_args(ctrl, control_arguments.cursor_state)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 

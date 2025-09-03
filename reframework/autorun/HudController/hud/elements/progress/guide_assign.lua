@@ -13,6 +13,12 @@
 --- icon: ProgressPartBaseConfig,
 --- }
 
+---@class (exact) ProgressPartGuideAssignControlArguments
+---@field guide_assign PlayObjectGetterFn[]
+---@field base PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field icon PlayObjectGetterFn[]
+
 local part_base = require("HudController.hud.elements.progress.part_base")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.elements.progress.text")
@@ -23,9 +29,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
-local ctrl_args = {
+---@type ProgressPartGuideAssignControlArguments
+local control_arguments = {
     guide_assign = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
             },
@@ -35,6 +43,7 @@ local ctrl_args = {
     -- PNL_guideAssign
     base = {
         {
+            play_object.control.get,
             {
                 "PNL_guideAssign",
                 "PNL_txt_guide",
@@ -44,6 +53,7 @@ local ctrl_args = {
     },
     icon = {
         {
+            play_object.control.get,
             {
                 "PNL_txt_guide",
                 "PNL_pos_assing",
@@ -52,6 +62,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_txt_guide",
             },
@@ -66,19 +77,19 @@ local ctrl_args = {
 ---@return ProgressPartGuideAssign
 function this:new(args, parent)
     local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.guide_assign)
+        return play_object.iter_args(ctrl, control_arguments.guide_assign)
     end)
     setmetatable(o, self)
     ---@cast o ProgressPartGuideAssign
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.base = part_base:new(args.children.base, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.base)
+        return play_object.iter_args(ctrl, control_arguments.base)
     end)
     o.children.icon = part_base:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.icon)
+        return play_object.iter_args(ctrl, control_arguments.icon)
     end)
 
     return o

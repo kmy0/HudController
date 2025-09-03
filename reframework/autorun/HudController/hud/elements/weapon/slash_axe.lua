@@ -7,6 +7,9 @@
 ---@class (exact) SlashAxeConfig : HudChildConfig
 ---@field children {background: HudChildConfig}
 
+---@class (exact) SlashAxeControlArguments
+---@field background PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -21,10 +24,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SlashAxeControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_UnderBase",
@@ -48,7 +53,7 @@ function this:new(args, parent)
     ---@cast o SlashAxe
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
 
     return o

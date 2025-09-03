@@ -10,6 +10,10 @@
 --- background: Scale9Config,
 --- }
 
+---@class (exact) SubtitlesControlArguments
+---@field group PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
@@ -23,10 +27,12 @@ local ace_enum = data.ace.enum
 local mod = data.mod
 local rl = game_data.reverse_lookup
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SubtitlesControlArguments
+local control_arguments = {
     group = {
         {
+            play_object.control.get,
             {
                 "PNL_Group00",
             },
@@ -34,8 +40,11 @@ local ctrl_args = {
     },
     background = {
         {
-            "s9g_accessibility_BG",
-            "via.gui.Scale9Grid",
+            play_object.child.all_type,
+            {
+                "s9g_accessibility_BG",
+                "via.gui.Scale9Grid",
+            },
         },
     },
 }
@@ -71,7 +80,7 @@ function this:new(args)
                 o.previous_category = category
             end
 
-            return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.group)
+            return play_object.iter_args(ctrl, control_arguments.group)
         end)
     end
 
@@ -79,7 +88,7 @@ function this:new(args)
         args.children.background --[[@as Scale9Config]],
         o,
         function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(play_object.child.all_type, ctrl, ctrl_args.background)
+            return play_object.iter_args(ctrl, control_arguments.background)
         end
     )
 

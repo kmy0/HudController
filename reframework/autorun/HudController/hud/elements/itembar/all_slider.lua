@@ -73,6 +73,19 @@
 ---@alias ItembarAllSliderProperty HudChildProperty | "control" | "decide_key" | "appear_open"
 ---@alias ItembarAllSliderWriteKey HudChildWriteKey | ItembarAllSliderProperty | "input"
 
+---@class (exact) ItembarAllSliderControlArguments
+---@field keys PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field right_stick_key PlayObjectGetterFn[]
+---@field icons PlayObjectGetterFn[]
+---@field icon_state PlayObjectGetterFn[]
+---@field text_num PlayObjectGetterFn[]
+---@field cursor_state PlayObjectGetterFn[]
+---@field text_pnl PlayObjectGetterFn[]
+---@field ref_icon PlayObjectGetterFn[]
+---@field color_scale PlayObjectGetterFn[]
+
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local frame_cache = require("HudController.util.misc.frame_cache")
@@ -95,10 +108,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_allSlider
-local ctrl_args = {
+-- PNL_allSlider
+---@type ItembarAllSliderControlArguments
+local control_arguments = {
     keys = {
         {
+            play_object.control.all,
             {},
             "PNL_keyInfo",
             true,
@@ -106,6 +121,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_ASL_Pos",
                 "PNL_info",
@@ -116,6 +132,7 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_itemAll",
                 "PNL_itemAS_inout",
@@ -123,8 +140,9 @@ local ctrl_args = {
             },
         },
     },
-    icon = {
+    icons = {
         {
+            play_object.control.all,
             {
                 "PNL_ASL_Pos",
                 "FSG_ASList",
@@ -135,6 +153,7 @@ local ctrl_args = {
     },
     right_stick_key = {
         {
+            play_object.control.get,
             {
                 "PNL_keyInfo",
             },
@@ -143,6 +162,7 @@ local ctrl_args = {
     -- Item_X
     icon_state = {
         {
+            play_object.control.get,
             {
                 "PNL_itemAll",
                 "PNL_itemAS_inout",
@@ -152,6 +172,7 @@ local ctrl_args = {
     -- Item_X
     cursor_state = {
         {
+            play_object.child.get,
             {
                 "PNL_itemAll",
                 "PNL_itemAS_inout",
@@ -163,6 +184,7 @@ local ctrl_args = {
     },
     text_num = {
         {
+            play_object.child.get,
             {
                 "PNL_ASL_Pos",
                 "PNL_info",
@@ -173,6 +195,7 @@ local ctrl_args = {
     },
     text_pnl = {
         {
+            play_object.control.get,
             {
                 "PNL_ASL_Pos",
                 "PNL_info",
@@ -181,6 +204,7 @@ local ctrl_args = {
     },
     ref_icon = {
         {
+            play_object.control.get,
             {
                 "PNL_ASL_Pos",
                 "FSG_ASList",
@@ -194,6 +218,7 @@ local ctrl_args = {
     },
     color_scale = {
         {
+            play_object.control.get,
             {
                 "PNL_ASL_Pos",
             },
@@ -215,7 +240,7 @@ local appear_open_states = {
 
 ---@param ctrl via.gui.Control
 local function get_icons(ctrl)
-    return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+    return play_object.iter_args(ctrl, control_arguments.icons)
 end
 
 ---@param args ItembarAllSliderConfig
@@ -238,24 +263,17 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     o._icon_first_update = true
 
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.keys)
+        return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.text = ctrl_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
         local icons = get_icons(ctrl)
-        local ret = {}
-        util_table.do_something(icons, function(t, key, value)
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, value --[[@as via.gui.Control]], ctrl_args.background)
-            )
-        end)
-        return ret
+        return play_object.iter_args(icons, control_arguments.background)
     end)
     o.children.right_stick_key = hud_child:new(args.children.right_stick_key, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.right_stick_key)
+        return play_object.iter_args(ctrl, control_arguments.right_stick_key)
     end, nil, nil, true)
 
     o:_init_appear_open(args)
@@ -304,14 +322,7 @@ function this:_init_appear_open(args)
     -- makes icons visible when expanded itembar is hidden
     self.children.icon_state = hud_child:new(args.children.icon_state, self, function(s, hudbase, gui_id, ctrl)
         local icons = get_icons(ctrl)
-        local ret = {}
-        util_table.do_something(icons, function(t, key, value)
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, value --[[@as via.gui.Control]], ctrl_args.icon_state)
-            )
-        end)
-        return ret
+        return play_object.iter_args(icons, control_arguments.icon_state)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -324,14 +335,7 @@ function this:_init_appear_open(args)
     -- hides cursor select when expanded itembar is hidden
     self.children.cursor_state = hud_child:new(args.children.cursor_state, self, function(s, hudbase, gui_id, ctrl)
         local icons = get_icons(ctrl)
-        local ret = {}
-        util_table.do_something(icons, function(t, key, value)
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, value --[[@as via.gui.Control]], ctrl_args.cursor_state)
-            )
-        end)
-        return ret
+        return play_object.iter_args(icons, control_arguments.cursor_state)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -351,7 +355,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- forces item number to appear
     self.children.text_num = hud_child:new(args.children.text_num, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text_num)
+        return play_object.iter_args(ctrl, control_arguments.text_num)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -362,7 +366,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- prevents text flicker when opening expanded itembar
     self.children.text_pnl = hud_child:new(args.children.text_pnl, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.text_pnl)
+        return play_object.iter_args(ctrl, control_arguments.text_pnl)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -371,7 +375,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- hides ref equip icon thing, for whatever reason its visible and when icons get recreated it flickers
     self.children.ref_icon = hud_child:new(args.children.ref_icon, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.ref_icon)
+        return play_object.iter_args(ctrl, control_arguments.ref_icon)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 
@@ -382,7 +386,7 @@ function this:_init_appear_open(args)
     end, nil, true)
     -- makes expanded itembar fully visible
     self.children.color_scale = hud_child:new(args.children.color_scale, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.color_scale)
+        return play_object.iter_args(ctrl, control_arguments.color_scale)
     end, nil, nil, true)
     -- fades all icons except selected one when expanded itembar is hidden
     self.children.icon_color_scale = hud_child:new(
@@ -424,7 +428,7 @@ function this:_init_appear_open(args)
     )
     -- hide keys
     self.children.keys_state = hud_child:new(args.children.keys_state, self, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.keys)
+        return play_object.iter_args(ctrl, control_arguments.keys)
     end, function(s, ctrl)
         play_object_defaults.check(ctrl)
 

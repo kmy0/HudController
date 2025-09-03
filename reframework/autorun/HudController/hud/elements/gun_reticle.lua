@@ -15,6 +15,12 @@
 --- out_of_range: HudChildConfig,
 --- }
 
+---@class (exact) GunReticleControlArguments
+---@field reticle PlayObjectGetterFn[]
+---@field ammo PlayObjectGetterFn[]
+---@field reload PlayObjectGetterFn[]
+---@field out_of_range PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -31,10 +37,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+local control_arguments = {
     reticle = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_BowgunReticle",
@@ -44,6 +51,7 @@ local ctrl_args = {
     },
     ammo = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_BowgunReticle",
@@ -53,6 +61,7 @@ local ctrl_args = {
     },
     reload = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_BowgunReticle",
@@ -63,6 +72,7 @@ local ctrl_args = {
     },
     out_of_range = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_BowgunReticle",
@@ -81,16 +91,16 @@ function this:new(args)
     ---@cast o GunReticle
 
     o.children.reticle = hud_child:new(args.children.reticle, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reticle)
+        return play_object.iter_args(ctrl, control_arguments.reticle)
     end)
     o.children.ammo = hud_child:new(args.children.ammo, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.ammo)
+        return play_object.iter_args(ctrl, control_arguments.ammo)
     end)
     o.children.reload = hud_child:new(args.children.reload, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reload)
+        return play_object.iter_args(ctrl, control_arguments.reload)
     end)
     o.children.out_of_range = hud_child:new(args.children.out_of_range, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.out_of_range)
+        return play_object.iter_args(ctrl, control_arguments.out_of_range)
     end)
     return o
 end
@@ -109,4 +119,5 @@ function this.get_config()
 
     return base
 end
+
 return this

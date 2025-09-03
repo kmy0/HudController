@@ -15,6 +15,10 @@
 --- focus: SlingerReticleFocusConfig,
 --- }
 
+---@class (exact) SlingerReticleControlArguments
+---@field slinger_state PlayObjectGetterFn[]
+---@field capture PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local focus = require("HudController.hud.elements.slinger_reticle.focus")
 local game_data = require("HudController.util.game.data")
@@ -34,10 +38,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SlingerReticleControlArguments
+local control_arguments = {
     slinger_state = {
         {
+            play_object.control.get,
             {
 
                 "PNL_Pat00",
@@ -48,6 +54,7 @@ local ctrl_args = {
     },
     capture = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_capture",
@@ -73,7 +80,7 @@ function this:new(args)
     end)
 
     o.children.capture = hud_child:new(args.children.capture, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.capture)
+        return play_object.iter_args(ctrl, control_arguments.capture)
     end)
     o.children.focus = focus:new(args.children.focus, o)
 
@@ -128,7 +135,12 @@ end
 ---@return boolean
 function this:is_GUI020000_visible()
     local ctrl = self:get_GUI020000_pnl()
-    local pnl = play_object.control.get(ctrl, ctrl_args.slinger_state[1][1]) --[[@as via.gui.Control]]
+    local res = play_object.iter_args(ctrl, control_arguments.slinger_state) --[==[@as via.gui.Control[]]==]
+    local pnl = res[1]
+
+    if not pnl then
+        return false
+    end
     return pnl:get_Visible()
 end
 
