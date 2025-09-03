@@ -280,6 +280,17 @@ function this.draw()
     imgui.begin_child_window("debug_child_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
+    if imgui.button(gui_util.tr("debug.button_add_profile")) then
+        hud_debug.add_all_element_profile()
+    end
+
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("debug.button_write_all")) then
+        hud_debug.write_all_elements()
+    end
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
+
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
         defaults.play_object.clear()
     end

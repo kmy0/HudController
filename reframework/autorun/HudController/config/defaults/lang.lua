@@ -31,6 +31,9 @@ return {
     },
     debug = {
         name = "Debug",
+        button_add_profile = "Add All Element Profile",
+        button_write_all = "Test All Elements",
+        tooltip_write_all = "Attempt to write all available elements",
         button_clear_default = "Clear HUD Defaults",
         box_show_disabled = "Show Disabled",
         button_snapshot = "Snapshot",
