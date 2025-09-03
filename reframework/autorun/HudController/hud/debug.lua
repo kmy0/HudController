@@ -26,10 +26,15 @@
 
 ---@alias AceElem AceControl | AceBase
 
+local data = require("HudController.data")
+local factory = require("HudController.hud.factory")
+local hud = require("HudController.hud")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
+
+local ace_enum = data.ace.enum
 
 ---@class HudDebug
 local this = {
@@ -208,6 +213,37 @@ end
 ---@param keys string[]
 function this.make_snapshot(keys)
     this.snapshot = util_table.deep_copy(keys)
+end
+
+function this.add_all_element_profile()
+    local new_config = hud.operations._new()
+    new_config.name = hud.operations.get_name("All Elements")
+    new_config.elements = {}
+    local key = 1
+
+    for enum, name in pairs(ace_enum.hud) do
+        local hud_elem = factory.get_config(enum)
+        hud_elem.key = key
+        new_config.elements[name] = hud_elem
+        key = key + 1
+    end
+
+    hud.operations.new(new_config)
+end
+
+function this.write_all_elements()
+    local current_hud = hud.manager.by_hudid
+
+    local function write_offset(hudbase)
+        hudbase:set_offset({ x = 999, y = 999 })
+        for _, child in pairs(hudbase.children) do
+            write_offset(child)
+        end
+    end
+
+    for _, hudbase in pairs(current_hud) do
+        write_offset(hudbase)
+    end
 end
 
 ---@param keys string[]
