@@ -1,3 +1,10 @@
+---@alias PlayObjectGetterFn ControlGetFn | ControlAllFn | ControlChildGetFn | ControlChildAllTypeFn
+
+---@alias ControlGetFn [fun(ctrl: via.gui.Control, chain: string[] | string): via.gui.Control?, string[] | string]]
+---@alias ControlAllFn [fun(ctrl: via.gui.Control, chain: string[] | string, target: string, lowercase: boolean?): via.gui.Control[]?, string[] | string, string, boolean?]
+---@alias ControlChildGetFn [fun(ctrl: via.gui.Control, chain: string[] | string, child_name: string, child_type: string): via.gui.Control?, string[] | string, string, string]
+---@alias ControlChildAllTypeFn [fun(ctrl: via.gui.Control, regex: string?,  child_type: string): via.gui.Control[], string?, string]
+
 ---@alias PlayObject via.gui.Control | via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 ---@alias ControlChild via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 
@@ -8,26 +15,39 @@ local this = {
     child = require("HudController.hud.play_object.child"),
 }
 
----@param func fun(ctrl: via.gui.Control, ...): PlayObject[] | PlayObject?
----@param ctrl via.gui.Control
----@param args table<integer, ...[]>
+---@param ctrl via.gui.Control | via.gui.Control[]
+---@param args PlayObjectGetterFn[]
 ---@return PlayObject[]
-function this.iter_args(func, ctrl, args)
+function this.iter_args(ctrl, args)
     ---@type PlayObject[]
     local ret = {}
 
-    for _, a in pairs(args) do
-        local res = func(ctrl, table.unpack(a))
-        if not res then
-            goto continue
-        end
+    --TODO: rest perf of this?
+    if type(ctrl) ~= "table" then
+        ctrl = { ctrl }
+    end
 
-        if type(res) == "table" then
-            util_table.array_merge_t(ret, res)
-        else
-            table.insert(ret, res)
+    for _, control in pairs(ctrl) do
+        for _, arguments in pairs(args) do
+            local fn = arguments[1]
+            if type(fn) == "table" then
+                util_table.print(fn)
+            end
+            ---@diagnostic disable-next-line: param-type-mismatch
+            local res = fn(control, table.unpack(arguments, 2))
+
+            if not res then
+                --TODO: debug here?
+                goto continue
+            end
+
+            if type(res) == "table" then
+                util_table.array_merge_t(ret, res)
+            else
+                table.insert(ret, res)
+            end
+            ::continue::
         end
-        ::continue::
     end
 
     return ret

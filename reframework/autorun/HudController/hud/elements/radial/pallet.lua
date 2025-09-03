@@ -28,6 +28,28 @@
 ---@class (exact) RadialPalletTextConfig : HudChildConfig
 ---@field children table<string, HudChildConfig>
 
+---@class (exact) RadialPalletControlArguments
+---@field keys PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field pallet_state PlayObjectGetterFn[]
+---@field center PlayObjectGetterFn[]
+---@field icons RadialPalletIconControlArguments
+---@field icon_center RadialPalletIconCenterControlArguments
+
+---@class (exact) RadialPalletIconControlArguments
+---@field icons PlayObjectGetterFn[]
+---@field ps PlayObjectGetterFn[]
+---@field keys PlayObjectGetterFn[]
+---@field select PlayObjectGetterFn[]
+---@field select_arrow PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+
+---@class (exact) RadialPalletIconCenterControlArguments
+---@field icon PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -39,24 +61,26 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
-local ctrl_args = {
+---@type RadialPalletControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletBlurBase",
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletSelect",
                 "PNL_PSBase",
             },
         },
-    },
-    background_tex = {
         {
+            play_object.child.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletMini",
@@ -66,38 +90,89 @@ local ctrl_args = {
             "via.gui.TextureSet",
         },
     },
+    icon_center = {
+        icon = {
+            {
+                play_object.control.get,
+                {
+                    "PNL_Pallet",
+                    "PNL_PalletSelect",
+                    "ICL_PSG",
+                    "SCG_PS_C",
+                    "ITM_PS_C",
+                },
+            },
+        },
+        frame = {
+            {
+                play_object.control.get,
+                {
+                    "PNL_base",
+                },
+            },
+        },
+    },
     icons = {
-        {
+        icons = {
             {
-                "PNL_Pallet",
-                "PNL_PalletSelect",
-                "ICL_PSG",
-            },
-            "SCG_PS",
-            true,
-        },
-    },
-    ["icons.ps"] = {
-        {
-            {},
-            "ITM_PS",
-            true,
-        },
-    },
-    frame_icon = {
-        {
-            {
-                "PNL_PS_base",
+                play_object.control.all,
+                {
+                    "PNL_Pallet",
+                    "PNL_PalletSelect",
+                    "ICL_PSG",
+                },
+                "SCG_PS_%d",
+                true,
             },
         },
-        {
+        ps = {
             {
-                "PNL_base",
+                play_object.control.all,
+                {},
+                "ITM_PS_%d",
+                true,
+            },
+        },
+        frame = {
+            {
+                play_object.control.get,
+                {
+                    "PNL_PS_base",
+                },
+            },
+        },
+        keys = {
+            {
+                play_object.control.get,
+                {
+                    "PNL_ref_Key_S00",
+                },
+            },
+        },
+        select = {
+            {
+                play_object.child.get,
+                {
+                    "PNL_PS_Select",
+                },
+                "texset_base",
+                "via.gui.TextureSet",
+            },
+        },
+        select_arrow = {
+            {
+                play_object.control.all,
+                {
+                    "PNL_PS_Select",
+                },
+                "PNL_SArrow",
+                true,
             },
         },
     },
-    frame_mat = {
+    frame = {
         {
+            play_object.child.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletMini",
@@ -107,6 +182,7 @@ local ctrl_args = {
             "via.gui.Material",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletMini",
@@ -116,6 +192,7 @@ local ctrl_args = {
             "via.gui.Material",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletMini",
@@ -125,6 +202,7 @@ local ctrl_args = {
             "via.gui.Material",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletMini",
@@ -136,21 +214,16 @@ local ctrl_args = {
     },
     keys = {
         {
+            play_object.control.get,
             {
                 "PNL_Pallet",
                 "PNL_centerKey",
             },
         },
     },
-    keys_icon = {
+    text = {
         {
-            {
-                "PNL_ref_Key_S00",
-            },
-        },
-    },
-    text_icon = {
-        {
+            play_object.control.get,
             {
                 "PNL_txtName",
             },
@@ -158,31 +231,15 @@ local ctrl_args = {
     },
     pallet_state = {
         {
+            play_object.control.get,
             {
                 "PNL_Pallet",
             },
         },
     },
-    select_icon = {
-        {
-            {
-                "PNL_PS_Select",
-            },
-            "texset_base",
-            "via.gui.TextureSet",
-        },
-    },
-    select_arrow_icon = {
-        {
-            {
-                "PNL_PS_Select",
-            },
-            "PNL_SArrow",
-            true,
-        },
-    },
     center = {
         {
+            play_object.control.get,
             {
                 "PNL_Pallet",
                 "PNL_PalletSelect",
@@ -190,15 +247,6 @@ local ctrl_args = {
                 "SCG_PS_C",
                 "ITM_PS_C",
                 "PNL_PS_Select_C",
-            },
-        },
-    },
-    icl = {
-        {
-            {
-                "PNL_Pallet",
-                "PNL_PalletSelect",
-                "ICL_PSG",
             },
         },
     },
@@ -211,15 +259,25 @@ local pallet_expanded_states = {
 ---@param ctrl via.gui.Control
 ---@return via.gui.Control[]
 local function get_pallet_icon_ps(ctrl)
-    local icons = play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icons)
-    local ret = {}
+    local icons = play_object.iter_args(ctrl, control_arguments.icons.icons)
+    return play_object.iter_args(icons, control_arguments.icons.ps)
+end
 
-    for _, icon in pairs(icons) do
-        ---@cast icon via.gui.Control
-        util_table.array_merge_t(ret, play_object.iter_args(play_object.control.all, icon, ctrl_args["icons.ps"]))
-    end
+---@param ctrl via.gui.Control
+---@return via.gui.Control
+local function get_icl(ctrl)
+    local pallet = play_object.control.get_parent(ctrl, "PNL_PalletInOut") --[[@as via.gui.Control]]
+    return play_object.control.get(pallet, {
+        "PNL_Pallet",
+        "PNL_PalletSelect",
+        "ICL_PSG",
+    }) --[[@as via.gui.Control]]
+end
 
-    return ret
+---@param ctrl via.gui.Control
+---@return via.gui.Control[]
+local function get_pallet_icon_center(ctrl)
+    return play_object.iter_args(ctrl, control_arguments.icon_center.icon)
 end
 
 ---@param args RadialPalletConfig
@@ -234,85 +292,48 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
     ---@cast o RadialPallet
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return util_table.array_merge_t(
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background),
-            play_object.iter_args(play_object.child.get, ctrl, ctrl_args.background_tex)
-        )
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        local icons = get_pallet_icon_ps(ctrl)
-        local ret = {}
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.frame_icon))
-        end
-
-        return util_table.array_merge_t(ret, play_object.iter_args(play_object.child.get, ctrl, ctrl_args.frame_mat))
+        return util_table.array_merge_t(
+            play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.frame),
+            play_object.iter_args(ctrl, control_arguments.frame),
+            play_object.iter_args(get_pallet_icon_center(ctrl), control_arguments.icon_center.frame)
+        )
     end)
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
-        local icons = get_pallet_icon_ps(ctrl)
-        local ret = {}
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.keys_icon))
-        end
-
-        return util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, ctrl, ctrl_args.keys))
+        return util_table.array_merge_t(
+            play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.keys),
+            play_object.iter_args(ctrl, control_arguments.keys)
+        )
     end)
 
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        local icons = get_pallet_icon_ps(ctrl)
-        local ret = {}
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.text_icon))
-        end
-
-        return ret
+        return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.text)
     end)
     for i = 1, 8 do
         o.children.text.children["text" .. i] = hud_child:new(
             args.children.text.children["text" .. i],
             o.children.text,
             function(s, hudbase, gui_id, ctrl)
-                local pallet = play_object.control.get_parent(ctrl, "PNL_PalletInOut") --[[@as via.gui.Control]]
-                local icl = play_object.control.get(pallet, ctrl_args.icl[1][1]) --[[@as via.gui.Control]]
-                local scg = play_object.control.get(icl, "SCG_PS_" .. i) --[[@as via.gui.Control]]
-                local ps = play_object.control.get(scg, "ITM_PS_" .. i) --[[@as via.gui.Control]]
-
-                return play_object.iter_args(play_object.control.get, ps, ctrl_args.text_icon)
+                local ps = play_object.control.get(get_icl(ctrl), { "SCG_PS_" .. i, "ITM_PS_" .. i }) --[[@as via.gui.Control]]
+                return play_object.iter_args(ps, control_arguments.text)
             end
         )
     end
 
     o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
-        local icons = get_pallet_icon_ps(ctrl)
-        local ret = {}
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.child.get, icon, ctrl_args.select_icon))
-        end
-
-        return ret
+        --FIXME: icons 1, 3, 6, 8 don't have texset, it's probably not worth to filter those out?
+        return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select)
     end)
     o.children.select_arrow = hud_child:new(args.children.select_arrow, o, function(s, hudbase, gui_id, ctrl)
-        local icons = get_pallet_icon_ps(ctrl)
-        local ret = {}
-        for _, icon in pairs(icons) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.all, icon, ctrl_args.select_arrow_icon)
-            )
-        end
-
-        return ret
+        return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select_arrow)
     end)
     o.children.center = hud_child:new(args.children.center, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.center)
+        return play_object.iter_args(ctrl, control_arguments.center)
     end)
     o.children.pallet_state = hud_child:new(args.children.pallet_state, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.pallet_state)
+        return play_object.iter_args(ctrl, control_arguments.pallet_state)
     end, nil, nil, true)
 
     if args.expanded then
@@ -385,5 +406,7 @@ function this.get_config()
 end
 
 get_pallet_icon_ps = frame_cache.memoize(get_pallet_icon_ps)
+get_icl = frame_cache.memoize(get_icl)
+get_pallet_icon_center = frame_cache.memoize(get_pallet_icon_center)
 
 return this

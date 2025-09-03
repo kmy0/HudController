@@ -23,6 +23,15 @@
 --- shield: HudChildConfig,
 --- }
 
+---@class (exact) DamageNumbersDamageStateControlArguments
+---@field circle PlayObjectGetterFn[]
+---@field horizontal_line PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field wound PlayObjectGetterFn[]
+---@field affinity PlayObjectGetterFn[]
+---@field negative_affinity PlayObjectGetterFn[]
+---@field shield PlayObjectGetterFn[]
+
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -39,10 +48,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_ALL
-local ctrl_args = {
+-- PNL_ALL
+---@type DamageNumbersDamageStateControlArguments
+local control_arguments = {
     circle = {
         {
+            play_object.control.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -52,6 +63,7 @@ local ctrl_args = {
     },
     horizontal_line = {
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -64,6 +76,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -74,6 +87,7 @@ local ctrl_args = {
             "via.gui.Text",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -86,6 +100,7 @@ local ctrl_args = {
     },
     wound = {
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -96,6 +111,7 @@ local ctrl_args = {
             "via.gui.Texture",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -108,6 +124,7 @@ local ctrl_args = {
     },
     affinity = {
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -119,6 +136,7 @@ local ctrl_args = {
     },
     negative_affinity = {
         {
+            play_object.child.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -130,6 +148,7 @@ local ctrl_args = {
     },
     shield = {
         {
+            play_object.control.get,
             {
                 "PNL_Scale",
                 "PNL_Pat00",
@@ -164,25 +183,25 @@ function this:new(args, parent)
     ---@cast o DamageNumbersDamageState
 
     o.children.horizontal_line = ctrl_child:new(args.children.horizontal_line, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.horizontal_line)
+        return play_object.iter_args(ctrl, control_arguments.horizontal_line)
     end)
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.wound = ctrl_child:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.wound)
+        return play_object.iter_args(ctrl, control_arguments.wound)
     end)
     o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.circle)
+        return play_object.iter_args(ctrl, control_arguments.circle)
     end)
     o.children.affinity = ctrl_child:new(args.children.affinity, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.affinity)
+        return play_object.iter_args(ctrl, control_arguments.affinity)
     end)
     o.children.negative_affinity = ctrl_child:new(args.children.negative_affinity, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.negative_affinity)
+        return play_object.iter_args(ctrl, control_arguments.negative_affinity)
     end)
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.shield)
+        return play_object.iter_args(ctrl, control_arguments.shield)
     end)
 
     ---@diagnostic disable-next-line: no-unknown

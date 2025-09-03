@@ -15,6 +15,12 @@
 --- life_line: HudChildConfig,
 --- }
 
+---@class (exact) TargetControlArguments
+---@field key PlayObjectGetterFn[]
+---@field pin PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field life_line PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -31,18 +37,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
-    pin = {
-        {
-            {
-                "PNL_Pat00",
-                "PNL_ref_pin00",
-            },
-        },
-    },
+-- PNL_Scale
+---@type TargetControlArguments
+local control_arguments = {
     key = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ref_Key_S00",
@@ -51,14 +51,25 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Base",
             },
         },
     },
+    pin = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_ref_pin00",
+            },
+        },
+    },
     life_line = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_graph",
@@ -72,18 +83,19 @@ local ctrl_args = {
 function this:new(args)
     local o = hud_base.new(self, args)
     setmetatable(o, self)
+
     ---@cast o Target
     o.children.pin = hud_child:new(args.children.pin, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.pin)
+        return play_object.iter_args(ctrl, control_arguments.pin)
     end)
     o.children.key = hud_child:new(args.children.key, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.key)
+        return play_object.iter_args(ctrl, control_arguments.key)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.life_line = hud_child:new(args.children.life_line, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.life_line)
+        return play_object.iter_args(ctrl, control_arguments.life_line)
     end)
     return o
 end

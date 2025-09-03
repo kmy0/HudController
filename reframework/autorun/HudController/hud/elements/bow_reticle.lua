@@ -17,6 +17,13 @@
 --- lockon: HudChildConfig,
 --- }
 
+---@class (exact) BowReticleControlArguments
+---@field reticle_main PlayObjectGetterFn[]
+---@field reticle_lockon PlayObjectGetterFn[]
+---@field phials PlayObjectGetterFn[]
+---@field out_of_range PlayObjectGetterFn[]
+---@field lockon PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -33,10 +40,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type BowReticleControlArguments
+local control_arguments = {
     reticle_main = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ReticleMain",
@@ -45,6 +54,7 @@ local ctrl_args = {
     },
     reticle_lockon = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ReticleLockOn",
@@ -53,6 +63,7 @@ local ctrl_args = {
     },
     phials = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Ammo",
@@ -61,6 +72,7 @@ local ctrl_args = {
     },
     lockon = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
             },
@@ -68,6 +80,7 @@ local ctrl_args = {
     },
     out_of_range = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_AddText",
@@ -85,19 +98,19 @@ function this:new(args)
     ---@cast o BowReticle
 
     o.children.reticle_main = hud_child:new(args.children.reticle_main, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reticle_main)
+        return play_object.iter_args(ctrl, control_arguments.reticle_main)
     end)
     o.children.reticle_lockon = hud_child:new(args.children.reticle_lockon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reticle_lockon)
+        return play_object.iter_args(ctrl, control_arguments.reticle_lockon)
     end)
     o.children.lockon = hud_child:new(args.children.lockon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.lockon)
+        return play_object.iter_args(ctrl, control_arguments.lockon)
     end)
     o.children.phials = hud_child:new(args.children.phials, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.phials)
+        return play_object.iter_args(ctrl, control_arguments.phials)
     end)
     o.children.out_of_range = hud_child:new(args.children.out_of_range, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.out_of_range)
+        return play_object.iter_args(ctrl, control_arguments.out_of_range)
     end)
     return o
 end

@@ -13,6 +13,11 @@
 --- extract_frame: MaterialConfig,
 --- }
 
+---@class (exact) RodReticleControlArguments
+---@field reticle PlayObjectGetterFn[]
+---@field extract PlayObjectGetterFn[]
+---@field extract_frame PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -30,10 +35,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type RodReticleControlArguments
+local control_arguments = {
     reticle = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Reticle",
@@ -42,6 +49,7 @@ local ctrl_args = {
     },
     extract = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Reticle",
@@ -51,6 +59,7 @@ local ctrl_args = {
     },
     extract_frame = {
         {
+            play_object.child.get,
             {
                 "PNL_Pat00",
                 "PNL_Reticle",
@@ -59,6 +68,7 @@ local ctrl_args = {
             "via.gui.Material",
         },
         {
+            play_object.child.get,
             {
                 "PNL_Pat00",
                 "PNL_Reticle",
@@ -77,14 +87,14 @@ function this:new(args)
     ---@cast o RodReticle
 
     o.children.reticle = hud_child:new(args.children.reticle, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.reticle)
+        return play_object.iter_args(ctrl, control_arguments.reticle)
     end)
     o.children.extract = hud_child:new(args.children.extract, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.extract)
+        return play_object.iter_args(ctrl, control_arguments.extract)
     end)
 
     o.children.extract_frame = material:new(args.children.extract_frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.extract_frame)
+        return play_object.iter_args(ctrl, control_arguments.extract_frame)
     end)
     return o
 end

@@ -29,6 +29,13 @@
 
 ---@alias SharpnessProperty HudChildProperty | "state"
 
+---@class (exact) SharpnessControlArguments
+---@field anim_max PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field next PlayObjectGetterFn[]
+---@field edge PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -47,10 +54,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SharpnessControlArguments
+local control_arguments = {
     anim_max = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -60,6 +69,7 @@ local ctrl_args = {
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -71,6 +81,7 @@ local ctrl_args = {
     },
     frame = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -80,6 +91,7 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -89,6 +101,7 @@ local ctrl_args = {
     },
     next = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -100,6 +113,7 @@ local ctrl_args = {
     },
     edge = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -110,6 +124,7 @@ local ctrl_args = {
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_allRotate",
@@ -133,19 +148,19 @@ function this:new(args)
         state = true,
     })
     o.children.anim_max = hud_child:new(args.children.anim_max, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.anim_max)
+        return play_object.iter_args(ctrl, control_arguments.anim_max)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame)
+        return play_object.iter_args(ctrl, control_arguments.frame)
     end)
     o.children.next = hud_child:new(args.children.next, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.next)
+        return play_object.iter_args(ctrl, control_arguments.next)
     end)
     o.children.edge = hud_child:new(args.children.edge, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.edge)
+        return play_object.iter_args(ctrl, control_arguments.edge)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
 
     if args.state ~= -1 then

@@ -14,6 +14,9 @@
 --- background: CtrlChildConfig,
 --- }
 
+---@class (exact) ProgressQuestTimerControlArguments
+---@field background PlayObjectGetterFn[]
+
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local play_object = require("HudController.hud.play_object")
 local timer = require("HudController.hud.elements.progress.timer")
@@ -24,10 +27,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = timer })
 
--- ctrl = PNL_time
-local ctrl_args = {
+-- PNL_time
+---@type ProgressQuestTimerControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.child.get,
             {
                 "PNL_timeNum",
             },
@@ -35,6 +40,7 @@ local ctrl_args = {
             "via.gui.Material",
         },
         {
+            play_object.child.get,
             {
                 "PNL_timeNum",
             },
@@ -63,7 +69,7 @@ function this:new(args, parent, ctrl_getter)
     o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
         local panel = this._get_panel(o)
         if panel then
-            return play_object.iter_args(play_object.child.get, panel, ctrl_args.background)
+            return play_object.iter_args(panel, control_arguments.background)
         end
     end, nil, { hide = false })
 

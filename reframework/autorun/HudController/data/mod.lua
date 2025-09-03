@@ -60,7 +60,6 @@ this.enum.hud_type = {
     BASE = 1,
     HEALTH = 2,
     WEAPON = 3,
-    VITAL = 4,
     MINIMAP = 5,
     ITEMBAR = 6,
     PROGRESS = 7,

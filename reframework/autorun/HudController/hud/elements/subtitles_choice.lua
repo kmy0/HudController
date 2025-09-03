@@ -9,6 +9,9 @@
 --- background: HudChildConfig,
 --- }
 
+---@class (exact) SubtitlesChoiceControlArguments
+---@field background PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -26,9 +29,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
-local ctrl_args = {
+-- PNL_Scale
+---@type SubtitlesChoiceControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Group00",
                 "PNL_txtBG",
@@ -45,7 +51,7 @@ function this:new(args)
     ---@cast o SubtitlesChoice
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
 
     return o

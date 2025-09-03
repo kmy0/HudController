@@ -19,6 +19,14 @@
 --- frame: HudChildConfig,
 --- }
 
+---@class (exact) ChargeAxeControlArguments
+---@field sword PlayObjectGetterFn[]
+---@field shield PlayObjectGetterFn[]
+---@field axe PlayObjectGetterFn[]
+---@field phials PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -33,10 +41,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type ChargeAxeControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_UnderBase",
@@ -45,6 +55,7 @@ local ctrl_args = {
     },
     axe = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Axe",
@@ -53,6 +64,7 @@ local ctrl_args = {
     },
     shield = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Shield",
@@ -61,6 +73,7 @@ local ctrl_args = {
     },
     sword = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Blade",
@@ -69,6 +82,7 @@ local ctrl_args = {
     },
     frame = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Frame",
@@ -77,6 +91,7 @@ local ctrl_args = {
     },
     phials = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Bottles",
@@ -100,22 +115,22 @@ function this:new(args, parent)
     ---@cast o ChargeAxe
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.axe = hud_child:new(args.children.axe, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.axe)
+        return play_object.iter_args(ctrl, control_arguments.axe)
     end)
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.shield)
+        return play_object.iter_args(ctrl, control_arguments.shield)
     end)
     o.children.sword = hud_child:new(args.children.sword, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.sword)
+        return play_object.iter_args(ctrl, control_arguments.sword)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame)
+        return play_object.iter_args(ctrl, control_arguments.frame)
     end)
     o.children.phials = hud_child:new(args.children.phials, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.phials)
+        return play_object.iter_args(ctrl, control_arguments.phials)
     end)
 
     return o

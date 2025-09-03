@@ -29,6 +29,18 @@
 --- select_base: HudChildConfig,
 --- }
 
+---@class (exact) RadialControlArguments
+---@field pallet PlayObjectGetterFn[]
+---@field craft PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field keys PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field center PlayObjectGetterFn[]
+---@field radial_state PlayObjectGetterFn[]
+---@field select PlayObjectGetterFn[]
+---@field select_base PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
@@ -48,10 +60,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type RadialControlArguments
+local control_arguments = {
     pallet = {
         {
+            play_object.control.get,
             {
                 "PNL_PalletInOut",
             },
@@ -59,6 +73,7 @@ local ctrl_args = {
     },
     icons = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
                 "PNL_SC_A",
@@ -67,8 +82,9 @@ local ctrl_args = {
             true,
         },
     },
-    frame_icon = {
+    frame = {
         {
+            play_object.control.get,
             {
                 "PNL_frame",
             },
@@ -76,6 +92,7 @@ local ctrl_args = {
     },
     background_icon = {
         {
+            play_object.control.get,
             {
                 "PNL_base",
             },
@@ -83,6 +100,7 @@ local ctrl_args = {
     },
     keys = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_center",
@@ -92,14 +110,14 @@ local ctrl_args = {
     },
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_blurCircleMask",
             },
         },
-    },
-    background_tex = {
         {
+            play_object.child.get,
             {
                 "PNL_Pat00",
                 "PNL_center",
@@ -110,6 +128,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_Item",
@@ -118,6 +137,7 @@ local ctrl_args = {
     },
     craft = {
         {
+            play_object.control.get,
             {
                 "PNL_preparation",
             },
@@ -125,6 +145,7 @@ local ctrl_args = {
     },
     center = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_center",
@@ -133,31 +154,38 @@ local ctrl_args = {
     },
     radial_state = {
         {
-            "PNL_Pat00",
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+            },
         },
     },
-    select_icon = {
+    select = {
         {
+            play_object.control.get,
             {
                 "PNL_select",
                 "PNL_angleS00",
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_select",
                 "PNL_angleS01",
             },
         },
     },
-    select_base_icon = {
+    select_base = {
         {
+            play_object.control.get,
             {
                 "PNL_select",
                 "PNL_baseL0",
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_select",
                 "PNL_baseR0",
@@ -172,7 +200,7 @@ local radial_expanded_states = {
 
 ---@param ctrl via.gui.Control
 local function get_icons(ctrl)
-    return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.icon)
+    return play_object.iter_args(ctrl, control_arguments.icons)
 end
 
 ---@param args RadialConfig
@@ -183,78 +211,38 @@ function this:new(args)
     ---@cast o Radial
 
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.keys)
+        return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        for _, icon in pairs(get_icons(ctrl)) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, icon, ctrl_args.background_icon)
-            )
-        end
-
         return util_table.array_merge_t(
-            ret,
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background),
-            play_object.iter_args(play_object.child.get, ctrl, ctrl_args.background_tex)
+            play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
+            play_object.iter_args(ctrl, control_arguments.background)
         )
     end)
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.center = hud_child:new(args.children.center, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.center)
+        return play_object.iter_args(ctrl, control_arguments.center)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        for _, icon in pairs(get_icons(ctrl)) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.frame_icon))
-        end
-
-        return ret
+        return play_object.iter_args(get_icons(ctrl), control_arguments.frame)
     end)
     o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        for _, icon in pairs(get_icons(ctrl)) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.select_icon))
-        end
-
-        return ret
+        return play_object.iter_args(get_icons(ctrl), control_arguments.select)
     end)
     o.children.select_base = hud_child:new(args.children.select_base, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        for _, icon in pairs(get_icons(ctrl)) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(
-                ret,
-                play_object.iter_args(play_object.control.get, icon, ctrl_args.select_base_icon)
-            )
-        end
-
-        return ret
-    end)
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        local ret = {}
-        for _, icon in pairs(get_icons(ctrl)) do
-            ---@cast icon via.gui.Control
-            util_table.array_merge_t(ret, play_object.iter_args(play_object.control.get, icon, ctrl_args.frame_icon))
-        end
-
-        return ret
+        return play_object.iter_args(get_icons(ctrl), control_arguments.select_base)
     end)
     o.children.radial_state = hud_child:new(args.children.radial_state, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.radial_state)
+        return play_object.iter_args(ctrl, control_arguments.radial_state)
     end, nil, nil, true)
 
     o.children.pallet = pallet:new(args.children.pallet, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.pallet)
+        return play_object.iter_args(ctrl, control_arguments.pallet)
     end)
     o.children.craft = hud_child:new(args.children.craft, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.craft)
+        return play_object.iter_args(ctrl, control_arguments.craft)
     end)
 
     if args.expanded then

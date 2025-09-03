@@ -33,7 +33,6 @@ local this = {
     shortcut_keyboard = require("HudController.hud.elements.shortcut_keyboard"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
-    [hud_enum.VITAL] = require("HudController.hud.def.vital_base"),
     [hud_enum.HEALTH] = require("HudController.hud.elements.health"),
     [hud_enum.WEAPON] = require("HudController.hud.elements.weapon"),
     [hud_enum.MINIMAP] = require("HudController.hud.elements.minimap"),

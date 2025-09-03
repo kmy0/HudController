@@ -17,6 +17,14 @@
 --- light: ProgressPartBaseConfig,
 --- }
 
+---@class (exact) ProgressPartTaskControlArguments
+---@field icon PlayObjectGetterFn[]
+---@field text PlayObjectGetterFn[]
+---@field num PlayObjectGetterFn[]
+---@field checkbox PlayObjectGetterFn[]
+---@field light PlayObjectGetterFn[]
+---@field task PlayObjectGetterFn[]
+
 local part_base = require("HudController.hud.elements.progress.part_base")
 local play_object = require("HudController.hud.play_object")
 local text = require("HudController.hud.elements.progress.text")
@@ -27,9 +35,11 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
-local ctrl_args = {
+---@type ProgressPartTaskControlArguments
+local control_arguments = {
     task = {
         {
+            play_object.control.all,
             {
                 "PNL_Pat00",
             },
@@ -39,6 +49,7 @@ local ctrl_args = {
     -- PNL_taskSet
     icon = {
         {
+            play_object.control.get,
             {
                 "PNL_taskSet",
                 "PNL_icon",
@@ -47,6 +58,7 @@ local ctrl_args = {
     },
     num = {
         {
+            play_object.control.get,
             {
                 "PNL_taskSet",
                 "PNL_num",
@@ -55,6 +67,7 @@ local ctrl_args = {
     },
     checkbox = {
         {
+            play_object.control.get,
             {
                 "PNL_taskSet",
                 "PNL_ref_CheckBox",
@@ -63,6 +76,7 @@ local ctrl_args = {
     },
     text = {
         {
+            play_object.child.get,
             {
                 "PNL_taskSet",
                 "PNL_taskAccent",
@@ -74,6 +88,7 @@ local ctrl_args = {
     },
     light = {
         {
+            play_object.control.get,
             {
                 "PNL_taskSet",
                 "PNL_taskAccent",
@@ -90,25 +105,25 @@ local ctrl_args = {
 ---@return ProgressPartTask
 function this:new(args, parent, ctrl_getter)
     local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.all, ctrl, ctrl_args.task)
+        return play_object.iter_args(ctrl, control_arguments.task)
     end)
     setmetatable(o, self)
     ---@cast o ProgressPartTask
 
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.child.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.checkbox = part_base:new(args.children.checkbox, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.checkbox)
+        return play_object.iter_args(ctrl, control_arguments.checkbox)
     end)
     o.children.icon = part_base:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.icon)
+        return play_object.iter_args(ctrl, control_arguments.icon)
     end)
     o.children.num = part_base:new(args.children.num, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.num)
+        return play_object.iter_args(ctrl, control_arguments.num)
     end)
     o.children.light = part_base:new(args.children.light, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.light)
+        return play_object.iter_args(ctrl, control_arguments.light)
     end)
 
     return o

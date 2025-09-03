@@ -17,13 +17,19 @@
 --- other_slinger: HudChildConfig,
 --- }
 
+---@class (exact) SlingerControlArguments
+---@field text PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field background PlayObjectGetterFn[]
+---@field ammo PlayObjectGetterFn[]
+---@field other_slinger PlayObjectGetterFn[]
+
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
-local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -35,27 +41,39 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type SlingerControlArguments
+local control_arguments = {
     text = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_MainName",
             },
         },
     },
-    background1 = {
+    frame = {
         {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_MainObject",
+                "PNL_Base",
+            },
+        },
+    },
+    background = {
+        {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_MainObject",
                 "PNL_Blur",
             },
         },
-    },
-    background2 = {
         {
+            play_object.child.get,
             {
                 "PNL_Pat00",
                 "PNL_MainObject",
@@ -64,17 +82,9 @@ local ctrl_args = {
             "via.gui.Texture",
         },
     },
-    frame = {
-        {
-            {
-                "PNL_Pat00",
-                "PNL_MainObject",
-                "PNL_Base",
-            },
-        },
-    },
     other_slinger = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_KeepingObject",
@@ -83,6 +93,7 @@ local ctrl_args = {
     },
     ammo = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_MainObject",
@@ -90,6 +101,7 @@ local ctrl_args = {
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_MainObject",
@@ -107,22 +119,19 @@ function this:new(args)
     ---@cast o Slinger
 
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.text)
+        return play_object.iter_args(ctrl, control_arguments.text)
     end)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.frame)
+        return play_object.iter_args(ctrl, control_arguments.frame)
     end)
     o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return util_table.array_merge_t(
-            play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background1),
-            play_object.iter_args(play_object.child.get, ctrl, ctrl_args.background2)
-        )
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.ammo = hud_child:new(args.children.ammo, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.ammo)
+        return play_object.iter_args(ctrl, control_arguments.ammo)
     end)
     o.children.other_slinger = hud_child:new(args.children.other_slinger, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.other_slinger)
+        return play_object.iter_args(ctrl, control_arguments.other_slinger)
     end)
 
     return o

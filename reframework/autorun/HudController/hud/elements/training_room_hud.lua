@@ -16,13 +16,18 @@
 --- combo_guide: HudChildConfig,
 --- }
 
+---@class (exact) TrainingRoomHudControlArguments
+---@field command_history PlayObjectGetterFn[]
+---@field button_guide PlayObjectGetterFn[]
+---@field damage PlayObjectGetterFn[]
+---@field combo_guide PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
-local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -34,9 +39,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
-local ctrl_args = {
+-- PNL_All
+---@type TrainingRoomHudControlArguments
+local control_arguments = {
     command_history = {
         {
+            play_object.control.get,
             {
                 "PNL_Group00",
             },
@@ -44,6 +52,7 @@ local ctrl_args = {
     },
     button_guide = {
         {
+            play_object.control.get,
             {
                 "PNL_Group01",
             },
@@ -51,6 +60,7 @@ local ctrl_args = {
     },
     damage = {
         {
+            play_object.control.get,
             {
                 "PNL_Group02",
             },
@@ -58,6 +68,7 @@ local ctrl_args = {
     },
     combo_guide = {
         {
+            play_object.control.get,
             {
                 "PNL_Group03",
             },
@@ -74,16 +85,16 @@ function this:new(args, default_overwrite)
     ---@cast o TrainingRoomHud
 
     o.children.command_history = hud_child:new(args.children.command_history, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.command_history)
+        return play_object.iter_args(ctrl, control_arguments.command_history)
     end)
     o.children.button_guide = hud_child:new(args.children.button_guide, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.button_guide)
+        return play_object.iter_args(ctrl, control_arguments.button_guide)
     end)
     o.children.damage = hud_child:new(args.children.damage, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.damage)
+        return play_object.iter_args(ctrl, control_arguments.damage)
     end)
     o.children.combo_guide = hud_child:new(args.children.combo_guide, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.combo_guide)
+        return play_object.iter_args(ctrl, control_arguments.combo_guide)
     end)
 
     return o

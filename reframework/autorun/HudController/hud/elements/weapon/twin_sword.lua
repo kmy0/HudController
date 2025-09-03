@@ -8,6 +8,10 @@
 ---@class (exact) TwinSwordConfig : HudChildConfig
 ---@field children {background: HudChildConfig, background_sword: HudChildConfig}
 
+---@class (exact) TwinSwordControlArguments
+---@field background PlayObjectGetterFn[]
+---@field background_sword PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -23,9 +27,11 @@ this.__index = this
 setmetatable(this, { __index = hud_child })
 
 -- ctrl = PNL_Scale
-local ctrl_args = {
+---@type TwinSwordControlArguments
+local control_arguments = {
     background = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_UnderBase",
@@ -34,12 +40,14 @@ local ctrl_args = {
     },
     background_sword = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_frame01",
             },
         },
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_demon",
@@ -63,10 +71,10 @@ function this:new(args, parent)
     ---@cast o TwinSword
 
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background)
+        return play_object.iter_args(ctrl, control_arguments.background)
     end)
     o.children.background_sword = hud_child:new(args.children.background_sword, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.background_sword)
+        return play_object.iter_args(ctrl, control_arguments.background_sword)
     end)
 
     return o

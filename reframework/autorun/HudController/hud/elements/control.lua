@@ -19,6 +19,14 @@
 --- skill_name: HudChildConfig,
 --- }
 
+---@class (exact) ControlControlArguments
+---@field music_left PlayObjectGetterFn[]
+---@field music_right PlayObjectGetterFn[]
+---@field notes PlayObjectGetterFn[]
+---@field control_guide1 PlayObjectGetterFn[]
+---@field control_guide2 PlayObjectGetterFn[]
+---@field skill_name PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -36,10 +44,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type ControlControlArguments
+local control_arguments = {
     music_left = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat02",
                 "PNL_MusicFolder01",
@@ -48,6 +58,7 @@ local ctrl_args = {
     },
     music_right = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat02",
                 "PNL_MusicFolder00",
@@ -56,6 +67,7 @@ local ctrl_args = {
     },
     notes = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat02",
                 "PNL_SampleNotes",
@@ -64,6 +76,7 @@ local ctrl_args = {
     },
     control_guide1 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ControlGuide00",
@@ -72,6 +85,7 @@ local ctrl_args = {
     },
     control_guide2 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_ControlGuide01",
@@ -80,14 +94,12 @@ local ctrl_args = {
     },
     skill_name = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat01",
                 "PNL_SkillName",
             },
         },
-    },
-    pat00 = {
-        "PNL_Pat00",
     },
 }
 
@@ -99,26 +111,26 @@ function this:new(args)
     ---@cast o Control
 
     o.children.music_left = hud_child:new(args.children.music_left, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.music_left)
+        return play_object.iter_args(ctrl, control_arguments.music_left)
     end)
     o.children.music_right = hud_child:new(args.children.music_right, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.music_right)
+        return play_object.iter_args(ctrl, control_arguments.music_right)
     end)
     o.children.notes = hud_child:new(args.children.notes, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.notes)
+        return play_object.iter_args(ctrl, control_arguments.notes)
     end)
     o.children.control_guide1 = hud_child:new(args.children.control_guide1, o, function(s, hudbase, gui_id, ctrl)
         ---@diagnostic disable-next-line: invisible
         o:_store_pat00_default(ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide1)
+        return play_object.iter_args(ctrl, control_arguments.control_guide1)
     end)
     o.children.control_guide2 = hud_child:new(args.children.control_guide2, o, function(s, hudbase, gui_id, ctrl)
         ---@diagnostic disable-next-line: invisible
         o:_store_pat00_default(ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.control_guide2)
+        return play_object.iter_args(ctrl, control_arguments.control_guide2)
     end)
     o.children.skill_name = hud_child:new(args.children.skill_name, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.skill_name)
+        return play_object.iter_args(ctrl, control_arguments.skill_name)
     end)
 
     return o
@@ -128,7 +140,7 @@ end
 ---@param ctrl via.gui.Control
 function this:_store_pat00_default(ctrl)
     -- required to reset button guide position when hunting horn is used
-    local pat00 = play_object.control.get(ctrl, ctrl_args.pat00) --[[@as via.gui.Control]]
+    local pat00 = play_object.control.get(ctrl, "PNL_Pat00") --[[@as via.gui.Control]]
     play_object_defaults.check(pat00)
 end
 

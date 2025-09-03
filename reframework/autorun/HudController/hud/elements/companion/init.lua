@@ -16,6 +16,12 @@
 --- player4: CompanionPlayerConfig,
 --- }
 
+---@class (exact) CompanionControlArguments
+---@field player1 PlayObjectGetterFn[]
+---@field player2 PlayObjectGetterFn[]
+---@field player3 PlayObjectGetterFn[]
+---@field player4 PlayObjectGetterFn[]
+
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -32,10 +38,12 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_base })
 
--- ctrl = PNL_Scale
-local ctrl_args = {
+-- PNL_Scale
+---@type CompanionControlArguments
+local control_arguments = {
     player1 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_player20",
@@ -44,6 +52,7 @@ local ctrl_args = {
     },
     player2 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_player30",
@@ -52,6 +61,7 @@ local ctrl_args = {
     },
     player3 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_player40",
@@ -60,6 +70,7 @@ local ctrl_args = {
     },
     player4 = {
         {
+            play_object.control.get,
             {
                 "PNL_Pat00",
                 "PNL_player50",
@@ -76,16 +87,16 @@ function this:new(args)
     ---@cast o Companion
 
     o.children.player1 = player:new(args.children.player1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.player1)
+        return play_object.iter_args(ctrl, control_arguments.player1)
     end)
     o.children.player2 = player:new(args.children.player2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.player2)
+        return play_object.iter_args(ctrl, control_arguments.player2)
     end)
     o.children.player3 = player:new(args.children.player3, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.player3)
+        return play_object.iter_args(ctrl, control_arguments.player3)
     end)
     o.children.player4 = player:new(args.children.player4, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(play_object.control.get, ctrl, ctrl_args.player4)
+        return play_object.iter_args(ctrl, control_arguments.player4)
     end)
 
     return o
