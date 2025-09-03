@@ -633,4 +633,20 @@ function this.array_to_map(t)
     return ret
 end
 
+---@param t table
+---@return string
+function this.to_string(t)
+    if type(t) == "table" then
+        local parts = {}
+        for i, v in ipairs(t) do
+            parts[i] = this.to_string(v)
+        end
+        return "{" .. table.concat(parts, ", ") .. "}"
+    elseif type(t) == "string" then
+        return '"' .. t .. '"'
+    else
+        return tostring(t)
+    end
+end
+
 return this
