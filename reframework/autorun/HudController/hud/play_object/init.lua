@@ -8,7 +8,9 @@
 ---@alias PlayObject via.gui.Control | via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 ---@alias ControlChild via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 
+local config = require("HudController.config")
 local util_table = require("HudController.util.misc.table")
+local logger = require("HudController.util.misc.logger").g
 
 local this = {
     control = require("HudController.hud.play_object.control"),
@@ -22,7 +24,6 @@ function this.iter_args(ctrl, args)
     ---@type PlayObject[]
     local ret = {}
 
-    --TODO: rest perf of this?
     if type(ctrl) ~= "table" then
         ctrl = { ctrl }
     end
@@ -30,14 +31,19 @@ function this.iter_args(ctrl, args)
     for _, control in pairs(ctrl) do
         for _, arguments in pairs(args) do
             local fn = arguments[1]
-            if type(fn) == "table" then
-                util_table.print(fn)
-            end
             ---@diagnostic disable-next-line: param-type-mismatch
             local res = fn(control, table.unpack(arguments, 2))
 
             if not res then
-                --TODO: debug here?
+                if config.debug.current.debug.is_debug then
+                    logger:debug(
+                        string.format(
+                            "iter_args failed!\nCtrl: %s\nArguments: %s",
+                            control:get_Name(),
+                            util_table.to_string({ table.unpack(arguments, 2) })
+                        )
+                    )
+                end
                 goto continue
             end
 
