@@ -1,6 +1,7 @@
 ---@class FrameCache : Cache
 ---@field protected _map_frame table<any, any>
 ---@field max_frame integer
+---@field jitter integer
 
 local cache = require("HudController.util.misc.cache")
 local frame_counter = require("HudController.util.misc.frame_counter")
@@ -13,12 +14,14 @@ this.__index = this
 setmetatable(this, { __index = cache })
 
 ---@param max_frame integer? by default, 0
+---@param jitter integer? by default, 0
 ---@return FrameCache
-function this:new(max_frame)
+function this:new(max_frame, jitter)
     local o = cache.new(self)
     setmetatable(o, self)
     ---@cast o FrameCache
     o.max_frame = max_frame or 0
+    o.jitter = jitter or 0
     o._map_frame = {}
     return o
 end
@@ -26,19 +29,22 @@ end
 ---@param key any
 ---@param value any
 function this:set(key, value)
-    ---@diagnostic disable-next-line: no-unknown
     self._map[key] = value
-    self._map_frame[key] = frame_counter.frame
+    self._map_frame[key] = frame_counter.frame + self.max_frame + math.random(0, self.jitter)
 end
 
 ---@param key any
 ---@return any
 function this:get(key)
-    if self._map_frame[key] and frame_counter.frame - self._map_frame[key] <= self.max_frame then
-        return self._map[key]
+    local max_frame = self._map_frame[key]
+    if max_frame then
+        if frame_counter.frame <= max_frame then
+            return self._map[key]
+        else
+            self._map[key] = nil
+            self._map_frame[key] = nil
+        end
     end
-
-    self._map[key] = nil
 end
 
 function this:clear()
@@ -50,10 +56,11 @@ end
 ---@param func T
 ---@param max_frame integer?
 ---@param do_hash boolean?
----@param deep_hash_table boolean?
+---@param deep_hash_table boolean?,
+---@param jitter integer?
 ---@return T
-function this.memoize(func, max_frame, do_hash, deep_hash_table)
-    local frame_cache = this:new(max_frame)
+function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter)
+    local frame_cache = this:new(max_frame, jitter)
 
     local wrapped = {
         clear = function()
