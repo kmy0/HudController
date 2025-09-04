@@ -192,6 +192,16 @@ function this:get_GUI020015()
     return self.GUI020015
 end
 
+---@return boolean
+function this:any()
+    return util_table.any(self.properties, function(key, value)
+        if (key == "state" and self[key] ~= -1) or (key ~= "state" and self[key]) then
+            return true
+        end
+        return false
+    end)
+end
+
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
