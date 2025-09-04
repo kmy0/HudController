@@ -24,9 +24,6 @@
 
 ---@class (exact) ShortcutKeyboardControlArguments
 ---@field background_blur PlayObjectGetterFn[]
----@field tabs PlayObjectGetterFn[]
----@field item PlayObjectGetterFn[]
----@field pallet PlayObjectGetterFn[]
 ---@field arrow PlayObjectGetterFn[]
 ---@field frame PlayObjectGetterFn[]
 
@@ -63,17 +60,6 @@ local control_arguments = {
             "via.gui.Material",
         },
     },
-    tabs = {
-        {
-            play_object.control.all,
-            {
-                "PNL_Pat00",
-                "PNL_Palette",
-                "FSL_Tab00",
-            },
-            "Item",
-        },
-    },
     frame = {
         {
             play_object.child.get,
@@ -96,15 +82,6 @@ local control_arguments = {
             "via.gui.Scale9GridV2",
         },
     },
-    pallet = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Pat00",
-                "PNL_Palette",
-            },
-        },
-    },
     arrow = {
         {
             play_object.control.get,
@@ -114,18 +91,6 @@ local control_arguments = {
                 "PNL_Common",
                 "PNL_Arrows",
             },
-        },
-    },
-    item = {
-        {
-            play_object.control.all,
-            {
-                "PNL_Pat00",
-                "PNL_Palette",
-                "PNL_Main",
-                "FSG_Keys",
-            },
-            "Item",
         },
     },
 }
@@ -146,15 +111,9 @@ function this:new(args)
     o.children.frame = ctrl_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.tab = tab:new(args.children.tab, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.tabs)
-    end)
-    o.children.item = item:new(args.children.item, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.item)
-    end)
-    o.children.pallet = pallet:new(args.children.pallet, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.pallet)
-    end)
+    o.children.tab = tab:new(args.children.tab, o)
+    o.children.item = item:new(args.children.item, o)
+    o.children.pallet = pallet:new(args.children.pallet, o)
 
     return o
 end

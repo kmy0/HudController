@@ -23,6 +23,7 @@
 ---@field keybind PlayObjectGetterFn[]
 ---@field frame PlayObjectGetterFn[]
 ---@field cursor_background PlayObjectGetterFn[]
+---@field tabs PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -126,14 +127,26 @@ local control_arguments = {
             },
         },
     },
+    tabs = {
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+                "PNL_Palette",
+                "FSL_Tab00",
+            },
+            "Item",
+        },
+    },
 }
 
 ---@param args ShortcutKeyboardTabConfig
 ---@param parent ShortcutKeyboard
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return ShortcutKeyboardTab
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.tabs)
+    end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardTab
 

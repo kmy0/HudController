@@ -44,7 +44,6 @@
 ---@field reload PlayObjectGetterFn[]
 ---@field mode_icon1 PlayObjectGetterFn[]
 ---@field mode_icon2 PlayObjectGetterFn[]
----@field bow_phials PlayObjectGetterFn[]
 ---@field bow_seperate PlayObjectGetterFn[]
 ---@field bow_icon_active PlayObjectGetterFn[]
 ---@field bow_icon_disable PlayObjectGetterFn[]
@@ -184,18 +183,6 @@ local control_arguments = {
             },
         },
     },
-    bow_phials = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Pat00",
-                "PNL_energy",
-                "PNL_ENGaugeSet",
-                "PNL_frameBow",
-                "PNL_BowBottlePlus",
-            },
-        },
-    },
     bow_seperate = {
         {
             play_object.control.all,
@@ -294,10 +281,7 @@ function this:new(args)
         util_table.array_merge_t(ret, play_object.iter_args(separators, control_arguments.bow_icon_disable))
         return ret
     end)
-
-    o.children.bow_phials = bow_phials:new(args.children.bow_phials, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.bow_phials)
-    end)
+    o.children.bow_phials = bow_phials:new(args.children.bow_phials, o)
 
     o.hide_write = true
     if args.no_hide_parts then

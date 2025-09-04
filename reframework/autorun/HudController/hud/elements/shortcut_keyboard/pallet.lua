@@ -14,6 +14,7 @@
 ---@class (exact) ShortcutKeyboardPalletControlArguments
 ---@field text PlayObjectGetterFn[]
 ---@field keybind PlayObjectGetterFn[]
+---@field pallet PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -42,14 +43,24 @@ local control_arguments = {
             },
         },
     },
+    pallet = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_Palette",
+            },
+        },
+    },
 }
 
 ---@param args ShortcutKeyboardPalletConfig
 ---@param parent ShortcutKeyboard
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return ShortcutKeyboardPallet
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.pallet)
+    end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardPallet
 

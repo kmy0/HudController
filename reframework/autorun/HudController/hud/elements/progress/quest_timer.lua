@@ -52,17 +52,16 @@ local control_arguments = {
 
 ---@param args ProgressQuestTimerConfig
 ---@param parent Progress
----@param ctrl_getter (fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
+---@param ctrl_getter fun(self: ProgressQuestTimer, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
+---@param ctrl_writer (fun(self: ProgressQuestTimer, ctrl: via.gui.Control): boolean)?
+---@param default_overwrite ProgressPartBaseDefaultOverwrite?
+---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param no_cache boolean?
 ---@return ProgressQuestTimer
-function this:new(args, parent, ctrl_getter)
-    local o = timer.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
-        local pnl = this._get_panel(s)
-        if pnl then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            parent.children.timer:reset_specific(nil, nil, pnl)
-        end
-        return pnl
-    end, true)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+    local o =
+        timer.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
     setmetatable(o, self)
     ---@cast o ProgressQuestTimer
 

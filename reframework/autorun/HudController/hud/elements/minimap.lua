@@ -74,9 +74,8 @@ local control_arguments = {
 }
 
 ---@param args MinimapConfig
----@param default_overwrite HudBaseDefaultOverwrite?
 ---@return Minimap
-function this:new(args, default_overwrite)
+function this:new(args)
     local o = hud_base.new(self, args)
     setmetatable(o, self)
     ---@cast o Minimap

@@ -40,6 +40,7 @@
 ---@field slider_animation PlayObjectGetterFn[]
 ---@field mantle_state PlayObjectGetterFn[]
 ---@field cursor_state PlayObjectGetterFn[]
+---@field slider PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -142,6 +143,15 @@ local control_arguments = {
             "via.gui.Texture",
         },
     },
+    slider = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_itemSlider",
+            },
+        },
+    },
 }
 
 local appear_open_states = {
@@ -153,12 +163,10 @@ local appear_open_states = {
 
 ---@param args ItembarSliderConfig
 ---@param parent Itembar
----@param ctrl_getter fun(self: ItembarSlider, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
----@param ctrl_writer (fun(self: ItembarSlider, ctrl: via.gui.Control): boolean)?
----@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean?
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_child:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent)
+    local o = hud_child:new(args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.slider)
+    end)
     setmetatable(o, self)
     ---@cast o ItembarSlider
 

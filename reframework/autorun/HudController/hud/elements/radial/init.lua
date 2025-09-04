@@ -30,7 +30,6 @@
 --- }
 
 ---@class (exact) RadialControlArguments
----@field pallet PlayObjectGetterFn[]
 ---@field craft PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
 ---@field keys PlayObjectGetterFn[]
@@ -63,14 +62,6 @@ setmetatable(this, { __index = hud_base })
 -- PNL_Scale
 ---@type RadialControlArguments
 local control_arguments = {
-    pallet = {
-        {
-            play_object.control.get,
-            {
-                "PNL_PalletInOut",
-            },
-        },
-    },
     icons = {
         {
             play_object.control.all,
@@ -237,9 +228,7 @@ function this:new(args)
     o.children.radial_state = hud_child:new(args.children.radial_state, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.radial_state)
     end, nil, nil, true)
-    o.children.pallet = pallet:new(args.children.pallet, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.pallet)
-    end)
+    o.children.pallet = pallet:new(args.children.pallet, o)
     o.children.craft = hud_child:new(args.children.craft, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.craft)
     end)

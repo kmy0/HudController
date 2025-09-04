@@ -22,10 +22,8 @@
 --- }
 
 ---@class (exact) ItembarControlArguments
----@field mantle PlayObjectGetterFn[]
----@field slider PlayObjectGetterFn[]
----@field all_slider PlayObjectGetterFn[]
 ---@field akuma_bar PlayObjectGetterFn[]
+---@field slider PlayObjectGetterFn[]
 
 local all_slider = require("HudController.hud.elements.itembar.all_slider")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -53,15 +51,6 @@ setmetatable(this, { __index = hud_base })
 -- PNL_Scale
 ---@type ItembarControlArguments
 local control_arguments = {
-    slider = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Pat00",
-                "PNL_itemSlider",
-            },
-        },
-    },
     akuma_bar = {
         {
             play_object.control.get,
@@ -73,48 +62,30 @@ local control_arguments = {
             },
         },
     },
-    all_slider = {
+    slider = {
         {
             play_object.control.get,
             {
                 "PNL_Pat00",
-                "PNL_allSlider",
-            },
-        },
-    },
-    mantle = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Pat00",
-                "PNL_mantleSet",
-                "PNL_mantleSetMove",
-                "PNL_mantleSetMode",
+                "PNL_itemSlider",
             },
         },
     },
 }
 
 ---@param args ItembarConfig
----@param default_overwrite HudBaseDefaultOverwrite?
 ---@return Itembar
-function this:new(args, default_overwrite)
-    local o = hud_base.new(self, args, nil, default_overwrite)
+function this:new(args)
+    local o = hud_base.new(self, args)
     setmetatable(o, self)
     ---@cast o Itembar
 
-    o.children.slider = slider:new(args.children.slider, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.slider)
-    end)
-    o.children.all_slider = all_slider:new(args.children.all_slider, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.all_slider)
-    end)
+    o.children.slider = slider:new(args.children.slider, o)
+    o.children.all_slider = all_slider:new(args.children.all_slider, o)
     o.children.akuma_bar = hud_child:new(args.children.akuma_bar, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.akuma_bar)
     end)
-    o.children.mantle = mantle:new(args.children.mantle, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.mantle)
-    end)
+    o.children.mantle = mantle:new(args.children.mantle, o)
     o.children.slider_part = hud_child:new(args.children.slider, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.slider)
     end, function(s, ctrl)

@@ -37,6 +37,7 @@
 ---@field center PlayObjectGetterFn[]
 ---@field icons RadialPalletIconControlArguments
 ---@field icon_center RadialPalletIconCenterControlArguments
+---@field pallet PlayObjectGetterFn[]
 
 ---@class (exact) RadialPalletIconControlArguments
 ---@field icons PlayObjectGetterFn[]
@@ -250,6 +251,14 @@ local control_arguments = {
             },
         },
     },
+    pallet = {
+        {
+            play_object.control.get,
+            {
+                "PNL_PalletInOut",
+            },
+        },
+    },
 }
 
 local pallet_expanded_states = {
@@ -282,12 +291,10 @@ end
 
 ---@param args RadialPalletConfig
 ---@param parent Radial
----@param ctrl_getter fun(self: RadialPallet, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
----@param ctrl_writer (fun(self: RadialPallet, ctrl: via.gui.Control): boolean)?
----@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean?
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_child:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent)
+    local o = hud_child:new(args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.pallet)
+    end)
     setmetatable(o, self)
     ---@cast o RadialPallet
 

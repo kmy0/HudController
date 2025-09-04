@@ -13,7 +13,6 @@
 --- }
 
 ---@class (exact) ProgressTimerControlArguments
----@field timer PlayObjectGetterFn[]
 ---@field text PlayObjectGetterFn[]
 ---@field rank PlayObjectGetterFn[]
 
@@ -26,19 +25,9 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
+-- PNL_time
 ---@type ProgressTimerControlArguments
 local control_arguments = {
-    timer = {
-        {
-            play_object.control.all,
-            {
-                "PNL_Pat00",
-            },
-            "PNL_time",
-            true,
-        },
-    },
-    -- PNL_time
     text = {
         {
             play_object.control.get,
@@ -59,13 +48,25 @@ local control_arguments = {
 
 ---@param args ProgressTimerConfig
 ---@param parent Progress
----@param ctrl_getter (fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
+---@param ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
+---@param ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
+---@param default_overwrite ProgressPartBaseDefaultOverwrite?
+---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@param no_cache boolean?
 ---@return ProgressTimer
-function this:new(args, parent, ctrl_getter, no_cache)
-    local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.timer)
-    end, nil, nil, nil, nil, no_cache)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+    local o = part_base.new(
+        self,
+        args,
+        parent,
+        ctrl_getter,
+        ctrl_writer,
+        default_overwrite,
+        gui_ignore,
+        children_sort,
+        no_cache
+    )
     setmetatable(o, self)
     ---@cast o ProgressTimer
 

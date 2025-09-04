@@ -83,9 +83,21 @@ setmetatable(this, { __index = ctrl_child })
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Material): boolean)?
 ---@param default_overwrite MaterialDefaultOverwrite?
 ---@param gui_ignore boolean?
+---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param no_cache boolean? by_default, false
 ---@return Material
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = ctrl_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+    local o = ctrl_child.new(
+        self,
+        args,
+        parent,
+        ctrl_getter,
+        ctrl_writer,
+        default_overwrite,
+        gui_ignore,
+        children_sort,
+        no_cache
+    )
     o.properties = util_table.merge_t(o.properties, {
         var0 = true,
         var1 = true,
