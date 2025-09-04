@@ -55,8 +55,7 @@ end
 function this:reset_ctrl(ctrl, key)
     ---@diagnostic disable-next-line: param-type-mismatch
     hud_child.reset_ctrl(self, ctrl, key)
-    ---@diagnostic disable-next-line: param-type-mismatch
-    self.children.slinger:reset_ctrl(self.children.slinger:get_slinger_pnl(), key)
+    self.children.slinger:clear()
 end
 
 ---@return SlingerReticleFocusConfig
