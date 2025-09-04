@@ -36,10 +36,10 @@ end
 ---@param box {x: integer, y: integer, w: integer, h: integer}?
 function cls:set_box(box)
     if box then
-        self:mark_write()
+        self:mark_write("offset")
     else
         self:reset("offset")
-        self:mark_idle()
+        self:mark_idle("offset")
 
         local current_config = self:get_current_config()
         if current_config.enabled_offset then

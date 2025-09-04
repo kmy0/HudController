@@ -18,6 +18,7 @@
 ---@field root HudBase
 ---@field children table<string, HudChild>
 ---@field write_nodes table<HudBase, integer>
+---@field write_properies table<HudBaseProperty, boolean>
 ---@field options table<string, integer>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
@@ -142,6 +143,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         children = {},
         options = {},
         write_nodes = {},
+        write_properies = {},
         properties = {
             scale = true,
             offset = true,
@@ -223,11 +225,11 @@ function this:set_color_scale(scale)
         self.color_scale.x = scale.x
         self.color_scale.y = scale.y
         self.color_scale.z = scale.z
-        self:mark_write()
+        self:mark_write("color_scale")
     else
         self:reset("color_scale")
         self.color_scale = scale
-        self:mark_idle()
+        self:mark_idle("color_scale")
     end
 end
 
@@ -235,11 +237,11 @@ end
 function this:set_scale(scale)
     if scale then
         self.scale = Vector3f.new(scale.x, scale.y, 0)
-        self:mark_write()
+        self:mark_write("scale")
     else
         self:reset("scale")
         self.scale = scale
-        self:mark_idle()
+        self:mark_idle("scale")
     end
 end
 
@@ -247,35 +249,35 @@ end
 function this:set_segment(segment)
     if segment then
         self.segment = rl(ace_enum.draw_segment, segment)
-        self:mark_write()
+        self:mark_write("segment")
     else
         self:reset("segment")
         self.segment = segment
-        self:mark_idle()
+        self:mark_idle("segment")
     end
 end
 
 ---@param offset {x:number, y:number}?
 function this:set_offset(offset)
     if offset then
-        self:mark_write()
+        self:mark_write("offset")
         self.offset = Vector3f.new(offset.x, offset.y, 0)
     else
         self:reset("offset")
         self.offset = offset
-        self:mark_idle()
+        self:mark_idle("offset")
     end
 end
 
 ---@param rot number?
 function this:set_rot(rot)
     if rot then
-        self:mark_write()
+        self:mark_write("rot")
         self.rot = Vector3f.new(0, 0, rot)
     else
         self:reset("rot")
         self.rot = rot
-        self:mark_idle()
+        self:mark_idle("rot")
     end
 end
 
@@ -285,9 +287,9 @@ function this:set_hide(hide)
     self:reset("hide")
 
     if self.hide and not hide then
-        self:mark_idle()
+        self:mark_idle("hide")
     elseif not self.hide and hide then
-        self:mark_write()
+        self:mark_write("hide")
     end
     self.hide = hide
 end
@@ -295,24 +297,24 @@ end
 ---@param opacity number?
 function this:set_opacity(opacity)
     if opacity then
-        self:mark_write()
+        self:mark_write("opacity")
         self.opacity = opacity
     else
         self:reset("opacity")
         self.opacity = opacity
-        self:mark_idle()
+        self:mark_idle("opacity")
     end
 end
 
 ---@param play_state string?
 function this:set_play_state(play_state)
     if play_state then
-        self:mark_write()
+        self:mark_write("play_state")
         self.play_state = play_state
     else
         self:reset("play_state")
         self.play_state = play_state
-        self:mark_idle()
+        self:mark_idle("play_state")
     end
 end
 
@@ -378,7 +380,28 @@ function this:whoami_cls()
     return table.concat(chain, ".")
 end
 
-function this:mark_write()
+---@param key HudBaseProperty
+function this:mark_write(key)
+    if self.write_properies[key] then
+        return
+    end
+
+    self.write_properies[key] = true
+    self:_mark_write()
+end
+
+---@param key HudBaseProperty
+function this:mark_idle(key)
+    if not self.write_properies[key] then
+        return
+    end
+
+    self.write_properies[key] = nil
+    self:_mark_idle()
+end
+
+---@protected
+function this:_mark_write()
     if not self.parent then
         return
     end
@@ -389,10 +412,11 @@ function this:mark_write()
         self.parent.write_nodes[self] = 1
     end
 
-    self.parent:mark_write()
+    self.parent:_mark_write()
 end
 
-function this:mark_idle()
+---@protected
+function this:_mark_idle()
     if not self.parent then
         return
     end
@@ -405,7 +429,7 @@ function this:mark_idle()
         self.parent.write_nodes[self] = nil
     end
 
-    self.parent:mark_idle()
+    self.parent:_mark_idle()
 end
 
 ---@param option_name string
@@ -705,7 +729,7 @@ function this:set_play_states(child_to_play_state)
     for child_name, play_state in pairs(child_to_play_state) do
         local child = self.children[child_name]
         child.play_state = play_state
-        child:mark_write()
+        child:mark_write("play_state")
     end
 end
 
@@ -717,7 +741,7 @@ function this:reset_play_states(child_to_play_state)
             child:reset(property)
             ---@diagnostic disable-next-line: no-unknown
             child[property] = nil
-            child:mark_idle()
+            child:mark_idle("play_state")
         end
     end
 end
@@ -796,7 +820,7 @@ function this:clear()
                 ---@diagnostic disable-next-line: no-unknown
                 self[key] = nil
             end
-            self:mark_idle()
+            self:mark_idle(key)
         end
     end
 end
@@ -807,10 +831,10 @@ function this:apply_other(other)
         ---@diagnostic disable-next-line: no-unknown
         local value = other[key]
         if value and not self[key] then
-            self:mark_write()
+            self:mark_write(key)
         elseif not value and self[key] then
             self:reset(key)
-            self:mark_idle()
+            self:mark_idle(key)
         end
         ---@diagnostic disable-next-line: no-unknown
         self[key] = value

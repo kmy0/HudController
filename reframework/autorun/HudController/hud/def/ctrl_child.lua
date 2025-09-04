@@ -15,6 +15,8 @@
 ---@field ctrl_getter fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?
 ---@field protected _ctrl_grouper fun(self: CtrlChild): ControlChild[]
 ---@field reset fun(self: CtrlChild, key: CtrlChildWriteKey)
+---@field mark_write fun(self: CtrlChild, key: CtrlChildProperty)
+---@field mark_idle fun(self: CtrlChild, key: CtrlChildProperty)
 
 ---@class (exact) CtrlChildConfig : HudChildConfig
 ---@field name_key string
@@ -130,11 +132,11 @@ end
 function this:set_scale(scale)
     if scale then
         self.scale = scale
-        self:mark_write()
+        self:mark_write("scale")
     else
         self:reset("scale")
         self.scale = scale
-        self:mark_idle()
+        self:mark_idle("scale")
     end
 end
 
@@ -142,11 +144,11 @@ end
 function this:set_size_x(size_x)
     if size_x then
         self.size_x = size_x
-        self:mark_write()
+        self:mark_write("size_x")
     else
         self:reset("size_x")
         self.size_x = size_x
-        self:mark_idle()
+        self:mark_idle("size_x")
     end
 end
 
@@ -154,24 +156,24 @@ end
 function this:set_size_y(size_y)
     if size_y then
         self.size_y = size_y
-        self:mark_write()
+        self:mark_write("size_y")
     else
         self:reset("size_y")
         self.size_y = size_y
-        self:mark_idle()
+        self:mark_idle("size_y")
     end
 end
 
 ---@param color integer?
 function this:set_color(color)
     if color then
-        self:mark_write()
+        self:mark_write("color")
         self.color = util_ref.value_type("via.Color")
         self.color.rgba = color
     else
         self:reset("color")
         self.color = color
-        self:mark_idle()
+        self:mark_idle("color")
     end
 end
 

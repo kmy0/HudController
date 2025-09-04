@@ -14,6 +14,8 @@
 ---@field input_default ItembarAllSliderInputDefault
 ---@field protected _icon_first_update boolean
 ---@field reset fun(self: ItembarAllSlider, key: ItembarAllSliderWriteKey)
+---@field mark_write fun(self: ItembarAllSlider, key: ItembarAllSliderProperty)
+---@field mark_idle fun(self: ItembarAllSlider, key: ItembarAllSliderProperty)
 ---@field ctrl_getter fun(self: ItembarAllSlider, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ItembarAllSlider, ctrl: via.gui.Control): boolean)?
 ---@field children {
@@ -70,7 +72,7 @@
 ---@field input_bit integer
 ---@field buttons [app.GUIFunc.TYPE, app.GUIFunc.TYPE, app.GUIFunc.TYPE]
 
----@alias ItembarAllSliderProperty HudChildProperty | "control" | "decide_key" | "appear_open"
+---@alias ItembarAllSliderProperty HudChildProperty | "control" | "decide_key" | "appear_open" | "disable_right_stick"
 ---@alias ItembarAllSliderWriteKey HudChildWriteKey | ItembarAllSliderProperty | "input"
 
 ---@class (exact) ItembarAllSliderControlArguments
@@ -258,6 +260,7 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
         control = true,
         decide_key = true,
         appear_open = true,
+        disable_right_stick = true,
     })
 
     o._icon_first_update = true
@@ -460,38 +463,38 @@ end
 ---@param val integer
 function this:set_control(val)
     if val ~= -1 then
-        self:mark_write()
+        self:mark_write("control")
         self.control = val
     else
         self:reset("input")
         self.control = val
-        self:mark_idle()
+        self:mark_idle("control")
     end
 end
 
 ---@param val string
 function this:set_decide_key(val)
     if val ~= "option_disable" then
-        self:mark_write()
+        self:mark_write("decide_key")
         self.decide_key = val
     else
         self:reset("input")
         self.decide_key = val
-        self:mark_idle()
+        self:mark_idle("decide_key")
     end
 end
 
 ---@param disable_right_stick boolean
-function this:set_disable_right_stick(disable_right_stick)
+function this:set_disable_right_stick(disable_right_stick) --TODO: TEST
     if disable_right_stick then
         self.children.right_stick_key:set_hide(true)
-        self:mark_write()
+        self:mark_write("disable_right_stick")
         self.disable_right_stick = disable_right_stick
     else
         self:reset("input")
         self.disable_right_stick = disable_right_stick
         self.children.right_stick_key:set_hide(false)
-        self:mark_idle()
+        self:mark_idle("disable_right_stick")
     end
 end
 

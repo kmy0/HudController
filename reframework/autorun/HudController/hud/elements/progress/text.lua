@@ -6,6 +6,8 @@
 ---@field set_offset_x fun(self: ProgressPartText, val: number?)
 ---@field set_clock_offset_x fun(self: ProgressPartText, val: number?)
 ---@field set_num_offset_x fun(self: ProgressPartText, val: number?)
+---@field mark_write fun(self: ProgressPartText, key: ProgressPartTextProperty)
+---@field mark_idle fun(self: ProgressPartText, key: ProgressPartTextProperty)
 
 ---@class (exact) ProgressPartTextConfig : TextConfig, ProgressPartBaseConfig
 ---@field align_left boolean?
@@ -88,14 +90,14 @@ end
 ---@param align_left boolean
 function this:set_align_left(align_left)
     if align_left then
-        self:mark_write()
+        self:mark_write("align_left")
         self.align_left = align_left
         self.page_alignment = rl(ace_enum.page_alignment, "LeftCenter")
     else
         self:reset("page_alignment")
         self.align_left = align_left
         self.page_alignment = nil
-        self:mark_idle()
+        self:mark_idle("align_left")
     end
 end
 
