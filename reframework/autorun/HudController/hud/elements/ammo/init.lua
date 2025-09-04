@@ -279,7 +279,7 @@ function this:new(args)
         }) do
             if not child.hide and not child.opacity then
                 ---@diagnostic disable-next-line: param-type-mismatch, invisible
-                for _, c in pairs(child:_ctrl_getter(nil, nil, { ctrl })) do
+                for _, c in pairs(child:ctrl_getter(nil, nil, ctrl)) do
                     self:_set_opacity(c, 1.0)
                 end
             end

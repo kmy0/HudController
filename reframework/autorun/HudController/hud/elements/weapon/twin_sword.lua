@@ -66,7 +66,7 @@ function this:new(args, parent)
             return {}
         end
         return ctrl
-    end)
+    end, nil, nil, nil, nil, true)
     setmetatable(o, self)
     ---@cast o TwinSword
 

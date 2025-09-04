@@ -485,7 +485,7 @@ function this:set_decide_key(val)
 end
 
 ---@param disable_right_stick boolean
-function this:set_disable_right_stick(disable_right_stick) --TODO: TEST
+function this:set_disable_right_stick(disable_right_stick)
     if disable_right_stick then
         self.children.right_stick_key:set_hide(true)
         self:mark_write("disable_right_stick")

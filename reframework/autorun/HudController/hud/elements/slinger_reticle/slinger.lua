@@ -57,7 +57,8 @@ local control_arguments = {
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@return SlingerReticleSlinger
 function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
-    local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+    local o =
+        hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, true)
     o.properties = util_table.merge_t(o.properties, {
         hide_slinger_empty = true,
     })

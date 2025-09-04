@@ -58,7 +58,8 @@ function this:new(args, parent)
                 return false
             end
             return a_key < b_key
-        end
+        end,
+        true
     )
 
     setmetatable(o, self)

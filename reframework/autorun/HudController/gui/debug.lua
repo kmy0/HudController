@@ -291,6 +291,13 @@ function this.draw()
         hud_debug.write_all_elements()
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
+
+    _changed, config_debug.show_disabled =
+        imgui.checkbox(gui_util.tr("debug.box_disable_cache"), config_debug.disable_cache)
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
+    changed = _changed or changed
+
+    imgui.same_line()
     imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
 
     if imgui.button(gui_util.tr("debug.button_perf_test")) then

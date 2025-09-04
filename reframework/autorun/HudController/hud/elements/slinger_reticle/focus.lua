@@ -29,7 +29,7 @@ function this:new(args, parent)
             parent:reset_slinger()
             return parent:get_GUI020002_pnl()
         end
-    end)
+    end, nil, nil, nil, nil, true)
     setmetatable(o, self)
     ---@cast o SlingerReticleFocus
 

@@ -62,7 +62,7 @@ function this:new(args, parent, ctrl_getter)
             parent.children.timer:reset_specific(nil, nil, pnl)
         end
         return pnl
-    end)
+    end, true)
     setmetatable(o, self)
     ---@cast o ProgressQuestTimer
 

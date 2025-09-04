@@ -85,7 +85,7 @@ function this:new(args, parent)
         end
 
         return ctrl
-    end)
+    end, nil, nil, nil, nil, true)
     setmetatable(o, self)
     ---@cast o Rod
 

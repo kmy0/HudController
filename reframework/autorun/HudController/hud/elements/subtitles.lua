@@ -81,7 +81,7 @@ function this:new(args)
             end
 
             return play_object.iter_args(ctrl, control_arguments.group)
-        end)
+        end, nil, nil, nil, nil, true)
     end
 
     o.children.background = scale9:new(
