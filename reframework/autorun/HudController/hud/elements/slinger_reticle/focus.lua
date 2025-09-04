@@ -36,7 +36,7 @@ function this:new(args, parent)
     ---@diagnostic disable-next-line: missing-fields
     o.children.slinger = slinger:new({}, o, function(s, hudbase, gui_id, ctrl)
         return s:get_slinger_pnl()
-    end, nil, nil, true)
+    end, nil, nil, true, nil, true)
     return o
 end
 

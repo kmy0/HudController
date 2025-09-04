@@ -21,8 +21,6 @@
 ---@field background PlayObjectGetterFn[]
 ---@field resonance PlayObjectGetterFn[]
 ---@field melody PlayObjectGetterFn[]
----@field notice PlayObjectGetterFn[]
----@field perform PlayObjectGetterFn[]
 
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
@@ -73,27 +71,6 @@ local control_arguments = {
             },
         },
     },
-    notice = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Scale",
-                "PNL_Pat00",
-                "PNL_Score",
-                "PNL_Notice",
-            },
-        },
-    },
-    perform = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Scale",
-                "PNL_Pat00",
-                "PNL_Perform",
-            },
-        },
-    },
 }
 
 ---@param args WhistleConfig
@@ -119,12 +96,8 @@ function this:new(args, parent)
     o.children.melody = hud_child:new(args.children.melody, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.melody)
     end)
-    o.children.notice = notice:new(args.children.notice, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.notice)
-    end)
-    o.children.perform = perform:new(args.children.perform, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.perform)
-    end)
+    o.children.notice = notice:new(args.children.notice, o)
+    o.children.perform = perform:new(args.children.perform, o)
 
     return o
 end

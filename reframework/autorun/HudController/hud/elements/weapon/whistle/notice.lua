@@ -11,6 +11,7 @@
 
 ---@class (exact) WhistleNoticeControlArguments
 ---@field arrow PlayObjectGetterFn[]
+---@field notice PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -44,14 +45,26 @@ local control_arguments = {
             "via.gui.Texture",
         },
     },
+    notice = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Scale",
+                "PNL_Pat00",
+                "PNL_Score",
+                "PNL_Notice",
+            },
+        },
+    },
 }
 
 ---@param args WhistleNoticeConfig
 ---@param parent Whistle
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@return WhistleNotice
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.notice)
+    end)
     setmetatable(o, self)
     ---@cast o WhistleNotice
 

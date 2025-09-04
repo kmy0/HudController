@@ -95,9 +95,20 @@ setmetatable(this, { __index = hud_child })
 ---@param default_overwrite CtrlChildDefaultOverwite?
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param no_cache boolean? by_default, false
 ---@return CtrlChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
-    local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        ctrl_getter,
+        ctrl_writer,
+        default_overwrite,
+        gui_ignore,
+        children_sort,
+        no_cache
+    )
     setmetatable(o, self)
     ---@cast o CtrlChild
 

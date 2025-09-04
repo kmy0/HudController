@@ -33,6 +33,10 @@
 --- faint: ProgressPartTaskFaintConfig,
 --- }
 
+---@class (exact) ProgressControlArguments
+---@field task PlayObjectGetterFn[]
+---@field timer PlayObjectGetterFn[]
+
 local best_timer = require("HudController.hud.elements.progress.best_timer")
 local clock = require("HudController.hud.elements.progress.clock")
 local data = require("HudController.data")
@@ -44,6 +48,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local name_main = require("HudController.hud.elements.progress.name_main")
 local name_sub = require("HudController.hud.elements.progress.name_sub")
 local part_task = require("HudController.hud.elements.progress.task")
+local play_object = require("HudController.hud.play_object")
 local play_object_defaults = require("HudController.hud.defaults.play_object")
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
@@ -60,6 +65,29 @@ local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = hud_base })
+
+---@type ProgressControlArguments
+local control_arguments = {
+    timer = {
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+            },
+            "PNL_time",
+            true,
+        },
+    },
+    task = {
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+            },
+            "PNL_task",
+        },
+    },
+}
 
 ---@param args ProgressConfig
 ---@return Progress
@@ -79,15 +107,27 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Progress
 
-    o.children.task = part_task:new(args.children.task, o)
+    o.children.task = part_task:new(args.children.task, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.task)
+    end)
     o.children.name_main = name_main:new(args.children.name_main, o)
     o.children.name_sub = name_sub:new(args.children.name_sub, o)
     o.children.guide_assign = guide_assign:new(args.children.guide_assign, o)
     o.children.gauge = gauge:new(args.children.gauge, o)
     o.children.text_part = text_part:new(args.children.text_part, o)
-    o.children.timer = timer:new(args.children.timer, o)
+    o.children.timer = timer:new(args.children.timer, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.timer)
+    end)
     o.children.clock = clock:new(args.children.clock, o)
-    o.children.quest_timer = quest_timer:new(args.children.quest_timer, o)
+    o.children.quest_timer = quest_timer:new(args.children.quest_timer, o, function(s, hudbase, gui_id, ctrl)
+        ---@diagnostic disable-next-line: invisible
+        local pnl = s._get_panel(s)
+        if pnl then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            o.children.timer:reset_specific(nil, nil, pnl)
+        end
+        return pnl
+    end, nil, nil, nil, nil, true)
     o.children.best_timer = best_timer:new(args.children.best_timer, o)
     o.children.faint = faint:new(args.children.faint, o)
     return o

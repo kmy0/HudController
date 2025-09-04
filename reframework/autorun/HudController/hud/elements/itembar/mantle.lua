@@ -16,6 +16,9 @@
 --- visible_state: HudChildConfig,
 --- }
 
+---@class (exact) ItembarMantleArguments
+---@field mantle PlayObjectGetterFn[]
+
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
 local util_table = require("HudController.util.misc.table")
@@ -26,6 +29,22 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
+-- PNL_Scale
+---@type ItembarMantleArguments
+local control_arguments = {
+    mantle = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_mantleSet",
+                "PNL_mantleSetMove",
+                "PNL_mantleSetMode",
+            },
+        },
+    },
+}
+
 local always_visible_states = {
     mantle_state = "dummy",
     visible_state = "dummy",
@@ -33,12 +52,10 @@ local always_visible_states = {
 
 ---@param args ItembarMantleConfig
 ---@param parent Itembar
----@param ctrl_getter fun(self: ItembarMantle, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
----@param ctrl_writer (fun(self: ItembarMantle, ctrl: via.gui.Control): boolean)?
----@param default_overwrite HudChildDefaultOverwrite?
----@param gui_ignore boolean?
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
-    local o = hud_child:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore)
+function this:new(args, parent)
+    local o = hud_child:new(args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.mantle)
+    end)
     setmetatable(o, self)
     ---@cast o ItembarMantle
 

@@ -314,10 +314,9 @@ local control_arguments = {
 }
 
 ---@param args HealthConfig
----@param default_overwrite HudBaseDefaultOverwrite?
 ---@return Health
-function this:new(args, default_overwrite)
-    local o = hud_base.new(self, args, nil, default_overwrite)
+function this:new(args)
+    local o = hud_base.new(self, args)
     setmetatable(o, self)
     ---@cast o Health
 

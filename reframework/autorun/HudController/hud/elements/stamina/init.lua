@@ -27,7 +27,6 @@
 ---@field frame_max PlayObjectGetterFn[]
 ---@field light_end PlayObjectGetterFn[]
 ---@field light_start PlayObjectGetterFn[]
----@field gauge PlayObjectGetterFn[]
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data")
@@ -90,15 +89,6 @@ local control_arguments = {
             },
             "tex_base02",
             "via.gui.Texture",
-        },
-    },
-    gauge = {
-        {
-            play_object.control.get,
-            {
-                "PNL_Pat00",
-                "PNL_gaugeMode00",
-            },
         },
     },
     background = {
@@ -195,9 +185,7 @@ function this:new(args)
     o.children.light_end = hud_child:new(args.children.light_end, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.light_end)
     end)
-    o.children.gauge = gauge:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.gauge)
-    end)
+    o.children.gauge = gauge:new(args.children.gauge, o)
     o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.background)
     end)

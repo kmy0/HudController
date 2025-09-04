@@ -15,6 +15,7 @@
 ---@field line1_shadow PlayObjectGetterFn[]
 ---@field line2 PlayObjectGetterFn[]
 ---@field line3 PlayObjectGetterFn[]
+---@field gauge PlayObjectGetterFn[]
 
 local data = require("HudController.data")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -77,14 +78,24 @@ local control_arguments = {
             "via.gui.Scale9Grid",
         },
     },
+    gauge = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_gaugeMode00",
+            },
+        },
+    },
 }
 
 ---@param args StaminaGaugeConfig
 ---@param parent Stamina
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return StaminaGauge
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.gauge)
+    end)
     setmetatable(o, self)
     ---@cast o StaminaGauge
 

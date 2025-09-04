@@ -77,7 +77,7 @@ function this:new(args)
             o:reset_focus()
             return s:get_slinger_pnl()
         end
-    end)
+    end, nil, nil, nil, nil, true)
 
     o.children.capture = hud_child:new(args.children.capture, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.capture)

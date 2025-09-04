@@ -17,6 +17,7 @@
 ---@field light PlayObjectGetterFn[]
 ---@field arrow PlayObjectGetterFn[]
 ---@field phial PlayObjectGetterFn[]
+---@field bow_phials PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -58,14 +59,27 @@ local control_arguments = {
             },
         },
     },
+    bow_phials = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_energy",
+                "PNL_ENGaugeSet",
+                "PNL_frameBow",
+                "PNL_BowBottlePlus",
+            },
+        },
+    },
 }
 
 ---@param args AmmoBowPhialConfig
 ---@param parent Ammo
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return AmmoBowPhial
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.bow_phials)
+    end)
     setmetatable(o, self)
     ---@cast o AmmoBowPhial
 

@@ -17,6 +17,7 @@
 ---@field text PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
 ---@field keybind PlayObjectGetterFn[]
+---@field item PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -56,14 +57,27 @@ local control_arguments = {
             },
         },
     },
+    item = {
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+                "PNL_Palette",
+                "PNL_Main",
+                "FSG_Keys",
+            },
+            "Item",
+        },
+    },
 }
 
 ---@param args ShortcutKeyboardItemConfig
 ---@param parent ShortcutKeyboard
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return ShortcutKeyboardItem
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.item)
+    end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardItem
 

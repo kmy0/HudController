@@ -23,7 +23,7 @@ function this:new(args, parent)
             parent.children.task:reset_specific(nil, nil, pnl)
             return pnl
         end
-    end, true)
+    end, nil, nil, nil, nil, true)
     setmetatable(o, self)
     ---@cast o ProgressPartTaskFaint
 

@@ -11,6 +11,7 @@
 
 ---@class (exact) CompanionPlayerSkillListControlArguments
 ---@field icon PlayObjectGetterFn[]
+---@field skill_list PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
@@ -31,14 +32,24 @@ local control_arguments = {
             "PNL_STIcon",
         },
     },
+    skill_list = {
+        {
+            play_object.control.get,
+            {
+                "PNL_playerSet00",
+                "PNL_StateIcons00",
+            },
+        },
+    },
 }
 
 ---@param args CompanionPlayerSkillListConfig
 ---@param parent CompanionPlayer
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): PlayObject[] | PlayObject?
 ---@return CompanionPlayerSkillList
-function this:new(args, parent, ctrl_getter)
-    local o = hud_child.new(self, args, parent, ctrl_getter)
+function this:new(args, parent)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.skill_list)
+    end)
     setmetatable(o, self)
     ---@cast o CompanionPlayerSkillList
 
