@@ -1,6 +1,10 @@
 ---@class HudDebug
 ---@field elements table<string, AceGUI>
 ---@field snapshot string[]
+---@field perf {
+--- total: integer,
+--- completed: integer,
+--- }
 ---@field initialized boolean
 
 ---@class (exact) AceBase
@@ -26,12 +30,15 @@
 
 ---@alias AceElem AceControl | AceBase
 
+local config = require("HudController.config")
 local data = require("HudController.data")
 local factory = require("HudController.hud.factory")
 local hud = require("HudController.hud")
 local m = require("HudController.util.ref.methods")
+local perf = require("HudController.util.misc.perf")
 local play_object = require("HudController.hud.play_object")
 local util_game = require("HudController.util.game")
+local util_misc = require("HudController.util.misc")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -41,6 +48,10 @@ local this = {
     elements = {},
     snapshot = {},
     initialized = false,
+    perf = {
+        total = 0,
+        completed = 0,
+    },
 }
 
 ---@param ctrl via.gui.Control
@@ -231,12 +242,68 @@ function this.add_all_element_profile()
     hud.operations.new(new_config)
 end
 
+function this.perf_test()
+    local current_hud = hud.manager.by_hudid
+    local output_file = util_misc.join_paths(config.name, "perf_log.txt")
+    this.perf.completed = 0
+    this.perf.total = 0
+
+    local file = io.open(output_file, "w")
+    if file then
+        file:write("")
+        file:close()
+    end
+
+    ---@param stats PerfStats
+    ---@return boolean
+    local function predicate(stats)
+        return true
+        -- return stats.trimmed_mean >= 50
+    end
+
+    ---@param stats PerfStats
+    local function callback(stats)
+        this.perf.completed = this.perf.completed + 1
+    end
+
+    local function wrap(hudbase)
+        for _, child in pairs(hudbase.children) do
+            ---@diagnostic disable-next-line: invisible
+            child._ctrl_getter = perf.perf(
+                ---@diagnostic disable-next-line: invisible
+                child._ctrl_getter,
+                1000,
+                string.format("%s %s", child:whoami(), "ctrl_getter"),
+                10,
+                output_file,
+                predicate,
+                callback
+            )
+            this.perf.total = this.perf.total + 1
+        end
+    end
+
+    for _, hudbase in pairs(current_hud) do
+        hudbase.write = perf.perf(
+            hudbase.write,
+            1000,
+            string.format("%s %s", hudbase:whoami(), "write"),
+            10,
+            output_file,
+            predicate,
+            callback
+        )
+        wrap(hudbase)
+        this.perf.total = this.perf.total + 1
+    end
+end
 function this.write_all_elements()
     local current_hud = hud.manager.by_hudid
 
     local function write_offset(hudbase)
         hudbase:set_offset({ x = 999, y = 999 })
         for _, child in pairs(hudbase.children) do
+            ---@diagnostic disable-next-line: invisible
             write_offset(child)
         end
     end

@@ -4,6 +4,7 @@
 ---@field min number
 ---@field max number
 ---@field mean number
+---@field trimmed_mean number
 ---@field median number
 ---@field p95 number
 ---@field p99 number
@@ -21,8 +22,9 @@ local function get_time()
 end
 
 ---@param measurements integer[]
+---@param trim_percent number?
 ---@return PerfStats
-local function calc_stats(measurements)
+local function calc_stats(measurements, trim_percent)
     table.sort(measurements)
 
     local sum = 0
@@ -39,6 +41,17 @@ local function calc_stats(measurements)
         return measurements[math.max(1, math.min(index, #measurements))]
     end
 
+    local trim_count = math.floor(#measurements * trim_percent / 100)
+    local trimmed_sum = 0
+    local trimmed_count = 0
+
+    for i = trim_count + 1, #measurements - trim_count do
+        trimmed_sum = trimmed_sum + measurements[i]
+        trimmed_count = trimmed_count + 1
+    end
+
+    local trimmed_mean = trimmed_count > 0 and (trimmed_sum / trimmed_count) or mean
+
     local variance_sum = 0
     for i = 1, #measurements do
         local diff = measurements[i] - mean
@@ -52,6 +65,7 @@ local function calc_stats(measurements)
         min = min,
         max = max,
         mean = mean,
+        trimmed_mean = trimmed_mean,
         median = percentile(50),
         p95 = percentile(95),
         p99 = percentile(99),
@@ -74,12 +88,15 @@ end
 ---@param fn fun(...): any
 ---@param it integer? by default, 100
 ---@param name string?
----@param ignore_below_n number?
+---@param trim_percent number?
+---@param output_file string?
+---@param predicate (fun(stats: PerfStats): boolean)?
+---@param callback (fun(stats: PerfStats))?
 ---@return fun(...): any
-function this.perf(fn, it, name, ignore_below_n)
+function this.perf(fn, it, name, trim_percent, output_file, predicate, callback)
     it = it or 100
-    ignore_below_n = ignore_below_n or -1
     name = name or ""
+    trim_percent = trim_percent or 10
     local measurements = {}
     local count = 0
 
@@ -94,23 +111,31 @@ function this.perf(fn, it, name, ignore_below_n)
         local e = get_time()
         local t = e - s
 
-        if t < ignore_below_n then
-            return ret
-        end
-
         count = count + 1
         table.insert(measurements, t)
 
         if count == it then
-            local stats = calc_stats(measurements)
+            local stats = calc_stats(measurements, trim_percent)
             local str = string.format("--Performance: %s\nit: %s", name, stats["it"])
-            local keys = { "total", "min", "max", "mean", "median", "p95", "p99", "stddev" }
+            local keys = { "total", "min", "max", "mean", "trimmed_mean", "median", "p95", "p99", "stddev" }
             for i = 1, #keys do
                 local key = keys[i]
                 str = string.format("%s\n%s: %s", str, key, format_time(stats[key]))
             end
 
             log.debug(str)
+
+            if output_file and (not predicate or predicate(stats)) then
+                local file = io.open(output_file, "a")
+                if file then
+                    file:write(str .. "\n")
+                    file:close()
+                end
+            end
+
+            if callback then
+                callback(stats)
+            end
         end
 
         return ret
