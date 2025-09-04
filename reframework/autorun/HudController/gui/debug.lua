@@ -233,6 +233,7 @@ end
 
 function this.draw()
     local changed = false
+    local _changed = false
     local gui_debug = config.gui.current.gui.debug
     local config_debug = config.debug.current.debug
 
@@ -290,6 +291,19 @@ function this.draw()
         hud_debug.write_all_elements()
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
+    imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
+
+    if imgui.button(gui_util.tr("debug.button_perf_test")) then
+        hud_debug.perf_test()
+    end
+    util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")
+
+    imgui.end_disabled()
+
+    if hud_debug.perf.total ~= hud_debug.perf.completed then
+        imgui.same_line()
+        imgui.text(string.format("%s/%s", hud_debug.perf.completed, hud_debug.perf.total))
+    end
 
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
         defaults.play_object.clear()
@@ -298,8 +312,9 @@ function this.draw()
 
     imgui.same_line()
 
-    changed, config_debug.show_disabled =
+    _changed, config_debug.show_disabled =
         imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
+    changed = _changed or changed
     util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
 
     local keys = hud_debug.get_keys(not config_debug.show_disabled)
@@ -311,7 +326,8 @@ function this.draw()
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
-    changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
+    _changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
+    changed = _changed or changed
     util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
     imgui.end_disabled()
 
@@ -319,7 +335,8 @@ function this.draw()
         keys = hud_debug.filter(keys)
     end
 
-    changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
+    _changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
+    changed = _changed or changed
     imgui.text(config.lang:tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang:tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang:tr("debug.text_states")))
