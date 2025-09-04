@@ -237,7 +237,6 @@ function this:new(args)
     o.children.radial_state = hud_child:new(args.children.radial_state, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.radial_state)
     end, nil, nil, true)
-
     o.children.pallet = pallet:new(args.children.pallet, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.pallet)
     end)

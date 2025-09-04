@@ -116,7 +116,7 @@ function this:new(args)
             ---@cast hudbase app.GUI020100
             ---@diagnostic disable-next-line: invisible
             return o:_notice_ctrl_getter(s, hudbase, cls_short)
-        end)
+        end, nil, nil, nil, nil, true)
 
         --FIXME: this feels a bit out of place...
         ace_map.no_lang_key[cls_short] = true

@@ -91,11 +91,11 @@ function this:new(args, default_overwrite)
                 return play_object.iter_args(root, control_arguments.background)
             end
         end
-    end)
+    end, nil, nil, nil, nil, true)
     o.children.out_frame_icon = hud_child:new(args.children.out_frame_icon, o, function(s, hudbase, gui_id, ctrl)
         local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
         return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
-    end)
+    end, nil, nil, nil, nil, true)
 
     return o
 end

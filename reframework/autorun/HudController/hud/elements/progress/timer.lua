@@ -60,11 +60,12 @@ local control_arguments = {
 ---@param args ProgressTimerConfig
 ---@param parent Progress
 ---@param ctrl_getter (fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
+---@param no_cache boolean?
 ---@return ProgressTimer
-function this:new(args, parent, ctrl_getter)
+function this:new(args, parent, ctrl_getter, no_cache)
     local o = part_base.new(self, args, parent, ctrl_getter or function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.timer)
-    end)
+    end, nil, nil, nil, nil, no_cache)
     setmetatable(o, self)
     ---@cast o ProgressTimer
 

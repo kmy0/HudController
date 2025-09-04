@@ -63,7 +63,7 @@ function this:new(args)
     o.children.rod = rod:new(args.children.rod, o)
     o.children.no_focus = hud_child:new(args.children.no_focus, o, function(s, hudbase, gui_id, ctrl)
         return ctrl
-    end, nil, nil, true)
+    end, nil, nil, true, nil, true)
 
     o:set_no_focus(args.no_focus)
     return o

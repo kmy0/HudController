@@ -107,7 +107,6 @@ local control_arguments = {
         },
     },
     keybind = {
-
         {
             play_object.control.get,
             {

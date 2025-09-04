@@ -3,6 +3,7 @@
 --- show_disabled: boolean,
 --- is_filter :boolean,
 --- is_debug: boolean,
+--- disable_cache: boolean,
 --- }
 
 ---@class DebugConfig : ConfigBase
@@ -15,5 +16,6 @@ return {
         show_disabled = false,
         is_filter = false,
         is_debug = false,
+        disable_cache = false,
     },
 }

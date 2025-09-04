@@ -60,9 +60,20 @@ setmetatable(this, { __index = hud_child })
 ---@param default_overwrite ProgressPartBaseDefaultOverwrite?
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param no_cache boolean?
 ---@return ProgressPartBase
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
-    local o = hud_child.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        ctrl_getter,
+        ctrl_writer,
+        default_overwrite,
+        gui_ignore,
+        children_sort,
+        no_cache
+    )
     o.properties = util_table.merge_t(o.properties, {
         offset_x = true,
         clock_offset_x = true,

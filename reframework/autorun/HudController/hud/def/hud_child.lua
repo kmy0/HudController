@@ -36,9 +36,11 @@
 
 local config = require("HudController.config")
 local hud_base = require("HudController.hud.def.hud_base")
+local util_game = require("HudController.util.game")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 local logger = require("HudController.util.misc.logger").g
+local frame_cache = require("HudController.util.misc.frame_cache")
 
 ---@class HudChild
 local this = {}
@@ -53,11 +55,19 @@ setmetatable(this, { __index = hud_base })
 ---@param default_overwrite HudBaseDefaultOverwrite?
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param no_cache boolean? by_default, false
 ---@return HudChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort)
+function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
     local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore, nil, children_sort)
     setmetatable(o, self)
     ---@cast o HudChild
+
+    if not no_cache and not config.debug.current.debug.disable_cache then
+        local max_frame = 60
+        local jitter = 120
+        o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter)
+    end
+
     o.ctrl_getter = ctrl_getter
     o.ctrl_writer = ctrl_writer
     o._getter_cache = {}
@@ -142,6 +152,18 @@ function this:reset_child(hudbase, gui_id, ctrl, key)
 
     local child_ctrls = self:_ctrl_getter(hudbase, gui_id, ctrl)
     for _, c in pairs(child_ctrls) do
+        if config.debug.current.debug.is_debug then
+            if c:get_reference_count() == 1 or util_game.is_only_my_ref(c) then
+                logger:debug(
+                    string.format(
+                        "Dead Control object!\nName Chain: %s,\nClass Chain: %s",
+                        self:whoami(),
+                        self:whoami_cls()
+                    )
+                )
+            end
+        end
+
         self:reset_ctrl(c, key)
     end
 

@@ -177,7 +177,7 @@ function this:new(args, parent)
             s:adjust_offset(hudbase)
             return ctrl
         end
-    end)
+    end, nil, nil, nil, nil, true)
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbersDamageState
