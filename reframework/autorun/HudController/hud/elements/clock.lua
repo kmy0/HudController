@@ -3,6 +3,8 @@
 ---@field map_component via.gui.GUI?
 ---@field get_config fun(): ClockConfig
 ---@field reset fun(self: Clock, key: ClockWriteKey)
+---@field mark_write fun(self: Clock, key: ClockProperty)
+---@field mark_idle fun(self: Clock, key: ClockProperty)
 ---@field children {text: HudChild, background: HudChild, frame: HudChild}
 
 ---@class (exact) ClockConfig : HudBaseConfig
@@ -13,7 +15,8 @@
 --- background: HudChildConfig,
 --- }
 
----@alias ClockWriteKey HudChildWriteKey | "hide_map_visible"
+---@alias ClockProperty HudChildProperty | "hide_map_visible"
+---@alias ClockWriteKey HudChildWriteKey | ClockProperty
 
 ---@class (exact) ClockControlArguments
 ---@field text PlayObjectGetterFn[]
@@ -136,9 +139,9 @@ function this:set_hide_map_visible(hide)
     self:reset("hide_map_visible")
 
     if self.hide_map_visible and not hide then
-        self:mark_idle()
+        self:mark_idle("hide_map_visible")
     elseif not self.hide_map_visible and hide then
-        self:mark_write()
+        self:mark_write("hide_map_visible")
     end
     self.hide_map_visible = hide
 end

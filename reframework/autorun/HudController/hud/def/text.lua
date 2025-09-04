@@ -7,6 +7,8 @@
 ---@field default_overwrite TextDefaultOverwrite
 ---@field ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text| via.gui.Text[]?
 ---@field reset fun(self: Text, key: TextWriteKey)
+---@field mark_write fun(self: Text, key: TextProperty)
+---@field mark_idle fun(self: Text, key: TextProperty)
 
 ---@class (exact) TextConfig : CtrlChildConfig
 ---@field hud_sub_type HudSubType
@@ -101,12 +103,12 @@ end
 ---@param page_alignment string?
 function this:set_page_alignment(page_alignment)
     if page_alignment then
-        self:mark_write()
+        self:mark_write("page_alignment")
         self.page_alignment = rl(ace_enum.page_alignment, page_alignment)
     else
         self:reset("page_alignment")
         self.page_alignment = page_alignment
-        self:mark_idle()
+        self:mark_idle("page_alignment")
     end
 end
 
@@ -115,9 +117,9 @@ function this:set_hide_glow(hide_glow)
     self:reset("hide_glow")
 
     if self.hide_glow and not hide_glow then
-        self:mark_idle()
+        self:mark_idle("hide_glow")
     elseif not self.hide_glow and hide_glow then
-        self:mark_write()
+        self:mark_write("hide_glow")
     end
     self.hide_glow = hide_glow
 end
@@ -125,27 +127,27 @@ end
 ---@param color integer?
 function this:set_glow_color(color)
     if color then
-        self:mark_write()
+        self:mark_write("glow_color")
         self.glow_color = util_ref.value_type("via.Color")
         self.glow_color.rgba = color
     else
         self:reset("glow_color")
         self.glow_color = color
-        self:mark_idle()
+        self:mark_idle("glow_color")
     end
 end
 
 ---@param size integer?
 function this:set_font_size(size)
     if size then
-        self:mark_write()
+        self:mark_write("font_size")
         self.font_size = util_ref.value_type("via.Size")
         self.font_size.w = size
         self.font_size.h = size
     else
         self:reset("font_size")
         self.font_size = size
-        self:mark_idle()
+        self:mark_idle("font_size")
     end
 end
 

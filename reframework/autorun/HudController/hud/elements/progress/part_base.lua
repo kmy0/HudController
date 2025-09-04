@@ -4,6 +4,8 @@
 ---@field num_offset_x number?
 ---@field root Progress
 ---@field hide nil
+---@field mark_write fun(self: ProgressPartBase, key: ProgressPartBaseProperty)
+---@field mark_idle fun(self: ProgressPartBase, key: ProgressPartBaseProperty)
 ---@field ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): ProgressPartBaseConfig
@@ -87,39 +89,39 @@ end
 ---@param offset_x number?
 function this:set_offset_x(offset_x)
     if offset_x then
-        self:mark_write()
+        self:mark_write("offset_x")
         self.offset_x = offset_x
     else
         self:reset("offset")
         self.offset_x = offset_x
         self.offset = nil
-        self:mark_idle()
+        self:mark_idle("offset_x")
     end
 end
 
 ---@param clock_offset_x number?
 function this:set_clock_offset_x(clock_offset_x)
     if clock_offset_x then
-        self:mark_write()
+        self:mark_write("clock_offset_x")
         self.clock_offset_x = clock_offset_x
     else
         self:reset("offset")
         self.clock_offset_x = clock_offset_x
         self.offset = nil
-        self:mark_idle()
+        self:mark_idle("clock_offset_x")
     end
 end
 
 ---@param num_offset_x number?
 function this:set_num_offset_x(num_offset_x)
     if num_offset_x then
-        self:mark_write()
+        self:mark_write("num_offset_x")
         self.num_offset_x = num_offset_x
     else
         self:reset("offset")
         self.num_offset_x = num_offset_x
         self.offset = nil
-        self:mark_idle()
+        self:mark_idle("num_offset_x")
     end
 end
 

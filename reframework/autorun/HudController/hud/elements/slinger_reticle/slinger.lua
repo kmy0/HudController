@@ -5,13 +5,16 @@
 ---@field ctrl_getter fun(self: SlingerReticleSlinger, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: SlingerReticleSlinger, ctrl: via.gui.Control): boolean)?
 ---@field reset fun(self: SlingerReticleSlinger, key: SlingerReticleSlingerWriteKey)
+---@field mark_write fun(self: SlingerReticleSlinger, key: SlingerReticleSlingerProperty)
+---@field mark_idle fun(self: SlingerReticleSlinger, key: SlingerReticleSlingerProperty)
 ---@field children {}
 
 ---@class (exact) SlingerReticleSlingerConfig : HudChildConfig
 ---@field hide_slinger_empty boolean
 ---@field children {}
 
----@alias SlingerReticleSlingerWriteKey HudChildWriteKey | "hide_slinger_empty"
+---@alias SlingerReticleSlingerProperty HudChildProperty | "hide_slinger_empty"
+---@alias SlingerReticleSlingerWriteKey HudChildWriteKey | SlingerReticleSlingerProperty
 
 ---@class (exact) SlingerReticleSlingerControlArguments
 ---@field slinger PlayObjectGetterFn[]
@@ -122,9 +125,9 @@ function this:set_hide_slinger_empty(hide)
     self:reset("hide_slinger_empty")
 
     if self.hide_slinger_empty and not hide then
-        self:mark_idle()
+        self:mark_idle("hide_slinger_empty")
     elseif not self.hide_slinger_empty and hide then
-        self:mark_write()
+        self:mark_write("hide_slinger_empty")
     end
     self.hide_slinger_empty = hide
 end

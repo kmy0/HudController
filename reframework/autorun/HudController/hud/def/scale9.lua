@@ -7,6 +7,8 @@
 ---@field default_overwrite Scale9DefaultOverwrite
 ---@field ctrl_getter fun(self: Scale9, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Scale9Grid | via.gui.Scale9Grid[]?
 ---@field reset fun(self: Scale9, key: Scale9WriteKey)
+---@field mark_write fun(self: Scale9, key: Scale9Property)
+---@field mark_idle fun(self: Scale9, key: Scale9Property)
 
 ---@class (exact) Scale9Config : CtrlChildConfig
 ---@field hud_sub_type HudSubType
@@ -100,48 +102,48 @@ end
 ---@param alpha_channel string?
 function this:set_alpha_channel(alpha_channel)
     if alpha_channel then
-        self:mark_write()
+        self:mark_write("alpha_channel")
         self.alpha_channel = rl(ace_enum.alpha_channel, alpha_channel)
     else
         self:reset("alpha_channel")
         self.color = alpha_channel
-        self:mark_idle()
+        self:mark_idle("alpha_channel")
     end
 end
 
 ---@param control_point string?
 function this:set_control_point(control_point)
     if control_point then
-        self:mark_write()
+        self:mark_write("control_point")
         self.control_point = rl(ace_enum.control_point, control_point)
     else
         self:reset("control_point")
         self.color = control_point
-        self:mark_idle()
+        self:mark_idle("control_point")
     end
 end
 
 ---@param blend string?
 function this:set_blend(blend)
     if blend then
-        self:mark_write()
+        self:mark_write("blend")
         self.blend = rl(ace_enum.blend, blend)
     else
         self:reset("blend")
         self.color = blend
-        self:mark_idle()
+        self:mark_idle("blend")
     end
 end
 
 ---@param ignore_alpha boolean?
 function this:set_ignore_alpha(ignore_alpha)
     if ignore_alpha ~= nil then
-        self:mark_write()
+        self:mark_write("ignore_alpha")
         self.ignore_alpha = ignore_alpha
     else
         self:reset("ignore_alpha")
         self.ignore_alpha = ignore_alpha
-        self:mark_idle()
+        self:mark_idle("ignore_alpha")
     end
 end
 

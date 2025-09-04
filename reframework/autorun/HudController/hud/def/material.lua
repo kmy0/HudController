@@ -24,6 +24,8 @@
 ---@field default_overwrite MaterialDefaultOverwrite
 ---@field ctrl_getter fun(self: Material, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Material | via.gui.Material[]?
 ---@field reset fun(self: Material, key: MaterialWriteKey)
+---@field mark_write fun(self: Material, key: MaterialProperty)
+---@field mark_idle fun(self: Material, key: MaterialProperty)
 
 ---@class (exact) MaterialConfig : CtrlChildConfig
 ---@field hud_sub_type HudSubType
@@ -122,10 +124,10 @@ end
 ---@param key MaterialProperty
 function this:set_var(val, key)
     if val then
-        self:mark_write()
+        self:mark_write(key)
     else
         self:reset(key)
-        self:mark_idle()
+        self:mark_idle(key)
     end
     ---@diagnostic disable-next-line: no-unknown
     self[key] = val

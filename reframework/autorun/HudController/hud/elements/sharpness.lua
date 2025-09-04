@@ -2,6 +2,8 @@
 ---@field get_config fun(): SharpnessConfig
 ---@field GUI020015 app.GUI020015
 ---@field state integer
+---@field mark_write fun(self: Sharpness, key: SharpnessProperty)
+---@field mark_idle fun(self: Sharpness, key: SharpnessProperty)
 ---@field children {
 --- anim_max: HudChild,
 --- background: HudChild,
@@ -175,12 +177,12 @@ end
 ---@param val integer
 function this:set_state(val)
     if val ~= -1 then
-        self:mark_write()
+        self:mark_write("state")
         self.state = val
     else
         -- no reset needed
         self.state = val
-        self:mark_idle()
+        self:mark_idle("state")
     end
 end
 
