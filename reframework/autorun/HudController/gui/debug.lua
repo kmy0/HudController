@@ -28,7 +28,7 @@ local this = {
     ---@type table<string, Vector2f>
     sub_window_pos = {},
     first_frame = true,
-    window_size = 252,
+    window_size = 152,
 }
 
 ---@param panel AceElem
@@ -300,6 +300,17 @@ function this.draw()
         defaults.play_object.clear()
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
+    util_imgui.tooltip(
+        string.format(
+            "%s\n%s\n%s\n%s",
+            config.lang:tr("debug.text_option_info"),
+            string.format("H - %s", config.lang:tr("debug.text_hidden")),
+            string.format("S - %s", config.lang:tr("debug.text_states")),
+            config.lang:tr("debug.text_pos_info")
+        ),
+        true,
+        string.format("(%s?)", config.lang:tr("misc.text_help"))
+    )
 
     changed = set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled") or changed
     util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
@@ -341,12 +352,6 @@ function this.draw()
     if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
         keys = hud_debug.filter(keys)
     end
-
-    imgui.separator()
-    imgui.text(config.lang:tr("debug.text_option_info"))
-    imgui.text(string.format("H - %s", config.lang:tr("debug.text_hidden")))
-    imgui.text(string.format("S - %s", config.lang:tr("debug.text_states")))
-    imgui.text(config.lang:tr("debug.text_pos_info"))
 
     local spacing = 4
     local size = imgui.get_cursor_pos().y - pos.y - spacing
