@@ -147,21 +147,6 @@ function this.get_array_enum(array)
     return enum
 end
 
----@param obj REManagedObject
----@return boolean
-function this.is_only_my_ref(obj)
-    if obj:read_qword(0x8) <= 0 then
-        return true
-    end
-
-    local gameobject_addr = obj:read_qword(0x10)
-    if gameobject_addr == 0 or not sdk.is_managed_object(gameobject_addr) then
-        return true
-    end
-
-    return false
-end
-
 ---@generic T
 ---@param system_array T[]
 ---@param something fun(system_array: System.Array<T>, index: integer, value: T): boolean?

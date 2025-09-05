@@ -35,6 +35,7 @@ return {
         button_write_all = "Test All Elements",
         button_perf_test = "Start Performance Test",
         box_disable_cache = "Disable Cache",
+        box_filter_known_errors = "Filter Known Errors",
         tooltip_write_all = "Write all available elements",
         tooltip_disable_cache = "Disable control getter function cache",
         button_clear_default = "Clear HUD Defaults",

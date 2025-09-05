@@ -344,6 +344,13 @@ function this.draw()
 
     _changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
     changed = _changed or changed
+
+    imgui.same_line()
+
+    _changed, config_debug.filter_known_errors =
+        imgui.checkbox(gui_util.tr("debug.box_filter_known_errors"), config_debug.filter_known_errors)
+    changed = _changed or changed
+
     imgui.text(config.lang:tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang:tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang:tr("debug.text_states")))

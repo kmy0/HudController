@@ -35,13 +35,11 @@
 ---@alias HudChildWriteKey HudBaseWriteKey
 
 local config = require("HudController.config")
+local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_base = require("HudController.hud.def.hud_base")
-local util_game = require("HudController.util.game")
+local hud_debug_log = require("HudController.hud.debug.log")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
-local logger = require("HudController.util.misc.logger").g
-local frame_cache = require("HudController.util.misc.frame_cache")
-
 ---@class HudChild
 local this = {}
 ---@diagnostic disable-next-line: inject-field
@@ -97,14 +95,15 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
 
         if not res then
             if config.debug.current.debug.is_debug then
-                logger:debug(
+                hud_debug_log.log(
                     string.format(
                         "Ctrl getter failed!\nGame Class: %s,\nName Chain: %s,\nClass Chain: %s,\nCtrl: %s",
                         util_ref.whoami(hudbase),
                         self:whoami(),
                         self:whoami_cls(),
                         ctrl:get_Name()
-                    )
+                    ),
+                    hud_debug_log.log_debug_type.CONTROL_GETTER
                 )
             end
 
@@ -153,13 +152,14 @@ function this:reset_child(hudbase, gui_id, ctrl, key)
     local child_ctrls = self:_ctrl_getter(hudbase, gui_id, ctrl)
     for _, c in pairs(child_ctrls) do
         if config.debug.current.debug.is_debug then
-            if c:get_reference_count() == 1 or util_game.is_only_my_ref(c) then
-                logger:debug(
+            if c:get_reference_count() <= 0 then
+                hud_debug_log.log(
                     string.format(
                         "Dead Control object!\nName Chain: %s,\nClass Chain: %s",
                         self:whoami(),
                         self:whoami_cls()
-                    )
+                    ),
+                    hud_debug_log.log_debug_type.CACHE
                 )
             end
         end
