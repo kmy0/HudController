@@ -100,6 +100,7 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
+local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config")
 local data = require("HudController.data")
@@ -162,6 +163,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
     setmetatable(o, self)
     ---@cast o HudBase
 
+    o._get_component = cache.memoize(o._get_component, nil, nil, nil, 2)
     o.root = o:get_root()
 
     o:set_hide(args.hide)
@@ -701,10 +703,19 @@ function this:reset_options()
     end
 end
 
+---@param ctrl via.gui.Control
+function this:_get_component(ctrl)
+    return ctrl:get_Component()
+end
+
 ---@param hudbase app.GUIHudBase
 ---@param gui_id app.GUIID.ID
 ---@param ctrl via.gui.Control
 function this:write(hudbase, gui_id, ctrl)
+    if not self:_get_component(ctrl):get_Enabled() then
+        return
+    end
+
     if self:any() and not self:_write(ctrl) then
         return
     end
