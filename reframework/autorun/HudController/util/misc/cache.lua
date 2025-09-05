@@ -52,8 +52,9 @@ end
 ---@param predicate (fun(cached_value: any, key: any?): boolean)?
 ---@param do_hash boolean?
 ---@param deep_hash_table boolean?
+---@param key_index integer?
 ---@return T
-function this.memoize(func, predicate, do_hash, deep_hash_table)
+function this.memoize(func, predicate, do_hash, deep_hash_table, key_index)
     local cache = this:new()
 
     local wrapped = {
@@ -66,12 +67,12 @@ function this.memoize(func, predicate, do_hash, deep_hash_table)
             ---@type any
             local key
             if do_hash then
-                key = hash.hash_args(deep_hash_table, ...)
+                ---@diagnostic disable-next-line: param-type-mismatch
+                key = hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
             else
-                key = { ... }
-                if #key > 0 then
+                if select("#", ...) > 0 then
                     ---@diagnostic disable-next-line: no-unknown
-                    key = key[1]
+                    key = select(key_index or 1, ...)
                 else
                     key = 1
                 end
