@@ -5,12 +5,15 @@
 ---@field first_frame boolean
 
 local config = require("HudController.config")
+local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults")
 local gui_util = require("HudController.gui.util")
 local hud_debug = require("HudController.hud.debug")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
+
+local set = config_set_base:new(config.debug)
 
 ---@class GuiDebug
 local this = {
@@ -25,7 +28,7 @@ local this = {
     ---@type table<string, Vector2f>
     sub_window_pos = {},
     first_frame = true,
-    window_size = 170,
+    window_size = 252,
 }
 
 ---@param panel AceElem
@@ -233,7 +236,6 @@ end
 
 function this.draw()
     local changed = false
-    local _changed = false
     local gui_debug = config.gui.current.gui.debug
     local config_debug = config.debug.current.debug
 
@@ -292,12 +294,36 @@ function this.draw()
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
 
-    _changed, config_debug.show_disabled =
-        imgui.checkbox(gui_util.tr("debug.box_disable_cache"), config_debug.disable_cache)
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("debug.button_clear_default")) then
+        defaults.play_object.clear()
+    end
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
+
+    changed = set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled") or changed
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
+
+    changed = set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache") or changed
     util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
-    changed = _changed or changed
+    changed = set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug") or changed
+    imgui.same_line()
+    changed = set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors") or changed
+
+    local keys = hud_debug.get_keys(not config_debug.show_disabled)
+
+    if imgui.button(gui_util.tr("debug.button_snapshot")) then
+        hud_debug.make_snapshot(keys)
+    end
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
 
     imgui.same_line()
+    imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
+
+    changed = set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter") or changed
+    util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
+    imgui.end_disabled()
+
     imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
 
     if imgui.button(gui_util.tr("debug.button_perf_test")) then
@@ -312,45 +338,11 @@ function this.draw()
         imgui.text(string.format("%s/%s", hud_debug.perf.completed, hud_debug.perf.total))
     end
 
-    if imgui.button(gui_util.tr("debug.button_clear_default")) then
-        defaults.play_object.clear()
-    end
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
-
-    imgui.same_line()
-
-    _changed, config_debug.show_disabled =
-        imgui.checkbox(gui_util.tr("debug.box_show_disabled"), config_debug.show_disabled)
-    changed = _changed or changed
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-
-    local keys = hud_debug.get_keys(not config_debug.show_disabled)
-
-    if imgui.button(gui_util.tr("debug.button_snapshot")) then
-        hud_debug.make_snapshot(keys)
-    end
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
-
-    imgui.same_line()
-    imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
-    _changed, config_debug.is_filter = imgui.checkbox(gui_util.tr("debug.box_filter"), config_debug.is_filter)
-    changed = _changed or changed
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
-    imgui.end_disabled()
-
     if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
         keys = hud_debug.filter(keys)
     end
 
-    _changed, config_debug.is_debug = imgui.checkbox(gui_util.tr("debug.box_enable_log"), config_debug.is_debug)
-    changed = _changed or changed
-
-    imgui.same_line()
-
-    _changed, config_debug.filter_known_errors =
-        imgui.checkbox(gui_util.tr("debug.box_filter_known_errors"), config_debug.filter_known_errors)
-    changed = _changed or changed
-
+    imgui.separator()
     imgui.text(config.lang:tr("debug.text_option_info"))
     imgui.text(string.format("H - %s", config.lang:tr("debug.text_hidden")))
     imgui.text(string.format("S - %s", config.lang:tr("debug.text_states")))
@@ -382,7 +374,7 @@ function this.draw()
     end
 
     if changed then
-        config.save_global()
+        config.debug:save()
     end
 
     imgui.end_window()

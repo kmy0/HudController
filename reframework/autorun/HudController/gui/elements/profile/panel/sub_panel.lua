@@ -2,12 +2,12 @@ local config = require("HudController.config")
 local data = require("HudController.data")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
-local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local util_game = require("HudController.util.game")
 local util_imgui = require("HudController.util.imgui")
 
 local mod = data.mod
+local set = state.set
 
 local this = {
     ---@type table<HudSubType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
@@ -100,11 +100,11 @@ local function draw_control_child(elem, elem_config, config_key)
 
     if elem_config.enabled_color ~= nil then
         local item_config_key = config_key .. ".enabled_color"
-        changed = set.checkbox(gui_util.tr("hud_element.entry.box_enable_color", item_config_key), item_config_key)
+        changed = set:checkbox(gui_util.tr("hud_element.entry.box_enable_color", item_config_key), item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_color)
         item_config_key = config_key .. ".color"
-        changed = set.color_edit("##" .. item_config_key, item_config_key) or changed
+        changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
 
         if changed then
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
@@ -173,7 +173,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
     if elem_config.enabled_control_point ~= nil then
         item_config_key = config_key .. ".enabled_control_point"
-        local changed = set.checkbox(
+        local changed = set:checkbox(
             gui_util.tr("hud_element.entry.box_enable_scale9_control_point", item_config_key),
             item_config_key
         )
@@ -188,7 +188,7 @@ local function draw_scale9(elem, elem_config, config_key)
             )
         end
 
-        changed = set.combo(
+        changed = set:combo(
             "##" .. item_config_key .. "_combo",
             item_config_key .. "_combo",
             state.combo.control_point.values
@@ -207,7 +207,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
     if elem_config.enabled_blend ~= nil then
         item_config_key = config_key .. ".enabled_blend"
-        local changed = set.checkbox(
+        local changed = set:checkbox(
             gui_util.tr("hud_element.entry.box_enable_scale9_blend_type", item_config_key),
             item_config_key
         )
@@ -219,7 +219,7 @@ local function draw_scale9(elem, elem_config, config_key)
             config:set(item_config_key .. "_combo", state.combo.blend:get_index(nil, config:get(item_config_key)))
         end
 
-        changed = set.combo("##" .. item_config_key .. "_combo", item_config_key .. "_combo", state.combo.blend.values)
+        changed = set:combo("##" .. item_config_key .. "_combo", item_config_key .. "_combo", state.combo.blend.values)
             or changed
 
         if changed then
@@ -235,7 +235,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
     if elem_config.enabled_alpha_channel ~= nil then
         item_config_key = config_key .. ".enabled_alpha_channel"
-        local changed = set.checkbox(
+        local changed = set:checkbox(
             gui_util.tr("hud_element.entry.box_enable_scale9_alpha_channel", item_config_key),
             item_config_key
         )
@@ -250,7 +250,7 @@ local function draw_scale9(elem, elem_config, config_key)
             )
         end
 
-        changed = set.combo(
+        changed = set:combo(
             "##" .. item_config_key .. "_combo",
             item_config_key .. "_combo",
             state.combo.alpha_channel.values
@@ -269,7 +269,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
     if elem_config.enabled_ignore_alpha ~= nil then
         item_config_key = config_key .. ".enabled_ignore_alpha"
-        local changed = set.checkbox(
+        local changed = set:checkbox(
             gui_util.tr("hud_element.entry.box_enable_scale9_ignore_alpha", item_config_key),
             item_config_key
         )
@@ -277,7 +277,7 @@ local function draw_scale9(elem, elem_config, config_key)
         imgui.begin_disabled(not elem_config.enabled_ignore_alpha)
 
         item_config_key = config_key .. ".ignore_alpha"
-        changed = set.checkbox(
+        changed = set:checkbox(
             gui_util.tr("hud_element.entry.box_scale9_ignore_alpha", item_config_key),
             item_config_key
         ) or changed
@@ -333,7 +333,7 @@ local function draw_text(elem, elem_config, config_key)
     if elem_config.enabled_page_alignment ~= nil then
         item_config_key = config_key .. ".enabled_page_alignment"
         changed =
-            set.checkbox(gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key), item_config_key)
+            set:checkbox(gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key), item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_page_alignment)
 
@@ -345,7 +345,7 @@ local function draw_text(elem, elem_config, config_key)
             )
         end
 
-        changed = set.combo(
+        changed = set:combo(
             "##" .. item_config_key .. "_combo",
             item_config_key .. "_combo",
             state.combo.page_alignment.values
@@ -364,7 +364,7 @@ local function draw_text(elem, elem_config, config_key)
 
     if elem_config.hide_glow ~= nil then
         if
-            set.checkbox(
+            set:checkbox(
                 gui_util.tr("hud_element.entry.box_hide_glow", config_key .. ".hide_glow"),
                 config_key .. ".hide_glow"
             )
@@ -379,12 +379,12 @@ local function draw_text(elem, elem_config, config_key)
 
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
-        changed = set.checkbox(gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key), item_config_key)
+        changed = set:checkbox(gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key), item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_glow_color)
 
         item_config_key = config_key .. ".glow_color"
-        changed = set.color_edit("##" .. item_config_key, item_config_key) or changed
+        changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
 
         if changed then
             elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
@@ -411,7 +411,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     local changed = false
 
     item_config_key = config_key .. ".enabled_box"
-    if set.checkbox(gui_util.tr("hud_element.entry.box_enable_box", item_config_key), item_config_key) then
+    if set:checkbox(gui_util.tr("hud_element.entry.box_enable_box", item_config_key), item_config_key) then
         elem:set_box(elem_config.enabled_box and {
             x = elem_config.box.x,
             y = elem_config.box.y,
@@ -589,7 +589,7 @@ local function draw_progress_text(elem, elem_config, config_key)
     separator_progress_text:refresh(elem_config)
 
     if elem_config.align_left ~= nil then
-        if set.checkbox(gui_util.tr("hud_element.entry.box_align_left"), config_key .. ".align_left") then
+        if set:checkbox(gui_util.tr("hud_element.entry.box_align_left"), config_key .. ".align_left") then
             elem:set_align_left(elem_config.align_left)
             config.save_global()
         end

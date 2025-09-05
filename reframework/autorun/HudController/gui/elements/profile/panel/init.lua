@@ -3,12 +3,13 @@ local data = require("HudController.data")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local main_panel = require("HudController.gui.elements.profile.panel.main_panel")
-local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub_panel")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
+local set = state.set
 
 local this = {}
 
@@ -110,7 +111,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                 local var_key = child_config.gui_thing or "hide"
 
                 if
-                    set.checkbox(
+                    set:checkbox(
                         string.format(
                             "%s %s##%s",
                             config.lang:tr("hud_element.entry.box_" .. var_key),

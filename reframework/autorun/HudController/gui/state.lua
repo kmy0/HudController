@@ -5,6 +5,7 @@
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
 ---@field redo_win_pos RedoWinPos
+---@field set ImguiConfigSet
 ---@field state {
 --- l1_pressed: boolean,
 --- }
@@ -39,6 +40,7 @@ local ace_player = require("HudController.util.ace.player")
 local bind_manager = require("HudController.hud.bind")
 local combo = require("HudController.gui.combo")
 local config = require("HudController.config")
+local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local gui_util = require("HudController.gui.util")
@@ -169,6 +171,7 @@ local this = {
     state = {
         l1_pressed = false,
     },
+    set = config_set:new(config),
 }
 ---@enum GuiColors
 this.colors = {

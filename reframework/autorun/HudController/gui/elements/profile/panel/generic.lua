@@ -1,10 +1,10 @@
 local config = require("HudController.config")
 local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
-local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 
 local ace_map = data.ace.map
+local set = state.set
 
 local this = {}
 this.separator = gui_util.separator:new({
@@ -30,7 +30,7 @@ function this.draw_options(option_keys, config_key, callback)
         local config_value = config:get(option_config_key)
 
         if
-            set.slider_int(
+            set:slider_int(
                 option_data.name_local,
                 option_config_key,
                 -1,
@@ -79,7 +79,7 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
     local changed = false
 
     if checkbox then
-        changed = set.checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
+        changed = set:checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
         imgui.begin_disabled(not config:get(checkbox.config_key))
     else
         imgui.begin_disabled(false)
@@ -87,7 +87,7 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
 
     for i = 1, #sliders do
         local slider = sliders[i]
-        changed = set.slider_float(
+        changed = set:slider_float(
             string.format("%s##%s", slider.label, slider.config_key),
             slider.config_key,
             min,
@@ -114,7 +114,7 @@ function this.draw(elem, elem_config, config_key)
 
     imgui.begin_disabled(state.state.l1_pressed)
     if elem_config.hide ~= nil then
-        if set.checkbox(gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"), config_key .. ".hide") then
+        if set:checkbox(gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"), config_key .. ".hide") then
             elem:set_hide(elem_config.hide)
         end
 
@@ -210,7 +210,7 @@ function this.draw(elem, elem_config, config_key)
 
     if elem_config.enabled_segment ~= nil then
         local checkbox_key = config_key .. ".enabled_segment"
-        changed = set.checkbox(
+        changed = set:checkbox(
             string.format("%s##%s", gui_util.tr("hud_element.entry.box_enable_segment"), checkbox_key),
             checkbox_key
         )
@@ -222,7 +222,7 @@ function this.draw(elem, elem_config, config_key)
             config:set(item_config_key .. "_combo", state.combo.segment:get_index(nil, config:get(item_config_key)))
         end
 
-        changed = set.combo(
+        changed = set:combo(
             "##" .. item_config_key .. "_combo",
             item_config_key .. "_combo",
             state.combo.segment.values

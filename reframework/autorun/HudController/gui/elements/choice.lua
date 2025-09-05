@@ -2,13 +2,13 @@ local config = require("HudController.config")
 local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
-local set = require("HudController.gui.set")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
+local set = state.set
 
 local this = {}
 local reverse_sort = false
@@ -18,7 +18,7 @@ function this.draw_hud()
 
     imgui.push_item_width(200)
 
-    if set.combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
+    if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input_action = nil
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
         config.save_global()
@@ -117,7 +117,7 @@ function this.draw_element()
 
     imgui.push_item_width(200)
 
-    set.combo(gui_util.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
+    set:combo(gui_util.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
 
     imgui.pop_item_width()
     imgui.same_line()
