@@ -24,7 +24,7 @@ end
 ---@param measurements integer[]
 ---@param trim_percent number?
 ---@return PerfStats
-local function calc_stats(measurements, trim_percent)
+function this.calc_stats(measurements, trim_percent)
     table.sort(measurements)
 
     local sum = 0
@@ -85,13 +85,27 @@ local function format_time(microseconds)
     end
 end
 
+---@param name string
+---@param stats PerfStats
+---@return string
+function this.format_stats(name, stats)
+    local ret = string.format("--Performance: %s\nit: %s", name, stats["it"])
+    local keys = { "total", "min", "max", "mean", "trimmed_mean", "median", "p95", "p99", "stddev" }
+    for i = 1, #keys do
+        local key = keys[i]
+        ret = string.format("%s\n%s: %s", ret, key, format_time(stats[key]))
+    end
+
+    return ret
+end
+
 ---@param fn fun(...): any
 ---@param it integer? by default, 100
 ---@param name string?
----@param trim_percent number?
+---@param trim_percent number?, by_default, 10
 ---@param output_file string?
 ---@param predicate (fun(stats: PerfStats): boolean)?
----@param callback (fun(stats: PerfStats))?
+---@param callback (fun(name: string, stats: PerfStats, measurements: number[]))?
 ---@return fun(...): any
 function this.perf(fn, it, name, trim_percent, output_file, predicate, callback)
     it = it or 100
@@ -115,17 +129,17 @@ function this.perf(fn, it, name, trim_percent, output_file, predicate, callback)
         table.insert(measurements, t)
 
         if count == it then
-            local stats = calc_stats(measurements, trim_percent)
-            local str = string.format("--Performance: %s\nit: %s", name, stats["it"])
-            local keys = { "total", "min", "max", "mean", "trimmed_mean", "median", "p95", "p99", "stddev" }
-            for i = 1, #keys do
-                local key = keys[i]
-                str = string.format("%s\n%s: %s", str, key, format_time(stats[key]))
+            local stats = this.calc_stats(measurements, trim_percent)
+
+            if predicate and not predicate(stats) then
+                return
             end
+
+            local str = this.format_stats(name, stats)
 
             log.debug(str)
 
-            if output_file and (not predicate or predicate(stats)) then
+            if output_file then
                 local file = io.open(output_file, "a")
                 if file then
                     file:write(str .. "\n")
@@ -134,7 +148,7 @@ function this.perf(fn, it, name, trim_percent, output_file, predicate, callback)
             end
 
             if callback then
-                callback(stats)
+                callback(name, stats, measurements)
             end
         end
 

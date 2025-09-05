@@ -4,6 +4,7 @@
 ---@field perf {
 --- total: integer,
 --- completed: integer,
+--- obj: string[],
 --- }
 ---@field initialized boolean
 
@@ -51,6 +52,7 @@ local this = {
     perf = {
         total = 0,
         completed = 0,
+        obj = {},
     },
 }
 
@@ -245,10 +247,25 @@ end
 function this.perf_test()
     local current_hud = hud.manager.by_hudid
     local output_file = util_misc.join_paths(config.name, "perf_log.txt")
+    local output_file_sorted = util_misc.join_paths(config.name, "perf_log_sorted.txt")
+    local trim_percent = 10
+    local it = 1000
+    ---@type number[]
+    local total = {}
+    ---@type [string, PerfStats][]
+    local all_stats = {}
+
     this.perf.completed = 0
     this.perf.total = 0
+    this.perf.obj = {}
 
     local file = io.open(output_file, "w")
+    if file then
+        file:write("")
+        file:close()
+    end
+
+    file = io.open(output_file_sorted, "w")
     if file then
         file:write("")
         file:close()
@@ -261,42 +278,81 @@ function this.perf_test()
         -- return stats.trimmed_mean >= 50
     end
 
+    ---@param name string
     ---@param stats PerfStats
-    local function callback(stats)
+    ---@param measurements number[]
+    local function callback(name, stats, measurements)
         this.perf.completed = this.perf.completed + 1
+        this.perf.obj = util_table.remove(this.perf.obj, function(t, i, j)
+            return t[i] ~= name
+        end)
+
+        table.insert(all_stats, { name, stats })
+
+        if name:match(".*write.*") then
+            if util_table.empty(total) then
+                total = util_table.deep_copy(measurements)
+            else
+                for i = 1, #measurements do
+                    total[i] = total[i] + measurements[i]
+                end
+            end
+        end
+
+        if this.perf.completed == this.perf.total then
+            table.insert(all_stats, { "TOTAL write", perf.calc_stats(total, trim_percent) })
+            table.sort(all_stats, function(a, b)
+                return a[2].trimmed_mean > b[2].trimmed_mean
+            end)
+
+            ---@type string[]
+            local str = {}
+            for i = 1, #all_stats do
+                local _stats = all_stats[i]
+                table.insert(str, perf.format_stats(_stats[1], _stats[2]))
+            end
+
+            local file = io.open(output_file_sorted, "a")
+            if file then
+                file:write(table.concat(str, "\n"))
+                file:close()
+            end
+        end
     end
 
     local function wrap(hudbase)
         for _, child in pairs(hudbase.children) do
             ---@diagnostic disable-next-line: invisible
-            child._ctrl_getter = perf.perf(
+            if hudbase.write_nodes[child] and not util_table.empty(child._getter_cache) then
+                local name = string.format("%s %s", child:whoami(), "ctrl_getter")
                 ---@diagnostic disable-next-line: invisible
-                child._ctrl_getter,
-                1000,
-                string.format("%s %s", child:whoami(), "ctrl_getter"),
-                10,
-                output_file,
-                predicate,
-                callback
-            )
-            this.perf.total = this.perf.total + 1
+                child._ctrl_getter = perf.perf(
+                    ---@diagnostic disable-next-line: invisible
+                    child._ctrl_getter,
+                    it,
+                    name,
+                    trim_percent,
+                    output_file,
+                    predicate,
+                    callback
+                )
+                this.perf.total = this.perf.total + 1
+                table.insert(this.perf.obj, name)
+            end
+
+            wrap(child)
         end
     end
 
     for _, hudbase in pairs(current_hud) do
-        hudbase.write = perf.perf(
-            hudbase.write,
-            1000,
-            string.format("%s %s", hudbase:whoami(), "write"),
-            10,
-            output_file,
-            predicate,
-            callback
-        )
+        local name = string.format("%s %s", hudbase:whoami(), "write")
+        hudbase.write = perf.perf(hudbase.write, it, name, trim_percent, output_file, predicate, callback)
         wrap(hudbase)
         this.perf.total = this.perf.total + 1
+        table.insert(this.perf.obj, name)
     end
 end
+
 function this.write_all_elements()
     local current_hud = hud.manager.by_hudid
 

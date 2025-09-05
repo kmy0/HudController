@@ -347,6 +347,7 @@ function this.draw()
     if hud_debug.perf.total ~= hud_debug.perf.completed then
         imgui.same_line()
         imgui.text(string.format("%s/%s", hud_debug.perf.completed, hud_debug.perf.total))
+        util_imgui.tooltip(table.concat(hud_debug.perf.obj, "\n"), true)
     end
 
     if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
