@@ -42,9 +42,7 @@ local control_arguments = {
         {
             play_object.control.get,
             {
-                "PNL_guideAssign",
-                "PNL_txt_guide",
-                "PNL_baseGuide",
+                "PNL_gaugeAnim",
             },
         },
     },
