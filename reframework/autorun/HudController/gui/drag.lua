@@ -1,11 +1,11 @@
-local gui_util = require("HudController.gui.util")
-local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
-
 ---@class (exact) Drag
 ---@field protected _drag any?
 ---@field item_pos table<any, number>
 ---@field protected _start_pos number
+
+local gui_util = require("HudController.gui.util")
+local state = require("HudController.gui.state")
+local util_imgui = require("HudController.util.imgui")
 
 ---@class Drag
 local this = {}

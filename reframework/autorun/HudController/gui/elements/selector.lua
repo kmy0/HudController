@@ -1,4 +1,5 @@
 local config = require("HudController.config")
+local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
@@ -8,6 +9,7 @@ local util_imgui = require("HudController.util.imgui")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
+local set = config_set_base:new(config.selector)
 
 local this = {
     is_opened = false,
@@ -40,7 +42,6 @@ function this.close()
 end
 
 function this.draw()
-    local changed = false
     local config_sel = config.selector.current
 
     imgui.spacing()
@@ -50,14 +51,11 @@ function this.draw()
     local pos = imgui.get_cursor_pos()
 
     imgui.push_item_width(200)
-    changed, config_sel.combo_file =
-        imgui.combo(gui_util.tr("selector.combo_config"), config_sel.combo_file, state.combo.config.values)
-    imgui.pop_item_width()
-
-    if changed then
+    if set:combo(gui_util.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
         config.selector:swap()
         reinit()
     end
+    imgui.pop_item_width()
 
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_new")) then
@@ -113,7 +111,7 @@ function this.draw()
     end
 
     if state.input_action then
-        changed, _ = state.get_input()
+        local changed, _ = state.get_input()
         if changed then
             if state.input_action ~= config.selector.sorted[config_sel.combo_file] then
                 config.selector:rename_current_file(state.input_action)
@@ -126,11 +124,7 @@ function this.draw()
     end
 
     imgui.push_item_width(200)
-    changed, config.selector.combo_file_backup = imgui.combo(
-        gui_util.tr("selector.combo_backup"),
-        config.selector.combo_file_backup,
-        state.combo.config_backup.values
-    )
+    set:combo(gui_util.tr("selector.combo_backup"), "combo_file_backup", state.combo.config_backup.values)
     imgui.pop_item_width()
     imgui.same_line()
 
