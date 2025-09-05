@@ -100,17 +100,17 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
+local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config")
 local data = require("HudController.data")
 local defaults = require("HudController.hud.defaults")
 local fade_manager = require("HudController.hud.fade")
 local frame_counter = require("HudController.util.misc.frame_counter")
 local game_data = require("HudController.util.game.data")
+local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
-local logger = require("HudController.util.misc.logger").g
-local call_queue = require("HudController.hud.call_queue")
 local play_object = require("HudController.hud.play_object")
+local play_object_defaults = require("HudController.hud.defaults.play_object")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud"
@@ -526,14 +526,15 @@ function this:get_all_ctrl()
         local hudbase = util_table.values(ret, function(o)
             return util_ref.whoami(o.hud_base)
         end) --[=[@as string[]]=]
-        logger:debug(
+        hud_debug_log.log(
             string.format(
                 "More than one Game Class\nGame Classes: %s,\nName Chain: %s,\nClass Chain: %s,\nHud Type: %s",
                 table.concat(hudbase, ", "),
                 self:whoami(),
                 self:whoami_cls(),
                 ace_enum.hud[self.hud_id]
-            )
+            ),
+            hud_debug_log.log_debug_type.GAME_CLASS
         )
     end
 

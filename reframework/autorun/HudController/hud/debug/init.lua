@@ -302,6 +302,7 @@ function this.write_all_elements()
 
     local function write_offset(hudbase)
         hudbase:set_offset({ x = 999, y = 999 })
+        ---@diagnostic disable-next-line: no-unknown
         for _, child in pairs(hudbase.children) do
             ---@diagnostic disable-next-line: invisible
             write_offset(child)

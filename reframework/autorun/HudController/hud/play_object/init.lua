@@ -9,8 +9,8 @@
 ---@alias ControlChild via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 
 local config = require("HudController.config")
+local hud_debug_log = require("HudController.hud.debug.log")
 local util_table = require("HudController.util.misc.table")
-local logger = require("HudController.util.misc.logger").g
 
 local this = {
     control = require("HudController.hud.play_object.control"),
@@ -36,12 +36,13 @@ function this.iter_args(ctrl, args)
 
             if not res then
                 if config.debug.current.debug.is_debug then
-                    logger:debug(
+                    hud_debug_log.log(
                         string.format(
                             "iter_args failed!\nCtrl: %s\nArguments: %s",
                             control:get_Name(),
                             util_table.to_string({ table.unpack(arguments, 2) })
-                        )
+                        ),
+                        hud_debug_log.log_debug_type.CONTROL_GETTER_ITER
                     )
                 end
                 goto continue
