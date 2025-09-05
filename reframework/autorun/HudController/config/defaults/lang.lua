@@ -28,6 +28,7 @@ return {
         text_frame_plural = "Frames",
         text_reset_required = "Script reset required",
         text_child_element = "Child Element",
+        text_help = "Help",
     },
     debug = {
         name = "Debug",
