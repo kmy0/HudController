@@ -58,8 +58,9 @@ end
 ---@param do_hash boolean?
 ---@param deep_hash_table boolean?,
 ---@param jitter integer?
+---@param key_index integer?
 ---@return T
-function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter)
+function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter, key_index)
     local frame_cache = this:new(max_frame, jitter)
 
     local wrapped = {
@@ -72,12 +73,12 @@ function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter)
             ---@type any
             local key
             if do_hash then
-                key = hash.hash_args(deep_hash_table, ...)
+                ---@diagnostic disable-next-line: param-type-mismatch
+                key = hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
             else
-                key = { ... }
-                if #key > 0 then
+                if select("#", ...) > 0 then
                     ---@diagnostic disable-next-line: no-unknown
-                    key = key[1]
+                    key = select(key_index or 1, ...)
                 else
                     key = 1
                 end
