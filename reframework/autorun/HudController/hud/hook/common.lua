@@ -30,7 +30,7 @@ end
 ---@param element_type `T`?
 ---@param guiid_name string app.GUIID.ID name
 ---@return T | HudBase?, app.GUIID.ID?
-function this.get_elem_consume_t(element_type, guiid_name, ...)
+function this.get_elem_consume_t(element_type, guiid_name)
     if not this.is_ok() then
         return
     end

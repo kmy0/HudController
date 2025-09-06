@@ -77,7 +77,7 @@ function this:get_all_panels()
     return ret
 end
 
----@return app.GUI020020.DAMAGE_INFO[]
+---@return table<app.GUI020020.DAMAGE_INFO, true>
 function this:get_dmg()
     local arr = self:get_GUI020020()._DamageInfoList
     if arr then
@@ -93,7 +93,7 @@ function this:get_dmg()
     return self.written
 end
 
----@return app.GUI020020.DAMAGE_INFO[]
+---@return table<app.GUI020020.DAMAGE_INFO, true>
 function this:get_dmg_static()
     local arr = self:get_GUI020020()._DamageInfo
     if arr then
