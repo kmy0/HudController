@@ -79,9 +79,8 @@ end
 function this.update_damage_numbers_post(retval)
     local dmg, guiid =
         common.get_elem_consume_t("DamageNumbers", ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
-    if dmg then
+    if dmg and guiid then
         util_table.do_something(dmg_static and dmg:get_dmg_static() or dmg:get_dmg(), function(_, key, _)
-            ---@diagnostic disable-next-line: param-type-mismatch
             dmg:write(key, guiid, nil)
         end)
     end

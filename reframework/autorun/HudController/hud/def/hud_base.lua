@@ -613,6 +613,7 @@ function this:reset(key)
         self:reset_children(args.hud_base, args.gui_id, args.ctrl, key)
     end
 end
+
 ---@param hudbase app.GUIHudBase
 ---@param gui_id app.GUIID.ID
 ---@param ctrl via.gui.Control
