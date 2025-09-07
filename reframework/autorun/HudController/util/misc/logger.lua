@@ -81,7 +81,8 @@ function this:_log(level, message)
 
     local timestamp = os.date("%Y-%m-%d %H:%M:%S")
     local level_name = self.level_names[level]
-    local formatted_message = string.format("[%s] [%s] [%s] %s%s", timestamp, self.name, level_name, message, rep)
+    local formatted_message =
+        string.format("[%s] [%s] [%s] %s%s", timestamp, self.name, level_name, message, rep)
 
     if self.console_output then
         log.debug(formatted_message)

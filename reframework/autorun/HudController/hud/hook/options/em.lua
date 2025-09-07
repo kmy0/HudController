@@ -81,7 +81,8 @@ function this.hide_monster_icon_pre(args)
                 flags:on(
                     rl(
                         ace_enum.enemy_continue_flag,
-                        hud.get_hud_option("hide_lock_target") and "HIDE_MAP_WITH_DISABLE_PIN" or "HIDE_MAP"
+                        hud.get_hud_option("hide_lock_target") and "HIDE_MAP_WITH_DISABLE_PIN"
+                            or "HIDE_MAP"
                     )
                 )
             end
@@ -129,7 +130,10 @@ function this.get_near_monsters_pre(args)
                 if
                     char
                     and ace_em.is_boss(char)
-                    and (not hud.get_hud_option("hide_lock_target") or ace_em.is_paintballed_ctx(ctx))
+                    and (
+                        not hud.get_hud_option("hide_lock_target")
+                        or ace_em.is_paintballed_ctx(ctx)
+                    )
                 then
                     table.insert(arr, value)
                 end
@@ -138,7 +142,8 @@ function this.get_near_monsters_pre(args)
 
         if not util_table.empty(arr) then
             ---@diagnostic disable-next-line: no-unknown
-            thread.get_hook_storage()["ret"] = util_game.lua_array_to_system_array(arr, "app.cEnemyManageInfo")
+            thread.get_hook_storage()["ret"] =
+                util_game.lua_array_to_system_array(arr, "app.cEnemyManageInfo")
         end
     end
 end
@@ -163,9 +168,12 @@ function this.hide_monster_recommend_post(retval)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_monster_icon") then
         local GUI060000Recommend = util_ref.get_this() --[[@as app.cGUI060000Recommend]]
-        util_game.do_something(GUI060000Recommend._RecommendSignParts, function(system_array, index, value)
-            value.IsActive = false
-        end)
+        util_game.do_something(
+            GUI060000Recommend._RecommendSignParts,
+            function(system_array, index, value)
+                value.IsActive = false
+            end
+        )
     end
 end
 --#endregion

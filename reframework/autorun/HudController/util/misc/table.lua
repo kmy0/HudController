@@ -73,7 +73,10 @@ function this.merge(...)
     assert(#tables_to_merge > 1, "There should be at least two tables to merge them")
 
     for key, table in ipairs(tables_to_merge) do
-        assert(type(table) == "table", string.format("Expected a table as function parameter %d", key))
+        assert(
+            type(table) == "table",
+            string.format("Expected a table as function parameter %d", key)
+        )
     end
 
     local result = this.deep_copy(tables_to_merge[1])
@@ -118,7 +121,10 @@ function this.merge2(protected, ignore_empty, ...)
     assert(#tables_to_merge > 1, "There should be at least two tables to merge them")
 
     for key, table in ipairs(tables_to_merge) do
-        assert(type(table) == "table", string.format("Expected a table as function parameter %d", key))
+        assert(
+            type(table) == "table",
+            string.format("Expected a table as function parameter %d", key)
+        )
     end
 
     local result = this.deep_copy(tables_to_merge[1])
@@ -130,7 +136,10 @@ function this.merge2(protected, ignore_empty, ...)
                 goto continue
             end
 
-            if type(value) == "table" and (not ignore_empty or (ignore_empty and not this.empty(value))) then
+            if
+                type(value) == "table"
+                and (not ignore_empty or (ignore_empty and not this.empty(value)))
+            then
                 result[key] = result[key] or {}
                 assert(type(result[key]) == "table", string.format("Expected a table: '%s'", key))
                 result[key] = this.merge2(protected, ignore_empty, result[key], value)

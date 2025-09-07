@@ -80,21 +80,39 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Minimap
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        local root = self:_get_panel()
-        ---@cast hudbase app.GUI060010
-        if root then
-            if not hudbase:get_IsActive() then
-                s:reset()
-            else
-                return play_object.iter_args(root, control_arguments.background)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            local root = self:_get_panel()
+            ---@cast hudbase app.GUI060010
+            if root then
+                if not hudbase:get_IsActive() then
+                    s:reset()
+                else
+                    return play_object.iter_args(root, control_arguments.background)
+                end
             end
-        end
-    end, nil, nil, nil, nil, true)
-    o.children.out_frame_icon = hud_child:new(args.children.out_frame_icon, o, function(s, hudbase, gui_id, ctrl)
-        local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
-        return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
-    end, nil, nil, nil, nil, true)
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
+    )
+    o.children.out_frame_icon = hud_child:new(
+        args.children.out_frame_icon,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
+            return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
+    )
 
     return o
 end

@@ -71,7 +71,10 @@ function this:init()
         end, function(err)
             fail = true
             logger:error(
-                util_misc.wrap_text(string.format("InitChain (%s) func at index %s threw: %s", self.name, i, err), 100)
+                util_misc.wrap_text(
+                    string.format("InitChain (%s) func at index %s threw: %s", self.name, i, err),
+                    100
+                )
             )
         end)
 
@@ -84,7 +87,10 @@ function this:init()
 
             if self._retries[i] >= self.max_retries then
                 logger:error(
-                    util_misc.wrap_text(string.format("InitChain (%s) func at index %s failed", self.name, i), 100)
+                    util_misc.wrap_text(
+                        string.format("InitChain (%s) func at index %s failed", self.name, i),
+                        100
+                    )
                 )
                 self.failed = true
             end

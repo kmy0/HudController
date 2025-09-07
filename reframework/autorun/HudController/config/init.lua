@@ -58,8 +58,12 @@ this.selector = selector_config:new(
     util_misc.join_paths(this.name, "other_configs", "selector.json"),
     this
 )
-this.lang =
-    lang:new(require("HudController.config.defaults.lang"), util_misc.join_paths(this.name, "lang"), "en-us.json", this)
+this.lang = lang:new(
+    require("HudController.config.defaults.lang"),
+    util_misc.join_paths(this.name, "lang"),
+    "en-us.json",
+    this
+)
 
 function this:load()
     local loaded_config = json.load_file(self.path) --[[@as MainSettings?]]
@@ -87,7 +91,12 @@ function this:get_backup_path()
     return util_misc.join_paths(
         self.name,
         "backups",
-        string.format("%s_backup_v%s_%s", os.time(), self.current.version, util_misc.get_file_name(self.path))
+        string.format(
+            "%s_backup_v%s_%s",
+            os.time(),
+            self.current.version,
+            util_misc.get_file_name(self.path)
+        )
     )
 end
 

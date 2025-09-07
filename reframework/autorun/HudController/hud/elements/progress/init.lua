@@ -119,15 +119,24 @@ function this:new(args)
         return play_object.iter_args(ctrl, control_arguments.timer)
     end)
     o.children.clock = clock:new(args.children.clock, o)
-    o.children.quest_timer = quest_timer:new(args.children.quest_timer, o, function(s, hudbase, gui_id, ctrl)
-        ---@diagnostic disable-next-line: invisible
-        local pnl = s._get_panel(s)
-        if pnl then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            o.children.timer:reset_specific(nil, nil, pnl)
-        end
-        return pnl
-    end, nil, nil, nil, nil, true)
+    o.children.quest_timer = quest_timer:new(
+        args.children.quest_timer,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            ---@diagnostic disable-next-line: invisible
+            local pnl = s._get_panel(s)
+            if pnl then
+                ---@diagnostic disable-next-line: param-type-mismatch
+                o.children.timer:reset_specific(nil, nil, pnl)
+            end
+            return pnl
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
+    )
     o.children.best_timer = best_timer:new(args.children.best_timer, o)
     o.children.faint = faint:new(args.children.faint, o)
     return o
@@ -156,7 +165,9 @@ function this:write(hudbase, gui_id, ctrl)
 end
 
 function this:reset_defaults()
-    play_object_defaults.clear_obj("GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00")
+    play_object_defaults.clear_obj(
+        "GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00"
+    )
 end
 
 ---@return boolean

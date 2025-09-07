@@ -196,7 +196,12 @@ end
 
 function this.import()
     local hud_config = json.load_string(imgui.get_clipboard()) --[[@as HudProfileConfig?]]
-    if not hud_config or not hud_config.elements or util_table.empty(hud_config.elements) or not hud_config.name then
+    if
+        not hud_config
+        or not hud_config.elements
+        or util_table.empty(hud_config.elements)
+        or not hud_config.name
+    then
         return
     end
 

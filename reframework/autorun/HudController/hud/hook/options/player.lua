@@ -79,10 +79,17 @@ function this.hide_weapon_post(retval)
             if
                 master_player
                 and not master_player:get_IsWeaponOnAction()
-                and not ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "PORTER_WP_CHANGE"))
-                and not ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_KIREAJI_HUD"))
+                and not ace_player.check_continue_flag(
+                    rl(ace_enum.hunter_continue_flag, "PORTER_WP_CHANGE")
+                )
+                and not ace_player.check_continue_flag(
+                    rl(ace_enum.hunter_continue_flag, "OPEN_KIREAJI_HUD")
+                )
             then
-                ace_player.set_continue_flag(rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"), true)
+                ace_player.set_continue_flag(
+                    rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"),
+                    true
+                )
             end
         end)
     end

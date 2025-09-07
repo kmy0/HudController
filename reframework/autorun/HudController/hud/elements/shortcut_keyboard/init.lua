@@ -102,9 +102,13 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboard
 
-    o.children.background_blur = ctrl_child:new(args.children.background_blur, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background_blur)
-    end)
+    o.children.background_blur = ctrl_child:new(
+        args.children.background_blur,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background_blur)
+        end
+    )
     o.children.arrow = hud_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.arrow)
     end)

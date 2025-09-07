@@ -124,7 +124,11 @@ function this.draw()
     end
 
     imgui.push_item_width(200)
-    set:combo(gui_util.tr("selector.combo_backup"), "combo_file_backup", state.combo.config_backup.values)
+    set:combo(
+        gui_util.tr("selector.combo_backup"),
+        "combo_file_backup",
+        state.combo.config_backup.values
+    )
     imgui.pop_item_width()
     imgui.same_line()
 

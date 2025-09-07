@@ -157,7 +157,8 @@ function this.seconds_to_minutes_string(n, n_format, pad)
         return string.format(
             format,
             pad and this.pad_zero(minutes_f) or minutes_f,
-            minutes == 1 and config.lang:tr("misc.text_minute") or config.lang:tr("misc.text_minute_plural"),
+            minutes == 1 and config.lang:tr("misc.text_minute")
+                or config.lang:tr("misc.text_minute_plural"),
             pad and this.pad_zero(seconds_f) or seconds_f,
             util_misc.round(seconds, 1) == 1 and config.lang:tr("misc.text_second")
                 or config.lang:tr("misc.text_second_plural")

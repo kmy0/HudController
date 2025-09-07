@@ -41,7 +41,9 @@ function this.get_by_regex(type_def, regex)
         end
     end
 
-    logger:error(string.format('Failed to get method with "%s" regex from "%s" type.', regex, type_def))
+    logger:error(
+        string.format('Failed to get method with "%s" regex from "%s" type.', regex, type_def)
+    )
 end
 
 ---@param type_def RETypeDefinition | string

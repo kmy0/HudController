@@ -37,7 +37,9 @@ function this.hide_nameplate_post(retval)
             if (master_pl_pos - pl_pos):length() > name_other.pl_draw_distance then
                 return false
             end
-        elseif name_other.pl_draw_distance > 0 and ace_enum.nameplate_type[type] == "SUPPORT_PL" then
+        elseif
+            name_other.pl_draw_distance > 0 and ace_enum.nameplate_type[type] == "SUPPORT_PL"
+        then
             ---@cast GUI020016Part app.GUI020016PartsPlayer
             local npc_pos = ace_npc.get_pos(GUI020016Part._NpcManageInfo)
             if (master_pl_pos - npc_pos):length() > name_other.pl_draw_distance then
@@ -51,7 +53,10 @@ function this.hide_nameplate_post(retval)
             end
         elseif
             name_other.pet_draw_distance > 0
-            and (ace_enum.nameplate_type[type] == "OT" or ace_enum.nameplate_type[type] == "SUPPORT_OT")
+            and (
+                ace_enum.nameplate_type[type] == "OT"
+                or ace_enum.nameplate_type[type] == "SUPPORT_OT"
+            )
         then
             ---@cast GUI020016Part app.GUI020016PartsOtomo
             local otomo_pos = ace_otomo.get_pos(GUI020016Part._OtomoManageInfo)

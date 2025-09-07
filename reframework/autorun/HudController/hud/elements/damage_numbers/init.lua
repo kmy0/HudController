@@ -70,7 +70,10 @@ function this:get_all_panels()
     local arr = self:get_GUI020020()._DamageInfo
     if arr then
         util_game.do_something(arr, function(system_array, index, value)
-            table.insert(ret, self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]])
+            table.insert(
+                ret,
+                self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]]
+            )
         end)
     end
 

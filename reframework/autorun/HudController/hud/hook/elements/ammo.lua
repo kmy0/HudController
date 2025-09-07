@@ -20,11 +20,15 @@ function this.no_hide_ammo_slider_parts_pre(args)
         -- app.GUI020007.controlSliderStatus closes parts when BulletSliderStatus transitions from Default to Active
         -- or its opened with ctrl
         local GUI020007 = sdk.to_managed_object(args[2]) --[[@as app.GUI020007]]
-        local flag = ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+        local flag =
+            ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
         local open_timer = GUI020007:get__OpenTimer()
         local is_rapid = GUI020007:get_IsRapidMode()
 
-        if (not flag and ammo_slider.item_slider_open) or (not flag and open_timer <= 0 and is_rapid) then
+        if
+            (not flag and ammo_slider.item_slider_open)
+            or (not flag and open_timer <= 0 and is_rapid)
+        then
             -- this is necessary when in rapid mode, to avoid fade in of energy bar
             GUI020007:setBulletSliderState("UNFOCUS")
             GUI020007:set__SliderStatus(rl(ace_enum.bullet_slider_status, "Default"))

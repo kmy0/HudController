@@ -26,7 +26,11 @@ end
 
 function this.update_porter_call_post(retval)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_porter") and not hud.get_hud_option("disable_porter_call") then
+    if
+        hud_config
+        and hud.get_hud_option("hide_porter")
+        and not hud.get_hud_option("disable_porter_call")
+    then
         timer.restart_key(porter.call_timer_key)
     end
 end
@@ -53,8 +57,14 @@ function this.hide_porter_post(retval)
             and (porter.hidden or timer.check(porter.touch_timer_key, config.porter_timeout))
         then
             ace_porter.change_fade_speed(0.5)
-            ace_porter.set_master_continue_flag(rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"), true)
-            ace_porter.set_master_continue_flag(rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"), true)
+            ace_porter.set_master_continue_flag(
+                rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"),
+                true
+            )
+            ace_porter.set_master_continue_flag(
+                rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"),
+                true
+            )
             porter.hidden = true
         end
     else

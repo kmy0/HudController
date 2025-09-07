@@ -79,9 +79,17 @@ function fade_callbacks.switch_profile_partial()
 end
 
 function fade_callbacks.finish()
-    if this.notify and config.current.mod.enable_notification and this.current_hud.show_notification then
+    if
+        this.notify
+        and config.current.mod.enable_notification
+        and this.current_hud.show_notification
+    then
         ace_misc.send_message(
-            string.format("%s %s", this.current_hud.name, config.lang:tr("misc.text_notification_message"))
+            string.format(
+                "%s %s",
+                this.current_hud.name,
+                config.lang:tr("misc.text_notification_message")
+            )
         )
     end
 
@@ -172,7 +180,10 @@ function this.request_hud(new_hud, force)
         config.current.mod.enable_fade
         and (new_hud.fade_in > 0 or (this.current_hud and this.current_hud.fade_out > 0))
     then
-        if fade_manager.is_active(fade_manager.type.fade_out) and fade_manager.current_fade.hud_key == new_hud.key then
+        if
+            fade_manager.is_active(fade_manager.type.fade_out)
+            and fade_manager.current_fade.hud_key == new_hud.key
+        then
             this.notify = false
             fade_manager.fade_in(this.current_hud, fade_callbacks.finish)
         elseif
@@ -213,7 +224,8 @@ function this.update_weapon_bind_state()
 
     local config_mod = config.current.mod
     local bind_weapon = config_mod.bind.weapon
-    local in_quest = bind_weapon.quest_in_combat and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
+    local in_quest = bind_weapon.quest_in_combat
+        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
     local is_riding = bind_weapon.ride_ignore_combat and ace_porter.is_master_riding()
     local is_village = ace_player.is_in_village()
 
@@ -281,7 +293,8 @@ function this.update_weapon_bind_state()
     end
 
     if weapon_config.enabled then
-        local state_config = weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
+        local state_config =
+            weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
         local hud_config = config_mod.hud[state_config.combo]
 
         if
@@ -339,7 +352,10 @@ function this.update()
             is_held = bind_manager.monitor:is_held("hud")
         end
 
-        if not config_mod.disable_weapon_binds_timed and (not config_mod.disable_weapon_binds_held or not is_held) then
+        if
+            not config_mod.disable_weapon_binds_timed
+            and (not config_mod.disable_weapon_binds_held or not is_held)
+        then
             timer.reset_key(timer_key)
         end
     end

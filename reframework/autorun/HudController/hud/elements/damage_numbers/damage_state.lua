@@ -182,9 +182,13 @@ function this:new(args, parent)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbersDamageState
 
-    o.children.horizontal_line = ctrl_child:new(args.children.horizontal_line, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.horizontal_line)
-    end)
+    o.children.horizontal_line = ctrl_child:new(
+        args.children.horizontal_line,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.horizontal_line)
+        end
+    )
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
@@ -194,12 +198,20 @@ function this:new(args, parent)
     o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.circle)
     end)
-    o.children.affinity = ctrl_child:new(args.children.affinity, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.affinity)
-    end)
-    o.children.negative_affinity = ctrl_child:new(args.children.negative_affinity, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.negative_affinity)
-    end)
+    o.children.affinity = ctrl_child:new(
+        args.children.affinity,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.affinity)
+        end
+    )
+    o.children.negative_affinity = ctrl_child:new(
+        args.children.negative_affinity,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.negative_affinity)
+        end
+    )
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
     end)

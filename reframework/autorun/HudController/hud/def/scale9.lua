@@ -189,7 +189,10 @@ function this:reset_ctrl(obj, key)
         obj:set_BlendType(default.blend)
     end
 
-    if self.ignore_alpha ~= nil and not key or key == "ignore_alpha" and default.ignore_alpha ~= nil then
+    if
+        self.ignore_alpha ~= nil and not key
+        or key == "ignore_alpha" and default.ignore_alpha ~= nil
+    then
         obj:set_IgnoreAlpha(default.ignore_alpha)
     end
 

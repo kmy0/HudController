@@ -149,9 +149,13 @@ function this:new(args)
     o.properties = util_table.merge_t(o.properties, {
         state = true,
     })
-    o.children.anim_max = hud_child:new(args.children.anim_max, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.anim_max)
-    end)
+    o.children.anim_max = hud_child:new(
+        args.children.anim_max,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.anim_max)
+        end
+    )
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
@@ -161,9 +165,13 @@ function this:new(args)
     o.children.edge = hud_child:new(args.children.edge, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.edge)
     end)
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
 
     if args.state ~= -1 then
         o:set_state(args.state)

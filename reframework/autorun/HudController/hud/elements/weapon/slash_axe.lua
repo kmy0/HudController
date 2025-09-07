@@ -42,13 +42,28 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return SlashAxe
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, nil, nil, nil, nil, nil, nil, rl(ace_enum.gui_id, "UI020029"))
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        rl(ace_enum.gui_id, "UI020029")
+    )
     setmetatable(o, self)
     ---@cast o SlashAxe
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
 
     return o
 end

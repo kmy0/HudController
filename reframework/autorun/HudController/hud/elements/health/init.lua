@@ -320,36 +320,72 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Health
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.frame_max = hud_child:new(args.children.frame_max, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.frame_max)
-    end)
-    o.children.light_end = hud_child:new(args.children.light_end, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.light_end)
-    end)
-    o.children.light_start = hud_child:new(args.children.light_start, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.light_start)
-    end)
-    o.children.skill_list = skill_list:new(args.children.skill_list, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.skill_list)
-    end)
-    o.children.skill_line = hud_child:new(args.children.skill_line, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.skill_line)
-    end)
-    o.children.anim_low_health = hud_child:new(args.children.anim_low_health, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.anim_low_health)
-    end)
-    o.children.red_health = hud_child:new(args.children.red_health, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.red_health)
-    end)
-    o.children.incoming_health = hud_child:new(args.children.incoming_health, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.incoming_health)
-    end)
+    o.children.frame_max = hud_child:new(
+        args.children.frame_max,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.frame_max)
+        end
+    )
+    o.children.light_end = hud_child:new(
+        args.children.light_end,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.light_end)
+        end
+    )
+    o.children.light_start = hud_child:new(
+        args.children.light_start,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.light_start)
+        end
+    )
+    o.children.skill_list = skill_list:new(
+        args.children.skill_list,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.skill_list)
+        end
+    )
+    o.children.skill_line = hud_child:new(
+        args.children.skill_line,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.skill_line)
+        end
+    )
+    o.children.anim_low_health = hud_child:new(
+        args.children.anim_low_health,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.anim_low_health)
+        end
+    )
+    o.children.red_health = hud_child:new(
+        args.children.red_health,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.red_health)
+        end
+    )
+    o.children.incoming_health = hud_child:new(
+        args.children.incoming_health,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.incoming_health)
+        end
+    )
     o.children.max_fall = max_fall:new(args.children.max_fall, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.max_fall)
     end)

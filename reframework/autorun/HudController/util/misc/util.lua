@@ -2,7 +2,10 @@ local this = {}
 
 ---@param rgba {r:integer, g:integer, b:integer, a:integer}
 function this.rgba_to_int(rgba)
-    return ((rgba.r & 0xFF) << 24) | ((rgba.g & 0xFF) << 16) | ((rgba.b & 0xFF) << 8) | (rgba.a & 0xFF)
+    return ((rgba.r & 0xFF) << 24)
+        | ((rgba.g & 0xFF) << 16)
+        | ((rgba.b & 0xFF) << 8)
+        | (rgba.a & 0xFF)
 end
 
 ---@param rgba_int integer

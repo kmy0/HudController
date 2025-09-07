@@ -26,13 +26,16 @@ end
 function this.get()
     if not this._fader then
         this._fader = {}
-        util_game.do_something(util_game.get_all_components("ace.GUIFade"), function(system_array, index, value)
-            local game_oject = value:get_GameObject()
-            if game_oject:get_Name() == "FadeAppSecond" then
-                this._fader.obj = value
-                return false
+        util_game.do_something(
+            util_game.get_all_components("ace.GUIFade"),
+            function(system_array, index, value)
+                local game_oject = value:get_GameObject()
+                if game_oject:get_Name() == "FadeAppSecond" then
+                    this._fader.obj = value
+                    return false
+                end
             end
-        end)
+        )
 
         this._fader.ori_color = this._fader.obj._Color
         local root = this._fader.obj._RootWindow

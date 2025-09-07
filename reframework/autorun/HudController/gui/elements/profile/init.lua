@@ -89,7 +89,11 @@ local function boxes_to_slider(label, boxes)
     then
         imgui.same_line()
         imgui.text(
-            string.format("(%s %s)", config.lang:tr("misc.text_overridden"), config.lang:tr("hud.option_disable"))
+            string.format(
+                "(%s %s)",
+                config.lang:tr("misc.text_overridden"),
+                config.lang:tr("hud.option_disable")
+            )
         )
     end
 
@@ -101,7 +105,10 @@ local function draw_options()
 
     util_imgui.separator_text(config.lang:tr("hud.category_general"))
     local changed = check_overriden(
-        set:checkbox(gui_util.tr("hud.box_mute_gui"), string.format("mod.hud.int:%s.mute_gui", config_mod.combo.hud)),
+        set:checkbox(
+            gui_util.tr("hud.box_mute_gui"),
+            string.format("mod.hud.int:%s.mute_gui", config_mod.combo.hud)
+        ),
         "mute_gui"
     )
     changed = check_overriden(
@@ -159,7 +166,10 @@ local function draw_options()
         "hide_handler"
     ) or changed
     changed = check_overriden(
-        set:checkbox(gui_util.tr("hud.box_hide_pet"), string.format("mod.hud.int:%s.hide_pet", config_mod.combo.hud)),
+        set:checkbox(
+            gui_util.tr("hud.box_hide_pet"),
+            string.format("mod.hud.int:%s.hide_pet", config_mod.combo.hud)
+        ),
         "hide_pet"
     ) or changed
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_pet"), true)
@@ -183,8 +193,10 @@ local function draw_options()
     imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud.category_monster"))
-    changed = boxes_to_slider(gui_util.tr("hud.slider_wound_state"), { "hide_scar", "show_scar", "disable_scar" })
-        or changed
+    changed = boxes_to_slider(
+        gui_util.tr("hud.slider_wound_state"),
+        { "hide_scar", "show_scar", "disable_scar" }
+    ) or changed
     changed = check_overriden(
         set:checkbox(
             gui_util.tr("hud.box_hide_small_monsters"),
@@ -304,7 +316,9 @@ local function draw_options()
     ) or changed
 
     imgui.same_line()
-    imgui.begin_disabled(not config:get(string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud)))
+    imgui.begin_disabled(
+        not config:get(string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud))
+    )
 
     changed = set:checkbox(
         gui_util.tr("hud.box_fade_opacity_both"),
@@ -343,7 +357,8 @@ local function draw_options()
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then
         util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
 
-        local sorted = util_table.sort(util_table.keys(config_mod.hud[config_mod.combo.hud].options))
+        local sorted =
+            util_table.sort(util_table.keys(config_mod.hud[config_mod.combo.hud].options))
         ---@cast sorted string[]
         generic.draw_options(
             sorted,
@@ -371,7 +386,8 @@ local function draw_elements()
     for i = 1, #sorted do
         local elem_config = sorted[i]
         local elem = hud.get_element(elem_config.hud_id)
-        local config_key = string.format("mod.hud.int:%s.elements.%s", config_mod.combo.hud, elem_config.name_key)
+        local config_key =
+            string.format("mod.hud.int:%s.elements.%s", config_mod.combo.hud, elem_config.name_key)
 
         drag:draw_drag_button(config_key, elem_config)
         imgui.same_line()
@@ -388,7 +404,8 @@ local function draw_elements()
             imgui.set_next_item_open(false)
         end
 
-        local header = imgui.collapsing_header(string.format("%s##%s_header", name, elem_config.name_key))
+        local header =
+            imgui.collapsing_header(string.format("%s##%s_header", name, elem_config.name_key))
 
         drag:check_drag_pos(elem_config)
 

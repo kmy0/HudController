@@ -93,9 +93,13 @@ function this:new(args)
         return play_object.iter_args(ctrl, control_arguments.extract)
     end)
 
-    o.children.extract_frame = material:new(args.children.extract_frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.extract_frame)
-    end)
+    o.children.extract_frame = material:new(
+        args.children.extract_frame,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.extract_frame)
+        end
+    )
     return o
 end
 

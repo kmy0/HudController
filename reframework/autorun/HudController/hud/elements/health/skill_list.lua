@@ -70,7 +70,10 @@ function this:new(args, parent, ctrl_getter)
     ---@cast o HealthSkillList
 
     o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
-        return util_table.array_merge_t(play_object.iter_args(ctrl, control_arguments.virus), get_icons(ctrl))
+        return util_table.array_merge_t(
+            play_object.iter_args(ctrl, control_arguments.virus),
+            get_icons(ctrl)
+        )
     end)
     o.children.timer = hud_child:new(args.children.timer, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(get_icons(ctrl), control_arguments.timer)

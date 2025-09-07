@@ -83,12 +83,24 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o ProgressClock
 
-    o.children.frame_base = hud_child:new(args.children.frame_base, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.frame_base)
-    end, nil, { hide = false })
-    o.children.frame_main = hud_child:new(args.children.frame_main, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.frame_main)
-    end, nil, { hide = false })
+    o.children.frame_base = hud_child:new(
+        args.children.frame_base,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.frame_base)
+        end,
+        nil,
+        { hide = false }
+    )
+    o.children.frame_main = hud_child:new(
+        args.children.frame_main,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.frame_main)
+        end,
+        nil,
+        { hide = false }
+    )
     o.children.limit = hud_child:new(args.children.limit, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.limit)
     end, nil, { hide = false })
@@ -101,8 +113,10 @@ function this.get_config()
     local base = hud_child.get_config("clock") --[[@as ProgressClockConfig]]
     local children = base.children
 
-    children.frame_base = { name_key = "frame_base", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
-    children.frame_main = { name_key = "frame_main", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
+    children.frame_base =
+        { name_key = "frame_base", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
+    children.frame_main =
+        { name_key = "frame_main", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
     children.limit = { name_key = "limit", hide = false }
 
     return base

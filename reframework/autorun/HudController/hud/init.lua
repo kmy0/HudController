@@ -50,7 +50,13 @@ end
 function this.get_current(strict)
     if
         not this.manager.current_hud
-        or (strict and (not this.manager.current_hud.elements or util_table.empty(this.manager.current_hud.elements)))
+        or (
+            strict
+            and (
+                not this.manager.current_hud.elements
+                or util_table.empty(this.manager.current_hud.elements)
+            )
+        )
     then
         return
     end

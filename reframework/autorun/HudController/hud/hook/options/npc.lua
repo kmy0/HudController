@@ -51,8 +51,16 @@ function this.hide_handler_post(retval)
                 return
             end
 
-            ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "DISABLE_TALK"), true)
-            ace_npc.set_continue_flag(handler_id, rl(ace_enum.npc_continue_flag, "ALPHA_ZERO"), true)
+            ace_npc.set_continue_flag(
+                handler_id,
+                rl(ace_enum.npc_continue_flag, "DISABLE_TALK"),
+                true
+            )
+            ace_npc.set_continue_flag(
+                handler_id,
+                rl(ace_enum.npc_continue_flag, "ALPHA_ZERO"),
+                true
+            )
             handler.hidden = true
 
             local handler_porter = ace_porter.get_porter(char_base)
@@ -60,8 +68,16 @@ function this.hide_handler_post(retval)
                 return
             end
 
-            ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"), true)
-            ace_porter.set_continue_flag(handler_porter, rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"), true)
+            ace_porter.set_continue_flag(
+                handler_porter,
+                rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"),
+                true
+            )
+            ace_porter.set_continue_flag(
+                handler_porter,
+                rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"),
+                true
+            )
             return
         end
     end
@@ -84,7 +100,11 @@ function this.hide_no_talk_npc_pre(args)
             (no_facility and ace_npc.is_facility(npc_base) == false)
             or (no_talk and ace_npc.is_talk(npc_base) == false)
         then
-            ace_npc.set_continue_flag(npc_base, rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"), true)
+            ace_npc.set_continue_flag(
+                npc_base,
+                rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"),
+                true
+            )
         end
     end
 end

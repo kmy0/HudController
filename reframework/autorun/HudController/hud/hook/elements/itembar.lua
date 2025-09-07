@@ -38,7 +38,8 @@ function this.open_expanded_itembar_pre(args)
 
     if itembar and itembar.start_expanded then
         local GUI020006 = itembar:get_GUI020006()
-        local flag = ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+        local flag =
+            ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
 
         if not this.expanded.visible and flag then
             if GUI020006:get_IsAllSliderMode() then
@@ -46,9 +47,11 @@ function this.open_expanded_itembar_pre(args)
             end
 
             --FIXME: sometimes this throws
-            if not util_misc.try(function()
-                GUI020006:startAllSlider()
-            end) then
+            if
+                not util_misc.try(function()
+                    GUI020006:startAllSlider()
+                end)
+            then
                 return
             end
 
@@ -87,7 +90,10 @@ function this.keep_slinger_open0_post(retval)
     if itembar then
         local GUI020017 = util_ref.get_this() --[[@as app.GUI020017]]
 
-        if itembar.children.all_slider.slinger_visible and GUI020017:get__SetMainAmmoType() ~= 0 then
+        if
+            itembar.children.all_slider.slinger_visible
+            and GUI020017:get__SetMainAmmoType() ~= 0
+        then
             return sdk.to_ptr(true)
         end
     end
@@ -123,7 +129,8 @@ function this.expanded_itembar_mouse_control_post(retval)
         itembar
         and itembar.children.all_slider.enable_mouse_control
         and itembar:get_GUI020006():get_IsAllSliderMode()
-        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()] ~= "PAD"
+        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+            ~= "PAD"
     then
         local all_slider = util_ref.get_this() --[[@as app.GUI020006PartsAllSlider]]
         local current_item = all_slider:getCurrentItem()
@@ -173,7 +180,12 @@ function this.expanded_itembar_mouse_control_post(retval)
             end, true)
 
             if mouse_over and ace_misc.get_kb():isOn(rl(ace_enum.kb_btn, "L_CLICK")) then
-                all_slider:callbackOther(all_slider.SLOT_ITEM_USE, fsg_ctrl, current_sel, current_index)
+                all_slider:callbackOther(
+                    all_slider.SLOT_ITEM_USE,
+                    fsg_ctrl,
+                    current_sel,
+                    current_index
+                )
             end
         end
     else
@@ -205,7 +217,8 @@ function this.force_cursor_visible_post(retval)
         itembar
         and itembar.children.all_slider.enable_mouse_control
         and itembar:get_GUI020006():get_IsAllSliderMode()
-        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()] ~= "PAD"
+        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+            ~= "PAD"
     then
         this.expanded.skip_mouse_update = true
         return sdk.to_ptr(true)
@@ -223,7 +236,11 @@ end
 
 function this.refresh_all_slider_post(retval)
     local itembar = common.get_elem_t("Itembar")
-    if itembar and itembar.children.all_slider.appear_open and not itembar:get_GUI020006():get_IsAllSliderMode() then
+    if
+        itembar
+        and itembar.children.all_slider.appear_open
+        and not itembar:get_GUI020006():get_IsAllSliderMode()
+    then
         itembar:get_GUI020006():initAllList()
     end
 

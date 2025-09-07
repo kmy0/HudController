@@ -51,7 +51,13 @@ function this.print_fields(obj)
 
         for j = 1, #type.data do
             local data = type.data[j]
-            print(string.format("%s: %s", data.name .. string.rep(" ", max_len - #data.name), data.data))
+            print(
+                string.format(
+                    "%s: %s",
+                    data.name .. string.rep(" ", max_len - #data.name),
+                    data.data
+                )
+            )
         end
     end
     print("\n")

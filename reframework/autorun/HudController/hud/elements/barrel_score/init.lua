@@ -77,7 +77,8 @@ end
 
 ---@return BarrelScoreConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "BARREL_BOWLING_SCORE"), "BARREL_BOWLING_SCORE") --[[@as BarrelScoreConfig]]
+    local base =
+        hud_base.get_config(rl(ace_enum.hud, "BARREL_BOWLING_SCORE"), "BARREL_BOWLING_SCORE") --[[@as BarrelScoreConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.BARREL_BOWLING_SCORE
