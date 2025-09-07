@@ -1,50 +1,29 @@
+---@class (exact) OptionDefaultJsonCache : JsonCache
+
 local config = require("HudController.config")
+local json_cache = require("HudController.util.misc.json_cache")
 local m = require("HudController.util.ref.methods")
-local util_misc = require("HudController.util.misc")
 
-local this = {
-    ---@type table<string, integer>
-    by_opt = {},
-    boot_time = util_misc.get_boot_time(),
-    ---@class DefaultsState
-    state = {},
-}
+---@class OptionDefaultJsonCache
+local this = {}
+---@diagnostic disable-next-line: inject-field
+this.__index = this
+setmetatable(this, { __index = json_cache })
 
----@param opt app.Option.ID
----@return integer?
-function this.get_default(opt)
-    return this.by_opt[tostring(opt)]
-end
-
----@param state DefaultsState
----@return boolean
-function this.init(state)
-    this.state = state
-
-    local j = json.load_file(config.option_default_path)
-    if j and math.abs(this.boot_time - j.boot_time) < 5 then
-        this.by_opt = j.cache or {}
-    else
-        json.dump_file(config.option_default_path, { boot_time = this.boot_time, cache = {} })
-    end
-    return true
-end
-
-function this.dump()
-    json.dump_file(config.option_default_path, { boot_time = this.boot_time, cache = this.by_opt })
+---@return OptionDefaultJsonCache
+function this:new()
+    local o = json_cache.new(self, config.option_default_path)
+    ---@cast o OptionDefaultJsonCache
+    return o
 end
 
 ---@param opt app.Option.ID
-function this.check(opt)
-    local key = tostring(opt)
-    if this.by_opt[key] then
+function this:check(opt)
+    if self:get(opt) then
         return
     end
 
-    this.by_opt[key] = m.getOptionValue(opt)
-    if this.state.do_dump then
-        this.dump()
-    end
+    self:set(opt, m.getOptionValue(opt))
 end
 
 return this

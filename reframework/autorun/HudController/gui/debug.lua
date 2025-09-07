@@ -307,7 +307,7 @@ function this.draw()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("debug.button_clear_default")) then
-        defaults.play_object.clear()
+        defaults.play_object:clear()
     end
     util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
     util_imgui.tooltip(

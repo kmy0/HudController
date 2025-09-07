@@ -61,20 +61,24 @@ local function override_scar_option(key, value)
 end
 
 function fade_callbacks.switch_profile()
-    defaults.with_dump(function()
-        this.overridden_options = {}
-        this.apply_options(this.requested_hud.options)
-        this.update_elements(this.requested_hud.elements)
-        this.current_hud = this.requested_hud
+    defaults.play_object:with_dump(function()
+        defaults.option:with_dump(function()
+            this.overridden_options = {}
+            this.apply_options(this.requested_hud.options)
+            this.update_elements(this.requested_hud.elements)
+            this.current_hud = this.requested_hud
+        end)
     end)
 end
 
 function fade_callbacks.switch_profile_partial()
-    defaults.with_dump(function()
-        this.overridden_options = {}
-        this.apply_options(this.requested_hud.options)
-        this._update_elements_partial(this.requested_hud.elements)
-        this.current_hud = this.requested_hud
+    defaults.play_object:with_dump(function()
+        defaults.option:with_dump(function()
+            this.overridden_options = {}
+            this.apply_options(this.requested_hud.options)
+            this._update_elements_partial(this.requested_hud.elements)
+            this.current_hud = this.requested_hud
+        end)
     end)
 end
 
@@ -98,7 +102,7 @@ function fade_callbacks.finish()
 end
 
 ---@param elements table<string, HudBaseConfig>
-function this.update_elements(elements, visible_only)
+function this.update_elements(elements)
     this.by_guiid = {}
 
     for _, elem in pairs(this.by_hudid) do
@@ -391,7 +395,8 @@ end
 
 ---@return boolean
 function this.init()
-    defaults.init()
+    defaults.play_object:init()
+    defaults.option:init()
     this.reinit()
 
     return true

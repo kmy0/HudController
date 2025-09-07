@@ -1,5 +1,6 @@
 ---@class Cache
 ---@field protected _map table<any, any>
+---@field protected _clearable boolean
 
 local hash = require("HudController.util.misc.hash")
 
@@ -15,6 +16,7 @@ this.instances = setmetatable({}, { __mode = "v" })
 function this:new()
     local o = {
         _map = {},
+        _clearable = true,
     }
     setmetatable(o, self)
     ---@cast o Cache
@@ -98,7 +100,9 @@ end
 
 function this.clear_all()
     for _, o in pairs(this.instances) do
-        o:clear()
+        if o._clearable then
+            o:clear()
+        end
     end
 end
 
