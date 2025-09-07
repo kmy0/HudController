@@ -18,7 +18,8 @@ local function is_result_skip()
     local hud_config = common.get_hud()
     local skip = hud_config and hud.get_hud_option("skip_quest_result")
     local notice = common.get_elem_t("Notice")
-    local skip_seamless = notice and (notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"])
+    local skip_seamless = notice
+        and (notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"])
     return skip, skip_seamless
 end
 
@@ -63,9 +64,11 @@ function this.stop_hide_gui_post(retval)
             "app.cQuestResult",
         }
 
-        if util_table.any(flows, function(key, value)
-            return util_ref.is_a(flow, value)
-        end) then
+        if
+            util_table.any(flows, function(key, value)
+                return util_ref.is_a(flow, value)
+            end)
+        then
             local guiman = s.get("app.GUIManager")
             local flags = guiman:get_AppContinueFlag()
             flags:off(rl(ace_enum.gui_continue_flag, "HIDE_GUI"))
@@ -97,9 +100,11 @@ function this.skip_quest_end_animation_pre(args)
             end
         end
 
-        if util_table.any(flows, function(key, value)
-            return util_ref.is_a(flow, value)
-        end) then
+        if
+            util_table.any(flows, function(key, value)
+                return util_ref.is_a(flow, value)
+            end)
+        then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -154,7 +159,9 @@ function this.hide_quest_result_post(retval)
 
     if skip then
         flow:endFlow()
-    elseif skip_seamless and util_ref.is_a(flow, "app.GUIFlowQuestResult.Flow.SeamlessResultList") then
+    elseif
+        skip_seamless and util_ref.is_a(flow, "app.GUIFlowQuestResult.Flow.SeamlessResultList")
+    then
         flow:endFlow()
     end
 end
@@ -188,7 +195,10 @@ function this.hide_quest_end_input_pre(args)
 
     if
         hud_config
-        and (not hud.get_hud_option("skip_quest_end_timer") and hud.get_hud_option("hide_quest_end_timer"))
+        and (
+            not hud.get_hud_option("skip_quest_end_timer")
+            and hud.get_hud_option("hide_quest_end_timer")
+        )
     then
         input:setEnableCtrl(false)
         skip_panel:set_ForceInvisible(true)

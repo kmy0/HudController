@@ -79,7 +79,10 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
     local changed = false
 
     if checkbox then
-        changed = set:checkbox(string.format("%s##%s", checkbox.label, checkbox.config_key), checkbox.config_key)
+        changed = set:checkbox(
+            string.format("%s##%s", checkbox.label, checkbox.config_key),
+            checkbox.config_key
+        )
         imgui.begin_disabled(not config:get(checkbox.config_key))
     else
         imgui.begin_disabled(false)
@@ -114,7 +117,12 @@ function this.draw(elem, elem_config, config_key)
 
     imgui.begin_disabled(state.state.l1_pressed)
     if elem_config.hide ~= nil then
-        if set:checkbox(gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"), config_key .. ".hide") then
+        if
+            set:checkbox(
+                gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"),
+                config_key .. ".hide"
+            )
+        then
             elem:set_hide(elem_config.hide)
         end
 
@@ -211,7 +219,11 @@ function this.draw(elem, elem_config, config_key)
     if elem_config.enabled_segment ~= nil then
         local checkbox_key = config_key .. ".enabled_segment"
         changed = set:checkbox(
-            string.format("%s##%s", gui_util.tr("hud_element.entry.box_enable_segment"), checkbox_key),
+            string.format(
+                "%s##%s",
+                gui_util.tr("hud_element.entry.box_enable_segment"),
+                checkbox_key
+            ),
             checkbox_key
         )
 
@@ -219,7 +231,10 @@ function this.draw(elem, elem_config, config_key)
 
         local item_config_key = config_key .. ".segment"
         if not config:get(item_config_key .. "_combo") then
-            config:set(item_config_key .. "_combo", state.combo.segment:get_index(nil, config:get(item_config_key)))
+            config:set(
+                item_config_key .. "_combo",
+                state.combo.segment:get_index(nil, config:get(item_config_key))
+            )
         end
 
         changed = set:combo(
@@ -229,7 +244,10 @@ function this.draw(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            config:set(item_config_key, state.combo.segment:get_value(config:get(item_config_key .. "_combo")))
+            config:set(
+                item_config_key,
+                state.combo.segment:get_value(config:get(item_config_key .. "_combo"))
+            )
             elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
             config.save_global()
         end

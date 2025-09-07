@@ -68,14 +68,23 @@ end
 ---@return string
 function Version:__tostring()
     if self.commit > 0 then
-        return string.format("Version(%d.%d.%d-%d)", self.major, self.minor, self.patch, self.commit)
+        return string.format(
+            "Version(%d.%d.%d-%d)",
+            self.major,
+            self.minor,
+            self.patch,
+            self.commit
+        )
     end
     return string.format("Version(%d.%d.%d)", self.major, self.minor, self.patch)
 end
 
 ---@param config MainSettings
 local function to_0_0_5_weapon_binds_camp(config)
-    for _, binds in pairs({ config.mod.bind.weapon.multiplayer, config.mod.bind.weapon.singleplayer }) do
+    for _, binds in pairs({
+        config.mod.bind.weapon.multiplayer,
+        config.mod.bind.weapon.singleplayer,
+    }) do
         for _, b in pairs(binds) do
             if b.enabled then
                 b.camp = util_table.deep_copy(b.combat_out)
@@ -88,7 +97,12 @@ end
 local function to_0_0_6_objectives(config)
     for _, profile in pairs(config.mod.hud) do
         for key, elem in pairs(profile.elements or {}) do
-            if key ~= "PROGRESS" or not elem.children or not elem.children.timer or elem.children.quest_timer then
+            if
+                key ~= "PROGRESS"
+                or not elem.children
+                or not elem.children.timer
+                or elem.children.quest_timer
+            then
                 goto continue
             end
 

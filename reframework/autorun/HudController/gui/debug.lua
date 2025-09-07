@@ -52,7 +52,11 @@ local function draw_option_window(panel, key)
         local button_size = { 100, 20 }
 
         imgui.set_next_window_pos(this.sub_window_pos[key])
-        local open = imgui.begin_window(string.format("%s##window_%s", panel.name, key), true, this.sub_window.flags)
+        local open = imgui.begin_window(
+            string.format("%s##window_%s", panel.name, key),
+            true,
+            this.sub_window.flags
+        )
 
         if not open then
             this.sub_window_pos[key] = nil
@@ -67,7 +71,8 @@ local function draw_option_window(panel, key)
             imgui.button(
                 string.format(
                     "%s##%s",
-                    panel.visible and config.lang:tr("debug.button_hide") or config.lang:tr("debug.button_show"),
+                    panel.visible and config.lang:tr("debug.button_hide")
+                        or config.lang:tr("debug.button_show"),
                     key
                 ),
                 button_size
@@ -116,7 +121,12 @@ local function draw_option_window(panel, key)
 
         imgui.same_line()
 
-        if imgui.button(string.format("%s##%s", config.lang:tr("debug.button_copy_args"), key), button_size) then
+        if
+            imgui.button(
+                string.format("%s##%s", config.lang:tr("debug.button_copy_args"), key),
+                button_size
+            )
+        then
             imgui.set_clipboard(hud_debug.get_chain(panel))
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_copy_args"))
@@ -319,7 +329,10 @@ function this.draw()
     util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
     changed = set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug") or changed
     imgui.same_line()
-    changed = set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors") or changed
+    changed = set:checkbox(
+        gui_util.tr("debug.box_filter_known_errors"),
+        "debug.filter_known_errors"
+    ) or changed
 
     local keys = hud_debug.get_keys(not config_debug.show_disabled)
 

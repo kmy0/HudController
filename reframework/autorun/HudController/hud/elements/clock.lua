@@ -96,9 +96,13 @@ function this:new(args)
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
 
     if args.hide_map_visible then
         o:set_hide_map_visible(args.hide_map_visible)

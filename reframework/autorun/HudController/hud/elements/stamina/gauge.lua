@@ -105,9 +105,13 @@ function this:new(args, parent)
     o.children.line2 = material:new(args.children.line2, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line2)
     end)
-    o.children.line1_shadow = material:new(args.children.line1_shadow, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.line1_shadow)
-    end)
+    o.children.line1_shadow = material:new(
+        args.children.line1_shadow,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.line1_shadow)
+        end
+    )
     o.children.line3 = scale9:new(args.children.line3, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line3)
     end)

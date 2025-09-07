@@ -49,8 +49,10 @@ end
 --#endregion
 
 function this.update_target_reticle_post(retval)
-    local hud_elem, guiid =
-        common.get_elem_consume_t("TargetReticle", ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"])
+    local hud_elem, guiid = common.get_elem_consume_t(
+        "TargetReticle",
+        ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"]
+    )
     if not hud_elem then
         return
     end
@@ -61,7 +63,8 @@ function this.update_target_reticle_post(retval)
 end
 
 function this.update_menu_button_guide_post(retval)
-    local hud_elem, guiid = common.get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["MENU_BUTTON_GUIDE"])
+    local hud_elem, guiid =
+        common.get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["MENU_BUTTON_GUIDE"])
     if not hud_elem then
         return
     end
@@ -77,12 +80,17 @@ function this.update_damage_numbers_static_pre(args)
 end
 
 function this.update_damage_numbers_post(retval)
-    local dmg, guiid =
-        common.get_elem_consume_t("DamageNumbers", ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"])
+    local dmg, guiid = common.get_elem_consume_t(
+        "DamageNumbers",
+        ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"]
+    )
     if dmg and guiid then
-        util_table.do_something(dmg_static and dmg:get_dmg_static() or dmg:get_dmg(), function(_, key, _)
-            dmg:write(key, guiid, nil)
-        end)
+        util_table.do_something(
+            dmg_static and dmg:get_dmg_static() or dmg:get_dmg(),
+            function(_, key, _)
+                dmg:write(key, guiid, nil)
+            end
+        )
     end
 
     dmg_static = false
@@ -90,8 +98,10 @@ end
 --#endregion
 
 function this.update_training_room_hud_post(retval)
-    local training_room_hud, guiid =
-        common.get_elem_consume_t("TrainingRoomHud", ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"])
+    local training_room_hud, guiid = common.get_elem_consume_t(
+        "TrainingRoomHud",
+        ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"]
+    )
     if training_room_hud then
         local hudbase = util_ref.get_this() --[[@as app.GUI600100]]
         local ctrl = training_room_hud:get_pnl_all()
@@ -114,7 +124,8 @@ function this.update_name_access_icons_post(retval)
 end
 
 function this.update_subtitles_pre(args)
-    local subtitles, guiid = common.get_elem_consume_t("Subtitles", ace_map.additional_hud_to_guiid_name["SUBTITLES"])
+    local subtitles, guiid =
+        common.get_elem_consume_t("Subtitles", ace_map.additional_hud_to_guiid_name["SUBTITLES"])
     if subtitles then
         local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
         local GUI020400 = subman._SubtitlesGUI
@@ -127,8 +138,10 @@ function this.update_subtitles_pre(args)
         subtitles:write(GUI020400, guiid, subtitles:get_scale_panel(GUI020400))
     end
 
-    local subtitles_choice, guiid =
-        common.get_elem_consume_t("SubtitlesChoice", ace_map.additional_hud_to_guiid_name["SUBTITLES_CHOICE"])
+    local subtitles_choice, guiid = common.get_elem_consume_t(
+        "SubtitlesChoice",
+        ace_map.additional_hud_to_guiid_name["SUBTITLES_CHOICE"]
+    )
     if subtitles_choice then
         local subman = sdk.to_managed_object(args[2])--[[@as app.cDialogueSubtitleManager]]
         local GUI020401 = subman._ChoiceGUI

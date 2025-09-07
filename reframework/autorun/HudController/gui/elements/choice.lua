@@ -123,7 +123,9 @@ function this.draw_element()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("hud_element.button_add")) then
-        hud.operations.add_element(state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]])
+        hud.operations.add_element(
+            state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
+        )
         config.save_global()
     end
 

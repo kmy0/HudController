@@ -61,9 +61,18 @@ function this:new(args)
     o.children.gun_lance = gun_lance:new(args.children.gun_lance, o)
     o.children.slash_axe = slash_axe:new(args.children.slash_axe, o)
     o.children.rod = rod:new(args.children.rod, o)
-    o.children.no_focus = hud_child:new(args.children.no_focus, o, function(s, hudbase, gui_id, ctrl)
-        return ctrl
-    end, nil, nil, true, nil, true)
+    o.children.no_focus = hud_child:new(
+        args.children.no_focus,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return ctrl
+        end,
+        nil,
+        nil,
+        true,
+        nil,
+        true
+    )
 
     o:set_no_focus(args.no_focus)
     return o

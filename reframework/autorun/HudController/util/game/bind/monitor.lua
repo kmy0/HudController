@@ -397,7 +397,8 @@ function this:monitor()
         return
     end
 
-    local device = enum.input_device[singletons.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+    local device =
+        enum.input_device[singletons.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
 
     self:_clear_triggers()
     self:_buffer_keys(device)

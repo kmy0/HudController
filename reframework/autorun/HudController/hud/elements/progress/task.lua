@@ -128,9 +128,13 @@ function this:new(
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
-    o.children.checkbox = part_base:new(args.children.checkbox, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.checkbox)
-    end)
+    o.children.checkbox = part_base:new(
+        args.children.checkbox,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.checkbox)
+        end
+    )
     o.children.icon = part_base:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.icon)
     end)

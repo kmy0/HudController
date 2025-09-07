@@ -41,7 +41,11 @@ function this.draw()
     draw.line(center_x, 0, center_x, screen_size.y, config_grid.color_center)
     draw.line(0, center_y, screen_size.x, center_y, config_grid.color_center)
 
-    util_ace.scene_fade.set(config_grid.fade_alpha, config_grid.color_fade, rl(ace_enum.draw_segment, "HUD_WORLD"))
+    util_ace.scene_fade.set(
+        config_grid.fade_alpha,
+        config_grid.color_fade,
+        rl(ace_enum.draw_segment, "HUD_WORLD")
+    )
 end
 
 return this

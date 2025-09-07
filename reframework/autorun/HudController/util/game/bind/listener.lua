@@ -83,7 +83,11 @@ function this:listen_keyboard()
         local index = sorted[i]
         local name = enum.kb_btn[index]
 
-        if not name:match("CLICK") and kb:isOn(index) and not util_table.contains(self._bind_base.keys, index) then
+        if
+            not name:match("CLICK")
+            and kb:isOn(index)
+            and not util_table.contains(self._bind_base.keys, index)
+        then
             table.insert(self._bind_base.keys, index)
             table.insert(btn_names, enum.kb_btn[index])
         end

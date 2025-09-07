@@ -73,8 +73,9 @@ function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter, key_ind
             ---@type any
             local key
             if do_hash then
-                ---@diagnostic disable-next-line: param-type-mismatch
-                key = hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
+                key =
+                    ---@diagnostic disable-next-line: param-type-mismatch
+                    hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
             else
                 if select("#", ...) > 0 then
                     ---@diagnostic disable-next-line: no-unknown

@@ -298,9 +298,13 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o RadialPallet
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return util_table.array_merge_t(
             play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.frame),
@@ -323,7 +327,8 @@ function this:new(args, parent)
             args.children.text.children["text" .. i],
             o.children.text,
             function(s, hudbase, gui_id, ctrl)
-                local ps = play_object.control.get(get_icl(ctrl), { "SCG_PS_" .. i, "ITM_PS_" .. i }) --[[@as via.gui.Control]]
+                local ps =
+                    play_object.control.get(get_icl(ctrl), { "SCG_PS_" .. i, "ITM_PS_" .. i }) --[[@as via.gui.Control]]
                 return play_object.iter_args(ps, control_arguments.text)
             end
         )
@@ -333,15 +338,29 @@ function this:new(args, parent)
         --FIXME: icons 1, 3, 6, 8 don't have texset, it's probably not worth to filter those out?
         return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select)
     end)
-    o.children.select_arrow = hud_child:new(args.children.select_arrow, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select_arrow)
-    end)
+    o.children.select_arrow = hud_child:new(
+        args.children.select_arrow,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(
+                get_pallet_icon_ps(ctrl),
+                control_arguments.icons.select_arrow
+            )
+        end
+    )
     o.children.center = hud_child:new(args.children.center, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.center)
     end)
-    o.children.pallet_state = hud_child:new(args.children.pallet_state, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.pallet_state)
-    end, nil, nil, true)
+    o.children.pallet_state = hud_child:new(
+        args.children.pallet_state,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.pallet_state)
+        end,
+        nil,
+        nil,
+        true
+    )
 
     if args.expanded then
         o:set_expanded(args.expanded)

@@ -13,7 +13,8 @@ m.hook("app.cGUIHudDisplayManager.lateUpdate()", function(retval)
     local slinger = hook_common.get_elem_t("Slinger")
 
     if slinger then
-        local device = key_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+        local device = key_enum.input_device[s.get("app.GUIManager")
+            :get_LastInputDeviceIgnoreMouseMove()]
         local flag = false
 
         if device == "PAD" then

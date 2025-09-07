@@ -112,11 +112,20 @@ function this:new(args)
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
-        o.children[cls_short] = hud_child:new(args.children[cls_short], o, function(s, hudbase, gui_id, ctrl)
-            ---@cast hudbase app.GUI020100
-            ---@diagnostic disable-next-line: invisible
-            return o:_notice_ctrl_getter(s, hudbase, cls_short)
-        end, nil, nil, nil, nil, true)
+        o.children[cls_short] = hud_child:new(
+            args.children[cls_short],
+            o,
+            function(s, hudbase, gui_id, ctrl)
+                ---@cast hudbase app.GUI020100
+                ---@diagnostic disable-next-line: invisible
+                return o:_notice_ctrl_getter(s, hudbase, cls_short)
+            end,
+            nil,
+            nil,
+            nil,
+            nil,
+            true
+        )
 
         --FIXME: this feels a bit out of place...
         ace_map.no_lang_key[cls_short] = true

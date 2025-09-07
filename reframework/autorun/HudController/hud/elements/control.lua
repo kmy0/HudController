@@ -110,28 +110,58 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Control
 
-    o.children.music_left = hud_child:new(args.children.music_left, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.music_left)
-    end)
-    o.children.music_right = hud_child:new(args.children.music_right, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.music_right)
-    end)
+    o.children.music_left = hud_child:new(
+        args.children.music_left,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.music_left)
+        end
+    )
+    o.children.music_right = hud_child:new(
+        args.children.music_right,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.music_right)
+        end
+    )
     o.children.notes = hud_child:new(args.children.notes, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.notes)
     end)
-    o.children.control_guide1 = hud_child:new(args.children.control_guide1, o, function(s, hudbase, gui_id, ctrl)
-        ---@diagnostic disable-next-line: invisible
-        o:_store_pat00_default(ctrl)
-        return play_object.iter_args(ctrl, control_arguments.control_guide1)
-    end, nil, nil, nil, nil, true)
-    o.children.control_guide2 = hud_child:new(args.children.control_guide2, o, function(s, hudbase, gui_id, ctrl)
-        ---@diagnostic disable-next-line: invisible
-        o:_store_pat00_default(ctrl)
-        return play_object.iter_args(ctrl, control_arguments.control_guide2)
-    end, nil, nil, nil, nil, true)
-    o.children.skill_name = hud_child:new(args.children.skill_name, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.skill_name)
-    end)
+    o.children.control_guide1 = hud_child:new(
+        args.children.control_guide1,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            ---@diagnostic disable-next-line: invisible
+            o:_store_pat00_default(ctrl)
+            return play_object.iter_args(ctrl, control_arguments.control_guide1)
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
+    )
+    o.children.control_guide2 = hud_child:new(
+        args.children.control_guide2,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            ---@diagnostic disable-next-line: invisible
+            o:_store_pat00_default(ctrl)
+            return play_object.iter_args(ctrl, control_arguments.control_guide2)
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
+    )
+    o.children.skill_name = hud_child:new(
+        args.children.skill_name,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.skill_name)
+        end
+    )
 
     return o
 end

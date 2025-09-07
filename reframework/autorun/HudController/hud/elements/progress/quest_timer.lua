@@ -86,12 +86,18 @@ function this:new(
     setmetatable(o, self)
     ---@cast o ProgressQuestTimer
 
-    o.children.background = ctrl_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        local panel = this._get_panel(o)
-        if panel then
-            return play_object.iter_args(panel, control_arguments.background)
-        end
-    end, nil, { hide = false })
+    o.children.background = ctrl_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            local panel = this._get_panel(o)
+            if panel then
+                return play_object.iter_args(panel, control_arguments.background)
+            end
+        end,
+        nil,
+        { hide = false }
+    )
 
     return o
 end

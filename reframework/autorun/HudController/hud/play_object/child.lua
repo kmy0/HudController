@@ -48,7 +48,10 @@ function this.all_type(ctrl, regex, child_type)
             while child do
                 local type = child:get_type_definition() --[[@as RETypeDefinition]]
 
-                if type:is_a(child_type) and (not regex or regex and string.match(child:get_Name(), regex)) then
+                if
+                    type:is_a(child_type)
+                    and (not regex or regex and string.match(child:get_Name(), regex))
+                then
                     table.insert(ret, child)
                     local _arg = util_table.deep_copy(arg)
                     _arg[3] = child:get_Name()

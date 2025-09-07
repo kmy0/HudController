@@ -100,7 +100,10 @@ local function draw_control_child(elem, elem_config, config_key)
 
     if elem_config.enabled_color ~= nil then
         local item_config_key = config_key .. ".enabled_color"
-        changed = set:checkbox(gui_util.tr("hud_element.entry.box_enable_color", item_config_key), item_config_key)
+        changed = set:checkbox(
+            gui_util.tr("hud_element.entry.box_enable_color", item_config_key),
+            item_config_key
+        )
 
         imgui.begin_disabled(not elem_config.enabled_color)
         item_config_key = config_key .. ".color"
@@ -147,7 +150,10 @@ local function draw_material(elem, elem_config, config_key)
 
             if changed then
                 ---@cast elem Material
-                elem:set_var(elem_config["enabled_" .. var_key] and elem_config[var_key].value or nil, var_key)
+                elem:set_var(
+                    elem_config["enabled_" .. var_key] and elem_config[var_key].value or nil,
+                    var_key
+                )
                 config.save_global()
             end
 
@@ -195,7 +201,8 @@ local function draw_scale9(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.control_point:get_value(config:get(item_config_key .. "_combo"))
+            local value =
+                state.combo.control_point:get_value(config:get(item_config_key .. "_combo"))
             elem:set_control_point(value)
             config:set(item_config_key, value)
             config.save_global()
@@ -216,11 +223,17 @@ local function draw_scale9(elem, elem_config, config_key)
 
         item_config_key = config_key .. ".blend"
         if not config:get(item_config_key .. "_combo") then
-            config:set(item_config_key .. "_combo", state.combo.blend:get_index(nil, config:get(item_config_key)))
+            config:set(
+                item_config_key .. "_combo",
+                state.combo.blend:get_index(nil, config:get(item_config_key))
+            )
         end
 
-        changed = set:combo("##" .. item_config_key .. "_combo", item_config_key .. "_combo", state.combo.blend.values)
-            or changed
+        changed = set:combo(
+            "##" .. item_config_key .. "_combo",
+            item_config_key .. "_combo",
+            state.combo.blend.values
+        ) or changed
 
         if changed then
             local value = state.combo.blend:get_value(config:get(item_config_key .. "_combo"))
@@ -257,7 +270,8 @@ local function draw_scale9(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.alpha_channel:get_value(config:get(item_config_key .. "_combo"))
+            local value =
+                state.combo.alpha_channel:get_value(config:get(item_config_key .. "_combo"))
             elem:set_alpha_channel(value)
             config:set(item_config_key, value)
             config.save_global()
@@ -283,7 +297,9 @@ local function draw_scale9(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            elem:set_ignore_alpha(elem_config.enabled_ignore_alpha and elem_config.ignore_alpha or nil)
+            elem:set_ignore_alpha(
+                elem_config.enabled_ignore_alpha and elem_config.ignore_alpha or nil
+            )
         end
 
         imgui.end_disabled()
@@ -332,8 +348,10 @@ local function draw_text(elem, elem_config, config_key)
 
     if elem_config.enabled_page_alignment ~= nil then
         item_config_key = config_key .. ".enabled_page_alignment"
-        changed =
-            set:checkbox(gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key), item_config_key)
+        changed = set:checkbox(
+            gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
+            item_config_key
+        )
 
         imgui.begin_disabled(not elem_config.enabled_page_alignment)
 
@@ -352,7 +370,8 @@ local function draw_text(elem, elem_config, config_key)
         ) or changed
 
         if changed then
-            local value = state.combo.page_alignment:get_value(config:get(item_config_key .. "_combo"))
+            local value =
+                state.combo.page_alignment:get_value(config:get(item_config_key .. "_combo"))
             elem:set_page_alignment(value)
             config:set(item_config_key, value)
             config.save_global()
@@ -379,7 +398,10 @@ local function draw_text(elem, elem_config, config_key)
 
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
-        changed = set:checkbox(gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key), item_config_key)
+        changed = set:checkbox(
+            gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key),
+            item_config_key
+        )
 
         imgui.begin_disabled(not elem_config.enabled_glow_color)
 
@@ -411,7 +433,12 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     local changed = false
 
     item_config_key = config_key .. ".enabled_box"
-    if set:checkbox(gui_util.tr("hud_element.entry.box_enable_box", item_config_key), item_config_key) then
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_enable_box", item_config_key),
+            item_config_key
+        )
+    then
         elem:set_box(elem_config.enabled_box and {
             x = elem_config.box.x,
             y = elem_config.box.y,
@@ -535,7 +562,9 @@ local function draw_progress_part(elem, elem_config, config_key)
         }, -4000, 4000, 1, "%.0f")
 
         if changed then
-            elem:set_clock_offset_x(elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil)
+            elem:set_clock_offset_x(
+                elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil
+            )
             config.save_global()
         end
 
@@ -557,7 +586,9 @@ local function draw_progress_part(elem, elem_config, config_key)
         }, -4000, 4000, 1, "%.0f")
 
         if changed then
-            elem:set_num_offset_x(elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil)
+            elem:set_num_offset_x(
+                elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil
+            )
             config.save_global()
         end
 
@@ -589,7 +620,12 @@ local function draw_progress_text(elem, elem_config, config_key)
     separator_progress_text:refresh(elem_config)
 
     if elem_config.align_left ~= nil then
-        if set:checkbox(gui_util.tr("hud_element.entry.box_align_left"), config_key .. ".align_left") then
+        if
+            set:checkbox(
+                gui_util.tr("hud_element.entry.box_align_left"),
+                config_key .. ".align_left"
+            )
+        then
             elem:set_align_left(elem_config.align_left)
             config.save_global()
         end

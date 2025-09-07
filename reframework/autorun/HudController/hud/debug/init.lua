@@ -216,10 +216,13 @@ end
 ---@return string[]
 function this.get_keys(enabled_only)
     enabled_only = enabled_only == nil and true or enabled_only
-    local keys = util_table.filter(util_table.sort(util_table.keys(this.elements)), function(key, value)
-        local gui_elem = this.elements[value]
-        return not enabled_only or gui_elem.gui:get_Enabled()
-    end)
+    local keys = util_table.filter(
+        util_table.sort(util_table.keys(this.elements)),
+        function(key, value)
+            local gui_elem = this.elements[value]
+            return not enabled_only or gui_elem.gui:get_Enabled()
+        end
+    )
     return util_table.sort(util_table.values(keys))
 end
 
@@ -346,7 +349,8 @@ function this.perf_test()
 
     for _, hudbase in pairs(current_hud) do
         local name = string.format("%s %s", hudbase:whoami(), "write")
-        hudbase.write = perf.perf(hudbase.write, it, name, trim_percent, output_file, predicate, callback)
+        hudbase.write =
+            perf.perf(hudbase.write, it, name, trim_percent, output_file, predicate, callback)
         wrap(hudbase)
         this.perf.total = this.perf.total + 1
         table.insert(this.perf.obj, name)

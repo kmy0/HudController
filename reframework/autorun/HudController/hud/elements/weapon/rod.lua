@@ -79,13 +79,28 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return Rod
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, nil, nil, nil, nil, nil, nil, rl(ace_enum.gui_id, "UI020027"))
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        rl(ace_enum.gui_id, "UI020027")
+    )
     setmetatable(o, self)
     ---@cast o Rod
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
     o.children.stamina = hud_child:new(args.children.stamina, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.stamina)
     end)

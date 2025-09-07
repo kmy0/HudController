@@ -103,17 +103,32 @@ local function draw_mod_menu()
         config.save_global()
     end
 
-    if util_imgui.menu_item(gui_util.tr("menu.config.enable_notification"), config_mod.enable_notification) then
+    if
+        util_imgui.menu_item(
+            gui_util.tr("menu.config.enable_notification"),
+            config_mod.enable_notification
+        )
+    then
         config_mod.enable_notification = not config_mod.enable_notification
         config.save_global()
     end
 
-    if util_imgui.menu_item(gui_util.tr("menu.config.enable_weapon_binds"), config_mod.enable_weapon_binds) then
+    if
+        util_imgui.menu_item(
+            gui_util.tr("menu.config.enable_weapon_binds"),
+            config_mod.enable_weapon_binds
+        )
+    then
         config_mod.enable_weapon_binds = not config_mod.enable_weapon_binds
         config.save_global()
     end
 
-    if util_imgui.menu_item(gui_util.tr("menu.config.enable_key_binds"), config_mod.enable_key_binds) then
+    if
+        util_imgui.menu_item(
+            gui_util.tr("menu.config.enable_key_binds"),
+            config_mod.enable_key_binds
+        )
+    then
         config_mod.enable_key_binds = not config_mod.enable_key_binds
         config.save_global()
     end
@@ -150,7 +165,10 @@ local function draw_mod_menu()
     imgui.unindent(2)
 
     if
-        util_imgui.menu_item(gui_util.tr("menu.config.disable_weapon_binds_held"), config_mod.disable_weapon_binds_held)
+        util_imgui.menu_item(
+            gui_util.tr("menu.config.disable_weapon_binds_held"),
+            config_mod.disable_weapon_binds_held
+        )
     then
         config_mod.disable_weapon_binds_held = not config_mod.disable_weapon_binds_held
         config.save_global()
@@ -203,7 +221,11 @@ local function draw_key_bind_menu()
                     config_mod.bind.key.buffer - 1,
                     config.lang:tr("misc.text_frame")
                 )
-                or string.format("%s %s", config_mod.bind.key.buffer - 1, config.lang:tr("misc.text_frame_plural"))
+                or string.format(
+                    "%s %s",
+                    config_mod.bind.key.buffer - 1,
+                    config.lang:tr("misc.text_frame_plural")
+                )
         )
     then
         bind_manager.monitor:set_max_buffer_frame(config_mod.bind.key.buffer)
@@ -222,7 +244,10 @@ local function draw_key_bind_menu()
             ---@diagnostic disable-next-line: param-type-mismatch
             (config_mod.bind.slider.key_bind == 1 and config.lang:tr("menu.bind.key.hud"))
                 or (config_mod.bind.slider.key_bind == 2 and config.lang:tr("menu.bind.key.option"))
-                or (config_mod.bind.slider.key_bind == 3 and config.lang:tr("menu.bind.key.option_mod"))
+                or (
+                    config_mod.bind.slider.key_bind == 3
+                    and config.lang:tr("menu.bind.key.option_mod")
+                )
         )
     then
         state.listener = nil
@@ -233,7 +258,8 @@ local function draw_key_bind_menu()
     local width = imgui.calc_item_width() / 2 - spacing
 
     imgui.begin_disabled(
-        state.listener ~= nil or config_mod.bind.slider.key_bind == 1 and util_table.empty(config_mod.hud)
+        state.listener ~= nil
+            or config_mod.bind.slider.key_bind == 1 and util_table.empty(config_mod.hud)
     )
 
     ---@type ModBindManager
@@ -250,9 +276,17 @@ local function draw_key_bind_menu()
 
         imgui.push_item_width(width)
 
-        set:combo("##bind_option_combo", "mod.combo.key_bind.option_hud", state.combo.option_bind.values)
+        set:combo(
+            "##bind_option_combo",
+            "mod.combo.key_bind.option_hud",
+            state.combo.option_bind.values
+        )
         imgui.same_line()
-        set:combo("##bind_action_type_combo", "mod.combo.key_bind.action_type", state.combo.bind_action_type.values)
+        set:combo(
+            "##bind_action_type_combo",
+            "mod.combo.key_bind.action_type",
+            state.combo.bind_action_type.values
+        )
         util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
 
         imgui.pop_item_width()
@@ -262,9 +296,17 @@ local function draw_key_bind_menu()
 
         imgui.push_item_width(width)
 
-        set:combo("##bind_option_mod_combo", "mod.combo.key_bind.option_mod", state.combo.option_mod_bind.values)
+        set:combo(
+            "##bind_option_mod_combo",
+            "mod.combo.key_bind.option_mod",
+            state.combo.option_mod_bind.values
+        )
         imgui.same_line()
-        set:combo("##bind_action_type_combo", "mod.combo.key_bind.action_type", state.combo.bind_action_type.values)
+        set:combo(
+            "##bind_action_type_combo",
+            "mod.combo.key_bind.action_type",
+            state.combo.bind_action_type.values
+        )
         util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
 
         imgui.pop_item_width()
@@ -326,7 +368,8 @@ local function draw_key_bind_menu()
             else
                 ---@diagnostic disable-next-line: assign-type-mismatch
                 bind.bound_value = state.listener.opt
-                bind.action_type = state.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
+                bind.action_type =
+                    state.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
             end
 
             local is_col, col = manager:is_collision(bind)
@@ -340,10 +383,12 @@ local function draw_key_bind_menu()
                 elseif manager.name == bind_manager.manager_names.OPTION_HUD then
                     col_name = config.lang:tr("hud." .. mod.map.options_hud[col.bound_value])
                 elseif manager.name == bind_manager.manager_names.OPTION_MOD then
-                    col_name = config.lang:tr("menu.config." .. mod.map.options_mod[col.bound_value])
+                    col_name =
+                        config.lang:tr("menu.config." .. mod.map.options_mod[col.bound_value])
                 end
 
-                state.listener.collision = string.format("%s %s", config.lang:tr("menu.bind.tooltip_bound"), col_name)
+                state.listener.collision =
+                    string.format("%s %s", config.lang:tr("menu.bind.tooltip_bound"), col_name)
             else
                 state.listener.collision = nil
             end
@@ -390,7 +435,10 @@ local function draw_key_bind_menu()
         imgui.separator()
     end
 
-    if not util_table.empty(config:get(config_key)) and imgui.begin_table("keybind_state", 4, 1 << 9) then
+    if
+        not util_table.empty(config:get(config_key))
+        and imgui.begin_table("keybind_state", 4, 1 << 9)
+    then
         imgui.separator()
 
         ---@type ModBind[]
@@ -414,7 +462,11 @@ local function draw_key_bind_menu()
 
             imgui.table_set_column_index(0)
 
-            if imgui.button(gui_util.tr("menu.bind.key.button_remove", bind.name, bind.bound_value)) then
+            if
+                imgui.button(
+                    gui_util.tr("menu.bind.key.button_remove", bind.name, bind.bound_value)
+                )
+            then
                 table.insert(remove, bind)
             end
 
@@ -456,9 +508,14 @@ local function draw_weapon_bind_menu()
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     local changed = false
-    changed = set:checkbox(gui_util.tr("menu.bind.weapon.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
-    changed = set:checkbox(gui_util.tr("menu.bind.weapon.ride_ignore_combat"), "mod.bind.weapon.ride_ignore_combat")
-        or changed
+    changed = set:checkbox(
+        gui_util.tr("menu.bind.weapon.quest_in_combat"),
+        "mod.bind.weapon.quest_in_combat"
+    )
+    changed = set:checkbox(
+        gui_util.tr("menu.bind.weapon.ride_ignore_combat"),
+        "mod.bind.weapon.ride_ignore_combat"
+    ) or changed
     util_imgui.tooltip(config.lang:tr("menu.bind.weapon.ride_ignore_combat_tooltip"), true)
     changed = set:slider_int(
         gui_util.tr("menu.bind.weapon.out_of_combat_delay"),
@@ -466,7 +523,11 @@ local function draw_weapon_bind_menu()
         0,
         600,
         config_mod.bind.weapon.out_of_combat_delay == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.out_of_combat_delay, nil, true)
+            or gui_util.seconds_to_minutes_string(
+                config_mod.bind.weapon.out_of_combat_delay,
+                nil,
+                true
+            )
     ) or changed
     changed = set:slider_int(
         gui_util.tr("menu.bind.weapon.in_combat_delay"),
@@ -524,7 +585,8 @@ local function draw_weapon_bind_menu()
             local weapon = sorted[i]
 
             imgui.begin_disabled(
-                weapon.name ~= "GLOBAL" and config:get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
+                weapon.name ~= "GLOBAL"
+                    and config:get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
             )
 
             changed = false
@@ -536,7 +598,8 @@ local function draw_weapon_bind_menu()
             local function draw_combo(sub_key)
                 imgui.push_item_width(100)
 
-                config_key = string.format("mod.bind.weapon.%s.%s.%s.combo", key, weapon.name, sub_key)
+                config_key =
+                    string.format("mod.bind.weapon.%s.%s.%s.combo", key, weapon.name, sub_key)
                 changed = set:combo(
                     string.format("##%s_%s_%s", weapon.name, sub_key, key),
                     config_key,
@@ -566,7 +629,8 @@ local function draw_weapon_bind_menu()
 
             imgui.table_set_column_index(4)
             imgui.text(
-                weapon.weapon_id < 0 and config.lang:tr("menu.bind.weapon.name_" .. weapon.name:lower())
+                weapon.weapon_id < 0
+                        and config.lang:tr("menu.bind.weapon.name_" .. weapon.name:lower())
                     or ace_map.weaponid_name_to_local_name[weapon.name]
             )
             imgui.end_disabled()
@@ -614,10 +678,17 @@ local function draw_grid_menu()
         #state.grid_ratio,
         state.grid_ratio[config:get("mod.grid.combo_grid_ratio")]
     ) or changed
-    changed = set:color_edit(gui_util.tr("menu.grid.color_center"), "mod.grid.color_center") or changed
+    changed = set:color_edit(gui_util.tr("menu.grid.color_center"), "mod.grid.color_center")
+        or changed
     changed = set:color_edit(gui_util.tr("menu.grid.color_grid"), "mod.grid.color_grid") or changed
     changed = set:color_edit(gui_util.tr("menu.grid.color_fade"), "mod.grid.color_fade") or changed
-    changed = set:slider_float(gui_util.tr("menu.grid.fade_alpha"), "mod.grid.fade_alpha", 0, 1, "%.2f") or changed
+    changed = set:slider_float(
+        gui_util.tr("menu.grid.fade_alpha"),
+        "mod.grid.fade_alpha",
+        0,
+        1,
+        "%.2f"
+    ) or changed
 
     if changed then
         config.save_global()

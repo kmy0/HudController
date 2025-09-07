@@ -182,22 +182,38 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Stamina
 
-    o.children.light_end = hud_child:new(args.children.light_end, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.light_end)
-    end)
+    o.children.light_end = hud_child:new(
+        args.children.light_end,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.light_end)
+        end
+    )
     o.children.gauge = gauge:new(args.children.gauge, o)
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
     o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.frame_max = hud_child:new(args.children.frame_max, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.frame_max)
-    end)
-    o.children.light_start = hud_child:new(args.children.light_start, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.light_start)
-    end)
+    o.children.frame_max = hud_child:new(
+        args.children.frame_max,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.frame_max)
+        end
+    )
+    o.children.light_start = hud_child:new(
+        args.children.light_start,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.light_start)
+        end
+    )
 
     return o
 end

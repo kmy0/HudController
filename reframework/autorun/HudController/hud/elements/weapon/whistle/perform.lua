@@ -70,9 +70,13 @@ function this:new(args, parent)
     ---@cast o WhistlePerform
 
     for i = 1, 3 do
-        o.children["melody" .. i] = hud_child:new(args.children["melody" .. i], o, function(s, hudbase, gui_id, ctrl)
-            return play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1)
-        end)
+        o.children["melody" .. i] = hud_child:new(
+            args.children["melody" .. i],
+            o,
+            function(s, hudbase, gui_id, ctrl)
+                return play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1)
+            end
+        )
     end
     o.children.arrow = hud_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
         local melody = play_object.iter_args(ctrl, control_arguments.melody)

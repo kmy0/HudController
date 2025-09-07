@@ -204,12 +204,16 @@ function this:new(args)
     o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keys)
     end)
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return util_table.array_merge_t(
-            play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
-            play_object.iter_args(ctrl, control_arguments.background)
-        )
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return util_table.array_merge_t(
+                play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
+                play_object.iter_args(ctrl, control_arguments.background)
+            )
+        end
+    )
     o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
@@ -222,12 +226,23 @@ function this:new(args)
     o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(get_icons(ctrl), control_arguments.select)
     end)
-    o.children.select_base = hud_child:new(args.children.select_base, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(get_icons(ctrl), control_arguments.select_base)
-    end)
-    o.children.radial_state = hud_child:new(args.children.radial_state, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.radial_state)
-    end, nil, nil, true)
+    o.children.select_base = hud_child:new(
+        args.children.select_base,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(get_icons(ctrl), control_arguments.select_base)
+        end
+    )
+    o.children.radial_state = hud_child:new(
+        args.children.radial_state,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.radial_state)
+        end,
+        nil,
+        nil,
+        true
+    )
     o.children.pallet = pallet:new(args.children.pallet, o)
     o.children.craft = hud_child:new(args.children.craft, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.craft)

@@ -104,13 +104,28 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return ChargeAxe
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, nil, nil, nil, nil, nil, nil, rl(ace_enum.gui_id, "UI020034"))
+    local o = hud_child.new(
+        self,
+        args,
+        parent,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        rl(ace_enum.gui_id, "UI020034")
+    )
     setmetatable(o, self)
     ---@cast o ChargeAxe
 
-    o.children.background = hud_child:new(args.children.background, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.background)
-    end)
+    o.children.background = hud_child:new(
+        args.children.background,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.background)
+        end
+    )
     o.children.axe = hud_child:new(args.children.axe, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.axe)
     end)

@@ -64,11 +64,15 @@ function this.init()
 
             if config_user[name] then
                 util_misc.try(function()
-                    this.loaded[name] = require(string.format("reframework.data.%s.user_scripts.%s", config.name, name))
+                    this.loaded[name] = require(
+                        string.format("reframework.data.%s.user_scripts.%s", config.name, name)
+                    )
                     logger:info(string.format("[UserScript] %s loaded.", name))
                 end, function(err)
-                    this.failed[name] =
-                        util_misc.wrap_text(string.format("[UserScript] %s failed: %s.", name, err), 100)
+                    this.failed[name] = util_misc.wrap_text(
+                        string.format("[UserScript] %s failed: %s.", name, err),
+                        100
+                    )
                     logger:error(this.failed[name])
                 end)
             end

@@ -463,12 +463,18 @@ end
 function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
         if not visible then
-            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
+            ace_misc
+                .get_hud_manager()
+                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
         elseif visible and hud_display then
             hud_display = hud_display ~= "HIDDEN" and hud_display or "DEFAULT"
-            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, hud_display))
+            ace_misc
+                .get_hud_manager()
+                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, hud_display))
         else
-            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "DEFAULT"))
+            ace_misc
+                .get_hud_manager()
+                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "DEFAULT"))
         end
 
         -- hiding root till FADE_IN or FADE_OUT finishes, there doesn't seem to be a way to instantly finish those
@@ -480,7 +486,9 @@ function this:change_visibility(ctrl, visible, hud_display)
 
             and not (
                 (self.name_key == "SLIDER_BULLET" or self.name_key == "SLIDER_ITEM")
-                and ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+                and ace_player.check_continue_flag(
+                    rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER")
+                )
             )
         then
             local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
@@ -491,7 +499,10 @@ function this:change_visibility(ctrl, visible, hud_display)
                 local frame_max = 6
 
                 local function restore_vis()
-                    if self:_is_fade_state_finished(root_window) or frame_counter.frame - frame >= frame_max then
+                    if
+                        self:_is_fade_state_finished(root_window)
+                        or frame_counter.frame - frame >= frame_max
+                    then
                         root_window:set_ForceInvisible(false)
                     else
                         call_queue.queue_func_next(self.hud_id, restore_vis)
@@ -520,7 +531,10 @@ function this:get_all_ctrl()
             goto continue
         end
 
-        table.insert(ret, { ctrl = disp_ctrl._TargetControl, hud_base = disp_ctrl:get_Owner(), gui_id = gui_id })
+        table.insert(
+            ret,
+            { ctrl = disp_ctrl._TargetControl, hud_base = disp_ctrl:get_Owner(), gui_id = gui_id }
+        )
         ::continue::
     end
 

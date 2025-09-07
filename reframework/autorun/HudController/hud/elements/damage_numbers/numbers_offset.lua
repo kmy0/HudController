@@ -88,7 +88,12 @@ function cls:set_offset_from_original_pos(hudbase)
         local text_x, text_y = self._get_real_text_size(
             self.root:get_state_value(hudbase, "<TextDamage>k__BackingField") --[[@as via.gui.Text]]
         )
-        x, y = self._clamp_offset(pos.x + self_config.offset.x, pos.y + self_config.offset.y, text_x, text_y)
+        x, y = self._clamp_offset(
+            pos.x + self_config.offset.x,
+            pos.y + self_config.offset.y,
+            text_x,
+            text_y
+        )
         self.offset = Vector3f.new(x, y, 0)
     end
 end

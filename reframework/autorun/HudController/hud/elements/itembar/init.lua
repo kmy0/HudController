@@ -82,25 +82,39 @@ function this:new(args)
 
     o.children.slider = slider:new(args.children.slider, o)
     o.children.all_slider = all_slider:new(args.children.all_slider, o)
-    o.children.akuma_bar = hud_child:new(args.children.akuma_bar, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.akuma_bar)
-    end)
-    o.children.mantle = mantle:new(args.children.mantle, o)
-    o.children.slider_part = hud_child:new(args.children.slider, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.slider)
-    end, function(s, ctrl)
-        play_object_defaults.check(ctrl)
-
-        if s.hide then
-            if self:get_GUI020006():get_IsAllSliderMode() or ctrl:get_PlayState() == "FADE_OUT" then
-                ctrl:set_ForceInvisible(true)
-                return false
-            else
-                ctrl:set_ForceInvisible(false)
-            end
+    o.children.akuma_bar = hud_child:new(
+        args.children.akuma_bar,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.akuma_bar)
         end
-        return true
-    end, nil, true)
+    )
+    o.children.mantle = mantle:new(args.children.mantle, o)
+    o.children.slider_part = hud_child:new(
+        args.children.slider,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.slider)
+        end,
+        function(s, ctrl)
+            play_object_defaults.check(ctrl)
+
+            if s.hide then
+                if
+                    self:get_GUI020006():get_IsAllSliderMode()
+                    or ctrl:get_PlayState() == "FADE_OUT"
+                then
+                    ctrl:set_ForceInvisible(true)
+                    return false
+                else
+                    ctrl:set_ForceInvisible(false)
+                end
+            end
+            return true
+        end,
+        nil,
+        true
+    )
 
     o.hide_write = true
     if args.start_expanded then
@@ -140,13 +154,19 @@ end
 function this:get_mantle()
     local GUI020006 = self:get_GUI020006()
     local disp_ctrl = GUI020006._DisplayControl
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local mantle_ctrl = util_table.normalize(self.children.mantle:ctrl_getter(GUI020006, nil, disp_ctrl._TargetControl))
+
+    local mantle_ctrl = util_table.normalize(
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self.children.mantle:ctrl_getter(GUI020006, nil, disp_ctrl._TargetControl)
+    )
     if not mantle_ctrl then
         return
     end
-    ---@diagnostic disable-next-line: param-type-mismatch
-    return util_table.normalize(self.children.mantle.children.visible_state:ctrl_getter(GUI020006, nil, mantle_ctrl))
+
+    return util_table.normalize(
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self.children.mantle.children.visible_state:ctrl_getter(GUI020006, nil, mantle_ctrl)
+    )
 end
 
 ---@return app.GUI020006

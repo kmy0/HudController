@@ -57,7 +57,12 @@ function this.draw()
     imgui.spacing()
     imgui.indent(2)
 
-    imgui.begin_child_window("hud_profile_sort_child_window", { 0, this.window_size }, false, 1 << 3)
+    imgui.begin_child_window(
+        "hud_profile_sort_child_window",
+        { 0, this.window_size },
+        false,
+        1 << 3
+    )
     local pos = imgui.get_cursor_pos()
 
     if imgui.button(gui_util.tr("sorter.button_sort")) then

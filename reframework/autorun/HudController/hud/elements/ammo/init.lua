@@ -235,52 +235,89 @@ function this:new(args)
     o.children.energy = hud_child:new(args.children.energy, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.energy)
     end)
-    o.children.sp_ammo1 = hud_child:new(args.children.sp_ammo1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.sp_ammo1)
-    end)
-    o.children.sp_ammo2 = hud_child:new(args.children.sp_ammo2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.sp_ammo2)
-    end)
-    o.children.sp_ammo_frame = hud_child:new(args.children.sp_ammo_frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.sp_ammo_frame)
-    end)
+    o.children.sp_ammo1 = hud_child:new(
+        args.children.sp_ammo1,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.sp_ammo1)
+        end
+    )
+    o.children.sp_ammo2 = hud_child:new(
+        args.children.sp_ammo2,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.sp_ammo2)
+        end
+    )
+    o.children.sp_ammo_frame = hud_child:new(
+        args.children.sp_ammo_frame,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.sp_ammo_frame)
+        end
+    )
     o.children.reload = hud_child:new(args.children.reload, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.reload)
     end)
-    o.children.mode_icon1 = hud_child:new(args.children.mode_icon1, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.mode_icon1)
-    end)
-    o.children.mode_icon2 = hud_child:new(args.children.mode_icon2, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.mode_icon2)
-    end)
-    o.children.no_hide_parts = hud_child:new(args.children.no_hide_parts, o, function(s, hudbase, gui_id, ctrl)
-        return ctrl
-    end, function(s, ctrl)
-        -- if opacity is not forced there is a flicker sometimes
-        for _, child in pairs({
-            o.children.energy,
-            o.children.reload,
-            o.children.sp_ammo1,
-            o.children.sp_ammo2,
-            o.children.sp_ammo_frame,
-        }) do
-            if not child.hide and not child.opacity then
-                ---@diagnostic disable-next-line: param-type-mismatch, invisible
-                for _, c in pairs(child:ctrl_getter(nil, nil, ctrl)) do
-                    self:_set_opacity(c, 1.0)
+    o.children.mode_icon1 = hud_child:new(
+        args.children.mode_icon1,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.mode_icon1)
+        end
+    )
+    o.children.mode_icon2 = hud_child:new(
+        args.children.mode_icon2,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.mode_icon2)
+        end
+    )
+    o.children.no_hide_parts = hud_child:new(
+        args.children.no_hide_parts,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return ctrl
+        end,
+        function(s, ctrl)
+            -- if opacity is not forced there is a flicker sometimes
+            for _, child in pairs({
+                o.children.energy,
+                o.children.reload,
+                o.children.sp_ammo1,
+                o.children.sp_ammo2,
+                o.children.sp_ammo_frame,
+            }) do
+                if not child.hide and not child.opacity then
+                    ---@diagnostic disable-next-line: param-type-mismatch, invisible
+                    for _, c in pairs(child:ctrl_getter(nil, nil, ctrl)) do
+                        self:_set_opacity(c, 1.0)
+                    end
                 end
             end
-        end
 
-        return true
-    end, nil, true)
-    o.children.bow_icon = hud_child:new(args.children.bow_icon, o, function(s, hudbase, gui_id, ctrl)
-        local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
-        local ret = {}
-        util_table.array_merge_t(ret, play_object.iter_args(separators, control_arguments.bow_icon_active))
-        util_table.array_merge_t(ret, play_object.iter_args(separators, control_arguments.bow_icon_disable))
-        return ret
-    end)
+            return true
+        end,
+        nil,
+        true
+    )
+    o.children.bow_icon = hud_child:new(
+        args.children.bow_icon,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
+            local ret = {}
+            util_table.array_merge_t(
+                ret,
+                play_object.iter_args(separators, control_arguments.bow_icon_active)
+            )
+            util_table.array_merge_t(
+                ret,
+                play_object.iter_args(separators, control_arguments.bow_icon_disable)
+            )
+            return ret
+        end
+    )
     o.children.bow_phials = bow_phials:new(args.children.bow_phials, o)
 
     o.hide_write = true
@@ -319,7 +356,8 @@ function this.get_config()
     children.mode_icon1 = hud_child.get_config("mode_icon1")
     children.mode_icon2 = hud_child.get_config("mode_icon2")
     children.bow_icon = { name_key = "bow_icon", hide = false }
-    children.no_hide_parts = { name_key = "__no_hide_parts", enabled_play_state = false, play_state = "" }
+    children.no_hide_parts =
+        { name_key = "__no_hide_parts", enabled_play_state = false, play_state = "" }
     children.bow_phials = bow_phials.get_config()
 
     return base

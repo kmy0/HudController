@@ -119,9 +119,20 @@ end
 ---@param draw_func fun()
 function this.center_h(str_id, draw_func)
     if imgui.begin_table(str_id .. "_center_h_table", 3, 3 << 13) then
-        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 1), nil, 0.01)
-        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 2), 1 << 4)
-        imgui.table_setup_column(string.format("##%s_%s_%s", str_id, "center_h_table_header", 3), nil, 0.01)
+        imgui.table_setup_column(
+            string.format("##%s_%s_%s", str_id, "center_h_table_header", 1),
+            nil,
+            0.01
+        )
+        imgui.table_setup_column(
+            string.format("##%s_%s_%s", str_id, "center_h_table_header", 2),
+            1 << 4
+        )
+        imgui.table_setup_column(
+            string.format("##%s_%s_%s", str_id, "center_h_table_header", 3),
+            nil,
+            0.01
+        )
 
         imgui.table_next_row()
         imgui.table_set_column_index(0)
@@ -204,7 +215,8 @@ function this.menu_item(label, selected_obj, enabled_obj)
     end
 
     local text_size = imgui.calc_text_size(label)
-    local ret = this.dummy_button2("##" .. id, { win_size.x - padding * 2, text_size.y + padding * 2 })
+    local ret =
+        this.dummy_button2("##" .. id, { win_size.x - padding * 2, text_size.y + padding * 2 })
 
     pos.y = pos.y + padding
     pos.x = pos.x + padding

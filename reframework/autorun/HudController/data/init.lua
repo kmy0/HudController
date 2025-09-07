@@ -102,12 +102,14 @@ function this.get_weapon_bind_map(config_table)
         local bind_weapon = config_table.mod.bind.weapon
         for _, mode in pairs(ace_map.weapon_binds.game_mode) do
             ---@diagnostic disable-next-line: no-unknown
-            bind_weapon[mode][name] = util_table.merge_t(util_table.deep_copy(wp_base), bind_weapon[mode][name] or {})
+            bind_weapon[mode][name] =
+                util_table.merge_t(util_table.deep_copy(wp_base), bind_weapon[mode][name] or {})
         end
     end
 
     for id, name in pairs(ace_enum.weapon) do
-        ace_map.weaponid_name_to_local_name[name] = game_lang.get_message_local(m.getWeaponName(id), lang, true)
+        ace_map.weaponid_name_to_local_name[name] =
+            game_lang.get_message_local(m.getWeaponName(id), lang, true)
         local weapon_base = util_table.deep_copy(base)
         weapon_base.weapon_id = id
         weapon_base.name = name
@@ -139,10 +141,10 @@ local function get_option_map()
         }
 
         util_game.do_something(option_data:get_Items(), function(system_array, index, value)
-            table.insert(
-                ace_map.option[name].items,
-                { index = index, name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true) }
-            )
+            table.insert(ace_map.option[name].items, {
+                index = index,
+                name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true),
+            })
         end)
         ::continue::
     end
@@ -156,8 +158,10 @@ function this.get_wp_action()
     for name, action_id in
         pairs(game_data.get_data("app.WpCommonAction.SetID") --[[@as table<string, ace.ACTION_ID>]])
     do
-        ace_map.wp_action_to_index[name] = { category = action_id._Category, index = action_id._Index }
-        ace_map.key_to_wp_action_name[string.format("%s:%s", action_id._Category, action_id._Index)] = name
+        ace_map.wp_action_to_index[name] =
+            { category = action_id._Category, index = action_id._Index }
+        ace_map.key_to_wp_action_name[string.format("%s:%s", action_id._Category, action_id._Index)] =
+            name
     end
 end
 
@@ -197,7 +201,12 @@ function this.init()
     game_data.get_enum("app.GUI020201.TYPE", ace_enum.quest_gui_type)
     game_data.get_enum("app.cGUIMemberPartsDef.MemberType", ace_enum.nameplate_type)
     game_data.get_enum("app.GUI020007.BulletSliderStatus", ace_enum.bullet_slider_status)
-    game_data.get_enum("app.GUIDefApp.DRAW_SEGMENT", ace_enum.draw_segment, nil, { "LOWEST", "HIGHEST" })
+    game_data.get_enum(
+        "app.GUIDefApp.DRAW_SEGMENT",
+        ace_enum.draw_segment,
+        nil,
+        { "LOWEST", "HIGHEST" }
+    )
     game_data.get_enum("app.cGUIQuestResultInfo.MODE", ace_enum.quest_result_mode)
     game_data.get_enum("app.GUIManager.APP_CONTINUE_FLAG", ace_enum.gui_continue_flag)
     game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
@@ -219,9 +228,12 @@ function this.init()
     game_data.get_enum("app.OtomoDef.CONTINUE_FLAG", ace_enum.otomo_continue_flag)
 
     if
-        util_table.any(this.ace.enum --[[@as table<string, table<integer, string>>]], function(key, value)
-            return util_table.empty(value)
-        end)
+        util_table.any(
+            this.ace.enum --[[@as table<string, table<integer, string>>]],
+            function(key, value)
+                return util_table.empty(value)
+            end
+        )
     then
         return false
     end

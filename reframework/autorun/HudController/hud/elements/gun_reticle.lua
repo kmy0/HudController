@@ -99,9 +99,13 @@ function this:new(args)
     o.children.reload = hud_child:new(args.children.reload, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.reload)
     end)
-    o.children.out_of_range = hud_child:new(args.children.out_of_range, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.out_of_range)
-    end)
+    o.children.out_of_range = hud_child:new(
+        args.children.out_of_range,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.out_of_range)
+        end
+    )
     return o
 end
 

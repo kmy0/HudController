@@ -83,18 +83,30 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o TrainingRoomHud
 
-    o.children.command_history = hud_child:new(args.children.command_history, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.command_history)
-    end)
-    o.children.button_guide = hud_child:new(args.children.button_guide, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.button_guide)
-    end)
+    o.children.command_history = hud_child:new(
+        args.children.command_history,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.command_history)
+        end
+    )
+    o.children.button_guide = hud_child:new(
+        args.children.button_guide,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.button_guide)
+        end
+    )
     o.children.damage = hud_child:new(args.children.damage, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.damage)
     end)
-    o.children.combo_guide = hud_child:new(args.children.combo_guide, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.combo_guide)
-    end)
+    o.children.combo_guide = hud_child:new(
+        args.children.combo_guide,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.combo_guide)
+        end
+    )
 
     return o
 end

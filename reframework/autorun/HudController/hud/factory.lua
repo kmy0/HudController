@@ -120,7 +120,12 @@ end
 ---@return table<string, HudBaseConfig>
 function this.verify_elements(elements)
     for key, elem in pairs(elements) do
-        if not elem.hud_id or not elem.hud_type or not elem.name_key or ace_enum.hud[elem.hud_id] ~= elem.name_key then
+        if
+            not elem.hud_id
+            or not elem.hud_type
+            or not elem.name_key
+            or ace_enum.hud[elem.hud_id] ~= elem.name_key
+        then
             elements[key] = nil
         else
             elements[key] = this.merge(elem)
@@ -133,7 +138,12 @@ end
 ---@param hud_config HudProfileConfig
 ---@return HudProfileConfig
 function this.verify_hud(hud_config)
-    return util_table.merge2_t(nil, false, this.get_hud_profile_config(hud_config.key, hud_config.name), hud_config)
+    return util_table.merge2_t(
+        nil,
+        false,
+        this.get_hud_profile_config(hud_config.key, hud_config.name),
+        hud_config
+    )
 end
 
 ---@param hud_elem HudBaseConfig

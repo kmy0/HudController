@@ -63,20 +63,23 @@ function this.all(ctrl, chain, target, lowercase)
     else
         ---@type string[]
         local names = {}
-        util_game.do_something(child:getChildren(control_type), function(system_array, index, candidate)
-            ---@cast candidate via.gui.Control
-            local o_candidate_name = candidate:get_Name() --[[@as string]]
-            local candidate_name = o_candidate_name
-            ---@type string
-            if lowercase then
-                candidate_name = candidate_name:lower()
-            end
+        util_game.do_something(
+            child:getChildren(control_type),
+            function(system_array, index, candidate)
+                ---@cast candidate via.gui.Control
+                local o_candidate_name = candidate:get_Name() --[[@as string]]
+                local candidate_name = o_candidate_name
+                ---@type string
+                if lowercase then
+                    candidate_name = candidate_name:lower()
+                end
 
-            if candidate_name == target or candidate_name:find(target) then
-                table.insert(ret, candidate)
-                table.insert(names, o_candidate_name)
+                if candidate_name == target or candidate_name:find(target) then
+                    table.insert(ret, candidate)
+                    table.insert(names, o_candidate_name)
+                end
             end
-        end)
+        )
 
         all_cache:set(key, names)
     end

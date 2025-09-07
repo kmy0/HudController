@@ -97,21 +97,33 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o BowReticle
 
-    o.children.reticle_main = hud_child:new(args.children.reticle_main, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.reticle_main)
-    end)
-    o.children.reticle_lockon = hud_child:new(args.children.reticle_lockon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.reticle_lockon)
-    end)
+    o.children.reticle_main = hud_child:new(
+        args.children.reticle_main,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.reticle_main)
+        end
+    )
+    o.children.reticle_lockon = hud_child:new(
+        args.children.reticle_lockon,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.reticle_lockon)
+        end
+    )
     o.children.lockon = hud_child:new(args.children.lockon, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.lockon)
     end)
     o.children.phials = hud_child:new(args.children.phials, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.phials)
     end)
-    o.children.out_of_range = hud_child:new(args.children.out_of_range, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.out_of_range)
-    end)
+    o.children.out_of_range = hud_child:new(
+        args.children.out_of_range,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.out_of_range)
+        end
+    )
     return o
 end
 
