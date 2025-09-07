@@ -62,6 +62,7 @@ m.hook(
     util.ref.capture_this,
     hook.elements.update.update_name_access_icons_post
 )
+m.hook("app.GUI090901.guiHudVisibleUpdate()", util.ref.capture_this, hook.elements.update.update_barrel_score_post)
 --#endregion
 --#region radial
 m.hook("app.GUI020008.checkOpen()", util.ref.capture_this, hook.elements.radial.hide_radial_post)
