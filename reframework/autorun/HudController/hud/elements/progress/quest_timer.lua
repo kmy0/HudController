@@ -58,10 +58,31 @@ local control_arguments = {
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@param no_cache boolean?
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
 ---@return ProgressQuestTimer
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
-    local o =
-        timer.new(self, args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+function this:new(
+    args,
+    parent,
+    ctrl_getter,
+    ctrl_writer,
+    default_overwrite,
+    gui_ignore,
+    children_sort,
+    no_cache,
+    valid_guiid
+)
+    local o = timer.new(
+        self,
+        args,
+        parent,
+        ctrl_getter,
+        ctrl_writer,
+        default_overwrite,
+        gui_ignore,
+        children_sort,
+        no_cache,
+        valid_guiid
+    )
     setmetatable(o, self)
     ---@cast o ProgressQuestTimer
 

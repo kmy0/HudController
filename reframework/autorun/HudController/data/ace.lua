@@ -174,8 +174,8 @@ local this = {
             MENU_BUTTON_GUIDE = "UI000008",
             -- GUI020026 qte?
             -- GUI120200 some notification thing?
-            -- GUI020901 placeholder?
-            -- GUI020902 placeholder?
+            -- GUI020901 ?
+            -- GUI020902 ?
             -- GUI090902 barrels rewards
         },
         hudless_to_hud = {
