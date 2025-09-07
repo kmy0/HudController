@@ -22,4 +22,16 @@ function this.reset_progress_mission_pre(args)
     end
 end
 
+function this.clear_cache_pre(args)
+    local progress = common.get_elem_t("Progress")
+    if progress then
+        local GUI020018 = progress:get_GUI020018()
+        if GUI020018._FadeInWaitPanelList:get_Count() > 0 then
+            progress:do_something_to_children(function(hudchild)
+                hudchild:clear_cache()
+            end)
+        end
+    end
+end
+
 return this

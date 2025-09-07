@@ -163,6 +163,8 @@ m.hook(
     "app.MissionManager.unLoadAllMissionData()",
     hook.elements.progress.reset_progress_default_pre
 )
+m.hook("app.GUI020018.updateMission()", hook.elements.progress.clear_cache_pre
+)
 --#endregion
 --#region notice
 m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", hook.elements.notice.cache_message_pre)

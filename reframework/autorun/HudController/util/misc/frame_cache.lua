@@ -94,7 +94,6 @@ function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter, key_ind
             ---@diagnostic disable-next-line: no-unknown
             local ret = func(...)
             frame_cache:set(key, ret)
-
             return ret
         end,
     })

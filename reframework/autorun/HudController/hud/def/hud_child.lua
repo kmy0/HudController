@@ -3,7 +3,7 @@
 ---@field type nil
 ---@field hud_id nil
 ---@field properties HudChildProperties
----@field ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
+---@field ctrl_getter (fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
 ---@field ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): HudChildConfig
 ---@field valid_guiid table<app.GUIID.ID, boolean>?
@@ -39,8 +39,10 @@ local config = require("HudController.config")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_debug_log = require("HudController.hud.debug.log")
+local util_misc = require("HudController.util.misc")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
+
 ---@class HudChild
 local this = {}
 ---@diagnostic disable-next-line: inject-field
@@ -149,6 +151,13 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
     end
 
     return ret
+end
+
+function this:clear_cache()
+    util_misc.try(function()
+        ---@diagnostic disable-next-line: undefined-field
+        self._ctrl_getter.clear()
+    end)
 end
 
 ---@param key HudChildWriteKey
