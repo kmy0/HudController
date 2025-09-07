@@ -111,7 +111,7 @@ local game_data = require("HudController.util.game.data")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud"
@@ -443,15 +443,14 @@ function this.apply_option(option_name, option_value)
     end
 
     if option_value == -1 then
-        local default = defaults.option.get_default(option_data.id)
-
+        local default = defaults.option:get(option_data.id)
         if not default then
             return
         end
 
         option_value = default
     else
-        defaults.option.check(option_data.id)
+        defaults.option:check(option_data.id)
     end
 
     m.setOptionValue(option_data.id, option_value)
@@ -658,7 +657,7 @@ end
 ---@param ctrl via.gui.Control
 ---@param key HudBaseWriteKey
 function this:reset_ctrl(ctrl, key)
-    local default = play_object_defaults.get_default(ctrl)
+    local default = play_object_defaults:get(ctrl)
     if default then
         default = util_table.merge_t(default, self.default_overwrite or {})
     else
@@ -785,7 +784,7 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    play_object_defaults.check(ctrl)
+    play_object_defaults:check(ctrl)
 
     if self.hide and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
         self:change_visibility(ctrl, not self.hide)

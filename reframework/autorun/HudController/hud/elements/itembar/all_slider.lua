@@ -96,7 +96,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game")
 local util_ref = require("HudController.util.ref")
@@ -337,7 +337,7 @@ function this:_init_appear_open(args)
             return ctrl
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
                 ctrl:set_PlayState("HIDDEN")
@@ -357,7 +357,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(icons, control_arguments.icon_state)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state and not self:is_visible() then
                 ctrl:set_PlayState("HIDDEN")
@@ -377,7 +377,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(icons, control_arguments.cursor_state)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if
                 s.play_state
@@ -404,7 +404,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(ctrl, control_arguments.text_num)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state then
                 ctrl:set_Visible(true)
@@ -422,7 +422,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(ctrl, control_arguments.text_pnl)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             ctrl:set_PlayState("HIDDEN")
             return true
@@ -438,7 +438,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(ctrl, control_arguments.ref_icon)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state then
                 ctrl:set_Visible(false)
@@ -467,7 +467,7 @@ function this:_init_appear_open(args)
             return get_icons(ctrl)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state then
                 local all_slider = self:get_part()
@@ -508,7 +508,7 @@ function this:_init_appear_open(args)
             return play_object.iter_args(ctrl, control_arguments.keys)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
                 ctrl:set_Visible(false)

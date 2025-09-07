@@ -68,7 +68,7 @@
 ---@alias MaterialWriteKey CtrlChildWriteKey | MaterialProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local util_table = require("HudController.util.misc.table")
 
 ---@class Material
@@ -160,7 +160,7 @@ end
 ---@param obj via.gui.Material
 ---@param key MaterialWriteKey
 function this:reset_ctrl(obj, key)
-    local default = play_object_defaults.get_default(obj) --[[@as MaterialDefault]]
+    local default = play_object_defaults:get(obj) --[[@as MaterialDefault]]
     if default then
         default = util_table.merge_t(default, self.default_overwrite or {})
     else

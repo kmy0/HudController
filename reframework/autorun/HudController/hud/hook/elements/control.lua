@@ -1,6 +1,6 @@
 local common = require("HudController.hud.hook.common")
 local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local util_ref = require("HudController.util.ref")
 
 local this = {}
@@ -24,7 +24,7 @@ function this.set_control_global_pos_post(retval)
         local control_guide00 = GUI020014:get__PNL_ControlGuide00()
         local pat = play_object.control.get_parent(control_guide00, "PNL_Pat00") --[[@as via.gui.Control]]
 
-        local pat_default = play_object_defaults.get_default(pat)
+        local pat_default = play_object_defaults:get(pat)
         if not pat_default then
             return
         end

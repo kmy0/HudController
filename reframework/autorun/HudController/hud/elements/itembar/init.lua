@@ -30,7 +30,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local mantle = require("HudController.hud.elements.itembar.mantle")
 local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local s = require("HudController.util.ref.singletons")
 local slider = require("HudController.hud.elements.itembar.slider")
 local util_table = require("HudController.util.misc.table")
@@ -97,7 +97,7 @@ function this:new(args)
             return play_object.iter_args(ctrl, control_arguments.slider)
         end,
         function(s, ctrl)
-            play_object_defaults.check(ctrl)
+            play_object_defaults:check(ctrl)
 
             if s.hide then
                 if

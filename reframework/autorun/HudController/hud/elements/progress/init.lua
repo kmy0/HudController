@@ -49,7 +49,7 @@ local name_main = require("HudController.hud.elements.progress.name_main")
 local name_sub = require("HudController.hud.elements.progress.name_sub")
 local part_task = require("HudController.hud.elements.progress.task")
 local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults.play_object")
+local play_object_defaults = require("HudController.hud.defaults").play_object
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
 local text_part = require("HudController.hud.elements.progress.text_part")
@@ -165,7 +165,7 @@ function this:write(hudbase, gui_id, ctrl)
 end
 
 function this:reset_defaults()
-    play_object_defaults.clear_obj(
+    play_object_defaults:remove_by_json_key(
         "GUI/ui020000/ui020000/ui020018//RootWindow/PNL_All/PNL_Scale/PNL_Pat00"
     )
 end

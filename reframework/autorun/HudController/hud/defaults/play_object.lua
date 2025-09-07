@@ -1,28 +1,40 @@
+---@class (exact) PlayObjectDefaultJsonCache : JsonCache
+
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config")
 local data = require("HudController.data")
+local json_cache = require("HudController.util.misc.json_cache")
 local m = require("HudController.util.ref.methods")
 local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local ace_enum = data.ace.enum
 
-local this = {
-    ---@type table<string, HudBaseDefault>
-    by_path = {},
-    ---@type table<PlayObject, HudBaseDefault>
-    by_obj = {},
-    ---@type table<string, PlayObject>
-    path_to_obj = {},
-    boot_time = util_misc.get_boot_time(),
-    ---@class DefaultsState
-    state = {},
-}
+---@class PlayObjectDefaultJsonCache
+local this = {}
+---@diagnostic disable-next-line: inject-field
+this.__index = this
+setmetatable(this, { __index = json_cache })
+
+---@return PlayObjectDefaultJsonCache
+function this:new()
+    local o = json_cache.new(self, config.hud_default_path)
+    ---@cast o PlayObjectDefaultJsonCache
+    return o
+end
+
+---@param key PlayObject
+---@return string
+function this:to_json_key(key)
+    local path = m.getPlayObjectFullPath(key)
+    local gui = key:get_Component()
+    return string.format("%s/%s", gui:ToString(), path)
+end
 
 ---@param obj PlayObject
 ---@return HudBaseDefault
-function this.create_default(obj)
+function this:create_default(obj)
     local offset = obj:get_Position()
     local hide = obj:get_ForceInvisible()
     local rot = obj:get_Rotation()
@@ -108,82 +120,33 @@ function this.create_default(obj)
     return ret
 end
 
----@param obj PlayObject
----@return string
-function this.get_path(obj)
-    local path = m.getPlayObjectFullPath(obj)
-    local gui = obj:get_Component()
-    return string.format("%s/%s", gui:ToString(), path)
-end
+---@param json_key string
+function this:remove_by_json_key(json_key)
+    for _json_key in pairs(self._json_map) do
+        if _json_key:match(json_key) then
+            local key = self._json_key_map[_json_key]
+            self._json_map[_json_key] = nil
+            self._json_key_map[_json_key] = nil
 
-function this.clear()
-    this.by_path = {}
-    this.by_obj = {}
-    this.dump()
-end
-
----@param path string
-function this.clear_obj(path)
-    for p in pairs(this.by_path) do
-        if p:match(path) then
-            this.by_path[p] = nil
-            local obj = this.path_to_obj[p]
-            if obj then
-                this.by_obj[obj] = nil
+            if key then
+                self._map[key] = nil
+                self._map_key_json[key] = nil
             end
-            this.path_to_obj[p] = nil
         end
     end
 
-    if this.state.do_dump then
-        this.dump()
+    if self._do_dump then
+        self:dump()
     end
 end
 
 ---@param obj PlayObject
-function this.check(obj)
-    if this.by_obj[obj] then
+function this:check(obj)
+    if self:get(obj) then
         return
     end
 
-    local path = this.get_path(obj)
-    this.path_to_obj[path] = obj
-    if this.by_path[path] then
-        this.by_obj[obj] = this.by_path[path]
-        return
-    end
-
-    local default = this.create_default(obj)
-    this.by_path[path] = default
-    this.by_obj[obj] = default
-
-    if this.state.do_dump then
-        this.dump()
-    end
-end
-
-function this.dump()
-    json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = this.by_path })
-end
-
----@param obj PlayObject
----@return HudBaseDefault?
-function this.get_default(obj)
-    return this.by_obj[obj]
-end
-
----@param state DefaultsState
----@return boolean
-function this.init(state)
-    this.state = state
-
-    local j = json.load_file(config.hud_default_path)
-    if j and math.abs(this.boot_time - j.boot_time) < 5 then
-        this.by_path = j.cache or {}
-    else
-        json.dump_file(config.hud_default_path, { boot_time = this.boot_time, cache = {} })
-    end
-    return true
+    self:set(obj, self:create_default(obj))
 end
 
 return this
