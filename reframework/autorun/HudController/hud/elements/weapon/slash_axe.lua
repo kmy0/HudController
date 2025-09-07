@@ -42,13 +42,7 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return SlashAxe
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        if gui_id ~= rl(ace_enum.gui_id, "UI020029") then
-            return {}
-        end
-
-        return ctrl
-    end, nil, nil, nil, nil, true)
+    local o = hud_child.new(self, args, parent, nil, nil, nil, nil, nil, nil, rl(ace_enum.gui_id, "UI020029"))
     setmetatable(o, self)
     ---@cast o SlashAxe
 

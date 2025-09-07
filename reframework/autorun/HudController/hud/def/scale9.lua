@@ -69,8 +69,19 @@ setmetatable(this, { __index = ctrl_child })
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@param no_cache boolean? by_default, false
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
 ---@return Scale9
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+function this:new(
+    args,
+    parent,
+    ctrl_getter,
+    ctrl_writer,
+    default_overwrite,
+    gui_ignore,
+    children_sort,
+    no_cache,
+    valid_guiid
+)
     local o = ctrl_child.new(
         self,
         args,
@@ -80,7 +91,8 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
         default_overwrite,
         gui_ignore,
         children_sort,
-        no_cache
+        no_cache,
+        valid_guiid
     )
     o.properties = util_table.merge_t(o.properties, {
         ignore_alpha = true,

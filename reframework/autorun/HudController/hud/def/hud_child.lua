@@ -6,6 +6,7 @@
 ---@field ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): HudChildConfig
+---@field valid_guiid table<app.GUIID.ID, boolean>?
 ---@field protected _getter_cache via.gui.Control[]
 
 ---@class (exact) HudChildConfig : HudBaseConfig
@@ -48,14 +49,25 @@ setmetatable(this, { __index = hud_base })
 
 ---@param args HudChildConfig
 ---@param parent HudBase | HudChild
----@param ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
+---@param ctrl_getter (fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
 ---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@param default_overwrite HudBaseDefaultOverwrite?
 ---@param gui_ignore boolean?
 ---@param children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@param no_cache boolean? by_default, false
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
 ---@return HudChild
-function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui_ignore, children_sort, no_cache)
+function this:new(
+    args,
+    parent,
+    ctrl_getter,
+    ctrl_writer,
+    default_overwrite,
+    gui_ignore,
+    children_sort,
+    no_cache,
+    valid_guiid
+)
     local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore, nil, children_sort)
     setmetatable(o, self)
     ---@cast o HudChild
@@ -66,9 +78,23 @@ function this:new(args, parent, ctrl_getter, ctrl_writer, default_overwrite, gui
         o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter)
     end
 
-    o.ctrl_getter = ctrl_getter
+    o.ctrl_getter = ctrl_getter or function(s, hudbase, gui_id, ctrl)
+        return ctrl
+    end
     o.ctrl_writer = ctrl_writer
     o._getter_cache = {}
+
+    if valid_guiid then
+        o.valid_guiid = {}
+
+        if type(valid_guiid) == "number" then
+            o.valid_guiid[valid_guiid] = true
+        else
+            for _, guiid in pairs(valid_guiid) do
+                o.valid_guiid[guiid] = true
+            end
+        end
+    end
     return o
 end
 
@@ -145,6 +171,10 @@ function this:reset_child(hudbase, gui_id, ctrl, key)
         return
     end
 
+    if self.valid_guiid and not self.valid_guiid[gui_id] then
+        return
+    end
+
     if type(ctrl) ~= "table" then
         ctrl = { ctrl }
     end
@@ -174,6 +204,10 @@ end
 ---@param gui_id app.GUIID.ID
 ---@param ctrl via.gui.Control | via.gui.Control[]
 function this:write_child(hudbase, gui_id, ctrl)
+    if self.valid_guiid and not self.valid_guiid[gui_id] then
+        return
+    end
+
     if type(ctrl) ~= "table" then
         ctrl = { ctrl }
     end
