@@ -23,6 +23,7 @@
 ---@class ace.GimmickBaseCore : via.Behavior
 ---@class ace.mcGimmickBase : ace.minicomponent.cUpdatableBase
 ---@class ace.minicomponent.cUpdatableBase : ace.minicomponent.cMiniComponent
+---@class ace.user_data.ExcelUserData.cData : via.clr.ManagedObject
 
 ---@class ace.GUIFade : via.Behavior
 ---@field setFadeAlpha fun(self: ace.GUIFade, alpha: System.Single)

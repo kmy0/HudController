@@ -35,6 +35,8 @@
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
 ---@class app.GUI060000 : app.GUIBaseApp
 ---@class app.CONTEXT_HANDLE : System.ValueType
+---@class app.FacilityBase : via.clr.ManagedObject
+---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -222,6 +224,7 @@
 
 ---@class app.savedata.cItemWork : ace.cSaveDataParam
 ---@field get_ItemId fun(self: app.savedata.cItemWork): app.ItemDef.ID
+---@field Num System.Int16
 
 ---@class app.GUI020006PartsAllSlider : app.cGUIPartsBaseApp
 ---@field startStackState fun(self: app.GUI020006PartsAllSlider)
@@ -554,3 +557,30 @@
 
 ---@class app.GUI020100 : app.GUIHudBase
 ---@field get__LogPanels  fun(self: app.GUI020100): System.Array<app.cGUI020100PanelBase>
+
+---@class app.user_data.ItemData.cData : ace.user_data.ExcelUserData.cData
+---@field get_RawName fun(self: app.user_data.ItemData.cData): System.Guid
+
+---@class app.cReceiveItemInfo : via.clr.ManagedObject
+---@field set_Num fun(self: app.cReceiveItemInfo, num: System.Int16)
+---@field set_ItemId fun(self: app.cReceiveItemInfo, item_id: app.ItemDef.ID)
+-- bool is something accessory related, on quick glance it does not seem to do anything
+---@field judge fun(self: app.cReceiveItemInfo, unknown: System.Boolean): System.Boolean
+---@field isValid fun(self: app.cReceiveItemInfo): System.Boolean
+-- bool is something accessory related, on quick glance it does not seem to do anything
+---@field receive fun(self: app.cReceiveItemInfo, unknown: System.Boolean)
+
+---@class app.FacilityManager : ace.GAElement
+---@field get_Bowling fun(self: app.FacilityManager): app.FacilityBowling
+
+---@class app.FacilityBowling : app.FacilityBase
+---@field getRewardItems fun(self: app.FacilityBowling, rank: app.BowlingDef.RANK): System.Array<app.savedata.cItemWork>
+
+---@class app.GameMiniEventManager : ace.GAElement
+---@field get_Bowling fun(self: app.GameMiniEventManager): app.cBowlingUpdater
+
+---@class app.cBowlingUpdater : via.clr.ManagedObject
+---@field get_TotalScoreRank fun(self): app.BowlingDef.RANK
+
+---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
+---@field _isEnd System.Boolean
