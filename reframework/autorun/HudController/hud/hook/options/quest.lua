@@ -1,8 +1,10 @@
+local ace_item = require("HudController.util.ace.item")
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud")
 local s = require("HudController.util.ref.singletons")
+local util_game = require("HudController.util.game")
 local util_ref = require("HudController.util.ref")
 local util_table = require("HudController.util.misc.table")
 
@@ -196,5 +198,23 @@ function this.hide_quest_end_input_pre(args)
     end
 end
 --#endregion
+
+function this.skip_bowling_result_pre(args)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option("skip_quest_result") then
+        local bowlfac = s.get("app.FacilityManager"):get_Bowling()
+        local bowlup = s.get("app.GameMiniEventManager"):get_Bowling()
+        local reward_rank = bowlup:get_TotalScoreRank()
+        local rewards = bowlfac:getRewardItems(reward_rank)
+
+        util_game.do_something(rewards, function(system_array, index, value)
+            ace_item.add_item(value:get_ItemId(), value.Num)
+        end)
+
+        local reult_end = sdk.to_managed_object(args[2]) --[[@as app.cBowlingUpdater.cUpdater_ResultEnd]]
+        reult_end._isEnd = true
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
 
 return this

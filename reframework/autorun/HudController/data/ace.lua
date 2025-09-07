@@ -176,7 +176,7 @@ local this = {
             -- GUI120200 some notification thing?
             -- GUI020901 placeholder?
             -- GUI020902 placeholder?
-            -- GUI090902 placeholder?
+            -- GUI090902 barrels rewards
         },
         hudless_to_hud = {
             UI020002 = "UI020000", -- focus reticle to slinger reticle

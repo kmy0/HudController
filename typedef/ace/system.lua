@@ -5,6 +5,7 @@
 ---@class System.ValueType : ValueType, via.clr.ManagedObject
 ---@class System.UInt32 : integer, System.ValueType
 ---@class System.Int32 : integer, System.ValueType
+---@class System.Int16 : integer, System.ValueType
 ---@class System.UInt16 : integer, System.ValueType
 ---@class System.Byte : integer, System.ValueType
 ---@class System.Boolean : boolean, System.ValueType

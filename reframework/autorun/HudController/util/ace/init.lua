@@ -6,6 +6,7 @@ local this = {
     misc = require("HudController.util.ace.misc"),
     flag = require("HudController.util.ace.flag"),
     otomo = require("HudController.util.ace.otomo"),
+    item = require("HudController.util.ace.item"),
 }
 
 return this

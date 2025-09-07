@@ -233,6 +233,7 @@ m.hook(
 )
 m.hook("app.cQuestDirector.update()", util.ref.capture_this, hook.options.quest.stop_hide_gui_post)
 m.hook("app.GUI020202.guiVisibleUpdate()", hook.options.quest.hide_quest_end_input_pre)
+m.hook("app.cBowlingUpdater.cUpdater_ResultEnd.onInit", hook.options.quest.skip_bowling_result_pre)
 --#endregion
 --#region scar
 m.hook("app.EnemyScar.requestScarStamp(app.cEmModuleScar.cScarParts.STATE)", hook.options.scar.disable_scar_stamp_pre)

@@ -74,10 +74,12 @@ function this.get_data(type_def_name)
     return ret
 end
 
----@param type_def_name string
----@param t table
+---@generic T
+---@param type_def_name `T`
+---@param t {[T]: string}
 ---@param as_string boolean?
 ---@param ignore_values string[]?
+---@return {[T]: string}
 function this.get_enum(type_def_name, t, as_string, ignore_values)
     local co = coroutine.create(this.iter_fields)
     local status = true
@@ -91,6 +93,8 @@ function this.get_enum(type_def_name, t, as_string, ignore_values)
             t[data] = name
         end
     end
+
+    return t
 end
 
 return this
