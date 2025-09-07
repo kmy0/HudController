@@ -867,6 +867,14 @@ function this:apply_other(other)
     end
 end
 
+---@param something fun(hudchild: HudChild)
+function this:do_something_to_children(something)
+    for _, child in pairs(self.children) do
+        something(child)
+        child:do_something_to_children(something)
+    end
+end
+
 ---@return HudBaseConfig
 function this:get_current_config()
     if not hud then
