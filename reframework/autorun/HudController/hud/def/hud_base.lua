@@ -22,8 +22,8 @@
 ---@field options table<string, integer>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
----@field gui_ignore boolean? --dont draw gui for this element
----@field gui_header_children boolean? --draw children with collapsed header instead of tree
+---@field gui_ignore boolean? -- if true, do not draw in imgui window
+---@field gui_header_children boolean? -- if true, draw chidlren as a header instead of a tree
 ---@field children_sort (fun(a_key: string, b_key: string): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
@@ -130,9 +130,9 @@ this.__index = this
 ---@param args HudBaseConfig | HudChildConfig
 ---@param parent HudBase | HudChild?
 ---@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean?
----@param gui_header_children boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@param gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
+---@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
 ---@return HudBase
 function this:new(args, parent, default_overwrite, gui_ignore, gui_header_children, children_sort)
     local o = {

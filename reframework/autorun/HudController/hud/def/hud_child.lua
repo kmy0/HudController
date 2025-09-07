@@ -3,10 +3,10 @@
 ---@field type nil
 ---@field hud_id nil
 ---@field properties HudChildProperties
----@field ctrl_getter (fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
+---@field ctrl_getter fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
 ---@field ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(name_key: string): HudChildConfig
----@field valid_guiid table<app.GUIID.ID, boolean>?
+---@field valid_guiid table<app.GUIID.ID, boolean>? when set, ctrl_getter ignores all guiids except these
 ---@field protected _getter_cache via.gui.Control[]
 
 ---@class (exact) HudChildConfig : HudBaseConfig
@@ -52,12 +52,12 @@ setmetatable(this, { __index = hud_base })
 ---@param args HudChildConfig
 ---@param parent HudBase | HudChild
 ---@param ctrl_getter (fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
----@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)?
+---@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)? when set, ctrl_writer is used instead of hud_base._write
 ---@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
----@param no_cache boolean? by_default, false
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
+---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
 ---@return HudChild
 function this:new(
     args,

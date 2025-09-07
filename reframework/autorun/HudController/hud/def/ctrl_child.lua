@@ -12,8 +12,7 @@
 ---@field children {}
 ---@field properties CtrlChildProperties
 ---@field default_overwrite CtrlChildDefaultOverwite
----@field ctrl_getter fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?
----@field protected _ctrl_grouper fun(self: CtrlChild): ControlChild[]
+---@field ctrl_getter (fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?)?
 ---@field reset fun(self: CtrlChild, key: CtrlChildWriteKey)
 ---@field mark_write fun(self: CtrlChild, key: CtrlChildProperty)
 ---@field mark_idle fun(self: CtrlChild, key: CtrlChildProperty)
@@ -90,13 +89,13 @@ setmetatable(this, { __index = hud_child })
 
 ---@param args CtrlChildConfig
 ---@param parent HudBase
----@param ctrl_getter fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?
----@param ctrl_writer (fun(self: CtrlChild, ctrl: ControlChild): boolean)?
+---@param ctrl_getter (fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?)?
+---@param ctrl_writer (fun(self: CtrlChild, ctrl: ControlChild): boolean)? when set, ctrl_writer is used instead of hud_base._write
 ---@param default_overwrite CtrlChildDefaultOverwite?
----@param gui_ignore boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
----@param no_cache boolean? by_default, false
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
+---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
 ---@return CtrlChild
 function this:new(
     args,

@@ -5,7 +5,7 @@
 ---@field alpha_channel via.gui.AlphaChannelType?
 ---@field properties Scale9Properties
 ---@field default_overwrite Scale9DefaultOverwrite
----@field ctrl_getter fun(self: Scale9, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Scale9Grid | via.gui.Scale9Grid[]?
+---@field ctrl_getter fun(self: Scale9, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Scale9Grid | via.gui.Scale9Grid[]?)
 ---@field reset fun(self: Scale9, key: Scale9WriteKey)
 ---@field mark_write fun(self: Scale9, key: Scale9Property)
 ---@field mark_idle fun(self: Scale9, key: Scale9Property)
@@ -63,13 +63,13 @@ setmetatable(this, { __index = ctrl_child })
 
 ---@param args Scale9Config
 ---@param parent HudBase
----@param ctrl_getter fun(self: Scale9, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Scale9Grid | via.gui.Scale9Grid[]?
----@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Scale9Grid): boolean)?
+---@param ctrl_getter (fun(self: Scale9, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Scale9Grid | via.gui.Scale9Grid[]?)?
+---@param ctrl_writer (fun(self: Scale9, ctrl: via.gui.Scale9Grid): boolean)? when set, ctrl_writer is used instead of hud_base._write
 ---@param default_overwrite Scale9DefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
----@param no_cache boolean? by_default, false
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
+---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
 ---@return Scale9
 function this:new(
     args,
