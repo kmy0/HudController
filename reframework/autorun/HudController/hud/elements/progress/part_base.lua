@@ -56,12 +56,12 @@ setmetatable(this, { __index = hud_child })
 ---@param args ProgressPartBaseConfig
 ---@param parent HudBase
 ---@param ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
----@param ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
+---@param ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)? when set, ctrl_writer is used instead of hud_base._write
 ---@param default_overwrite ProgressPartBaseDefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
----@param no_cache boolean?
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
+---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
+---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
 ---@return ProgressPartBase
 function this:new(
     args,
