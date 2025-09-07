@@ -244,6 +244,7 @@ return {
             ACTION_TUTORIAL = "Action Tutorial",
             TARGET_RETICLE = "Target Reticle",
             MENU_BUTTON_GUIDE = "Menu Button Guide",
+            BARREL_BOWLING_SCORE = "Barrel Bowling Score",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -453,5 +454,7 @@ return {
         item = "Item",
         tab = "Tab",
         cursor_background = "Cursor Background",
+        name = "Name",
+        points = "Points",
     },
 }

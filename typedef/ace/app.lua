@@ -37,6 +37,7 @@
 ---@class app.CONTEXT_HANDLE : System.ValueType
 ---@class app.FacilityBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
+---@class app.GUI090901 : app.GUIHudBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)

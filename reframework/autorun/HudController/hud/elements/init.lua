@@ -31,6 +31,7 @@ local this = {
     menu_button_guide = require("HudController.hud.elements.menu_button_guide"),
     target_reticle = require("HudController.hud.elements.target_reticle"),
     shortcut_keyboard = require("HudController.hud.elements.shortcut_keyboard"),
+    barrel_score = require("HudController.hud.elements.barrel_score"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.HEALTH] = require("HudController.hud.elements.health"),
@@ -61,6 +62,7 @@ local this = {
     [hud_enum.MENU_BUTTON_GUIDE] = require("HudController.hud.elements.menu_button_guide"),
     [hud_enum.TARGET_RETICLE] = require("HudController.hud.elements.target_reticle"),
     [hud_enum.SHORTCUT_KEYBOARD] = require("HudController.hud.elements.shortcut_keyboard"),
+    [hud_enum.BARREL_BOWLING_SCORE] = require("HudController.hud.elements.barrel_score"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -90,6 +92,7 @@ local this = {
     MenuButtonGuide = "MENU_BUTTON_GUIDE",
     TargetReticle = "TARGET_RETICLE",
     ShortcutKeyboard = "SHORTCUT_KEYBOARD",
+    BarrelScore = "BARREL_BOWLING_SCORE",
     --
     HEALTH = require("HudController.hud.elements.health"),
     WEAPON = require("HudController.hud.elements.weapon"),
@@ -119,6 +122,7 @@ local this = {
     MENU_BUTTON_GUIDE = require("HudController.hud.elements.menu_button_guide"),
     TARGET_RETICLE = require("HudController.hud.elements.target_reticle"),
     SHORTCUT_KEYBOARD = require("HudController.hud.elements.shortcut_keyboard"),
+    BARREL_BOWLING_SCORE = require("HudController.hud.elements.barrel_score"),
 }
 
 return this

@@ -142,4 +142,13 @@ function this.update_subtitles_pre(args)
     end
 end
 
+function this.update_barrel_score_post(retval)
+    local barrel_score, guiid = common.get_elem_consume_t("BarrelScore", "UI090901")
+    if barrel_score and guiid then
+        local GUI090901 = util_ref.get_this() --[[@as app.GUI090901]]
+        local disp_ctrl = GUI090901._DisplayControl
+        barrel_score:write(GUI090901, guiid, disp_ctrl._TargetControl)
+    end
+end
+
 return this

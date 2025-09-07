@@ -153,6 +153,7 @@ local this = {
             "ACTION_TUTORIAL",
             "TARGET_RETICLE",
             "MENU_BUTTON_GUIDE",
+            "BARREL_BOWLING_SCORE",
         },
         weapon_binds = {
             additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
@@ -172,6 +173,7 @@ local this = {
             ACTION_TUTORIAL = "UI600000",
             TARGET_RETICLE = "UI020021",
             MENU_BUTTON_GUIDE = "UI000008",
+            BARREL_BOWLING_SCORE = "UI090901",
             -- GUI020026 qte?
             -- GUI120200 some notification thing?
             -- GUI020901 ?
@@ -183,7 +185,7 @@ local this = {
         },
         no_lang_key = { ALL = true },
         guiid_ignore = {
-            UI090901 = true, -- barrels
+            UI090901 = true, -- barrels score
         },
         wp_action_to_index = {},
         key_to_wp_action_name = {},
