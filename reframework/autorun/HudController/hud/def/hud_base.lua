@@ -722,11 +722,17 @@ function this:_get_component(ctrl)
     return ctrl:get_Component()
 end
 
+---@param ctrl via.gui.Control
+---@return boolean
+function this:is_enabled_component(ctrl)
+    return self:_get_component(ctrl):get_Enabled()
+end
+
 ---@param hudbase app.GUIHudBase
 ---@param gui_id app.GUIID.ID
 ---@param ctrl via.gui.Control
 function this:write(hudbase, gui_id, ctrl)
-    if not self:_get_component(ctrl):get_Enabled() then
+    if not self:is_enabled_component(ctrl) then
         return
     end
 

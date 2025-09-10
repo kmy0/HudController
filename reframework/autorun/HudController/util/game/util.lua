@@ -3,6 +3,7 @@ local s = require("HudController.util.ref.singletons")
 local m = require("HudController.util.ref.methods")
 local util_misc = require("HudController.util.misc")
 local util_ref = require("HudController.util.ref")
+local cache = util_misc.cache
 
 local this = {}
 
@@ -170,5 +171,14 @@ function this.do_something(system_array, something, reverse)
         end
     end
 end
+
+---@generic T
+---@param type `T`
+---@return T?
+function this.get_component_any_cached(type)
+    return this.get_component_any(type)
+end
+
+this.get_component_any_cached = cache.memoize(this.get_component_any_cached)
 
 return this

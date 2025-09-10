@@ -49,6 +49,7 @@
 ---@field sharpness_state table<app.GUI020015.DEFAULT_STATUS, string>
 ---@field target_access table<app.TARGET_ACCESS_KEY.CATEGORY, string>
 ---@field otomo_continue_flag table<app.OtomoDef.CONTINUE_FLAG, string>
+---@field map_flow_flag table<app.cGUIMapFlowCtrl.FLAG, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -130,6 +131,7 @@ local this = {
         sharpness_state = {},
         target_access = {},
         otomo_continue_flag = {},
+        map_flow_flag = {},
     },
     map = {
         hudid_to_guiid = {},

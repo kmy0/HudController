@@ -226,6 +226,7 @@ function this.init()
     game_data.get_enum("app.GUI020015.DEFAULT_STATUS", ace_enum.sharpness_state)
     game_data.get_enum("app.TARGET_ACCESS_KEY.CATEGORY", ace_enum.target_access)
     game_data.get_enum("app.OtomoDef.CONTINUE_FLAG", ace_enum.otomo_continue_flag)
+    game_data.get_enum("app.cGUIMapFlowCtrl.FLAG", ace_enum.map_flow_flag)
 
     if
         util_table.any(

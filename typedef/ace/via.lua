@@ -70,6 +70,7 @@
 ---@class via.gui.GUI : via.Component
 ---@field get_Enabled fun(self: via.gui.GUI): System.Boolean
 ---@field get_View fun(self: via.gui.GUI): via.gui.View
+---@field set_Enabled fun(self: via.gui.GUI, val: System.Boolean)
 
 ---@class via.gui.Control : via.gui.TransformObject
 ---@field get_Segment fun(self: via.gui.Control): via.gui.Segment

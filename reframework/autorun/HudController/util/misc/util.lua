@@ -206,4 +206,9 @@ function this.wrap_text(text, width)
     return table.concat(lines, "\n")
 end
 
+---@param num integer
+function this.integer_to_hex(num)
+    return string.format("0x%x", num)
+end
+
 return this

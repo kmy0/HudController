@@ -8,6 +8,7 @@ local this = {
     progress = require("HudController.hud.hook.elements.progress"),
     notice = require("HudController.hud.hook.elements.notice"),
     name_access = require("HudController.hud.hook.elements.name_access"),
+    shortcut_keyboard = require("HudController.hud.hook.elements.shortcut_keyboard"),
 }
 
 return this

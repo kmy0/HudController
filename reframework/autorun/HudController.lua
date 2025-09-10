@@ -163,8 +163,7 @@ m.hook(
     "app.MissionManager.unLoadAllMissionData()",
     hook.elements.progress.reset_progress_default_pre
 )
-m.hook("app.GUI020018.updateMission()", hook.elements.progress.clear_cache_pre
-)
+m.hook("app.GUI020018.updateMission()", hook.elements.progress.clear_cache_pre)
 --#endregion
 --#region notice
 m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", hook.elements.notice.cache_message_pre)
@@ -182,6 +181,19 @@ m.hook(
     "app.GUIAccessIconControl.lateUpdate()",
     util.ref.capture_this,
     hook.elements.name_access.hide_iteractables_post
+)
+--#endregion
+--#region shortcut_keyboard
+m.hook("app.cGUIMapFlowCtrl.update()", hook.elements.shortcut_keyboard.reveal_minimap_pre)
+m.hook(
+    "app.GUI020600.guiHudVisibleUpdate()",
+    nil,
+    hook.elements.shortcut_keyboard.reveal_elements_post
+)
+m.hook(
+    "app.GUI020600.guiHudOpenUpdate()",
+    nil,
+    hook.elements.shortcut_keyboard.reveal_elements_post
 )
 --#endregion
 --#endregion

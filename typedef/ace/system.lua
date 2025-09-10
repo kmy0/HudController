@@ -52,3 +52,7 @@
 ---@field AddWithResize fun(self: System.Array<any>, item: any)
 ---@field Remove fun(self: System.Array<any>, item: any): System.Boolean
 ---@field Clear fun(self: System.Array<any>)
+
+---@class System.Collections.BitArray : via.clr.ManagedObject
+---@field get_Item fun(self: System.Collections.BitArray, index: System.Int32): System.Boolean
+---@field set_Item fun(self: System.Collections.BitArray, index: System.Int32, val: System.Boolean)

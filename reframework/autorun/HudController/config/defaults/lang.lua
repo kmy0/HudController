@@ -252,6 +252,7 @@ return {
             category_animation = "Animation Settings",
             category_texture = "Texture Settings",
             category_itembar_behavior = "Item Bar Behavior",
+            category_shortcut_keyboard_behavior = "Keyboard Shortcuts Behavior",
             category_expanded_itembar_behavior = "Expanded Item Bar Behavior",
             category_weapon_behavior = "Weapon Behavior",
             category_notice_system = "System Message",
@@ -342,6 +343,7 @@ return {
             button_send = "Send",
             box_cache_messages = "Cache Messages",
             button_clear = "Clear",
+            box_no_hide_elements = "Do Not Hide Elements",
         },
     },
     hud_subelement = {

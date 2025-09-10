@@ -624,6 +624,28 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_shortcut_keyboard(elem, elem_config, config_key)
+    ---@cast elem_config ShortcutKeyboardConfig
+    ---@cast elem ShortcutKeyboard
+
+    util_imgui.separator_text(
+        config.lang:tr("hud_element.entry.category_shortcut_keyboard_behavior")
+    )
+    local item_config_key = config_key .. ".no_hide_elements"
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_no_hide_elements", item_config_key),
+            item_config_key
+        )
+    then
+        elem:set_no_hide_elements(elem_config.no_hide_elements)
+        config.save_global()
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -643,5 +665,6 @@ this.funcs[mod.enum.hud_type.RADIAL] = draw_radial
 this.funcs[mod.enum.hud_type.SLINGER_RETICLE] = draw_slinger_reticle
 this.funcs[mod.enum.hud_type.SHARPNESS] = draw_sharpness
 this.funcs[mod.enum.hud_type.CLOCK] = draw_clock
+this.funcs[mod.enum.hud_type.SHORTCUT_KEYBOARD] = draw_shortcut_keyboard
 
 return this

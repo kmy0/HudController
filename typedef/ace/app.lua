@@ -586,3 +586,9 @@
 
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 ---@field _isEnd System.Boolean
+
+---@class app.GUI020600 : app.GUIHudBase
+---@field _IsOpen System.Boolean
+
+---@class app.cGUIMapFlowCtrl : via.clr.ManagedObject
+---@field get_Flags fun(self: app.cGUIMapFlowCtrl): System.Collections.BitArray
