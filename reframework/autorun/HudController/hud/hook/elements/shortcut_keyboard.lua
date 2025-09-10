@@ -39,4 +39,13 @@ function this.reveal_elements_post(retval)
     end
 end
 
+function this.clear_cache_pre(args)
+    local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+    if shortcut_keyboard then
+        shortcut_keyboard:do_something_to_children(function(hudchild)
+            hudchild:clear_cache()
+        end)
+    end
+end
+
 return this

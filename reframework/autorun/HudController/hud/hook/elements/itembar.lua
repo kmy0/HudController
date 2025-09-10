@@ -266,4 +266,13 @@ function this.move_next_item_pre(args)
     end
 end
 
+function this.clear_cache_pre(args)
+    local itembar = common.get_elem_t("Itembar")
+    if itembar then
+        itembar.children.all_slider:do_something_to_children(function(hudchild)
+            hudchild:clear_cache()
+        end)
+    end
+end
+
 return this

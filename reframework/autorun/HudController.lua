@@ -131,6 +131,11 @@ m.hook(
     "app.ItemUtil.useItem(app.ItemDef.ID, System.Int16, System.Boolean)",
     hook.elements.itembar.move_next_item_pre
 )
+m.hook(
+    "app.GUI020006PartsAllSlider.updateDispItems(System.Int32, via.gui.SelectItem, System.Int32)",
+    hook.elements.itembar.clear_cache_pre
+)
+
 --#endregion
 --#region ammo
 m.hook("app.GUI020007.controlSliderStatus()", hook.elements.ammo.no_hide_ammo_slider_parts_pre)
@@ -194,6 +199,10 @@ m.hook(
     "app.GUI020600.guiHudOpenUpdate()",
     nil,
     hook.elements.shortcut_keyboard.reveal_elements_post
+)
+m.hook(
+    "app.GUI020600.requestOpenPCShortcut(app.GUI020600.TYPE, System.Int32, System.Int32, app.GUI020600.MODE, via.gui.Rect)",
+    hook.elements.shortcut_keyboard.clear_cache_pre
 )
 --#endregion
 --#endregion
