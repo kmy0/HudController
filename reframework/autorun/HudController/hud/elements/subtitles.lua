@@ -41,10 +41,8 @@ local control_arguments = {
     background = {
         {
             play_object.child.all_type,
-            {
-                "s9g_accessibility_BG",
-                "via.gui.Scale9Grid",
-            },
+            "s9g_accessibility_BG",
+            "via.gui.Scale9Grid",
         },
     },
 }
