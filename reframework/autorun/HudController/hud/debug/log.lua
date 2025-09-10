@@ -31,8 +31,6 @@ this.known_errors = {
     },
     [this.log_debug_type.CONTROL_GETTER_ITER] = {
         'Ctrl: PNL_Scale\nArguments: {{"PNL_Pat00", "PNL_Radar", "PNL_OutFrameIconMain"}, "PNL_OutFrameIcon00", true}',
-        'Ctrl: ITM_PS_.\nArguments: {{"PNL_PS_Select"}, "texset_base", "via%.gui%.TextureSet"}',
-        'Ctrl: PNL_frameEmpty\nArguments: {{"PNL_frame"}}',
     },
 }
 

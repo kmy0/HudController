@@ -38,6 +38,7 @@
 ---@class app.FacilityBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
 ---@class app.GUI090901 : app.GUIHudBase
+---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -589,6 +590,13 @@
 
 ---@class app.GUI020600 : app.GUIHudBase
 ---@field _IsOpen System.Boolean
+---@field _Frames System.Array<System.Array<app.GUI020600PartsFrame>>
+
+---@class app.cGUIPartsShortcutFrameBase : ace.cGUIPartsBase
+---@field get__ShortcutItem fun(self: app.cGUIPartsShortcutFrameBase): app.cGUIShortcutItem
+
+---@class app.cGUIShortcutItem : via.clr.ManagedObject
+---@field get__BasePanel fun(self: app.cGUIShortcutItem): via.gui.Control
 
 ---@class app.cGUIMapFlowCtrl : via.clr.ManagedObject
 ---@field get_Flags fun(self: app.cGUIMapFlowCtrl): System.Collections.BitArray

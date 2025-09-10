@@ -17,10 +17,10 @@
 ---@field text PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
 ---@field keybind PlayObjectGetterFn[]
----@field item PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object")
+local util_game = require("HudController.util.game")
 
 ---@class ShortcutKeyboardItem
 local this = {}
@@ -34,7 +34,6 @@ local control_arguments = {
         {
             play_object.control.get,
             {
-                "PNL_itemAll",
                 "PNL_ref_Key_S00",
             },
         },
@@ -43,7 +42,6 @@ local control_arguments = {
         {
             play_object.control.get,
             {
-                "PNL_itemAll",
                 "PNL_KeyBg",
             },
         },
@@ -52,21 +50,8 @@ local control_arguments = {
         {
             play_object.control.get,
             {
-                "PNL_itemAll",
                 "PNL_ItemName",
             },
-        },
-    },
-    item = {
-        {
-            play_object.control.all,
-            {
-                "PNL_Pat00",
-                "PNL_Palette",
-                "PNL_Main",
-                "FSG_Keys",
-            },
-            "Item",
         },
     },
 }
@@ -76,7 +61,20 @@ local control_arguments = {
 ---@return ShortcutKeyboardItem
 function this:new(args, parent)
     local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.item)
+        ---@cast hudbase app.GUI020600
+        local ret = {}
+        -- items are recreated every time ShortcutKeyboard is opened, so play_object.control.all cannot be used,
+        util_game.do_something(hudbase._Frames, function(_, _, tabs)
+            util_game.do_something(tabs, function(_, _, frame)
+                if frame then
+                    local shrt = frame:get__ShortcutItem()
+                    local pnl = shrt:get__BasePanel()
+                    table.insert(ret, play_object.control.get_parent(pnl, "PNL_itemAll", true))
+                end
+            end)
+        end)
+
+        return ret
     end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardItem

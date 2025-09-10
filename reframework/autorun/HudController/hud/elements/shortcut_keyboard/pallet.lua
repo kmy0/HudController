@@ -25,6 +25,7 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = hud_child })
 
+---@type ShortcutKeyboardPalletControlArguments
 local control_arguments = {
     text = {
         {

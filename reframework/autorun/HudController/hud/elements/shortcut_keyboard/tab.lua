@@ -24,6 +24,8 @@
 ---@field frame PlayObjectGetterFn[]
 ---@field cursor_background PlayObjectGetterFn[]
 ---@field tabs PlayObjectGetterFn[]
+---@field item PlayObjectGetterFn[]
+---@field select_base PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -37,37 +39,24 @@ setmetatable(this, { __index = hud_child })
 
 ---@type ShortcutKeyboardTabControlArguments
 local control_arguments = {
+    select_base = {
+        {
+            play_object.control.get,
+            {
+                "PNL_UnSelectedBase",
+            },
+        },
+        {
+            play_object.control.get,
+            {
+                "PNL_SelectedBase",
+            },
+        },
+    },
     background = {
         {
-            play_object.child.get,
-            {
-                "PNL_UnSelectedBase",
-            },
+            play_object.child.all_type,
             "tex_Base",
-            "via.gui.Texture",
-        },
-        {
-            play_object.child.get,
-            {
-                "PNL_UnSelectedBase",
-            },
-            "tex_BaseAdjust",
-            "via.gui.Texture",
-        },
-        {
-            play_object.child.get,
-            {
-                "PNL_SelectedBase",
-            },
-            "tex_Base",
-            "via.gui.Texture",
-        },
-        {
-            play_object.child.get,
-            {
-                "PNL_SelectedBase",
-            },
-            "tex_BaseAdjust",
             "via.gui.Texture",
         },
     },
@@ -91,38 +80,38 @@ local control_arguments = {
     },
     frame = {
         {
-            play_object.child.get,
-            {
-                "PNL_UnSelectedBase",
-            },
+            play_object.child.all_type,
             "s9g_Line",
             "via.gui.Scale9GridV2",
         },
         {
-            play_object.child.get,
-            {
-                "PNL_SelectedBase",
-            },
-            "s9g_Line",
-            "via.gui.Scale9GridV2",
+            play_object.child.all_type,
+            "tex_SeparateLine",
+            "via.gui.Texture",
         },
     },
     keybind = {
         {
             play_object.control.get,
             {
-                "PNL_ItemIcon",
-                "PNL_EachItem00",
                 "PNL_ref_Key_S00",
             },
+        },
+    },
+    item = {
+        {
+
+            play_object.control.all,
+            {
+                "PNL_ItemIcon",
+            },
+            "PNL_EachItem",
         },
     },
     icon = {
         {
             play_object.control.get,
             {
-                "PNL_ItemIcon",
-                "PNL_EachItem00",
                 "PNL_ref_icon00",
             },
         },
@@ -134,6 +123,24 @@ local control_arguments = {
                 "PNL_Pat00",
                 "PNL_Palette",
                 "FSL_Tab00",
+            },
+            "Item",
+        },
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+                "PNL_Palette",
+                "FSL_Tab01",
+            },
+            "Item",
+        },
+        {
+            play_object.control.all,
+            {
+                "PNL_Pat00",
+                "PNL_Palette",
+                "FSL_Tab00Large",
             },
             "Item",
         },
@@ -151,17 +158,20 @@ function this:new(args, parent)
     ---@cast o ShortcutKeyboardTab
 
     o.children.keybind = hud_child:new(args.children.keybind, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.keybind)
+        local items = play_object.iter_args(ctrl, control_arguments.item)
+        return play_object.iter_args(items, control_arguments.keybind)
     end)
     o.children.background = ctrl_child:new(
         args.children.background,
         o,
         function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
+            local select_base = play_object.iter_args(ctrl, control_arguments.select_base)
+            return play_object.iter_args(select_base, control_arguments.background)
         end
     )
     o.children.frame = ctrl_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.frame)
+        local select_base = play_object.iter_args(ctrl, control_arguments.select_base)
+        return play_object.iter_args(select_base, control_arguments.frame)
     end)
     o.children.cursor_background = hud_child:new(
         args.children.cursor_background,
@@ -171,7 +181,8 @@ function this:new(args, parent)
         end
     )
     o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
-        return play_object.iter_args(ctrl, control_arguments.icon)
+        local items = play_object.iter_args(ctrl, control_arguments.item)
+        return play_object.iter_args(items, control_arguments.icon)
     end)
 
     return o

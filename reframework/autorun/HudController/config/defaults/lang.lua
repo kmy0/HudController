@@ -458,5 +458,7 @@ return {
         cursor_background = "Cursor Background",
         name = "Name",
         points = "Points",
+        item_background = "Item Background",
+        line_cursor = "Line Cursor",
     },
 }
