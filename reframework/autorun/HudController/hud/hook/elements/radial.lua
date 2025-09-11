@@ -1,6 +1,6 @@
 local ace_player = require("HudController.util.ace.player")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hook_itembar = require("HudController.hud.hook.elements.itembar")
 

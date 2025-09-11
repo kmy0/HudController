@@ -1,7 +1,7 @@
 local common = require("HudController.hud.hook.common")
-local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults").play_object
-local util_ref = require("HudController.util.ref")
+local play_object = require("HudController.hud.play_object.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_ref = require("HudController.util.ref.init")
 
 local this = {}
 

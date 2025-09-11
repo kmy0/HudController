@@ -1,10 +1,10 @@
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local gui_util = require("HudController.gui.util")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod

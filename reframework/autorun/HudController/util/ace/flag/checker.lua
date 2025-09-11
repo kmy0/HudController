@@ -4,7 +4,7 @@
 ---@field type string
 ---@field protected _flag_max integer
 
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 
 ---@class FlagChecker
 local this = {}

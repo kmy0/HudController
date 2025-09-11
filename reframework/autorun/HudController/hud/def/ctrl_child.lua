@@ -77,8 +77,8 @@
 ---@alias CtrlChildWriteKey CtrlChildProperty | "dummy"?
 
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object_defaults = require("HudController.hud.defaults").play_object
-local util_ref = require("HudController.util.ref")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@class CtrlChild

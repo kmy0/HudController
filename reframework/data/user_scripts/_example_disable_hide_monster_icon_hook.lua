@@ -1,11 +1,11 @@
 -- Disable Hide Monster Icon when map is open
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local hook_common = require("HudController.hud.hook.common")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
-local util_game = require("HudController.util.game")
-local util_ref = require("HudController.util.ref")
+local util_game = require("HudController.util.game.init")
+local util_ref = require("HudController.util.ref.init")
 
 local rl = util_game.data.reverse_lookup
 

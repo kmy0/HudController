@@ -1,8 +1,8 @@
 local common = require("HudController.hud.hook.common")
-local config = require("HudController.config")
-local data = require("HudController.data")
-local play_object = require("HudController.hud.play_object")
-local util_ref = require("HudController.util.ref")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
+local play_object = require("HudController.hud.play_object.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

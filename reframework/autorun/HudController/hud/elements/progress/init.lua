@@ -39,7 +39,7 @@
 
 local best_timer = require("HudController.hud.elements.progress.best_timer")
 local clock = require("HudController.hud.elements.progress.clock")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local faint = require("HudController.hud.elements.progress.faint")
 local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.progress.gauge")
@@ -48,8 +48,8 @@ local hud_base = require("HudController.hud.def.hud_base")
 local name_main = require("HudController.hud.elements.progress.name_main")
 local name_sub = require("HudController.hud.elements.progress.name_sub")
 local part_task = require("HudController.hud.elements.progress.task")
-local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults").play_object
+local play_object = require("HudController.hud.play_object.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local s = require("HudController.util.ref.singletons")
 local text_part = require("HudController.hud.elements.progress.text_part")

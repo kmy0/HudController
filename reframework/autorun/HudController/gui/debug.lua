@@ -4,13 +4,13 @@
 ---@field sub_window_pos table<string, Vector2f>
 ---@field first_frame boolean
 
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
-local defaults = require("HudController.hud.defaults")
+local defaults = require("HudController.hud.defaults.init")
 local gui_util = require("HudController.gui.util")
-local hud_debug = require("HudController.hud.debug")
+local hud_debug = require("HudController.hud.debug.init")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local set = config_set_base:new(config.debug)

@@ -27,7 +27,7 @@
 ---@alias ProgressPartTextProperty "align_left" | ProgressPartBaseProperty
 ---@alias ProgressPartTextWriteKey ProgressPartTextProperty | TextProperties
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local part_base = require("HudController.hud.elements.progress.part_base")
 local text = require("HudController.hud.def.text")

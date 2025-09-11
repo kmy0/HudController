@@ -8,7 +8,7 @@
 ---@alias PlayObject via.gui.Control | via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 ---@alias ControlChild via.gui.Text | via.gui.Rect | via.gui.Material | via.gui.Scale9Grid | via.gui.TextureSet
 
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local hud_debug_log = require("HudController.hud.debug.log")
 local util_table = require("HudController.util.misc.table")
 

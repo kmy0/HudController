@@ -1,4 +1,4 @@
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map

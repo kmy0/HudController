@@ -3,10 +3,10 @@
 
 ---@class (exact) TargetReticleConfig : HudBaseConfig
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod

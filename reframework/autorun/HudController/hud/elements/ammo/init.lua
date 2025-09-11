@@ -50,11 +50,11 @@
 
 local bow_phials = require("HudController.hud.elements.ammo.bow_phials")
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

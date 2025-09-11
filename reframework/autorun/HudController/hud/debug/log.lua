@@ -1,5 +1,5 @@
 local logger = require("HudController.util.misc.logger").g
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 
 local this = {
     ---@type table<string, boolean>

@@ -12,11 +12,11 @@
 ---@class (exact) SubtitlesChoiceControlArguments
 ---@field background PlayObjectGetterFn[]
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 
 local ace_enum = data.ace.enum

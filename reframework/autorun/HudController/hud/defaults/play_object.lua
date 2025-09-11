@@ -1,11 +1,11 @@
 ---@class (exact) PlayObjectDefaultJsonCache : JsonCache
 
 local ace_misc = require("HudController.util.ace.misc")
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local json_cache = require("HudController.util.misc.json_cache")
 local m = require("HudController.util.ref.methods")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map

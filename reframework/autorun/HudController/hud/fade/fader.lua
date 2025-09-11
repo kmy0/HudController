@@ -8,7 +8,7 @@
 ---@field ctrl via.gui.Control
 ---@field current_opacity number
 
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 
 ---@class Fader
 local this = {}

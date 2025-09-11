@@ -1,9 +1,9 @@
 local call_queue = require("HudController.hud.call_queue")
-local config = require("HudController.config")
-local data = require("HudController.data")
-local elements = require("HudController.hud.elements")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
+local elements = require("HudController.hud.elements.init")
 local game_data = require("HudController.util.game.data")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod

@@ -2,9 +2,9 @@ local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
-local util_ref = require("HudController.util.ref")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 
 m.NpcIDfromFIXED = m.wrap(m.get("app.NpcDef.getIDFromFixed(app.NpcDef.ID_Fixed, app.NpcDef.ID)")) --[[@as fun(id_fixed: app.NpcDef.ID_Fixed, out: app.NpcDef.ID): System.Boolean]]
 m.isEnableTalk = m.wrap(m.get("app.NpcUtil.isEnableTalk(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]

@@ -5,7 +5,7 @@
 --- ori_seg: app.GUIDefApp.DRAW_SEGMENT,
 --- }?
 
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 
 ---@class SceneFade
 local this = {

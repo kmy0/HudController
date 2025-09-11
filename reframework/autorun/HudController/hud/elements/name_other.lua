@@ -9,7 +9,7 @@
 ---@field pl_draw_distance number
 ---@field pet_draw_distance number
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 

@@ -1,10 +1,10 @@
 local ace_player = require("HudController.util.ace.player")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map

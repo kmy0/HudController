@@ -14,7 +14,7 @@
 ---@field background PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 
 ---@class BarrelScoreName
 local this = {}

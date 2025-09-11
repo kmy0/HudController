@@ -1,6 +1,6 @@
 ---@class ModBindMonitor : BindMonitor
 
----@module "HudController.hud"
+---@module "HudController.hud.init"
 local hud
 local bind_monitor = require("HudController.util.game.bind.monitor")
 
@@ -21,7 +21,7 @@ end
 
 function this:execute_actions()
     if not hud then
-        hud = require("HudController.hud")
+        hud = require("HudController.hud.init")
     end
 
     local current_hud = hud.get_current()

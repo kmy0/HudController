@@ -37,11 +37,11 @@
 ---@field debug boolean
 
 local ace_player = require("HudController.util.ace.player")
-local bind_manager = require("HudController.hud.bind")
+local bind_manager = require("HudController.hud.bind.init")
 local combo = require("HudController.gui.combo")
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local gui_util = require("HudController.gui.util")
 local util_table = require("HudController.util.misc.table")

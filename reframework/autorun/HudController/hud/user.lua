@@ -1,4 +1,4 @@
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.util")
 local logger = require("HudController.util.misc.logger").g
 
@@ -49,6 +49,16 @@ end
 
 ---@return boolean
 function this.init()
+    for k, v in
+        pairs(package.loaded --[[@as table<string ,table>]])
+    do
+        k = string.match(k, "^(HudController.*)%.init$")
+        if k then
+            ---@diagnostic disable-next-line: no-unknown
+            package.loaded[k] = v
+        end
+    end
+
     local config_user = config.current.mod.user_scripts
     local files = fs.glob(util_misc.join_paths_b(config.name, "user_scripts", ".*lua"))
 

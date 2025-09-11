@@ -8,7 +8,7 @@
 ---@field children {[string]: DamageNumbersDamageStateConfig}
 
 local damage_state = require("HudController.hud.elements.damage_numbers.damage_state")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local hud_child = require("HudController.hud.def.hud_child")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
 local util_table = require("HudController.util.misc.table")

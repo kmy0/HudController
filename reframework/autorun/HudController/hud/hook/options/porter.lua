@@ -1,9 +1,9 @@
 local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local timer = require("HudController.util.misc.timer")
 
 local ace_enum = data.ace.enum

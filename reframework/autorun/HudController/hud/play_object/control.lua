@@ -1,7 +1,7 @@
 local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
-local data = require("HudController.data")
-local util_game = require("HudController.util.game")
+local data = require("HudController.data.init")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

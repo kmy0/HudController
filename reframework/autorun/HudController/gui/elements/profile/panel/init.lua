@@ -1,11 +1,11 @@
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local main_panel = require("HudController.gui.elements.profile.panel.main_panel")
 local state = require("HudController.gui.state")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub_panel")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map

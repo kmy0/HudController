@@ -3,7 +3,7 @@
 
 local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 
 ---@class PlayerUtil
 local this = {}

@@ -9,12 +9,12 @@
 
 ---@class (exact) ModBind : Bind, ModBindBase
 
----@module "HudController.hud"
+---@module "HudController.hud.init"
 local hud
 local ace_misc = require("HudController.util.ace.misc")
 local bind_monitor = require("HudController.hud.bind.monitor")
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local mod_bind_manager = require("HudController.hud.bind.manager")
 local util_table = require("HudController.util.misc.table")
 
@@ -40,7 +40,7 @@ this.action_type = {
 ---@param bind ModBind
 local function action_hud(bind)
     if not hud then
-        hud = require("HudController.hud")
+        hud = require("HudController.hud.init")
     end
 
     local config_mod = config.current.mod
@@ -57,7 +57,7 @@ end
 ---@param bind ModBind
 local function action_option_hud(bind)
     if not hud then
-        hud = require("HudController.hud")
+        hud = require("HudController.hud.init")
     end
 
     ---@type boolean?
@@ -88,7 +88,7 @@ end
 ---@param bind ModBind
 local function action_option_mod(bind)
     if not hud then
-        hud = require("HudController.hud")
+        hud = require("HudController.hud.init")
     end
 
     local config_mod = config.current.mod

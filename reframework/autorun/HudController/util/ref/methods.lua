@@ -2,7 +2,7 @@
 ---@field methods table<string, REMethodDefinition>
 
 local types = require("HudController.util.ref.types")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.util")
 local logger = require("HudController.util.misc.logger").g
 

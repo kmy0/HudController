@@ -22,11 +22,11 @@
 ---@field player3 PlayObjectGetterFn[]
 ---@field player4 PlayObjectGetterFn[]
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
-local play_object = require("HudController.hud.play_object")
-local player = require("HudController.hud.elements.companion.player")
+local play_object = require("HudController.hud.play_object.init")
+local player = require("HudController.hud.elements.companion.player.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod

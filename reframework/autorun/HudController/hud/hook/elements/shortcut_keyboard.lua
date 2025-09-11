@@ -1,5 +1,5 @@
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local s = require("HudController.util.ref.singletons")
 

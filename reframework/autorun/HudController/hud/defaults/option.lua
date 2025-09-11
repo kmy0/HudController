@@ -1,6 +1,6 @@
 ---@class (exact) OptionDefaultJsonCache : JsonCache
 
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local json_cache = require("HudController.util.misc.json_cache")
 local m = require("HudController.util.ref.methods")
 

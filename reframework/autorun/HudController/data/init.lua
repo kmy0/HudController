@@ -4,12 +4,12 @@ local this = {
 }
 
 local ace_misc = require("HudController.util.ace.misc")
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local game_data = require("HudController.util.game.data")
 local game_lang = require("HudController.util.game.lang")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map

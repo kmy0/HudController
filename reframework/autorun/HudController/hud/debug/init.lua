@@ -31,15 +31,15 @@
 
 ---@alias AceElem AceControl | AceBase
 
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
 local perf = require("HudController.util.misc.perf")
-local play_object = require("HudController.hud.play_object")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local play_object = require("HudController.hud.play_object.init")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

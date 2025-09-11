@@ -2,7 +2,7 @@
 
 local cache = require("HudController.util.misc.cache")
 local hook_common = require("HudController.hud.hook.common")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local s = require("HudController.util.ref.singletons")
 
 ---@return via.gui.GUI?

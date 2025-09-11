@@ -17,10 +17,10 @@
 ---@field line3 PlayObjectGetterFn[]
 ---@field gauge PlayObjectGetterFn[]
 
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local scale9 = require("HudController.hud.def.scale9")
 
 local mod = data.mod

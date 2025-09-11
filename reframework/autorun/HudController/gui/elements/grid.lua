@@ -1,8 +1,8 @@
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local state = require("HudController.gui.state")
-local util_ace = require("HudController.util.ace")
-local util_game = require("HudController.util.game")
+local util_ace = require("HudController.util.ace.init")
+local util_game = require("HudController.util.game.init")
 
 local rl = util_game.data.reverse_lookup
 local ace_enum = data.ace.enum

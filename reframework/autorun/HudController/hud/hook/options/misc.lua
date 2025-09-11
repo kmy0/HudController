@@ -1,8 +1,8 @@
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
-local hud = require("HudController.hud")
-local util_ref = require("HudController.util.ref")
+local hud = require("HudController.hud.init")
+local util_ref = require("HudController.util.ref.init")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup

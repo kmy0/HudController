@@ -1,10 +1,10 @@
-local bind_manager = require("HudController.hud.bind")
-local config = require("HudController.config")
-local data = require("HudController.data")
+local bind_manager = require("HudController.hud.bind.init")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
 local hud_manager = require("HudController.hud.manager")
 local state = require("HudController.gui.state")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local rl = util_game.data.reverse_lookup

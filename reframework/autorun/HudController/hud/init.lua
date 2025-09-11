@@ -1,4 +1,4 @@
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local util_table = require("HudController.util.misc.table")
 

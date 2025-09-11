@@ -1,5 +1,5 @@
 local cache = require("HudController.util.misc.cache")
-local play_object_defaults = require("HudController.hud.defaults").play_object
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 
 local this = {}
 

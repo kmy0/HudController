@@ -21,7 +21,7 @@
 
 local gauge = require("HudController.hud.elements.companion.player.gauge")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local skill_list = require("HudController.hud.elements.companion.player.skill_list")
 
 ---@class CompanionPlayer

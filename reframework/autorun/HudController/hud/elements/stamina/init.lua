@@ -29,14 +29,14 @@
 ---@field light_start PlayObjectGetterFn[]
 
 local call_queue = require("HudController.hud.call_queue")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.stamina.gauge")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local play_object = require("HudController.hud.play_object.init")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 
 local mod = data.mod
 local ace_enum = data.ace.enum

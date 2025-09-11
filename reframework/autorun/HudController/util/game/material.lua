@@ -5,7 +5,7 @@
 ---@field func_name string
 
 local game_data = require("HudController.util.game.data")
-local util_ref = require("HudController.util.ref")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {

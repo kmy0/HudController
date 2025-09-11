@@ -1,5 +1,5 @@
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
 

@@ -1,12 +1,12 @@
-local config = require("HudController.config")
+local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
-local hud = require("HudController.hud")
+local hud = require("HudController.hud.init")
 local operations = require("HudController.hud.operations")
-local panel = require("HudController.gui.elements.profile.panel")
+local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local set = state.set

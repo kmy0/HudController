@@ -4,7 +4,7 @@ local this = {
     porter = require("HudController.util.ace.porter"),
     scene_fade = require("HudController.util.ace.scene_fade"),
     misc = require("HudController.util.ace.misc"),
-    flag = require("HudController.util.ace.flag"),
+    flag = require("HudController.util.ace.flag.init"),
     otomo = require("HudController.util.ace.otomo"),
     item = require("HudController.util.ace.item"),
 }

@@ -33,10 +33,10 @@
 ---@field shield PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local hud_child = require("HudController.hud.def.hud_child")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local text = require("HudController.hud.def.text")
 
 local ace_enum = data.ace.enum

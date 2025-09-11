@@ -90,16 +90,16 @@
 ---@field all_slider PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults").play_object
+local play_object = require("HudController.hud.play_object.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game")
-local util_ref = require("HudController.util.ref")
+local util_game = require("HudController.util.game.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

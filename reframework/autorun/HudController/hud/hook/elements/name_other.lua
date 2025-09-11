@@ -3,8 +3,8 @@ local ace_otomo = require("HudController.util.ace.otomo")
 local ace_player = require("HudController.util.ace.player")
 local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data")
-local util_ref = require("HudController.util.ref")
+local data = require("HudController.data.init")
+local util_ref = require("HudController.util.ref.init")
 
 local ace_enum = data.ace.enum
 

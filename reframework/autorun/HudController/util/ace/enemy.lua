@@ -1,7 +1,7 @@
 local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 
 ---@class EnemyUtil
 local this = {}

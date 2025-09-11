@@ -48,10 +48,10 @@
 ---@alias TextWriteKey CtrlChildWriteKey | TextProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data")
+local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
-local play_object_defaults = require("HudController.hud.defaults").play_object
-local util_ref = require("HudController.util.ref")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

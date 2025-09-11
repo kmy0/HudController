@@ -1,5 +1,5 @@
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 local uuid = require("HudController.util.misc.uuid")
 
 local this = {}

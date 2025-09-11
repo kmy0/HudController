@@ -103,19 +103,19 @@ local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
 local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
-local config = require("HudController.config")
-local data = require("HudController.data")
-local defaults = require("HudController.hud.defaults")
-local fade_manager = require("HudController.hud.fade")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
+local defaults = require("HudController.hud.defaults.init")
+local fade_manager = require("HudController.hud.fade.init")
 local frame_timer = require("HudController.util.misc.frame_timer")
 local game_data = require("HudController.util.game.data")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
-local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults").play_object
-local util_ref = require("HudController.util.ref")
+local play_object = require("HudController.hud.play_object.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
----@module"HudController.hud"
+---@module"HudController.hud.init"
 local hud
 
 local ace_enum = data.ace.enum
@@ -882,7 +882,7 @@ end
 ---@return HudBaseConfig
 function this:get_current_config()
     if not hud then
-        hud = require("HudController.hud")
+        hud = require("HudController.hud.init")
     end
 
     local current_hud = hud.get_current() --[[@as HudProfileConfig]]

@@ -1,10 +1,10 @@
-local config = require("HudController.config")
-local data = require("HudController.data")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
-local util_game = require("HudController.util.game")
-local util_imgui = require("HudController.util.imgui")
+local util_game = require("HudController.util.game.init")
+local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod
 local set = state.set
