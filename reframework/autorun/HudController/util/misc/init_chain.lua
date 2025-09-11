@@ -33,7 +33,7 @@ function this:new(name, ...)
     setmetatable(o, self)
     ---@cast o InitChain
 
-    o.retry_timer = timer.new("retry_timer_" .. tostring(o), 3, nil, true)
+    o.retry_timer = timer:new(3)
     return o
 end
 
@@ -47,7 +47,7 @@ function this:init()
         return false
     end
 
-    if not self.retry_timer:update() then
+    if self.retry_timer:active() then
         return false
     end
 
@@ -70,6 +70,7 @@ function this:init()
             self._progress[f] = true
         end, function(err)
             fail = true
+
             logger:error(
                 util_misc.wrap_text(
                     string.format("InitChain (%s) func at index %s threw: %s", self.name, i, err),

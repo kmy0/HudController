@@ -28,6 +28,7 @@
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
 ---@field restore_all_force_invis fun()
+---@field hide_timer FrameTimer
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -106,7 +107,7 @@ local config = require("HudController.config")
 local data = require("HudController.data")
 local defaults = require("HudController.hud.defaults")
 local fade_manager = require("HudController.hud.fade")
-local frame_counter = require("HudController.util.misc.frame_counter")
+local frame_timer = require("HudController.util.misc.frame_timer")
 local game_data = require("HudController.util.game.data")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
@@ -159,6 +160,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         gui_ignore = gui_ignore,
         gui_header_children = gui_header_children,
         children_sort = children_sort,
+        hide_timer = frame_timer:new(60),
     }
     setmetatable(o, self)
     ---@cast o HudBase
@@ -494,14 +496,10 @@ function this:change_visibility(ctrl, visible, hud_display)
 
             if root_window then
                 root_window:set_ForceInvisible(true)
-                local frame = frame_counter.frame
-                local frame_max = 6
+                frame_timer:restart()
 
                 local function restore_vis()
-                    if
-                        self:_is_fade_state_finished(root_window)
-                        or frame_counter.frame - frame >= frame_max
-                    then
+                    if self:_is_fade_state_finished(root_window) or frame_timer:finished() then
                         root_window:set_ForceInvisible(false)
                     else
                         call_queue.queue_func_next(self.hud_id, restore_vis)

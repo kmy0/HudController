@@ -10,7 +10,7 @@ local this = {}
 this.__index = this
 ---@type Cache[]
 ---@diagnostic disable-next-line: inject-field
-this.instances = setmetatable({}, { __mode = "v" })
+this._instances = setmetatable({}, { __mode = "v" })
 
 ---@return Cache
 function this:new()
@@ -20,7 +20,7 @@ function this:new()
     }
     setmetatable(o, self)
     ---@cast o Cache
-    table.insert(this.instances, self)
+    table.insert(this._instances, self)
     return o
 end
 
@@ -99,7 +99,7 @@ function this.memoize(func, predicate, do_hash, deep_hash_table, key_index)
 end
 
 function this.clear_all()
-    for _, o in pairs(this.instances) do
+    for _, o in pairs(this._instances) do
         if o._clearable then
             o:clear()
         end

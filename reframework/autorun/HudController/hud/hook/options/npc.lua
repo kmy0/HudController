@@ -18,7 +18,7 @@ local rl = game_data.reverse_lookup
 
 local this = {}
 local handler = {
-    timer_key = "handler_touch_timer",
+    hide_timer = timer:new(config.handler_timeout, nil),
     hidden = false,
 }
 
@@ -43,9 +43,12 @@ function this.hide_handler_post(retval)
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
         local handler_id = ace_npc.get_npc_id_from_fixed(handler_id_fixed)
 
-        if ace_npc.is_touch(handler_id) and not handler.hidden then
-            timer.restart_key(handler.timer_key)
-        elseif timer.check(handler.timer_key, config.handler_timeout) then
+        if
+            not handler.hide_timer:started()
+            or (ace_npc.is_touch(handler_id) and not handler.hidden)
+        then
+            handler.hide_timer:restart()
+        elseif handler.hide_timer:finished() then
             local char_base = ace_npc.get_char_base(handler_id)
             if not char_base then
                 return
@@ -80,6 +83,8 @@ function this.hide_handler_post(retval)
             )
             return
         end
+    elseif handler.hide_timer:finished() then
+        handler.hide_timer:abort()
     end
 
     handler.hidden = false

@@ -34,7 +34,7 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = part_base })
 
--- PNL_taskSet
+-- PNL_task
 ---@type ProgressPartTaskControlArguments
 local control_arguments = {
     icon = {

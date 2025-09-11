@@ -11,7 +11,6 @@
 
 local timer = require("HudController.util.misc.timer")
 local util_table = require("HudController.util.misc.table")
-local uuid = require("HudController.util.misc.uuid")
 
 ---@class ConfigBase
 local this = {}
@@ -32,9 +31,9 @@ function this:new(default_settings, path, save_delay)
         path = path,
     }
 
-    o.save_timer = timer.new(uuid.generate(), save_delay or 0.5, function()
+    o.save_timer = timer:new(save_delay or 0.5, function()
         o:save_no_timer()
-    end, true)
+    end)
     setmetatable(o, self)
     ---@cast o ConfigBase
 

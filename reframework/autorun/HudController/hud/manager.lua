@@ -43,9 +43,11 @@ local this = {
 }
 ---@class FadeCallbacks
 local fade_callbacks = {}
-local timer_key = "disable_weapon_binds"
-local out_of_combat_delay_key = "out_of_combat_delay"
-local in_combat_delay_key = "in_combat_delay"
+local timers = {
+    out_of_combat = timer:new(0),
+    in_combat = timer:new(0),
+    disable_weapon_binds = timer:new(0),
+}
 
 ---@param key string
 ---@param value boolean
@@ -233,23 +235,23 @@ function this.update_weapon_bind_state()
     local is_riding = bind_weapon.ride_ignore_combat and ace_porter.is_master_riding()
     local is_village = ace_player.is_in_village()
 
+    timers.out_of_combat:update_args(bind_weapon.out_of_combat_delay)
+    timers.in_combat:update_args(bind_weapon.in_combat_delay)
+
     if not in_quest and not is_village then
         if this.combat_state_frame and not is_combat and this.combat_state then
-            timer.new(out_of_combat_delay_key, bind_weapon.out_of_combat_delay, nil)
+            timers.out_of_combat:restart()
         elseif not this.combat_state_frame and is_combat and not this.combat_state then
-            timer.new(in_combat_delay_key, bind_weapon.in_combat_delay, nil)
+            timers.in_combat:restart()
         end
 
-        if not is_combat and timer.remaining_key(in_combat_delay_key) > 0 then
-            timer.reset_key(in_combat_delay_key)
-        elseif is_combat and timer.remaining_key(out_of_combat_delay_key) > 0 then
-            timer.reset_key(out_of_combat_delay_key)
+        if not is_combat and timers.in_combat:active() then
+            timers.in_combat:restart()
+        elseif is_combat and timers.out_of_combat:active() then
+            timers.out_of_combat:restart()
         end
 
-        if
-            timer.check(in_combat_delay_key, bind_weapon.in_combat_delay, nil, true)
-            and timer.check(out_of_combat_delay_key, bind_weapon.out_of_combat_delay, nil, true)
-        then
+        if not timers.in_combat:active() and not timers.out_of_combat:active() then
             if is_riding and is_combat and not this.combat_state then
                 this.combat_state = false
             else
@@ -258,12 +260,12 @@ function this.update_weapon_bind_state()
         end
     elseif is_village then
         this.combat_state = false
-        timer.reset_key(in_combat_delay_key)
-        timer.reset_key(out_of_combat_delay_key)
+        timers.in_combat:abort()
+        timers.out_of_combat:abort()
     elseif in_quest then
         this.combat_state = true
-        timer.reset_key(in_combat_delay_key)
-        timer.reset_key(out_of_combat_delay_key)
+        timers.in_combat:abort()
+        timers.out_of_combat:abort()
     end
 
     this.combat_state_frame = is_combat
@@ -336,6 +338,8 @@ function this.update()
     end
 
     local is_held = false
+    timers.disable_weapon_binds:update_args(config_mod.disable_weapon_binds_time)
+
     if config_mod.enable_key_binds then
         bind_manager.monitor:monitor()
 
@@ -344,11 +348,11 @@ function this.update()
                 bind_manager.monitor:register_on_release_callback(
                     bind_manager.monitor:get_held_key_names("hud"),
                     function()
-                        timer.restart_key(timer_key)
+                        timers.disable_weapon_binds:restart()
                     end
                 )
             else
-                timer.restart_key(timer_key)
+                timers.disable_weapon_binds:restart()
             end
         end
 
@@ -360,13 +364,13 @@ function this.update()
             not config_mod.disable_weapon_binds_timed
             and (not config_mod.disable_weapon_binds_held or not is_held)
         then
-            timer.reset_key(timer_key)
+            timers.disable_weapon_binds:abort()
         end
     end
 
     if
         config_mod.enable_weapon_binds
-        and timer.check(timer_key, config_mod.disable_weapon_binds_time, nil, true)
+        and not timers.disable_weapon_binds:active()
         and (not config_mod.disable_weapon_binds_held or not is_held)
     then
         this.update_weapon_bind_state()

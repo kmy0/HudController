@@ -1,5 +1,5 @@
 ---@class FrameCache : Cache
----@field protected _map_frame table<any, any>
+---@field protected _map_frame table<any, integer>
 ---@field max_frame integer
 ---@field jitter integer
 
@@ -56,7 +56,7 @@ end
 ---@param func T
 ---@param max_frame integer?
 ---@param do_hash boolean?
----@param deep_hash_table boolean?,
+---@param deep_hash_table boolean?
 ---@param jitter integer?
 ---@param key_index integer?
 ---@return T

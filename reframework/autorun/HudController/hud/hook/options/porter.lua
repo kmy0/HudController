@@ -11,9 +11,8 @@ local rl = game_data.reverse_lookup
 
 local this = {}
 local porter = {
-    timer_key = "master_porter_timer",
-    call_timer_key = "master_porter_call_timer",
-    touch_timer_key = "master_porter_touch_timer",
+    hide_timer = timer:new(config.porter_timeout, nil, true),
+    call_timer = timer:new(config.porter_timeout),
     hidden = false,
 }
 
@@ -31,7 +30,7 @@ function this.update_porter_call_post(retval)
         and hud.get_hud_option("hide_porter")
         and not hud.get_hud_option("disable_porter_call")
     then
-        timer.restart_key(porter.call_timer_key)
+        porter.call_timer:restart()
     end
 end
 
@@ -45,17 +44,17 @@ function this.hide_porter_post(retval)
         hud_config
         and hud.get_hud_option("hide_porter")
         and not ace_porter.is_master_riding()
-        and timer.check(porter.call_timer_key, config.porter_timeout)
+        and not porter.call_timer:active()
         and not ace_porter.is_master_quest_interrupt()
     then
-        if ace_porter.is_master_touch() then
-            timer.restart_key(porter.touch_timer_key)
+        if
+            not porter.hide_timer:started()
+            or (not porter.hidden and porter.hide_timer:active() and ace_porter.is_master_touch())
+        then
+            porter.hide_timer:restart()
         end
 
-        if
-            timer.check(porter.timer_key, config.porter_timeout)
-            and (porter.hidden or timer.check(porter.touch_timer_key, config.porter_timeout))
-        then
+        if porter.hidden or porter.hide_timer:finished() then
             ace_porter.change_fade_speed(0.5)
             ace_porter.set_master_continue_flag(
                 rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"),
@@ -67,9 +66,8 @@ function this.hide_porter_post(retval)
             )
             porter.hidden = true
         end
-    else
-        timer.restart_key(porter.touch_timer_key)
-        timer.restart_key(porter.timer_key)
+    elseif porter.hide_timer:finished() then
+        porter.hide_timer:abort()
         ace_porter.change_fade_speed(5.0)
         porter.hidden = false
     end

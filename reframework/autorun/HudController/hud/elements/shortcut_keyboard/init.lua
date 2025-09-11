@@ -56,7 +56,6 @@ local prepare = require("HudController.hud.elements.shortcut_keyboard.prepare")
 local tab = require("HudController.hud.elements.shortcut_keyboard.tab")
 local util_game = require("HudController.util.game")
 local util_table = require("HudController.util.misc.table")
-local uuid = require("HudController.util.misc.uuid")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -132,7 +131,7 @@ function this:new(args)
     o.properties = util_table.merge_t(o.properties, {
         no_hide_elements = true,
     })
-    o.open_timer = frame_timer.new(uuid.generate(), 15, nil, true)
+    o.open_timer = frame_timer:new(15)
 
     o.children.background_blur = ctrl_child:new(
         args.children.background_blur,
@@ -183,7 +182,7 @@ function this:is_open()
         self.open_timer:restart()
     end
 
-    return is_open or not self.open_timer:update()
+    return is_open or self.open_timer:active()
 end
 
 ---@return ShortcutKeyboardConfig

@@ -9,33 +9,35 @@ local this = {}
 this.__index = this
 setmetatable(this, { __index = timer })
 
----@param key string
----@param limit integer
+---@param timeout integer
 ---@param callback fun()?
----@param start_finished boolean?
----@param restart_on_finish boolean?
-function this.new(key, limit, callback, start_finished, restart_on_finish)
-    local o = timer.new(key, limit, callback, start_finished, restart_on_finish)
-    setmetatable(o, this)
+---@param auto_start boolean? by default, false
+---@param auto_restart boolean? by default, false
+function this:new(timeout, callback, auto_start, auto_restart)
+    local o = timer.new(self, timeout, callback, auto_start, auto_restart)
+    setmetatable(o, self)
     ---@cast o FrameTimer
-    o.now = frame_counter.frame
-    o.start_time = frame_counter.frame
-    this._instances[key] = o
     return o
 end
 
 ---@protected
 ---@return number
 function this:_update()
-    self.now = frame_counter.frame
-    return self.now
+    self._now = frame_counter.frame
+    return self._now
 end
 
----@protected
-function this:_restart()
-    self._finished = false
-    self.start_time = frame_counter.frame
-    self._do_restart = false
+---@param timeout integer?
+---@param callback fun()?
+---@param auto_restart boolean?
+function this:start(timeout, callback, auto_restart)
+    self:update_args(timeout, callback, auto_restart)
+    if not self._started then
+        local now = frame_counter.frame
+        self._now = now
+        self._started_at = now
+        self._started = true
+    end
 end
 
 return this
