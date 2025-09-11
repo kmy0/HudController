@@ -76,22 +76,6 @@ local version = require("HudController.config.version")
 ---@type MainSettings
 return {
     version = version.version,
-    gui = {
-        main = {
-            pos_x = 50,
-            pos_y = 50,
-            size_x = 800,
-            size_y = 700,
-            is_opened = false,
-        },
-        debug = {
-            pos_x = 50,
-            pos_y = 50,
-            size_x = 800,
-            size_y = 700,
-            is_opened = false,
-        },
-    },
     mod = {
         lang = {
             file = "en-us",
@@ -145,10 +129,5 @@ return {
                 action_type = 1,
             },
         },
-    },
-    debug = {
-        show_disabled = false,
-        is_filter = false,
-        is_debug = false,
     },
 }
