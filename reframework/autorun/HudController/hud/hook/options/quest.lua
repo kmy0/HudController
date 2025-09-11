@@ -4,8 +4,8 @@ local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud")
 local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game")
-local util_ref = require("HudController.util.ref")
+local util_game = require("HudController.util.game.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

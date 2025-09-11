@@ -4,7 +4,7 @@
 
 local cache = require("HudController.util.misc.cache")
 local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local rl = util_game.data.reverse_lookup

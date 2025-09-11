@@ -8,7 +8,7 @@
 
 local config = require("HudController.config")
 local data = require("HudController.data")
-local fade_manager = require("HudController.hud.fade")
+local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements")
 local state = require("HudController.gui.state")
 local util_table = require("HudController.util.misc.table")

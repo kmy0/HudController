@@ -23,7 +23,7 @@ local config_base = require("HudController.util.misc.config_base")
 local lang = require("HudController.config.lang")
 local migration = require("HudController.config.migration")
 local selector_config = require("HudController.config.selector")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 local version = require("HudController.config.version")
 

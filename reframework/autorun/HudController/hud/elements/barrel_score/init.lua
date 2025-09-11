@@ -21,7 +21,7 @@ local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local name = require("HudController.hud.elements.barrel_score.name")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local points = require("HudController.hud.elements.barrel_score.points")
 
 local ace_enum = data.ace.enum

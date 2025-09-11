@@ -4,7 +4,7 @@
 ---@field protected _start_count integer
 
 local config = require("HudController.config")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}

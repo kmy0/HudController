@@ -66,9 +66,9 @@ local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
-local util_ref = require("HudController.util.ref")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map

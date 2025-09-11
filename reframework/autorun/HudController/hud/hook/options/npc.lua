@@ -10,8 +10,8 @@ local hud = require("HudController.hud")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
-local util_game = require("HudController.util.game")
-local util_misc = require("HudController.util.misc")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup

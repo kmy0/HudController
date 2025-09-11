@@ -27,7 +27,7 @@
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup

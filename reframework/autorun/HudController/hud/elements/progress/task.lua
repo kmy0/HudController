@@ -25,7 +25,7 @@
 ---@field light PlayObjectGetterFn[]
 
 local part_base = require("HudController.hud.elements.progress.part_base")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local text = require("HudController.hud.elements.progress.text")
 
 ---@class ProgressPartTask

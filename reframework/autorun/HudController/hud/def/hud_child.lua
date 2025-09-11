@@ -39,8 +39,8 @@ local config = require("HudController.config")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_debug_log = require("HudController.hud.debug.log")
-local util_misc = require("HudController.util.misc")
-local util_ref = require("HudController.util.ref")
+local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@class HudChild

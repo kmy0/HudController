@@ -36,7 +36,7 @@
 ---@field hide_weapon boolean
 
 local data = require("HudController.data")
-local hud_elements = require("HudController.hud.elements")
+local hud_elements = require("HudController.hud.elements.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

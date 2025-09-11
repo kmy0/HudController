@@ -5,7 +5,7 @@ local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud")
 local state = require("HudController.gui.state")
 local user = require("HudController.hud.user")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod

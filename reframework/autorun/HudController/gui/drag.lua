@@ -5,7 +5,7 @@
 
 local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
+local util_imgui = require("HudController.util.imgui.init")
 
 ---@class Drag
 local this = {}

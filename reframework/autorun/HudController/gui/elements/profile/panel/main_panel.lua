@@ -3,8 +3,8 @@ local data = require("HudController.data")
 local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
 local state = require("HudController.gui.state")
-local util_imgui = require("HudController.util.imgui")
-local util_misc = require("HudController.util.misc")
+local util_imgui = require("HudController.util.imgui.init")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod

@@ -51,10 +51,10 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local item = require("HudController.hud.elements.shortcut_keyboard.item")
 local pallet = require("HudController.hud.elements.shortcut_keyboard.pallet")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local prepare = require("HudController.hud.elements.shortcut_keyboard.prepare")
 local tab = require("HudController.hud.elements.shortcut_keyboard.tab")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

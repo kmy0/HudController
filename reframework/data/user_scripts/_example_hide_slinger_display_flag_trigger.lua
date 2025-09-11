@@ -4,7 +4,7 @@ local ace_player = require("HudController.util.ace.player")
 local data = require("HudController.data")
 local hook_common = require("HudController.hud.hook.common")
 local m = require("HudController.util.ref.methods")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 
 local rl = util_game.data.reverse_lookup
 local ace_enum = data.ace.enum

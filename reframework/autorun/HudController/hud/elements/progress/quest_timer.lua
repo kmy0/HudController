@@ -18,7 +18,7 @@
 ---@field background PlayObjectGetterFn[]
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local timer = require("HudController.hud.elements.progress.timer")
 
 ---@class ProgressQuestTimer

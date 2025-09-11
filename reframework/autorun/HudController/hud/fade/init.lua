@@ -7,7 +7,7 @@
 
 local data = require("HudController.data")
 local fader = require("HudController.hud.fade.fader")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

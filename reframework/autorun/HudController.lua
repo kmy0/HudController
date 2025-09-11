@@ -4,12 +4,12 @@ local config_menu = require("HudController.gui")
 local data = require("HudController.data")
 local grid = require("HudController.gui.elements.grid")
 local gui_debug = require("HudController.gui.debug")
-local hook = require("HudController.hud.hook")
+local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud")
 local hud_base = require("HudController.hud.def.hud_base")
 local sorter = require("HudController.gui.elements.sorter")
 local user = require("HudController.hud.user")
-local util = require("HudController.util")
+local util = require("HudController.util.init")
 local logger = util.misc.logger.g
 
 local init = util.misc.init_chain:new(

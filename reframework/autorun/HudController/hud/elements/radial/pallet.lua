@@ -53,7 +53,7 @@
 
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@class RadialPallet

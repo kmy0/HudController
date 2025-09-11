@@ -19,7 +19,7 @@ local frame_cache = require("HudController.util.misc.frame_cache")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
 

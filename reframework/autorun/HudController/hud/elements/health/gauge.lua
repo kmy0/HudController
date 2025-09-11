@@ -24,7 +24,7 @@
 local data = require("HudController.data")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
-local play_object = require("HudController.hud.play_object")
+local play_object = require("HudController.hud.play_object.init")
 
 local mod = data.mod
 

@@ -1,9 +1,9 @@
 local this = {
-    misc = require("HudController.util.misc"),
-    game = require("HudController.util.game"),
-    ref = require("HudController.util.ref"),
-    imgui = require("HudController.util.imgui"),
-    ace = require("HudController.util.ace"),
+    misc = require("HudController.util.misc.init"),
+    game = require("HudController.util.game.init"),
+    ref = require("HudController.util.ref.init"),
+    imgui = require("HudController.util.imgui.init"),
+    ace = require("HudController.util.ace.init"),
 }
 
 return this

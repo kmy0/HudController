@@ -20,7 +20,7 @@
 ---@field path string
 
 local config_base = require("HudController.util.misc.config_base")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@class SelectorConfig

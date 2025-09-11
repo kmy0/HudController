@@ -12,7 +12,7 @@
 ---@field protected _do_dump boolean
 
 local cache = require("HudController.util.misc.cache")
-local util_misc = require("HudController.util.misc")
+local util_misc = require("HudController.util.misc.init")
 
 ---@class JsonCache
 local this = {}

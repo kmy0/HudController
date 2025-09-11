@@ -19,8 +19,8 @@
 ---@field keybind PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
-local util_game = require("HudController.util.game")
+local play_object = require("HudController.hud.play_object.init")
+local util_game = require("HudController.util.game.init")
 
 ---@class ShortcutKeyboardItem
 local this = {}

@@ -49,7 +49,7 @@
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
-local play_object_defaults = require("HudController.hud.defaults").play_object
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum

@@ -44,8 +44,8 @@
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local hud_child = require("HudController.hud.def.hud_child")
-local play_object = require("HudController.hud.play_object")
-local play_object_defaults = require("HudController.hud.defaults").play_object
+local play_object = require("HudController.hud.play_object.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local util_table = require("HudController.util.misc.table")
 
 ---@class ItembarSlider

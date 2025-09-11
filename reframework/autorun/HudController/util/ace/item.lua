@@ -1,6 +1,6 @@
 local game_data = require("HudController.util.game.data")
 local lang = require("HudController.util.game.lang")
-local util_ref = require("HudController.util.ref")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")

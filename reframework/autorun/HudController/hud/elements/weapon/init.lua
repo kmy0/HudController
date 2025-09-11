@@ -35,7 +35,7 @@ local rod = require("HudController.hud.elements.weapon.rod")
 local slash_axe = require("HudController.hud.elements.weapon.slash_axe")
 local tachi = require("HudController.hud.elements.weapon.tachi")
 local twin_sword = require("HudController.hud.elements.weapon.twin_sword")
-local whistle = require("HudController.hud.elements.weapon.whistle")
+local whistle = require("HudController.hud.elements.weapon.whistle.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod

@@ -13,7 +13,7 @@ local data = require("HudController.data")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
-local util_game = require("HudController.util.game")
+local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
