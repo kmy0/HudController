@@ -28,7 +28,6 @@ local this = {
     ---@type table<string, Vector2f>
     sub_window_pos = {},
     first_frame = true,
-    window_size = 152,
 }
 
 ---@param panel AceElem
@@ -290,91 +289,90 @@ function this.draw()
     imgui.spacing()
     imgui.indent(2)
 
-    imgui.begin_child_window("debug_child_window", { 0, this.window_size }, false, 1 << 3)
-    local pos = imgui.get_cursor_pos()
+    ---@type string[]
+    local keys
 
-    if imgui.button(gui_util.tr("debug.button_add_profile")) then
-        hud_debug.add_all_element_profile()
-    end
+    util_imgui.draw_child_window("debug_child_window", function()
+        if imgui.button(gui_util.tr("debug.button_add_profile")) then
+            hud_debug.add_all_element_profile()
+        end
 
-    imgui.same_line()
-
-    if imgui.button(gui_util.tr("debug.button_write_all")) then
-        hud_debug.write_all_elements()
-    end
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
-
-    imgui.same_line()
-
-    if imgui.button(gui_util.tr("debug.button_clear_default")) then
-        defaults.play_object:clear()
-    end
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
-    util_imgui.tooltip(
-        string.format(
-            "%s\n%s\n%s\n%s",
-            config.lang:tr("debug.text_option_info"),
-            string.format("H - %s", config.lang:tr("debug.text_hidden")),
-            string.format("S - %s", config.lang:tr("debug.text_states")),
-            config.lang:tr("debug.text_pos_info")
-        ),
-        true,
-        string.format("(%s?)", config.lang:tr("misc.text_help"))
-    )
-
-    changed = set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled") or changed
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-
-    changed = set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache") or changed
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
-    changed = set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug") or changed
-    imgui.same_line()
-    changed = set:checkbox(
-        gui_util.tr("debug.box_filter_known_errors"),
-        "debug.filter_known_errors"
-    ) or changed
-
-    local keys = hud_debug.get_keys(not config_debug.show_disabled)
-
-    if imgui.button(gui_util.tr("debug.button_snapshot")) then
-        hud_debug.make_snapshot(keys)
-    end
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
-
-    imgui.same_line()
-    imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
-
-    changed = set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter") or changed
-    util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
-    imgui.end_disabled()
-
-    imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
-
-    if imgui.button(gui_util.tr("debug.button_perf_test")) then
-        hud_debug.perf_test()
-    end
-    util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")
-
-    imgui.end_disabled()
-
-    if hud_debug.perf.total ~= hud_debug.perf.completed then
         imgui.same_line()
-        imgui.text(string.format("%s/%s", hud_debug.perf.completed, hud_debug.perf.total))
-        util_imgui.tooltip(table.concat(hud_debug.perf.obj, "\n"), true)
-    end
 
-    if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
-        keys = hud_debug.filter(keys)
-    end
+        if imgui.button(gui_util.tr("debug.button_write_all")) then
+            hud_debug.write_all_elements()
+        end
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
 
-    local spacing = 4
-    local size = imgui.get_cursor_pos().y - pos.y - spacing
-    this.window_size = size > 0 and size or this.window_size
+        imgui.same_line()
 
-    imgui.unindent(2)
-    imgui.end_child_window()
+        if imgui.button(gui_util.tr("debug.button_clear_default")) then
+            defaults.play_object:clear()
+        end
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
+        util_imgui.tooltip(
+            string.format(
+                "%s\n%s\n%s\n%s",
+                config.lang:tr("debug.text_option_info"),
+                string.format("H - %s", config.lang:tr("debug.text_hidden")),
+                string.format("S - %s", config.lang:tr("debug.text_states")),
+                config.lang:tr("debug.text_pos_info")
+            ),
+            true,
+            string.format("(%s?)", config.lang:tr("misc.text_help"))
+        )
+
+        changed = set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
+            or changed
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
+
+        changed = set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
+            or changed
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
+        changed = set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug") or changed
+        imgui.same_line()
+        changed = set:checkbox(
+            gui_util.tr("debug.box_filter_known_errors"),
+            "debug.filter_known_errors"
+        ) or changed
+
+        keys = hud_debug.get_keys(not config_debug.show_disabled)
+
+        if imgui.button(gui_util.tr("debug.button_snapshot")) then
+            hud_debug.make_snapshot(keys)
+        end
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
+
+        imgui.same_line()
+        imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
+
+        changed = set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter") or changed
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
+        imgui.end_disabled()
+
+        imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
+
+        if imgui.button(gui_util.tr("debug.button_perf_test")) then
+            hud_debug.perf_test()
+        end
+        util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")
+
+        imgui.end_disabled()
+
+        if hud_debug.perf.total ~= hud_debug.perf.completed then
+            imgui.same_line()
+            imgui.text(string.format("%s/%s", hud_debug.perf.completed, hud_debug.perf.total))
+            util_imgui.tooltip(table.concat(hud_debug.perf.obj, "\n"), true)
+        end
+
+        if config_debug.is_filter and not util_table.empty(hud_debug.snapshot) then
+            keys = hud_debug.filter(keys)
+        end
+
+        imgui.unindent(2)
+    end, 152, 4)
+
     imgui.separator()
-
     imgui.begin_child_window("debug_elements_child_window", { -1, -1 }, false)
     for i = 1, #keys do
         local key = keys[i]

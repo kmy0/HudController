@@ -14,7 +14,6 @@ local this = {
         condition = 2,
     },
     is_opened = false,
-    window_size = 22,
 }
 ---@type string[]
 local hud_names = {}
@@ -57,43 +56,32 @@ function this.draw()
     imgui.spacing()
     imgui.indent(2)
 
-    imgui.begin_child_window(
-        "hud_profile_sort_child_window",
-        { 0, this.window_size },
-        false,
-        1 << 3
-    )
-    local pos = imgui.get_cursor_pos()
+    util_imgui.draw_child_window("hud_profile_sort_child_window", function()
+        if imgui.button(gui_util.tr("sorter.button_sort")) then
+            if reverse_sort then
+                table.sort(hud_names, function(a, b)
+                    return a > b
+                end)
+            else
+                table.sort(hud_names)
+            end
 
-    if imgui.button(gui_util.tr("sorter.button_sort")) then
-        if reverse_sort then
-            table.sort(hud_names, function(a, b)
-                return a > b
-            end)
-        else
-            table.sort(hud_names)
+            reverse_sort = not reverse_sort
+        end
+        util_imgui.tooltip(config.lang:tr("sorter.button_sort_tooltip"))
+
+        imgui.same_line()
+
+        if imgui.button(gui_util.tr("sorter.button_apply")) then
+            hud.operations.sort(hud_names)
+            this.close()
+            config:save()
         end
 
-        reverse_sort = not reverse_sort
-    end
-    util_imgui.tooltip(config.lang:tr("sorter.button_sort_tooltip"))
+        imgui.unindent(2)
+    end, 22, 4)
 
-    imgui.same_line()
-
-    if imgui.button(gui_util.tr("sorter.button_apply")) then
-        hud.operations.sort(hud_names)
-        this.close()
-        config:save()
-    end
-
-    local spacing = 4
-    local size = imgui.get_cursor_pos().y - pos.y - spacing
-    this.window_size = size > 0 and size or this.window_size
-
-    imgui.unindent(2)
-    imgui.end_child_window()
     imgui.separator()
-
     imgui.begin_child_window("hud_profile_sort_elements_child_window", { -1, -1 }, false)
 
     drag:clear()
