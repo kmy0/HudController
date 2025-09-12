@@ -3,6 +3,8 @@ local util_misc = require("HudController.util.misc.init")
 local uuid = require("HudController.util.misc.uuid")
 
 local this = {}
+---@type table<string, number>
+local child_window_sizes = {}
 
 ---@param x number
 ---@param y number?
@@ -245,6 +247,26 @@ function this.open_popup(key, offset_x, offset_y)
     local screen_center = util_game.get_screen_center()
     imgui.set_next_window_pos(Vector2f.new(screen_center.x - offset_x, screen_center.y - offset_y))
     imgui.open_popup(key)
+end
+
+---@param name string
+---@param draw_fn fun()
+---@param size_y number?
+---@param spacing number?
+function this.draw_child_window(name, draw_fn, size_y, spacing)
+    size_y = size_y or 0
+    spacing = spacing or 0
+
+    if not child_window_sizes[name] then
+        child_window_sizes[name] = size_y
+    end
+
+    imgui.begin_child_window(name, { 0, child_window_sizes[name] }, false, 1 << 3)
+    local pos = imgui.get_cursor_pos()
+    draw_fn()
+    local size = imgui.get_cursor_pos().y - pos.y - spacing
+    child_window_sizes[name] = size > 0 and size or child_window_sizes[name]
+    imgui.end_child_window()
 end
 
 return this

@@ -11,6 +11,7 @@ local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local state = require("HudController.gui.state")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -21,7 +22,6 @@ local this = {
         flags = 1024 | 1 << 3 | 1 << 4,
         condition = 2,
     },
-    window_size = 48,
     state = state,
 }
 
@@ -113,20 +113,12 @@ function this.draw()
             or (config_mod.enable_fade and fade_manager.is_active())
     )
 
-    imgui.begin_child_window("hud_child_window", { 0, this.window_size }, false, 1 << 3)
-    local pos = imgui.get_cursor_pos()
-
-    gui_elements.choice.draw_hud()
-
-    imgui.begin_disabled(util_table.empty(config_mod.hud))
-
-    gui_elements.choice.draw_element()
-    local spacing = 4
-    local size = imgui.get_cursor_pos().y - pos.y - spacing
-    this.window_size = size > 0 and size or this.window_size
-
-    imgui.end_disabled()
-    imgui.end_child_window()
+    util_imgui.draw_child_window("hud_child_window", function()
+        gui_elements.choice.draw_hud()
+        imgui.begin_disabled(util_table.empty(config_mod.hud))
+        gui_elements.choice.draw_element()
+        imgui.end_disabled()
+    end, 48, 4)
 
     imgui.separator()
 
