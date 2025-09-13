@@ -496,10 +496,10 @@ function this:change_visibility(ctrl, visible, hud_display)
 
             if root_window then
                 root_window:set_ForceInvisible(true)
-                frame_timer:restart()
+                self.hide_timer:restart()
 
                 local function restore_vis()
-                    if self:_is_fade_state_finished(root_window) or frame_timer:finished() then
+                    if self:_is_fade_state_finished(root_window) or self.hide_timer:finished() then
                         root_window:set_ForceInvisible(false)
                     else
                         call_queue.queue_func_next(self.hud_id, restore_vis)
