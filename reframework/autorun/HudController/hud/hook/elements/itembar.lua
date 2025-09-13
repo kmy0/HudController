@@ -249,15 +249,13 @@ end
 
 function this.move_next_item_pre(args)
     local itembar = common.get_elem_t("Itembar")
-    if not itembar then
+    if not itembar or not itembar.children.slider.move_next then
         return
     end
 
     local item_id = sdk.to_int64(args[2]) --[[@as app.ItemDef.ID]]
     if
-        itembar
-        and true
-        and not itembar:get_GUI020006():get_IsAllSliderMode()
+        not itembar:get_GUI020006():get_IsAllSliderMode()
         and itembar:get_GUI020006():get_SelectedItemId() == item_id
         and m.getItemNum(item_id, rl(ace_enum.stock_type, "POUCH")) == 1
     then
