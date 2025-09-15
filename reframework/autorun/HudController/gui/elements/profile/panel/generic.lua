@@ -112,7 +112,6 @@ end
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
-    local changed = false
     this.separator:refresh(elem_config)
 
     imgui.begin_disabled(state.state.l1_pressed)
@@ -133,84 +132,80 @@ function this.draw(elem, elem_config, config_key)
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
     if elem_config.enabled_scale ~= nil then
-        changed = this.draw_slider_settings({
-            config_key = config_key .. ".enabled_scale",
-            label = gui_util.tr("hud_element.entry.box_enable_scale"),
-        }, {
-            {
-                config_key = config_key .. ".scale.x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
-            },
-            {
-                config_key = config_key .. ".scale.y",
-                label = gui_util.tr("hud_element.entry.slider_y"),
-            },
-        }, -10.0, 10.0, 0.01, "%.2f")
-
-        if changed then
+        if
+            this.draw_slider_settings({
+                config_key = config_key .. ".enabled_scale",
+                label = gui_util.tr("hud_element.entry.box_enable_scale"),
+            }, {
+                {
+                    config_key = config_key .. ".scale.x",
+                    label = gui_util.tr("hud_element.entry.slider_x"),
+                },
+                {
+                    config_key = config_key .. ".scale.y",
+                    label = gui_util.tr("hud_element.entry.slider_y"),
+                },
+            }, -10.0, 10.0, 0.01, "%.2f")
+        then
             elem:set_scale(elem_config.enabled_scale and elem_config.scale or nil)
-            config.save_global()
         end
 
         this.separator:draw()
     end
 
     if elem_config.enabled_offset ~= nil then
-        changed = this.draw_slider_settings({
-            config_key = config_key .. ".enabled_offset",
-            label = gui_util.tr("hud_element.entry.box_enable_offset"),
-        }, {
-            {
-                config_key = config_key .. ".offset.x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
-            },
-            {
-                config_key = config_key .. ".offset.y",
-                label = gui_util.tr("hud_element.entry.slider_y"),
-            },
-        }, -4000, 4000, 1, "%.0f")
-
-        if changed then
+        if
+            this.draw_slider_settings({
+                config_key = config_key .. ".enabled_offset",
+                label = gui_util.tr("hud_element.entry.box_enable_offset"),
+            }, {
+                {
+                    config_key = config_key .. ".offset.x",
+                    label = gui_util.tr("hud_element.entry.slider_x"),
+                },
+                {
+                    config_key = config_key .. ".offset.y",
+                    label = gui_util.tr("hud_element.entry.slider_y"),
+                },
+            }, -4000, 4000, 1, "%.0f")
+        then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
-            config.save_global()
         end
 
         this.separator:draw()
     end
 
     if elem_config.enabled_rot ~= nil then
-        changed = this.draw_slider_settings({
-            config_key = config_key .. ".enabled_rot",
-            label = gui_util.tr("hud_element.entry.box_enable_rotation"),
-        }, {
-            {
-                config_key = config_key .. ".rot",
-                label = "",
-            },
-        }, 0, 360, 0.1, "%.1f")
-
-        if changed then
+        if
+            this.draw_slider_settings({
+                config_key = config_key .. ".enabled_rot",
+                label = gui_util.tr("hud_element.entry.box_enable_rotation"),
+            }, {
+                {
+                    config_key = config_key .. ".rot",
+                    label = "",
+                },
+            }, 0, 360, 0.1, "%.1f")
+        then
             elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
-            config.save_global()
         end
 
         this.separator:draw()
     end
 
     if elem_config.enabled_opacity ~= nil then
-        changed = this.draw_slider_settings({
-            config_key = config_key .. ".enabled_opacity",
-            label = gui_util.tr("hud_element.entry.box_enable_opacity"),
-        }, {
-            {
-                config_key = config_key .. ".opacity",
-                label = "",
-            },
-        }, 0, 1, 0.01, "%.2f")
-
-        if changed then
+        if
+            this.draw_slider_settings({
+                config_key = config_key .. ".enabled_opacity",
+                label = gui_util.tr("hud_element.entry.box_enable_opacity"),
+            }, {
+                {
+                    config_key = config_key .. ".opacity",
+                    label = "",
+                },
+            }, 0, 1, 0.01, "%.2f")
+        then
             elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
-            config.save_global()
         end
 
         this.separator:draw()
@@ -218,7 +213,7 @@ function this.draw(elem, elem_config, config_key)
 
     if elem_config.enabled_segment ~= nil then
         local checkbox_key = config_key .. ".enabled_segment"
-        changed = set:checkbox(
+        local changed = set:checkbox(
             string.format(
                 "%s##%s",
                 gui_util.tr("hud_element.entry.box_enable_segment"),
@@ -249,7 +244,6 @@ function this.draw(elem, elem_config, config_key)
                 state.combo.segment:get_value(config:get(item_config_key .. "_combo"))
             )
             elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
-            config.save_global()
         end
 
         imgui.end_disabled()

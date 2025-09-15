@@ -195,9 +195,9 @@ function this.draw_checkmark(x, y, size, color)
 end
 
 ---@param label string
----@param selected_obj? boolean
+---@param selected_obj boolean?
 ---@param enabled_obj? boolean
----@return boolean
+---@return boolean, boolean?
 function this.menu_item(label, selected_obj, enabled_obj)
     local pos_screen = imgui.get_cursor_screen_pos()
     local pos = imgui.get_cursor_pos()
@@ -207,6 +207,7 @@ function this.menu_item(label, selected_obj, enabled_obj)
     local padding = pos_screen.x - win_pos.x
     local disabled = enabled_obj ~= nil and enabled_obj or false
     local id = label
+    local ret = selected_obj
 
     imgui.begin_disabled(disabled)
 
@@ -217,7 +218,7 @@ function this.menu_item(label, selected_obj, enabled_obj)
     end
 
     local text_size = imgui.calc_text_size(label)
-    local ret =
+    local changed =
         this.dummy_button2("##" .. id, { win_size.x - padding * 2, text_size.y + padding * 2 })
 
     pos.y = pos.y + padding
@@ -235,8 +236,12 @@ function this.menu_item(label, selected_obj, enabled_obj)
         )
     end
 
+    if changed and type(ret) == "boolean" then
+        ret = not ret
+    end
+
     imgui.end_disabled()
-    return ret
+    return changed, ret
 end
 
 ---@param key string

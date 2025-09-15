@@ -21,7 +21,6 @@ function this.draw_hud()
     if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input_action = nil
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
-        config.save_global()
     end
 
     imgui.pop_item_width()
@@ -32,7 +31,7 @@ function this.draw_hud()
         hud.operations.new()
         config_mod.combo.hud = #config_mod.hud
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
-        config.save_global()
+        config:save()
     end
 
     imgui.same_line()
@@ -62,7 +61,7 @@ function this.draw_hud()
             hud.request_hud(config_mod.hud[config_mod.combo.hud])
         end
 
-        config.save_global()
+        config:save()
     end
 
     imgui.same_line()
@@ -80,7 +79,7 @@ function this.draw_hud()
     util_imgui.tooltip(config.lang:tr("hud.button_import_tooltip"))
     if button then
         hud.operations.import()
-        config.save_global()
+        config:save()
     end
 
     imgui.same_line()
@@ -107,7 +106,7 @@ function this.draw_hud()
         if changed then
             hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input_action)
             state.input_action = nil
-            config.save_global()
+            config:save()
         end
     end
 end
@@ -126,7 +125,7 @@ function this.draw_element()
         hud.operations.add_element(
             state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
         )
-        config.save_global()
+        config:save()
     end
 
     imgui.same_line()
@@ -138,7 +137,7 @@ function this.draw_element()
     if imgui.button(gui_util.tr("hud_element.button_sort")) then
         local elements = config_mod.hud[config_mod.combo.hud].elements or {}
         hud.operations.sort_elements(util_table.values(elements), reverse_sort)
-        config.save_global()
+        config:save()
         reverse_sort = not reverse_sort
     end
     util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))

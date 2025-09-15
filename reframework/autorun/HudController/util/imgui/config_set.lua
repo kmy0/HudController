@@ -1,6 +1,8 @@
 ---@class (exact) ImguiConfigSet
 ---@field ref ConfigBase
 
+local util_imgui = require("HudController.util.imgui.init")
+
 ---@class ImguiConfigSet
 local this = {}
 ---@diagnostic disable-next-line: inject-field
@@ -66,6 +68,13 @@ end
 ---@return boolean
 function this:slider_int(name, config_key, v_min, v_max, display_format)
     return self:generic_config(name, config_key, imgui.slider_int, v_min, v_max, display_format)
+end
+
+---@param name string
+---@param config_key string
+---@param enabled_obj boolean?
+function this:menu_item(name, config_key, enabled_obj)
+    return self:generic_config(name, config_key, util_imgui.menu_item, enabled_obj)
 end
 
 return this

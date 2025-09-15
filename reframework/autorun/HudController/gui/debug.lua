@@ -244,7 +244,6 @@ function this.close()
 end
 
 function this.draw()
-    local changed = false
     local gui_debug = config.gui.current.gui.debug
     local config_debug = config.debug.current.debug
 
@@ -322,19 +321,13 @@ function this.draw()
             string.format("(%s?)", config.lang:tr("misc.text_help"))
         )
 
-        changed = set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
-            or changed
+        set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-
-        changed = set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
-            or changed
+        set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
-        changed = set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug") or changed
+        set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
         imgui.same_line()
-        changed = set:checkbox(
-            gui_util.tr("debug.box_filter_known_errors"),
-            "debug.filter_known_errors"
-        ) or changed
+        set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
 
         keys = hud_debug.get_keys(not config_debug.show_disabled)
 
@@ -346,7 +339,7 @@ function this.draw()
         imgui.same_line()
         imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
 
-        changed = set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter") or changed
+        set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
         imgui.end_disabled()
 
@@ -388,10 +381,6 @@ function this.draw()
 
     if config.lang.font then
         imgui.pop_font()
-    end
-
-    if changed then
-        config.debug:save()
     end
 
     imgui.end_window()
