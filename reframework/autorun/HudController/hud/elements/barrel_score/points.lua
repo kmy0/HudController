@@ -73,7 +73,7 @@ local control_arguments = {
 ---@param ctrl_writer (fun(self: BarrelScorePoints, ctrl: via.gui.Control): boolean)?
 ---@param default_overwrite HudChildDefaultOverwrite?
 ---@param gui_ignore boolean?
----@param children_sort (fun(a_key: string, b_key: string): boolean)?
+---@param children_sort (fun(a: HudChild, b: HudChild): boolean)?
 ---@param no_cache boolean?
 ---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
 ---@return BarrelScorePoints

@@ -92,17 +92,17 @@ local control_arguments = {
 ---@param args ProgressConfig
 ---@return Progress
 function this:new(args)
-    local o = hud_base.new(self, args, nil, nil, nil, nil, function(a_key, b_key)
+    local o = hud_base.new(self, args, nil, nil, nil, nil, function(a, b)
         local t = { "faint", "best_timer", "quest_timer" }
 
-        if util_table.contains(t, a_key) then
+        if util_table.contains(t, a.name_key) then
             return false
         end
 
-        if util_table.contains(t, b_key) then
+        if util_table.contains(t, b.name_key) then
             return true
         end
-        return a_key < b_key
+        return a.name_key < b.name_key
     end)
     setmetatable(o, self)
     ---@cast o Progress

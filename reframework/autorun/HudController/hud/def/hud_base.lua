@@ -24,7 +24,7 @@
 ---@field properties HudBaseProperties
 ---@field gui_ignore boolean? -- if true, do not draw in imgui window
 ---@field gui_header_children boolean? -- if true, draw chidlren as a header instead of a tree
----@field children_sort (fun(a_key: string, b_key: string): boolean)?
+---@field children_sort (fun(a: HudChild, b: HudChild): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
 ---@field restore_all_force_invis fun()
@@ -133,7 +133,7 @@ this.__index = this
 ---@param default_overwrite HudBaseDefaultOverwrite?
 ---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
 ---@param gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
----@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 ---@return HudBase
 function this:new(args, parent, default_overwrite, gui_ignore, gui_header_children, children_sort)
     local o = {
@@ -604,9 +604,9 @@ function this:get_changed()
     return ret
 end
 
----@return string[]
-function this:get_children_keys()
-    local keys = util_table.keys(self.children)
+---@return HudChild[]
+function this:get_write_children()
+    local keys = util_table.keys(self.write_nodes)
     if self.children_sort then
         return util_table.sort(keys, self.children_sort)
     end
@@ -643,12 +643,10 @@ end
 ---@param ctrl via.gui.Control | via.gui.Control[]
 ---@param key HudBaseWriteKey
 function this:reset_children(hudbase, gui_id, ctrl, key)
-    local children_keys = self:get_children_keys()
-    for i = 1, #children_keys do
-        local child = self.children[children_keys[i]]
-        if self.write_nodes[child] then
-            child:reset_child(hudbase, gui_id, ctrl, key)
-        end
+    local children = self:get_write_children()
+    for i = 1, #children do
+        local child = children[i]
+        child:reset_child(hudbase, gui_id, ctrl, key)
     end
 end
 
@@ -745,12 +743,10 @@ end
 ---@param gui_id app.GUIID.ID
 ---@param ctrl via.gui.Control | via.gui.Control[]
 function this:write_children(hudbase, gui_id, ctrl)
-    local children_keys = self:get_children_keys()
-    for i = 1, #children_keys do
-        local child = self.children[children_keys[i]]
-        if self.write_nodes[child] then
-            child:write_child(hudbase, gui_id, ctrl)
-        end
+    local children = self:get_write_children()
+    for i = 1, #children do
+        local child = children[i]
+        child:write_child(hudbase, gui_id, ctrl)
     end
 end
 

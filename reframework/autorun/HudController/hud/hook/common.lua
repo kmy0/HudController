@@ -12,7 +12,7 @@ local rl = game_data.reverse_lookup
 local this = {}
 
 function this.is_ok()
-    return mod.initialized and config:get("mod.enabled")
+    return mod.initialized and config.current.mod.enabled
 end
 
 ---@generic T

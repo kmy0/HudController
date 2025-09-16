@@ -83,7 +83,7 @@ setmetatable(this, { __index = ctrl_child })
 ---@param ctrl_writer (fun(self: Material, ctrl: via.gui.Material): boolean)? when set, ctrl_writer is used instead of hud_base._write
 ---@param default_overwrite MaterialDefaultOverwrite?
 ---@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@param children_sort (fun(a_key: string, b_key: string): boolean)? children iteration order
+---@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 ---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
 ---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
 ---@return Material
