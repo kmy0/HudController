@@ -21,7 +21,7 @@ return {
         text_sub_type = "Sub Type",
         text_system = "System",
         text_lobby = "Lobby",
-        text_unknown = " Unknown",
+        text_unknown = "Unknown",
         text_row = "Row",
         text_message = "Message",
         text_frame = "Frame",
