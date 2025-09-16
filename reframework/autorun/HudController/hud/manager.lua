@@ -8,6 +8,7 @@
 ---@field overridden_options_func table<string, fun(key: string, value: boolean)>
 ---@field combat_state_frame boolean
 ---@field combat_state boolean
+---@field is_cleared boolean
 
 ---@class (exact) FadeCallbacks
 ---@field switch_profile fun()
@@ -40,6 +41,7 @@ local this = {
     by_guiid = {},
     overridden_options = {},
     overridden_options_func = {},
+    is_cleared = true,
 }
 ---@class FadeCallbacks
 local fade_callbacks = {}
@@ -320,9 +322,14 @@ end
 function this.update()
     local config_mod = config.current.mod
     if not config_mod.enabled or not mod.is_ok() then
-        this.clear()
+        if not this.is_cleared then
+            this.clear()
+        end
+
         return
     end
+
+    this.is_cleared = false
 
     if not this.current_hud and not this.requested_hud then
         local hud_config = config_mod.hud[config_mod.combo.hud]
@@ -395,6 +402,7 @@ function this.clear()
     this.requested_hud = nil
 
     cache.clear_all()
+    this.is_cleared = true
 end
 
 ---@return boolean
