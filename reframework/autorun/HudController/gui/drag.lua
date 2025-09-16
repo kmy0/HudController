@@ -2,6 +2,8 @@
 ---@field protected _drag any?
 ---@field item_pos table<any, number>
 ---@field protected _start_pos number
+---@field protected _last_cursor_pos number
+---@field protected _dir integer
 
 local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
@@ -14,15 +16,17 @@ this.__index = this
 
 ---@return Drag
 function this:new()
-    return setmetatable({ item_pos = {}, _start_pos = 0 }, self)
+    return setmetatable({ item_pos = {}, _start_pos = 0, _last_cursor_pos = 0, _dir = 1 }, self)
 end
 
 ---@param unique_key string
 ---@param value any
-function this:draw_drag_button(unique_key, value)
+---@param y_size number?
+function this:draw_drag_button(unique_key, value, y_size)
     self._start_pos = imgui.get_cursor_screen_pos().y
+    y_size = y_size or 0
 
-    util_imgui.dummy_button(gui_util.tr("misc.text_drag", unique_key))
+    util_imgui.dummy_button(gui_util.tr("misc.text_drag", unique_key), { 0, y_size })
     local hover = imgui.is_item_hovered()
     local mouse_down = imgui.is_mouse_down(0)
 
@@ -37,16 +41,29 @@ end
 ---@param value any
 function this:check_drag_pos(value)
     local end_pos = imgui.get_cursor_screen_pos().y
+    local cursor_pos = imgui.get_mouse().y
 
     if self._drag == value then
         util_imgui.highlight(state.colors.info, 0, -(end_pos - self._start_pos))
     end
 
-    if self._drag == value then
-        self.item_pos[value] = imgui.get_mouse().y
-    else
-        self.item_pos[value] = self._start_pos
+    if self._last_cursor_pos > cursor_pos then
+        self._dir = -1
+    elseif self._last_cursor_pos < cursor_pos then
+        self._dir = 1
     end
+
+    if self._drag == value then
+        self.item_pos[value] = cursor_pos
+    else
+        if self._dir == 1 then
+            self.item_pos[value] = self._start_pos
+        else
+            self.item_pos[value] = end_pos
+        end
+    end
+
+    self._last_cursor_pos = cursor_pos
 end
 
 ---@return boolean
