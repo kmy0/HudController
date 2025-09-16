@@ -1,3 +1,4 @@
+local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
@@ -12,6 +13,14 @@ local rl = game_data.reverse_lookup
 
 local this = {}
 local dmg_static = false
+
+---@param disp_ctrl app.cGUIHudDisplayControl
+---@return [app.GUIHudBase, app.GUIID.ID, via.gui.Control]
+local function get_write_args(disp_ctrl)
+    local hudbase = disp_ctrl:get_Owner()
+    local gui_id = hudbase:get_ID()
+    return { hudbase, gui_id, disp_ctrl._TargetControl }
+end
 
 --#region update
 function this.update_pre(args)
@@ -32,8 +41,7 @@ function this.update_post(retval)
         return
     end
 
-    local hudbase = disp_ctrl:get_Owner()
-    local gui_id = hudbase:get_ID()
+    local hudbase, gui_id, target_ctrl = table.unpack(get_write_args(disp_ctrl))
 
     call_queue.consume(gui_id)
 
@@ -44,7 +52,7 @@ function this.update_post(retval)
         return
     end
 
-    hud_elem:write(hudbase, gui_id, disp_ctrl._TargetControl)
+    hud_elem:write(hudbase, gui_id, target_ctrl)
 end
 --#endregion
 
@@ -163,5 +171,7 @@ function this.update_barrel_score_post(retval)
         barrel_score:write(GUI090901, guiid, disp_ctrl._TargetControl)
     end
 end
+
+get_write_args = cache.memoize(get_write_args)
 
 return this
