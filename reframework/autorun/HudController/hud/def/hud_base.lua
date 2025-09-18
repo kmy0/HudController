@@ -160,7 +160,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         gui_ignore = gui_ignore,
         gui_header_children = gui_header_children,
         children_sort = children_sort,
-        hide_timer = frame_timer:new(60),
+        hide_timer = frame_timer:new(5),
     }
     setmetatable(o, self)
     ---@cast o HudBase
@@ -483,6 +483,9 @@ function this:change_visibility(ctrl, visible, hud_display)
         if
             ctrl
             and self.hide_changed
+            -- minimap is actually 2 elements in one, cba to create some ass edge case just for one element
+
+            and not self.name_key == "MINIMAP"
             -- ignore when game is force revealing item bar or ammo bar
 
             and not (
