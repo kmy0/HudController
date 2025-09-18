@@ -732,6 +732,7 @@ end
 ---@param ctrl via.gui.Control
 function this:write(hudbase, gui_id, ctrl)
     if not self:is_enabled_component(ctrl) then
+        play_object_defaults:check(ctrl)
         return
     end
 
