@@ -101,7 +101,7 @@ function this:new(args)
 
             if s.hide then
                 if
-                    self:get_GUI020006():get_IsAllSliderMode()
+                    o:get_GUI020006():get_IsAllSliderMode()
                     or ctrl:get_PlayState() == "FADE_OUT"
                 then
                     ctrl:set_ForceInvisible(true)

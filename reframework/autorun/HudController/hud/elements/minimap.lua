@@ -84,7 +84,8 @@ function this:new(args)
         args.children.background,
         o,
         function(s, hudbase, gui_id, ctrl)
-            local root = self:_get_panel()
+            ---@diagnostic disable-next-line: invisible
+            local root = o:_get_panel()
             ---@cast hudbase app.GUI060010
             if root then
                 if not hudbase:get_IsActive() then
