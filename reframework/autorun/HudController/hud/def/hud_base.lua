@@ -663,7 +663,7 @@ function this:reset_ctrl(ctrl, key)
 
     if self.hide and (not key or key == "hide") and default.hide ~= nil then
         --FIXME: hide_changed = true here?
-        self:change_visibility(ctrl, not default.hide, default.display)
+        self:change_visibility(ctrl, not default.hide, "DEFAULT")
 
         if self.hud_id and not fade_manager.is_active() then
             fade_manager.restore_opacity(self.hud_id, ctrl)
