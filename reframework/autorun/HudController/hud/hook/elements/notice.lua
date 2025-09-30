@@ -53,8 +53,9 @@ function this.cache_message_pre(args)
 
         util_table.do_something(txts, function(t, key, value)
             local msg = value:get_Message()
-            if msg and not msg:match("<") then
-                table.insert(msgs, msg)
+            if msg then
+                local stripped_msg, _ = msg:gsub("<[^>]*>", "")
+                table.insert(msgs, stripped_msg)
             end
         end)
 
