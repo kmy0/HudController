@@ -65,7 +65,11 @@ m.hook(
     hook.elements.update.update_damage_numbers_static_pre
 )
 m.hook("app.cDialogueSubtitleManager.updateDisp()", hook.elements.update.update_subtitles_pre)
-m.hook("app.GUI020020.guiLateUpdate()", nil, hook.elements.update.update_damage_numbers_post)
+m.hook(
+    "app.GUI020020.guiLateUpdate()",
+    util.ref.capture_this,
+    hook.elements.update.update_damage_numbers_post
+)
 m.hook(
     "app.GUI600100.guiUpdate()",
     util.ref.capture_this,

@@ -1,6 +1,6 @@
 ---@class (exact) DamageNumbers : DamageNumbersOffset, HudBase
 ---@field get_config fun(): DamageNumbersConfig
----@field GUI020020 app.GUI020020?
+---@field GUI020020 app.GUI020020[]?
 ---@field state table<app.GUI020020.DAMAGE_INFO, {[string]: any}>
 ---@field written table<app.GUI020020.DAMAGE_INFO, boolean>
 ---@field children {[string]: DamageNumbersCriticalState}
@@ -55,10 +55,11 @@ function this:new(args)
     return o
 end
 
----@return app.GUI020020
+---@return app.GUI020020[]
 function this:get_GUI020020()
     if not self.GUI020020 then
-        self.GUI020020 = util_game.get_component_any("app.GUI020020")
+        self.GUI020020 =
+            util_game.system_array_to_lua(util_game.get_all_components("app.GUI020020"))
     end
 
     return self.GUI020020
@@ -67,52 +68,58 @@ end
 ---@return via.gui.Panel[]
 function this:get_all_panels()
     local ret = {}
-    local arr = self:get_GUI020020()._DamageInfo
-    if arr then
-        util_game.do_something(arr, function(system_array, index, value)
-            table.insert(
-                ret,
-                self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]]
-            )
-        end)
-    end
+    util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
+        local arr = GUI020020._DamageInfo
+        if arr then
+            util_game.do_something(arr, function(system_array, index, value)
+                table.insert(
+                    ret,
+                    self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]]
+                )
+            end)
+        end
+    end)
 
     return ret
 end
 
 ---@return table<app.GUI020020.DAMAGE_INFO, true>
 function this:get_dmg()
-    local arr = self:get_GUI020020()._DamageInfoList
-    if arr then
-        util_game.do_something(arr, function(system_array, index, value)
-            if not self.written[value] then
-                self:get_state_value(value, "<criticalState>k__BackingField", true)
-                self:get_state_value(value, "<State>k__BackingField", true)
-                self.written[value] = true
-            end
-        end)
-    end
+    util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
+        local arr = GUI020020._DamageInfoList
+        if arr then
+            util_game.do_something(arr, function(system_array, index, value)
+                if not self.written[value] then
+                    self:get_state_value(value, "<criticalState>k__BackingField", true)
+                    self:get_state_value(value, "<State>k__BackingField", true)
+                    self.written[value] = true
+                end
+            end)
+        end
+    end)
 
     return self.written
 end
 
 ---@return table<app.GUI020020.DAMAGE_INFO, true>
 function this:get_dmg_static()
-    local arr = self:get_GUI020020()._DamageInfo
-    if arr then
-        util_game.do_something(arr, function(system_array, index, value)
-            if not self.written[value] then
-                local pnl_wrap = self:get_state_value(value, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
-                if not pnl_wrap:get_Visible() then
-                    return
-                end
+    util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
+        local arr = GUI020020._DamageInfo
+        if arr then
+            util_game.do_something(arr, function(system_array, index, value)
+                if not self.written[value] then
+                    local pnl_wrap = self:get_state_value(value, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
+                    if not pnl_wrap:get_Visible() then
+                        return
+                    end
 
-                self:get_state_value(value, "<criticalState>k__BackingField", true)
-                self:get_state_value(value, "<State>k__BackingField", true)
-                self.written[value] = true
-            end
-        end)
-    end
+                    self:get_state_value(value, "<criticalState>k__BackingField", true)
+                    self:get_state_value(value, "<State>k__BackingField", true)
+                    self.written[value] = true
+                end
+            end)
+        end
+    end)
 
     return self.written
 end

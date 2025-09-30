@@ -90,8 +90,9 @@ end
 function this.update_damage_numbers_post(retval)
     local dmg, guiid = common.get_elem_consume_t(
         "DamageNumbers",
-        ace_map.additional_hud_to_guiid_name["DAMAGE_NUMBERS"]
+        (util_ref.get_this() --[[@as app.GUI020020]]):get_ID()
     )
+
     if dmg and guiid then
         util_table.do_something(
             dmg_static and dmg:get_dmg_static() or dmg:get_dmg(),

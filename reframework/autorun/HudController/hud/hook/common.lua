@@ -28,14 +28,17 @@ end
 
 ---@generic T
 ---@param element_type `T`?
----@param guiid_name string app.GUIID.ID name
+---@param guiid string | app.GUIID.ID
 ---@return T | HudBase?, app.GUIID.ID?
-function this.get_elem_consume_t(element_type, guiid_name)
+function this.get_elem_consume_t(element_type, guiid)
     if not this.is_ok() then
         return
     end
 
-    local guiid = rl(ace_enum.gui_id, guiid_name)
+    if type(guiid) == "string" then
+        guiid = rl(ace_enum.gui_id, guiid)
+    end
+
     call_queue.consume(guiid)
 
     ---@type HudBase?
