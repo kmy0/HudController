@@ -245,6 +245,8 @@ return {
             TARGET_RETICLE = "Target Reticle",
             MENU_BUTTON_GUIDE = "Menu Button Guide",
             BARREL_BOWLING_SCORE = "Barrel Bowling Score",
+            TU3_DEBUFF = "TU3 Debuff",
+            TU3_CANVAS = "TU3 Canvas",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

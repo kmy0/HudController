@@ -156,6 +156,8 @@ local this = {
             "TARGET_RETICLE",
             "MENU_BUTTON_GUIDE",
             "BARREL_BOWLING_SCORE",
+            "TU3_DEBUFF",
+            "TU3_CANVAS",
         },
         weapon_binds = {
             additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
@@ -176,10 +178,10 @@ local this = {
             TARGET_RETICLE = "UI020021",
             MENU_BUTTON_GUIDE = "UI000008",
             BARREL_BOWLING_SCORE = "UI090901",
+            TU3_DEBUFF = "UI020901",
+            TU3_CANVAS = "UI020902",
             -- GUI020026 qte?
             -- GUI120200 some notification thing?
-            -- GUI020901 ?
-            -- GUI020902 ?
             -- GUI090902 barrels rewards
         },
         hudless_to_hud = {
