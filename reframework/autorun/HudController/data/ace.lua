@@ -50,6 +50,7 @@
 ---@field target_access table<app.TARGET_ACCESS_KEY.CATEGORY, string>
 ---@field otomo_continue_flag table<app.OtomoDef.CONTINUE_FLAG, string>
 ---@field map_flow_flag table<app.cGUIMapFlowCtrl.FLAG, string>
+---@field log_id table<app.ChatDef.LOG_ID, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -67,6 +68,7 @@
 ---@field guiid_ignore table<string, boolean>
 ---@field wp_action_to_index table<string, {category: integer, index: integer}>
 ---@field key_to_wp_action_name table<string, string>
+---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
 ---@field weapon_binds {
 --- additional_weapon: string[],
 --- game_mode: string[],
@@ -132,6 +134,7 @@ local this = {
         target_access = {},
         otomo_continue_flag = {},
         map_flow_flag = {},
+        log_id = {},
     },
     map = {
         hudid_to_guiid = {},
@@ -193,6 +196,7 @@ local this = {
         },
         wp_action_to_index = {},
         key_to_wp_action_name = {},
+        log_id_to_text = {},
     },
 }
 

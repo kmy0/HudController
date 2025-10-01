@@ -25,6 +25,7 @@
 ---@field enemy_msg_type Combo
 ---@field config Combo
 ---@field config_backup Combo
+---@field log_id Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -44,6 +45,7 @@ local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local gui_util = require("HudController.gui.util")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -128,6 +130,16 @@ local this = {
                 return config.lang:tr("menu.bind.key.action_type." .. key)
             end
         ),
+        log_id = combo:new(nil, function(a, b)
+            return tonumber(a.key) < tonumber(b.key)
+        end, function(value)
+            local id = rl(ace_enum.log_id, value)
+            return string.format(
+                "%s - %s",
+                id,
+                util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
+            )
+        end),
     },
     grid_ratio = {
         "1",
@@ -230,6 +242,7 @@ function this.init()
     this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
+    this.combo.log_id:swap(ace_enum.log_id)
     this.translate_combo()
 end
 

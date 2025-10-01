@@ -6,6 +6,9 @@
 ---@field enemy_log table<string, boolean>
 ---@field camp_log table<string, boolean>
 ---@field chat_log table<string, boolean>
+---@field log_id table<string, integer>
+---@field contains {hide: boolean, pattern: string}
+---@field not_contains {hide: boolean, pattern: string}
 ---@field message_log_cache CircularBuffer<CachedMessage>
 ---@field protected _queued_callbacks table<app.cGUI020100PanelBase, boolean>
 ---@field get_cls_name_short fun(cls_name: string): string
@@ -40,6 +43,9 @@
 ---@field enemy_log table<string, boolean>
 ---@field camp_log table<string, boolean>
 ---@field chat_log table<string, boolean>
+---@field log_id table<string, integer>
+---@field contains {hide: boolean, pattern: string}
+---@field not_contains {hide: boolean, pattern: string}
 ---@field children {
 --- Item: HudChildConfig,
 --- Tutorial: HudChildConfig,
@@ -58,6 +64,7 @@
 ---@field other_type string?
 ---@field msg string
 ---@field cls string
+---@field log_id app.ChatDef.LOG_ID
 
 local call_queue = require("HudController.hud.call_queue")
 local circular_buffer = require("HudController.util.misc.circular_buffer")
@@ -109,6 +116,9 @@ function this:new(args)
     o.chat_log = args.chat_log
     o.cache_msg = args.cache_msg
     o._queued_callbacks = {}
+    o.contains = args.contains
+    o.not_contains = args.not_contains
+    o:_set_log_id(args.log_id)
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
@@ -132,6 +142,18 @@ function this:new(args)
     end
 
     return o
+end
+
+---@protected
+---@param log_id table<string, integer>
+function this:_set_log_id(log_id)
+    self.log_id = {}
+    -- required because of merge2, merge2 removes all keys that do not exist in default config
+    for k, v in pairs(log_id) do
+        if type(v) == "number" then
+            self.log_id[k] = v
+        end
+    end
 end
 
 ---@param name_key string
@@ -167,6 +189,26 @@ end
 ---@param val boolean
 function this:set_cache_msg(val)
     self.cache_msg = val
+end
+
+---@param val boolean
+---@param pattern string
+function this:set_contains_msg(val, pattern)
+    self.contains.hide = val
+    self.contains.pattern = pattern
+end
+
+---@param val boolean
+---@param pattern string
+function this:set_not_contains_msg(val, pattern)
+    self.not_contains.hide = val
+    self.not_contains.pattern = pattern
+end
+
+---@param key string
+---@param val integer?
+function this:set_log_id(key, val)
+    self.log_id[key] = val
 end
 
 ---@param msg CachedMessage
@@ -245,6 +287,9 @@ function this.get_config()
     base.enemy_log = {}
     base.camp_log = {}
     base.cache_msg = false
+    base.log_id = {}
+    base.contains = { hide = false, pattern = "" }
+    base.not_contains = { hide = false, pattern = "" }
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
@@ -270,6 +315,12 @@ function this.get_config()
 
     for _, name in pairs(ace_enum.chat_log) do
         base.chat_log[name] = false
+    end
+
+    for e, _ in pairs(ace_enum.log_id) do
+        -- required because of merge2, merge2 removes all keys that do not exist in default config
+        ---@diagnostic disable-next-line: assign-type-mismatch
+        base.log_id[tostring(e)] = "dummy"
     end
 
     return base

@@ -55,6 +55,7 @@
 ---@class app.OtomoDef.CONTINUE_FLAG : System.Enum
 ---@class app.BowlingDef.RANK : System.Enum
 ---@class app.cGUIMapFlowCtrl.FLAG : System.Enum
+---@class app.ChatDef.LOG_ID : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

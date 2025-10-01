@@ -77,4 +77,11 @@ function this:menu_item(name, config_key, enabled_obj)
     return self:generic_config(name, config_key, util_imgui.menu_item, enabled_obj)
 end
 
+---@param name string
+---@param config_key string
+---@param flags ImGuiInputTextFlags?
+function this:input_text(name, config_key, flags)
+    return self:generic_config(name, config_key, imgui.input_text, flags)
+end
+
 return this

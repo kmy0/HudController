@@ -36,6 +36,12 @@ function this.tooltip_exclamation(text)
     this.tooltip(text, true, "(!)")
 end
 
+function this.tooltip_text(text)
+    imgui.begin_disabled(true)
+    imgui.text(string.format("( %s )", text))
+    imgui.end_disabled()
+end
+
 ---@param label string
 ---@param padding number?
 ---@param thickness number?

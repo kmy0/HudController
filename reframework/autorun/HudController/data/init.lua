@@ -7,6 +7,7 @@ local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local game_data = require("HudController.util.game.data")
 local game_lang = require("HudController.util.game.lang")
+---@class MethodUtil
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
@@ -15,6 +16,8 @@ local util_table = require("HudController.util.misc.table")
 local ace_map = this.ace.map
 local ace_enum = this.ace.enum
 local rl = util_game.data.reverse_lookup
+
+m.ChatLogIDData = m.wrap(m.get("app.ChatDef.Data(app.ChatDef.LOG_ID)")) --[[@as fun(log_id: app.ChatDef.LOG_ID): app.user_data.ChatLogData.cData]]
 
 ---@return boolean
 local function get_hud_setting()
@@ -85,6 +88,55 @@ local function set_additional_hud()
     end
 end
 
+local function get_option_map()
+    local lang = game_lang.get_language()
+    for id, name in pairs(ace_enum.option) do
+        local option_data = m.getOptionData(id)
+
+        if not option_data then
+            goto continue
+        end
+
+        ace_map.option[name] = {
+            id = id,
+            name_local = game_lang.get_message_local(option_data:get_MsgTitle(), lang, true),
+            items = {},
+        }
+
+        util_game.do_something(option_data:get_Items(), function(system_array, index, value)
+            table.insert(ace_map.option[name].items, {
+                index = index,
+                name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true),
+            })
+        end)
+        ::continue::
+    end
+end
+
+local function get_log_id_text()
+    local lang = game_lang.get_language()
+
+    for log_id, _ in pairs(ace_enum.log_id) do
+        local data = m.ChatLogIDData(log_id)
+        local msgs = {
+            game_lang.get_message_local(data:get_Title(), lang, true),
+            game_lang.get_message_local(data:get_Caption(), lang, true),
+        }
+        local stripped = {}
+
+        for _, msg in ipairs(msgs) do
+            local stripped_msg, _ = msg:gsub("<[^>]*>", "")
+
+            if stripped_msg ~= "" then
+                ---@diagnostic disable-next-line: no-unknown
+                stripped_msg, _ = stripped_msg:gsub("\n", " ")
+                table.insert(stripped, stripped_msg)
+            end
+        end
+        ace_map.log_id_to_text[log_id] = table.concat(stripped, ", ")
+    end
+end
+
 ---@param config_table MainSettings
 function this.get_weapon_bind_map(config_table)
     local lang = game_lang.get_language()
@@ -122,31 +174,6 @@ function this.get_weapon_bind_map(config_table)
         weapon_base.name = name
         weapon_base.weapon_id = -i
         copy_base(name, weapon_base)
-    end
-end
-
-local function get_option_map()
-    local lang = game_lang.get_language()
-    for id, name in pairs(ace_enum.option) do
-        local option_data = m.getOptionData(id)
-
-        if not option_data then
-            goto continue
-        end
-
-        ace_map.option[name] = {
-            id = id,
-            name_local = game_lang.get_message_local(option_data:get_MsgTitle(), lang, true),
-            items = {},
-        }
-
-        util_game.do_something(option_data:get_Items(), function(system_array, index, value)
-            table.insert(ace_map.option[name].items, {
-                index = index,
-                name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true),
-            })
-        end)
-        ::continue::
     end
 end
 
@@ -227,6 +254,7 @@ function this.init()
     game_data.get_enum("app.TARGET_ACCESS_KEY.CATEGORY", ace_enum.target_access)
     game_data.get_enum("app.OtomoDef.CONTINUE_FLAG", ace_enum.otomo_continue_flag)
     game_data.get_enum("app.cGUIMapFlowCtrl.FLAG", ace_enum.map_flow_flag)
+    game_data.get_enum("app.ChatDef.LOG_ID", ace_enum.log_id)
 
     if
         util_table.any(
@@ -243,6 +271,7 @@ function this.init()
     set_additional_hud()
     this.get_weapon_bind_map(config.current)
     get_option_map()
+    get_log_id_text()
 
     util_table.do_something(
         { ace_enum.subtitles_category, ace_enum.damage_state, ace_enum.critical_state },
