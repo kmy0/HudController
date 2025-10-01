@@ -473,6 +473,7 @@
 
 ---@class app.ChatDef.MessageElement : via.clr.ManagedObject
 ---@field get_MsgType fun(self: app.ChatDef.MessageElement): app.ChatDef.MSG_TYPE
+---@field get_ChatLogId fun(self: app.ChatDef.MessageElement): app.ChatDef.LOG_ID
 
 ---@class app.NpcCharacter : app.CharacterBase
 ---@field _ContextHolder app.cNpcContextHolder
@@ -600,3 +601,7 @@
 
 ---@class app.cGUIMapFlowCtrl : via.clr.ManagedObject
 ---@field get_Flags fun(self: app.cGUIMapFlowCtrl): System.Collections.BitArray
+
+---@class app.user_data.ChatLogData.cData : ace.user_data.ExcelUserData.cData
+---@field get_Title fun(self: app.user_data.ChatLogData.cData): System.Guid
+---@field get_Caption fun(self: app.user_data.ChatLogData.cData): System.Guid

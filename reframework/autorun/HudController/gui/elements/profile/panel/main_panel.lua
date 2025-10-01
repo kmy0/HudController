@@ -9,6 +9,7 @@ local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
 local set = state.set
+local ace_map = data.ace.map
 
 local this = {
     ---@type table<HudType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
@@ -245,10 +246,7 @@ local function draw_notice(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
     local item_config_key = config_key .. ".tools_enemy_message_type"
     if not config:get(item_config_key .. "_combo") then
-        config:set(
-            item_config_key .. "_combo",
-            state.combo.item_decide:get_index(config:get(item_config_key))
-        )
+        config:set(item_config_key .. "_combo", 1)
     end
 
     if
@@ -287,7 +285,7 @@ local function draw_notice(elem, elem_config, config_key)
         if
             imgui.begin_table(
                 "notice_cached_messages",
-                6,
+                7,
                 1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
                 Vector2f.new(0, 4 * 46)
             )
@@ -298,6 +296,7 @@ local function draw_notice(elem, elem_config, config_key)
                 config.lang:tr("misc.text_sub_type"),
                 config.lang:tr("misc.text_other_type"),
                 config.lang:tr("misc.text_child_element"),
+                config.lang:tr("misc.text_id"),
                 config.lang:tr("misc.text_message"),
             }) do
                 imgui.table_setup_column(header)
@@ -324,6 +323,9 @@ local function draw_notice(elem, elem_config, config_key)
                 imgui.text(entry.cls)
 
                 imgui.table_set_column_index(5)
+                imgui.text(entry.log_id)
+
+                imgui.table_set_column_index(6)
                 imgui.text(util_misc.trunc_string(entry.msg))
                 util_imgui.tooltip(entry.msg)
             end
@@ -339,6 +341,120 @@ local function draw_notice(elem, elem_config, config_key)
         string.format("%s.%s", config_key, "system_log"),
         elem.set_system_log
     )
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_pattern"))
+    util_imgui.tooltip_text(config.lang:tr("hud_element.entry.tooltip_notice_system_pattern"))
+
+    item_config_key = config_key .. ".contains.hide"
+    if set:checkbox("##" .. item_config_key, item_config_key) then
+        elem:set_contains_msg(elem_config.contains.hide, elem_config.contains.pattern)
+    end
+
+    imgui.begin_disabled(not elem_config.contains.hide)
+    imgui.same_line()
+
+    item_config_key = config_key .. ".contains.pattern"
+    if
+        set:input_text(
+            gui_util.tr("hud_element.entry.box_hide_contains", item_config_key),
+            item_config_key
+        )
+    then
+        elem:set_contains_msg(elem_config.contains.hide, elem_config.contains.pattern)
+    end
+
+    imgui.end_disabled()
+
+    item_config_key = config_key .. ".not_contains.hide"
+    if set:checkbox("##" .. item_config_key, item_config_key) then
+        elem:set_not_contains_msg(elem_config.not_contains.hide, elem_config.not_contains.pattern)
+    end
+
+    imgui.begin_disabled(not elem_config.not_contains.hide)
+    imgui.same_line()
+
+    item_config_key = config_key .. ".not_contains.pattern"
+    if
+        set:input_text(
+            gui_util.tr("hud_element.entry.box_hide_not_contains", item_config_key),
+            item_config_key
+        )
+    then
+        elem:set_not_contains_msg(elem_config.not_contains.hide, elem_config.not_contains.pattern)
+    end
+
+    imgui.end_disabled()
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_id"))
+    item_config_key = config_key .. ".log_id"
+    if not config:get(item_config_key .. "_combo") then
+        config:set(item_config_key .. "_combo", 1)
+    end
+
+    set:combo(
+        gui_util.tr("hud_element.entry.combo_log_id"),
+        item_config_key .. "_combo",
+        state.combo.log_id.values
+    )
+
+    imgui.same_line()
+
+    if imgui.button(gui_util.tr("hud_element.entry.button_hide", item_config_key)) then
+        local key = tostring(state.combo.log_id:get_key(config:get(item_config_key .. "_combo")))
+        if not elem.log_id[key] then
+            local i = util_table.size(elem.log_id)
+            elem:set_log_id(key, i)
+            config:set(item_config_key, elem.log_id)
+        end
+    end
+
+    if not util_table.empty(elem.log_id) then
+        if
+            imgui.begin_table(
+                "log_id_hide",
+                3,
+                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
+                Vector2f.new(0, 4 * 46)
+            )
+        then
+            for _, header in ipairs({
+                config.lang:tr("misc.text_id"),
+                config.lang:tr("misc.text_message"),
+                "",
+            }) do
+                imgui.table_setup_column(header)
+            end
+
+            local rows = util_table.sort(util_table.keys(elem.log_id), function(a, b)
+                return elem.log_id[a] > elem.log_id[b]
+            end)
+
+            imgui.table_headers_row()
+            for i = 1, #rows do
+                imgui.table_next_row()
+                local id = tonumber(rows[i])
+
+                imgui.table_set_column_index(0)
+                imgui.text(id)
+
+                imgui.table_set_column_index(1)
+                imgui.text(util_misc.trunc_string(ace_map.log_id_to_text[id]))
+                util_imgui.tooltip(ace_map.log_id_to_text[id])
+
+                imgui.table_set_column_index(2)
+                if
+                    imgui.button(
+                        gui_util.tr("hud_element.entry.button_remove", "log_id_remove", id)
+                    )
+                then
+                    elem:set_log_id(rows[i], nil)
+                    config:set(item_config_key, elem.log_id)
+                end
+            end
+
+            imgui.end_table()
+        end
+    end
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_enemy"))
     imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
