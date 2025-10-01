@@ -4,6 +4,7 @@ local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
+local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -170,6 +171,28 @@ function this.update_barrel_score_post(retval)
         local GUI090901 = util_ref.get_this() --[[@as app.GUI090901]]
         local disp_ctrl = GUI090901._DisplayControl
         barrel_score:write(GUI090901, guiid, disp_ctrl._TargetControl)
+    end
+end
+
+function this.update_chat_log_post(retval)
+    local chat_log, guiid = common.get_elem_consume_t("ChatLog", "UI020101")
+    if chat_log and guiid then
+        ---@cast chat_log ChatLog
+        local GUI020101 = util_ref.get_this() --[[@as app.GUI020101]]
+        ---@diagnostic disable-next-line: param-type-mismatch
+        chat_log:write(GUI020101, guiid, chat_log:get_all_panel(GUI020101))
+    end
+end
+
+function this.update_chat_log_menu_button_guide_post(retval)
+    local chat_log = common.get_elem_t("ChatLog")
+    if
+        chat_log
+        and chat_log.children.button_guide:any()
+        and util_game.get_component_any("app.GUI020101")
+    then
+        ---@diagnostic disable-next-line: missing-parameter
+        chat_log.children.button_guide:write_child()
     end
 end
 
