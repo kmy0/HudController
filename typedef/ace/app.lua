@@ -34,6 +34,7 @@
 ---@class app.cGuideInsectContext.cTargetInfo.cNavigationTargetInfoGuideInsect : app.cNavigationTargetInfo
 ---@class app.cGUI3DMapModelContollerBase : ace.cGUIPartsBase
 ---@class app.GUI060000 : app.GUIBaseApp
+---@class app.GUI020101 : app.GUIBaseApp
 ---@class app.CONTEXT_HANDLE : System.ValueType
 ---@class app.FacilityBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject

@@ -9,6 +9,7 @@ local this = {
     notice = require("HudController.hud.hook.elements.notice"),
     name_access = require("HudController.hud.hook.elements.name_access"),
     shortcut_keyboard = require("HudController.hud.hook.elements.shortcut_keyboard"),
+    chat_log = require("HudController.hud.hook.elements.chat_log"),
 }
 
 return this

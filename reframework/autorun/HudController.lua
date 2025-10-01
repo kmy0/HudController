@@ -85,6 +85,16 @@ m.hook(
     util.ref.capture_this,
     hook.elements.update.update_barrel_score_post
 )
+m.hook(
+    "app.GUI020101.guiLateUpdate()",
+    util.ref.capture_this,
+    hook.elements.update.update_chat_log_post
+)
+m.hook(
+    "app.GUI000008.guiLateUpdate()",
+    nil,
+    hook.elements.update.update_chat_log_menu_button_guide_post
+)
 --#endregion
 --#region radial
 m.hook("app.GUI020008.checkOpen()", util.ref.capture_this, hook.elements.radial.hide_radial_post)
@@ -208,6 +218,9 @@ m.hook(
     "app.GUI020600.requestOpenPCShortcut(app.GUI020600.TYPE, System.Int32, System.Int32, app.GUI020600.MODE, via.gui.Rect)",
     hook.elements.shortcut_keyboard.clear_cache_pre
 )
+--#endregion
+--#region chat_log
+m.hook("app.GUI020101.guiAwake()", hook.elements.chat_log.clear_cache_pre)
 --#endregion
 --#endregion
 

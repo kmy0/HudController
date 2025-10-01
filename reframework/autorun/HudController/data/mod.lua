@@ -87,6 +87,7 @@ this.enum.hud_type = {
     TARGET_RETICLE = 29,
     SHORTCUT_KEYBOARD = 30,
     BARREL_BOWLING_SCORE = 31,
+    CHAT_LOG = 32,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = {

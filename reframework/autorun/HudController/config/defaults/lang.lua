@@ -248,6 +248,7 @@ return {
             BARREL_BOWLING_SCORE = "Barrel Bowling Score",
             TU3_DEBUFF = "TU3 Debuff",
             TU3_CANVAS = "TU3 Canvas",
+            CHAT_LOG = "Chat Log",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",
@@ -469,5 +470,10 @@ return {
         points = "Points",
         item_background = "Item Background",
         line_cursor = "Line Cursor",
+        filter = "Filter",
+        text_box = "Text Box",
+        list = "List",
+        new_message = "New Message",
+        recipient = "Recipient",
     },
 }
