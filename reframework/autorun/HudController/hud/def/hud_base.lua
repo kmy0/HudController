@@ -154,6 +154,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
             color_scale = true,
             hide = true,
             play_state = true,
+            segment = true,
         },
         initialized = false,
         default_overwrite = default_overwrite,
