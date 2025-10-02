@@ -199,7 +199,7 @@ local function draw_scale9(elem, elem_config, config_key)
         if changed then
             local value =
                 state.combo.control_point:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_control_point(value)
+            elem:set_control_point(elem_config.enabled_control_point and value or nil)
             config:set(item_config_key, value)
         end
 
@@ -232,7 +232,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
         if changed then
             local value = state.combo.blend:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_blend(value)
+            elem:set_blend(elem_config.enabled_blend and value or nil)
             config:set(item_config_key, value)
         end
 
@@ -266,7 +266,7 @@ local function draw_scale9(elem, elem_config, config_key)
         if changed then
             local value =
                 state.combo.alpha_channel:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_alpha_channel(value)
+            elem:set_alpha_channel(elem_config.enabled_alpha_channel and value or nil)
             config:set(item_config_key, value)
         end
 
