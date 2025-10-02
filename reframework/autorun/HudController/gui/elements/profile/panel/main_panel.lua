@@ -342,49 +342,6 @@ local function draw_notice(elem, elem_config, config_key)
         elem.set_system_log
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_pattern"))
-    util_imgui.tooltip_text(config.lang:tr("hud_element.entry.tooltip_notice_system_pattern"))
-
-    item_config_key = config_key .. ".contains.hide"
-    if set:checkbox("##" .. item_config_key, item_config_key) then
-        elem:set_contains_msg(elem_config.contains.hide, elem_config.contains.pattern)
-    end
-
-    imgui.begin_disabled(not elem_config.contains.hide)
-    imgui.same_line()
-
-    item_config_key = config_key .. ".contains.pattern"
-    if
-        set:input_text(
-            gui_util.tr("hud_element.entry.box_hide_contains", item_config_key),
-            item_config_key
-        )
-    then
-        elem:set_contains_msg(elem_config.contains.hide, elem_config.contains.pattern)
-    end
-
-    imgui.end_disabled()
-
-    item_config_key = config_key .. ".not_contains.hide"
-    if set:checkbox("##" .. item_config_key, item_config_key) then
-        elem:set_not_contains_msg(elem_config.not_contains.hide, elem_config.not_contains.pattern)
-    end
-
-    imgui.begin_disabled(not elem_config.not_contains.hide)
-    imgui.same_line()
-
-    item_config_key = config_key .. ".not_contains.pattern"
-    if
-        set:input_text(
-            gui_util.tr("hud_element.entry.box_hide_not_contains", item_config_key),
-            item_config_key
-        )
-    then
-        elem:set_not_contains_msg(elem_config.not_contains.hide, elem_config.not_contains.pattern)
-    end
-
-    imgui.end_disabled()
-
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_id"))
     item_config_key = config_key .. ".log_id"
     if not config:get(item_config_key .. "_combo") then

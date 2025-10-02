@@ -2,12 +2,10 @@ local common = require("HudController.hud.hook.common")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local play_object = require("HudController.hud.play_object.init")
-local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
-local ace_map = data.ace.map
 
 local this = {}
 
@@ -30,41 +28,6 @@ function this.skip_system_message_pre(args)
         if log_id ~= -1 then
             if notice.log_id[tostring(log_id)] then
                 return sdk.PreHookResult.SKIP_ORIGINAL
-            end
-
-            if notice.contains.hide then
-                local msg = ace_map.log_id_to_text[log_id]:lower()
-                local match = false
-
-                util_misc.try(function()
-                    match = util_table.any(
-                        util_misc.split_string(notice.contains.pattern:lower(), "|"),
-                        function(key, value)
-                            return msg:match(value) ~= nil
-                        end
-                    )
-                end)
-
-                if match then
-                    return sdk.PreHookResult.SKIP_ORIGINAL
-                end
-            end
-
-            if notice.not_contains.hide then
-                local msg = ace_map.log_id_to_text[log_id]:lower()
-                local match = false
-                util_misc.try(function()
-                    match = not util_table.all(
-                        util_misc.split_string(notice.not_contains.pattern:lower(), "|"),
-                        function(o)
-                            return msg:match(o) == nil
-                        end
-                    )
-                end)
-
-                if match then
-                    return sdk.PreHookResult.SKIP_ORIGINAL
-                end
             end
         end
 

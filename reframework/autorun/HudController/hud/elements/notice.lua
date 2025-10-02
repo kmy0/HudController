@@ -7,8 +7,6 @@
 ---@field camp_log table<string, boolean>
 ---@field chat_log table<string, boolean>
 ---@field log_id table<string, integer>
----@field contains {hide: boolean, pattern: string}
----@field not_contains {hide: boolean, pattern: string}
 ---@field message_log_cache CircularBuffer<CachedMessage>
 ---@field protected _queued_callbacks table<app.cGUI020100PanelBase, boolean>
 ---@field get_cls_name_short fun(cls_name: string): string
@@ -116,8 +114,6 @@ function this:new(args)
     o.chat_log = args.chat_log
     o.cache_msg = args.cache_msg
     o._queued_callbacks = {}
-    o.contains = args.contains
-    o.not_contains = args.not_contains
     o:_set_log_id(args.log_id)
 
     for _, cls_name in pairs(cls_name_array) do
@@ -189,20 +185,6 @@ end
 ---@param val boolean
 function this:set_cache_msg(val)
     self.cache_msg = val
-end
-
----@param val boolean
----@param pattern string
-function this:set_contains_msg(val, pattern)
-    self.contains.hide = val
-    self.contains.pattern = pattern
-end
-
----@param val boolean
----@param pattern string
-function this:set_not_contains_msg(val, pattern)
-    self.not_contains.hide = val
-    self.not_contains.pattern = pattern
 end
 
 ---@param key string
@@ -288,8 +270,6 @@ function this.get_config()
     base.camp_log = {}
     base.cache_msg = false
     base.log_id = {}
-    base.contains = { hide = false, pattern = "" }
-    base.not_contains = { hide = false, pattern = "" }
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
