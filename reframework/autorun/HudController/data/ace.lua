@@ -195,6 +195,7 @@ local this = {
         no_lang_key = { ALL = true },
         guiid_ignore = {
             UI090901 = true, -- barrels score
+            UI020902 = true,
         },
         wp_action_to_index = {},
         key_to_wp_action_name = {},
