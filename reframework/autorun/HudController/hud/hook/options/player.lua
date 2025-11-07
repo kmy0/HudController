@@ -23,11 +23,13 @@ end
 --#region disable_focus_turn
 function this.disable_focus_turn_pre(args)
     local hud_config = common.get_hud()
-    if
-        hud_config
-        and hud.get_hud_option("disable_focus_turn")
-        and not m.isGunnerWeapon(ace_player.get_weapon_type())
-    then
+    if hud_config and hud.get_hud_option("disable_focus_turn") then
+        local wp_type = ace_player.get_weapon_type()
+
+        if m.isGunnerWeapon(wp_type) then
+            return
+        end
+
         local action_id = sdk.to_valuetype(args[4], "ace.ACTION_ID") --[[@as ace.ACTION_ID]]
         data.get_wp_action()
         local key = string.format("%s:%s", action_id._Category, action_id._Index)
@@ -39,6 +41,10 @@ function this.disable_focus_turn_pre(args)
 
         if name == "WP_STEP_SP_ON" then
             return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+
+        if ace_enum.weapon[wp_type] == "LANCE" or ace_enum.weapon[wp_type] == "GUN_LANCE" then
+            return
         end
 
         if name:match("Dodge") and name ~= "Dodge" then
