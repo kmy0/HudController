@@ -483,7 +483,6 @@
 ---@field get_OwnerGimmick fun(self: app.mcGimmick): app.GimmickBaseApp
 
 ---@class app.CharacterBase : app.AppBehavior
----@field get_BaseActionController fun(self: app.CharacterBase): app.cActionController
 ---@field get_Pos fun(self: app.CharacterBase): Vector3f
 
 ---@class app.GUI020016PartsPlayer : app.GUI020016PartsBase

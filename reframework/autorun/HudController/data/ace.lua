@@ -66,8 +66,6 @@
 ---@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
----@field wp_action_to_index table<string, {category: integer, index: integer}>
----@field key_to_wp_action_name table<string, string>
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
 ---@field weapon_binds {
 --- additional_weapon: string[],
@@ -197,8 +195,6 @@ local this = {
             UI090901 = true, -- barrels score
             UI020902 = true,
         },
-        wp_action_to_index = {},
-        key_to_wp_action_name = {},
         log_id_to_text = {},
     },
 }

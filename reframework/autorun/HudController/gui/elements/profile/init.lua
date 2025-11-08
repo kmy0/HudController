@@ -128,13 +128,6 @@ local function draw_options()
     )
 
     util_imgui.separator_text(config.lang:tr("hud.category_player"))
-    check_overriden(
-        set:checkbox(
-            gui_util.tr("hud.box_disable_focus_turn"),
-            string.format("mod.hud.int:%s.disable_focus_turn", config_mod.combo.hud)
-        ),
-        "disable_focus_turn"
-    )
     local box = set:checkbox(
         gui_util.tr("hud.box_hide_danger"),
         string.format("mod.hud.int:%s.hide_danger", config_mod.combo.hud)

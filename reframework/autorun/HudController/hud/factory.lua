@@ -29,7 +29,6 @@
 ---@field hide_small_monsters boolean
 ---@field disable_scar boolean
 ---@field skip_quest_result boolean
----@field disable_focus_turn boolean
 ---@field hide_wounds boolean
 ---@field show_wounds boolean
 ---@field disable_porter_tracking boolean
@@ -83,7 +82,6 @@ function this.get_hud_profile_config(key, name)
         hide_small_monsters = false,
         disable_scar = false,
         skip_quest_result = false,
-        disable_focus_turn = false,
         hide_wounds = false,
         show_wounds = false,
         disable_porter_tracking = false,

@@ -216,7 +216,6 @@ return {
         box_disable_scar = "Disable Wounds",
         box_skip_quest_result = "Skip Quest Result",
         tooltip_skip_quest_result = "You still get all rewards",
-        box_disable_focus_turn = "Disable Focus Mode Aim",
         box_hide_scar = "Hide Wounds",
         box_show_scar = "Always Display Wounds",
         slider_wound_state = "Wounds",

@@ -390,11 +390,6 @@ m.hook(
     hook.options.player.hide_danger_line_post
 )
 m.hook(
-    "app.HunterCharacter.changeActionRequest(app.AppActionDef.LAYER, ace.ACTION_ID, System.Boolean)",
-    hook.options.player.disable_focus_turn_pre
-)
-m.hook("app.HunterCharacter.isEnableAimTurn()", nil, hook.options.player.disable_focus_turn_post)
-m.hook(
     "app.cMasterPlayerControllerEntity.entityUpdate()",
     hook.options.player.hide_weapon_pre,
     hook.options.player.hide_weapon_post
