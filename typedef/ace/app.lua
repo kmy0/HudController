@@ -20,7 +20,6 @@
 ---@class app.cQuestFlowPartsBase : via.clr.ManagedObject
 ---@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
----@class app.GUI020401 : app.GUIBaseApp
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
 ---@class app.GUI020001 : app.GUIHudBase
@@ -398,6 +397,7 @@
 
 ---@class app.GUI020400 : app.GUIBaseApp
 ---@field _SubtitlesCategory app.GUI020400.SUBTITLES_CATEGORY
+---@field _ButtonPanel via.gui.Panel
 
 ---@class app.DialogueManager : ace.DialogueManagerBase
 ---@field get_SubtitleManager fun(self: app.DialogueManager): app.cDialogueSubtitleManager
@@ -614,3 +614,6 @@
 
 ---@class app.GUI020002_AimParts : app.GUI020002_PartsBase
 ---@field _AimPartsPanelList System.Array<via.gui.Panel>
+
+---@class app.GUI020401 : app.GUIBaseApp
+---@field _GroupPanel via.gui.Panel

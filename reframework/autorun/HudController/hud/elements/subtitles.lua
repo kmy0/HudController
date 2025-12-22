@@ -96,11 +96,8 @@ end
 ---@param hudbase app.GUI020400
 ---@return via.gui.Control
 function this:get_scale_panel(hudbase)
-    local root = hudbase._RootWindow
-    return play_object.control.get(root, {
-        "PNL_All",
-        "PNL_Scale",
-    }) --[[@as via.gui.Control]]
+    local pnl = hudbase._ButtonPanel
+    return play_object.control.get_parent(pnl, "PNL_Scale", true) --[[@as via.gui.Control]]
 end
 
 ---@param key HudBaseWriteKey
