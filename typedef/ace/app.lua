@@ -23,7 +23,6 @@
 ---@class app.GUI020401 : app.GUIBaseApp
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
----@class app.GUI020002 : app.GUIHudBase
 ---@class app.GUI020001 : app.GUIHudBase
 ---@class app.MissionGuideGUIParts.TaskPanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.mcGimmickBreak : app.mcGimmick
@@ -40,6 +39,7 @@
 ---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
 ---@class app.GUI090901 : app.GUIHudBase
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
+---@class app.GUI020002_PartsBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -459,6 +459,7 @@
 
 ---@class app.GUI020000 : app.GUIHudBase
 ---@field get__SetMainAmmoType fun(self: app.GUI020000): app.HunterDef.SLINGER_AMMO_TYPE
+---@field _SlingerPanel via.gui.Panel
 
 ---@class app.GUI020202 : app.GUIBaseApp
 ---@field _SkipPanel via.gui.Panel
@@ -607,3 +608,9 @@
 ---@class app.user_data.ChatLogData.cData : ace.user_data.ExcelUserData.cData
 ---@field get_Title fun(self: app.user_data.ChatLogData.cData): System.Guid
 ---@field get_Caption fun(self: app.user_data.ChatLogData.cData): System.Guid
+
+---@class app.GUI020002 : app.GUIHudBase
+---@field _AimParts app.GUI020002_AimParts
+
+---@class app.GUI020002_AimParts : app.GUI020002_PartsBase
+---@field _AimPartsPanelList System.Array<via.gui.Panel>

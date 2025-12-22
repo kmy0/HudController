@@ -28,6 +28,8 @@ function this:new(args, parent)
         if parent:is_GUI020002_visible() then
             parent:reset_slinger()
             return parent:get_GUI020002_pnl()
+        else
+            s:reset()
         end
     end, nil, nil, nil, nil, true)
     setmetatable(o, self)

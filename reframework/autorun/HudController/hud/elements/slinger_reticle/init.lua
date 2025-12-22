@@ -107,14 +107,15 @@ end
 
 ---@return via.gui.Control
 function this:get_GUI020000_pnl()
-    local disp_ctrl = self:get_GUI020000()._DisplayControl
-    return disp_ctrl._TargetControl
+    local pnl = self:get_GUI020000()._SlingerPanel
+    return play_object.control.get_parent(pnl, "PNL_Scale", true) --[[@as via.gui.Control]]
 end
 
 ---@return via.gui.Control
 function this:get_GUI020002_pnl()
-    local disp_ctrl = self:get_GUI020002()._DisplayControl
-    return disp_ctrl._TargetControl
+    local aim_parts = self:get_GUI020002()._AimParts
+    local pnls = aim_parts._AimPartsPanelList
+    return play_object.control.get_parent(pnls:get_Item(0), "PNL_Scale", true) --[[@as via.gui.Control]]
 end
 
 ---@return boolean
