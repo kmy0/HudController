@@ -7,7 +7,6 @@
 ---@class app.cCharacterExtendBase : via.clr.ManagedObject
 ---@class app.GUIBaseApp : ace.GUIBase
 ---@class app.cGUIPartsBaseApp : ace.cGUIPartsBase
----@class app.GUI060001 : app.GUIBaseApp
 ---@class app.MissionGuideGUIParts.SmallMissionPanelBase : app.MissionGuideGUIParts.MissionGuidePartsBase
 ---@class app.GUI020010Accessor : app.cGUIAppAccessorBase
 ---@class app.GUI020006Accessor : app.cGUIAppAccessorBase
@@ -617,3 +616,6 @@
 
 ---@class app.GUI020401 : app.GUIBaseApp
 ---@field _GroupPanel via.gui.Panel
+
+---@class app.GUI060001 : app.GUIBaseApp
+---@field _PanelAll via.gui.Control
