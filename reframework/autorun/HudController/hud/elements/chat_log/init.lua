@@ -130,7 +130,7 @@ function this:new(args)
         function(s, hudbase, gui_id, ctrl)
             local GUI000008 = o:get_GUI000008()
             if GUI000008 then
-                return play_object.control.get(GUI000008._RootWindow, "PNL_All")
+                return play_object.control.get(GUI000008:get_Control(), "PNL_All")
             end
         end
     )
@@ -189,8 +189,8 @@ end
 ---@param hudbase app.GUI020101
 ---@return via.gui.Control
 function this:get_all_panel(hudbase)
-    local root = hudbase._RootWindow
-    return play_object.control.get(root, "PNL_All") --[[@as via.gui.Control]]
+    local pnl = hudbase._PNL_Newmessage
+    return play_object.control.get_parent(pnl, "PNL_All", true) --[[@as via.gui.Control]]
 end
 
 ---@return ChatLogConfig
