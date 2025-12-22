@@ -221,6 +221,14 @@ local control_arguments = {
                 "PNL_gaugeEffectBack00",
             },
         },
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_gaugeMode01",
+                "PNL_gaugeEasy",
+            },
+        },
     },
     gauge = {
         {

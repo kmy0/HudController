@@ -166,6 +166,15 @@ local control_arguments = {
                 "PNL_essyMax01",
             },
         },
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_gaugeMode01",
+                "PNL_gaugeEasy",
+                "PNL_gaugeEasy01",
+            },
+        },
     },
 }
 
