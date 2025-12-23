@@ -347,12 +347,10 @@
 ---@field getPaintBallBeaconListAll fun(self: app.cGUIPaintBallController): System.Array<app.cGUIBeaconBase>
 
 ---@class app.cGUIEMBossBeaconContainer : app.cGUIBeaconContainerBase
----@field _BeaconListSafe ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
----@field _BeaconList ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
+---@field _BeaconListSafe System.Array<app.cGUIBeaconEM>
 
 ---@class app.cGUIEMZakoBeaconContainer : app.cGUIBeaconContainerBase
 ---@field _BeaconListSafe System.Array<app.cGUIBeaconEM>
----@field _BeaconList ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
 
 ---@class app.cEnemyContext : app.cGameContext
 ---@field get_ContinueFlag fun(self: app.cEnemyContext): ace.cSafeContinueFlagGroup

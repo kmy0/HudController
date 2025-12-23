@@ -33,7 +33,6 @@ local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local ace_misc = require("HudController.util.ace.misc")
 local slider = require("HudController.hud.elements.itembar.slider")
-local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local data = require("HudController.data.init")
@@ -173,7 +172,8 @@ end
 ---@return app.GUI020006
 function this:get_GUI020006()
     if not self.GUI020006 then
-        self.GUI020006 = util_game.get_component_any("app.GUI020006") --[[@as app.GUI020006]]
+        local accessor = s.get("app.GUIManager"):get_GUI020006Accessor()
+        self.GUI020006 = accessor.GUIs:get_Item(0)
     end
 
     return self.GUI020006

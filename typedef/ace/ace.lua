@@ -25,10 +25,6 @@
 ---@class ace.minicomponent.cUpdatableBase : ace.minicomponent.cMiniComponent
 ---@class ace.user_data.ExcelUserData.cData : via.clr.ManagedObject
 
----@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
----@field _Array System.Array<any>
----@field _Count System.Int32
-
 ---@class ace.GUIFade : via.Behavior
 ---@field setFadeAlpha fun(self: ace.GUIFade, alpha: System.Single)
 ---@field setFadeColor fun(self: ace.GUIFade, color: via.Color)

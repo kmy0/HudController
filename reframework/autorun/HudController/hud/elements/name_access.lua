@@ -19,6 +19,7 @@
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
+local play_object = require("HudController.hud.play_object.init")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -101,6 +102,25 @@ end
 ---@param val number
 function this:set_npc_draw_distance(val)
     self.npc_draw_distance = val
+end
+
+---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
+function this:get_all_ctrl()
+    ---@type {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
+    local ret = {}
+    local hudbase = self:get_GUI020001()
+    if hudbase then
+        local disp_ctrl = hudbase._DisplayControl
+        local ctrl = disp_ctrl._TargetControl
+        local gui_id = hudbase:get_ID()
+        local pnl = play_object.control.all(ctrl, "PNL_Pat00", "PNL_Pat", true) --[=[@as via.gui.Control[]]=]
+
+        for _, name_pnl in pairs(pnl) do
+            table.insert(ret, { ctrl = name_pnl, hud_base = hudbase, gui_id = gui_id })
+        end
+    end
+
+    return ret
 end
 
 ---@return app.GUI020001?
