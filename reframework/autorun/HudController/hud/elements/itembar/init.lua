@@ -33,6 +33,7 @@ local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local ace_misc = require("HudController.util.ace.misc")
 local slider = require("HudController.hud.elements.itembar.slider")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local data = require("HudController.data.init")
@@ -172,8 +173,7 @@ end
 ---@return app.GUI020006
 function this:get_GUI020006()
     if not self.GUI020006 then
-        local accessor = s.get("app.GUIManager"):get_GUI020006Accessor()
-        self.GUI020006 = accessor.GUIs:get_Item(0)
+        self.GUI020006 = util_mod.get_gui_cls("app.GUI020006")
     end
 
     return self.GUI020006

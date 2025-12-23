@@ -35,8 +35,8 @@ local gauge = require("HudController.hud.elements.stamina.gauge")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
+local util_mod = require("HudController.util.mod.init")
 
 local mod = data.mod
 local ace_enum = data.ace.enum
@@ -253,7 +253,7 @@ end
 ---@return app.GUI020004
 function this:get_GUI020004()
     if not self.GUI020004 then
-        self.GUI020004 = util_game.get_component_any("app.GUI020004")
+        self.GUI020004 = util_mod.get_gui_cls("app.GUI020004")
     end
 
     return self.GUI020004

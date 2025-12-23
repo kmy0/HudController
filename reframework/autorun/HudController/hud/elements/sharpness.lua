@@ -43,7 +43,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -197,7 +197,7 @@ end
 ---@return app.GUI020015
 function this:get_GUI020015()
     if not self.GUI020015 then
-        self.GUI020015 = util_game.get_component_any("app.GUI020015") --[[@as app.GUI020015]]
+        self.GUI020015 = util_mod.get_gui_cls("app.GUI020015") --[[@as app.GUI020015]]
     end
     return self.GUI020015
 end

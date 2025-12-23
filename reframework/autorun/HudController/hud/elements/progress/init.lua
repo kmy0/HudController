@@ -51,9 +51,9 @@ local part_task = require("HudController.hud.elements.progress.task")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
-local s = require("HudController.util.ref.singletons")
 local text_part = require("HudController.hud.elements.progress.text_part")
 local timer = require("HudController.hud.elements.progress.timer")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -145,8 +145,7 @@ end
 ---@return app.GUI020018
 function this:get_GUI020018()
     if not self.GUI020018 then
-        local accessor = s.get("app.GUIManager"):get_GUI020018Accessor()
-        self.GUI020018 = accessor.MissionGuideGUI
+        self.GUI020018 = util_mod.get_gui_cls("app.GUI020018")
     end
     return self.GUI020018
 end

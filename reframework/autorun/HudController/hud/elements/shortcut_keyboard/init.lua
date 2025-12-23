@@ -54,7 +54,7 @@ local pallet = require("HudController.hud.elements.shortcut_keyboard.pallet")
 local play_object = require("HudController.hud.play_object.init")
 local prepare = require("HudController.hud.elements.shortcut_keyboard.prepare")
 local tab = require("HudController.hud.elements.shortcut_keyboard.tab")
-local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -170,7 +170,7 @@ end
 
 function this:get_GUI020600()
     if not self.GUI020600 then
-        self.GUI020600 = util_game.get_component_any("app.GUI020600") --[[@as app.GUI020600]]
+        self.GUI020600 = util_mod.get_gui_cls("app.GUI020600") --[[@as app.GUI020600]]
     end
 
     return self.GUI020600
