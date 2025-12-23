@@ -86,7 +86,6 @@ function this:new(args)
         function(s, hudbase, gui_id, ctrl)
             ---@diagnostic disable-next-line: invisible
             local root = o:_get_panel()
-
             ---@cast hudbase app.GUI060010
             if root then
                 if not hudbase:get_IsActive() then
@@ -124,7 +123,7 @@ end
 function this._get_panel()
     local map3d = s.get("app.GUIManager"):get_MAP3D()
     local GUI060001 = map3d:get_GUIBack()
-    return play_object.control.get_parent(GUI060001._PanelAll, "RootWindow", true)
+    return GUI060001._RootWindow
 end
 
 ---@return MinimapConfig

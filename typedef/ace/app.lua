@@ -7,6 +7,7 @@
 ---@class app.cCharacterExtendBase : via.clr.ManagedObject
 ---@class app.GUIBaseApp : ace.GUIBase
 ---@class app.cGUIPartsBaseApp : ace.cGUIPartsBase
+---@class app.GUI060001 : app.GUIBaseApp
 ---@class app.MissionGuideGUIParts.SmallMissionPanelBase : app.MissionGuideGUIParts.MissionGuidePartsBase
 ---@class app.GUI020010Accessor : app.cGUIAppAccessorBase
 ---@class app.GUI020006Accessor : app.cGUIAppAccessorBase
