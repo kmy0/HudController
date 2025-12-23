@@ -5,7 +5,7 @@ local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
-local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -187,10 +187,11 @@ end
 
 function this.update_chat_log_menu_button_guide_post(retval)
     local chat_log = common.get_elem_t("ChatLog")
+
     if
         chat_log
         and chat_log.children.button_guide:any()
-        and util_game.get_component_any("app.GUI020101")
+        and util_mod.get_gui_cls("app.GUI020101")
     then
         ---@diagnostic disable-next-line: missing-parameter
         chat_log.children.button_guide:write_child()

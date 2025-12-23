@@ -27,7 +27,7 @@ local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -128,7 +128,7 @@ end
 
 ---@return app.GUI600100?
 function this:get_GUI600100()
-    return util_game.get_component_any("app.GUI600100")
+    return util_mod.get_gui_cls("app.GUI600100")
 end
 
 ---@return via.gui.Control?

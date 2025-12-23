@@ -39,7 +39,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local recipient = require("HudController.hud.elements.chat_log.recipient")
 local text_box = require("HudController.hud.elements.chat_log.text_box")
-local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -166,7 +166,7 @@ function this:reset(key)
         return
     end
 
-    local GUI020101 = util_game.get_component_any("app.GUI020101")
+    local GUI020101 = util_mod.get_gui_cls("app.GUI020101")
     if not GUI020101 then
         return
     end
@@ -180,7 +180,7 @@ end
 ---@return app.GUI000008?
 function this:get_GUI000008()
     if not self.GUI000008 then
-        self.GUI000008 = util_game.get_component_any("app.GUI000008")
+        self.GUI000008 = util_mod.get_gui_cls("app.GUI000008")
     end
 
     return self.GUI000008

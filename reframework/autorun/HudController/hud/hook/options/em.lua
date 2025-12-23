@@ -5,6 +5,7 @@ local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -16,9 +17,7 @@ local clear_map_navi = true
 
 ---@return boolean
 local function clear_map_navi_lines()
-    local guiman = s.get("app.GUIManager")
-    local GUI060002Accessor = guiman:get_GUI060002Accessor()
-    local GUI060002 = GUI060002Accessor.GUIs:get_Item(0) --[[@as app.GUI060002]]
+    local GUI060002 = util_mod.get_gui_cls("app.GUI060002")
     local icon_ctrl = GUI060002:get_IconController()
     if icon_ctrl then
         local line_ctrl = icon_ctrl._LineCtrl

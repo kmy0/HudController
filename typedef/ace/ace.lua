@@ -40,6 +40,7 @@
 
 ---@class ace.GUIManagerBase : ace.GAElement
 ---@field get_LastInputDeviceIgnoreMouseMove fun(self: ace.GUIManagerBase): ace.GUIDef.INPUT_DEVICE
+---@field getGUI fun(self: ace.GUIManagerBase, gui_id: app.GUIID.ID): ace.GUIBase
 
 ---@class ace.GUIBase : ace.GUIBaseCore
 ---@field get_ID fun(self: ace.GUIBase): app.GUIID.ID

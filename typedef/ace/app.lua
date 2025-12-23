@@ -9,9 +9,6 @@
 ---@class app.cGUIPartsBaseApp : ace.cGUIPartsBase
 ---@class app.GUI060001 : app.GUIBaseApp
 ---@class app.MissionGuideGUIParts.SmallMissionPanelBase : app.MissionGuideGUIParts.MissionGuidePartsBase
----@class app.GUI020010Accessor : app.cGUIAppAccessorBase
----@class app.GUI020006Accessor : app.cGUIAppAccessorBase
----@class app.GUI060002Accessor : app.cGUIAppAccessorBase
 ---@class app.StatusIconManager : app.StatusIconManagerBase
 ---@class app.GUI020010 : app.GUIHudBase
 ---@class app.GUI020008 : app.GUIHudBase
@@ -47,10 +44,6 @@
 
 ---@class app.GUIManager : ace.GUIManagerBase
 ---@field get_HudDisplayManager fun(self: app.GUIManager): app.cGUIHudDisplayManager
----@field get_GUI020018Accessor fun(self: app.GUIManager): app.GUI020018Accessor
----@field get_GUI020006Accessor fun(self: app.GUIManager): app.GUI020006Accessor
----@field get_GUI020100Accessor fun(self: app.GUIManager): app.GUI020010Accessor
----@field get_GUI060002Accessor fun(self: app.GUIManager): app.GUI060002Accessor
 ---@field get_MAP3D fun(self: app.GUIManager): app.cGUIMapController
 ---@field set_IsAllSliderMode fun(self: app.GUIManager, state: System.Boolean)
 -- bool sets <SelectedIndexRequest>k__BackingField to true
@@ -61,12 +54,6 @@
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIBack fun(self: app.cGUIMapController): app.GUI060001
 ---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
-
----@class app.GUI020018Accessor : app.cGUIAppAccessorBase
----@field MissionGuideGUI app.GUI020018
-
----@class app.cGUIAppAccessorBase : via.clr.ManagedObject
----@field GUIs System.Array<ace.GUIBase>
 
 ---@class app.cGUIHudDisplayManager : via.clr.ManagedObject
 ---@field findDisplayControl fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.cGUIHudDisplayControl?
