@@ -19,6 +19,7 @@
 ---@class app.cGUIBeaconContainerBase : via.clr.ManagedObject
 ---@class app.cQuestFlowPartsBase : via.clr.ManagedObject
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
+---@class app.GUI020401 : app.GUIBaseApp
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
 ---@class app.GUI020001 : app.GUIHudBase
@@ -399,7 +400,6 @@
 
 ---@class app.GUI020400 : app.GUIBaseApp
 ---@field _SubtitlesCategory app.GUI020400.SUBTITLES_CATEGORY
----@field _ButtonPanel via.gui.Panel
 
 ---@class app.DialogueManager : ace.DialogueManagerBase
 ---@field get_SubtitleManager fun(self: app.DialogueManager): app.cDialogueSubtitleManager
