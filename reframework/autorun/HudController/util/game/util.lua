@@ -173,6 +173,32 @@ function this.do_something(system_array, something, reverse)
 end
 
 ---@generic T
+---@param dynamic_array T[]
+---@param something fun(system_array: System.Array<T>, index: integer, value: T): boolean?
+---@param reverse boolean?
+function this.do_something_dynamic(dynamic_array, something, reverse)
+    ---@diagnostic disable-next-line: undefined-field, no-unknown
+    local size = dynamic_array._Count - 1
+    local array = dynamic_array._Array --[[@as System.Array<any>]]
+
+    if reverse then
+        for i = size, 0, -1 do
+            ---@diagnostic disable-next-line: undefined-field
+            if something(array, i, array:get_Item(i)) == false then
+                break
+            end
+        end
+    else
+        for i = 0, size do
+            ---@diagnostic disable-next-line: undefined-field
+            if something(array, i, array:get_Item(i)) == false then
+                break
+            end
+        end
+    end
+end
+
+---@generic T
 ---@param type `T`
 ---@return T?
 function this.get_component_any_cached(type)

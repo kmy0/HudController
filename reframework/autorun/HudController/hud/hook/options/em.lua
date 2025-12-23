@@ -73,8 +73,7 @@ function this.hide_monster_icon_pre(args)
 
         local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
         local beacons = beacon_man:get_EmBossBeaconContainer()
-
-        util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
+        util_game.do_something_dynamic(beacons._BeaconList, function(system_array, index, value)
             local ctx = value:getGameContext()
             if not ace_em.is_paintballed_ctx(ctx) then
                 local flags = ctx:get_ContinueFlag()
@@ -185,7 +184,7 @@ function this.hide_small_monsters_pre(args)
         local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
         local beacons = beacon_man:get_EmZakoBeaconContainer()
 
-        util_game.do_something(beacons._BeaconListSafe, function(system_array, index, value)
+        util_game.do_something_dynamic(beacons._BeaconList, function(system_array, index, value)
             ace_em.destroy_em_ctx(value:get_ContextHolder())
         end)
     end
