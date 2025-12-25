@@ -17,7 +17,6 @@
 ---@class app.user_data.OptionData.Item : app.user_data.OptionData.Base
 ---@class app.cGUIBeaconContainerBase : via.clr.ManagedObject
 ---@class app.cQuestFlowPartsBase : via.clr.ManagedObject
----@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
 ---@class app.cGUIFlowContextBaseApp : ace.cGUIFlowContextBase
 ---@class app.GUI020003 : app.GUIGaugeHudBase
 ---@class app.GUI020020.DAMAGE_INFO : System.ValueType
@@ -37,6 +36,7 @@
 ---@class app.GUI090901 : app.GUIHudBase
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
 ---@class app.GUI020002_PartsBase : via.clr.ManagedObject
+---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -52,6 +52,7 @@
 -- bool sets <SelectedIndexRequest>k__BackingField to true
 ---@field addActiveItem fun(self: app.GUIManager, item_id: app.ItemDef.ID, bool: System.Boolean)
 ---@field get_AppContinueFlag fun(self: app.GUIManager): ace.cSafeContinueFlag
+---@field getQuestResult fun(self: app.GUIManager): app.cGUISystemModuleQuestResult
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIBack fun(self: app.cGUIMapController): app.GUI060001
@@ -380,6 +381,7 @@
 ---@class app.GUIFlowQuestResult.cContext : app.cGUIFlowContextBaseApp
 ---@field getMode fun(self: app.GUIFlowQuestResult.cContext): app.cGUIQuestResultInfo.MODE
 ---@field set_SkipReward fun(self: app.GUIFlowQuestResult.cContext, val: System.Boolean)
+---@field get_IsJudge fun(self: app.GUIFlowQuestResult.cContext): System.Boolean
 
 ---@class app.GUIFlowQuestResult.Flow.SeamlessResultList : app.cGUIFlowBaseApp
 ---@field endFlow fun(self: app.GUIFlowQuestResult.Flow.SeamlessResultList)
@@ -622,3 +624,19 @@
 
 ---@class app.GUI020101 : app.GUIBaseApp
 ---@field _PNL_Newmessage via.gui.Panel
+
+---@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
+---@field get_Context fun(self: app.cGUIFlowBaseApp): app.GUIFlowQuestResult.cContext
+
+---@class app.cGUISystemModuleQuestResult : ace.cGUISystemModuleBase
+---@field get_QuestResult fun(self: app.cGUISystemModuleQuestResult): app.cGUIQuestResultInfo
+
+---@class app.cGUIQuestResultInfo : via.clr.ManagedObject
+---@field get_JudgeItems fun(self: app.cGUIQuestResultInfo): app.cGUIRewardItems
+
+---@class app.cGUIRewardItems : via.clr.ManagedObject
+---@field get_ItemInfoList fun(self: app.cGUIRewardItems): System.Array<app.cSendItemInfo>
+
+---@class app.cSendItemInfo : app.cReceiveItemInfo
+-- bool1 = true, bool2 = false when receiving appraisal items
+---@field getReward fun(self: app.cSendItemInfo, bool1: System.Boolean, bool2: System.Boolean)

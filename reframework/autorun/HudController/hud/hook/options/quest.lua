@@ -157,6 +157,18 @@ function this.hide_quest_result_post(retval)
         return
     end
 
+    local flow_ctx = flow:get_Context()
+    if flow_ctx:get_IsJudge() then
+        local module_quest_result = s.get("app.GUIManager"):getQuestResult()
+        local quest_result = module_quest_result:get_QuestResult()
+        local judge_items = quest_result:get_JudgeItems()
+        local item_infos = judge_items:get_ItemInfoList()
+
+        util_game.do_something(item_infos, function(system_array, index, value)
+            value:getReward(true, false)
+        end)
+    end
+
     if skip then
         flow:endFlow()
     elseif
