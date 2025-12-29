@@ -12,6 +12,7 @@ local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local rl = game_data.reverse_lookup
@@ -22,7 +23,7 @@ local handler = {
     hidden = false,
 }
 
----@return System.Array<app.OtomoCharacter>?
+---@return app.OtomoCharacter[]?
 local function get_pets()
     local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
     if quest_dir:isPlayingQuest() or util_game.get_component_any("app.OtomoDoll") then
@@ -34,7 +35,18 @@ local function get_pets()
         return
     end
 
-    return util_game.get_all_components("app.OtomoCharacter"):add_ref()
+    ---@type app.OtomoCharacter[]
+    local ret = {}
+    util_game.do_something(
+        util_game.get_all_components("app.OtomoCharacter"),
+        function(system_array, index, value)
+            if value:get_OwnerHunterCharacter() then
+                table.insert(ret, value)
+            end
+        end
+    )
+
+    return ret
 end
 
 function this.hide_handler_post(retval)
@@ -120,7 +132,7 @@ function this.hide_pet_pre(args)
         util_misc.try(function()
             local pets = get_pets()
             if pets then
-                util_game.do_something(pets, function(system_array, index, value)
+                util_table.do_something(pets, function(t, key, value)
                     value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
                 end)
             end

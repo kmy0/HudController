@@ -556,6 +556,7 @@
 
 ---@class app.OtomoCharacter : app.CharacterBase
 ---@field onOtomoContinueFlag fun(self: app.OtomoCharacter, flag: app.OtomoDef.CONTINUE_FLAG)
+---@field get_OwnerHunterCharacter fun(self: app.OtomoCharacter): app.HunterCharacter
 
 ---@class app.ContextManager : ace.GAElement
 ---@field requestRemoveContext_Enemy fun(self: app.ContextManager, handle: app.CONTEXT_HANDLE)
