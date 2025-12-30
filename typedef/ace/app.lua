@@ -35,7 +35,6 @@
 ---@class app.FacilityBase : via.clr.ManagedObject
 ---@class app.GUI090901 : app.GUIHudBase
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
----@class app.GUI020002_PartsBase : via.clr.ManagedObject
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 
@@ -598,21 +597,6 @@
 ---@class app.user_data.ChatLogData.cData : ace.user_data.ExcelUserData.cData
 ---@field get_Title fun(self: app.user_data.ChatLogData.cData): System.Guid
 ---@field get_Caption fun(self: app.user_data.ChatLogData.cData): System.Guid
-
----@class app.GUI020002 : app.GUIHudBase
----@field _AimParts app.GUI020002_AimParts
-
----@class app.GUI020002_AimParts : app.GUI020002_PartsBase
----@field _AimPartsPanelList System.Array<via.gui.Panel>
-
----@class app.GUI020401 : app.GUIBaseApp
----@field _GroupPanel via.gui.Panel
-
----@class app.GUI060001 : app.GUIBaseApp
----@field _PanelAll via.gui.Control
-
----@class app.GUI020101 : app.GUIBaseApp
----@field _PNL_Newmessage via.gui.Panel
 
 ---@class app.cGUIFlowBaseApp : ace.cGUIFlowBase
 ---@field get_Context fun(self: app.cGUIFlowBaseApp): app.GUIFlowQuestResult.cContext
