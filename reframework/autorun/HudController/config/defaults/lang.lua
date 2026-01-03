@@ -343,7 +343,7 @@ return {
             box_hide_map_visible = "Hide When Map Visible",
             category_tools = "Tools",
             button_send = "Send",
-            box_cache_messages = "Cache Messages",
+            box_cache_messages = "Log Messages",
             button_clear = "Clear",
             box_no_hide_elements = "Do Not Hide Elements",
             category_notice_system_id = "System Message ID",
