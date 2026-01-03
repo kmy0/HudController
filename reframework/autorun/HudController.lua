@@ -421,6 +421,11 @@ m.hook(
     hook.misc.reset_cache_post
 )
 --#endregion
+m.hook(
+    "app.SoundDialogueTriggerManager.shouldTrigger(app.DialogueDef.DialogueVoiceParam, soundlib.SoundContainer, System.UInt32)",
+    hook.options.misc.mute_gossip_subtitles_pre,
+    hook.options.misc.mute_gossip_subtitles_post
+)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then

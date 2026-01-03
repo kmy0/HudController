@@ -640,3 +640,6 @@
 ---@class app.cSendItemInfo : app.cReceiveItemInfo
 -- bool1 = true, bool2 = false when receiving appraisal items
 ---@field getReward fun(self: app.cSendItemInfo, bool1: System.Boolean, bool2: System.Boolean)
+
+---@class app.DialogueDef.DialogueVoiceParam : via.clr.ManagedObject
+---@field TalkType app.DialogueType.TYPE

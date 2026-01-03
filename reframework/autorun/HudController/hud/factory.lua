@@ -34,6 +34,7 @@
 ---@field disable_porter_tracking boolean
 ---@field hide_weapon boolean
 ---@field hide_pet boolean
+---@field mute_gossip boolean
 
 local data = require("HudController.data.init")
 local hud_elements = require("HudController.hud.elements.init")
@@ -88,6 +89,7 @@ function this.get_hud_profile_config(key, name)
         disable_porter_tracking = false,
         hide_weapon = false,
         hide_pet = false,
+        mute_gossip = false,
     }
 end
 

@@ -224,6 +224,7 @@ return {
         tooltip_hide_weapon = "Hide weapon when not drawn",
         box_hide_pet = "Hide Palico",
         tooltip_hide_pet = "Hide Palico outside of quests",
+        box_mute_gossip = "Mute Gossip Dialogue",
     },
     hud_element = {
         combo = "Hud Element",

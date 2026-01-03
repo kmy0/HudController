@@ -122,7 +122,13 @@ local function draw_options()
         ),
         "hide_subtitles"
     )
-
+    check_overriden(
+        set:checkbox(
+            gui_util.tr("hud.box_mute_gossip"),
+            string.format("mod.hud.int:%s.mute_gossip", config_mod.combo.hud)
+        ),
+        "mute_gossip"
+    )
     check_overriden(
         set:checkbox(
             gui_util.tr("hud.box_disable_area_intro"),

@@ -43,6 +43,29 @@ function this.hide_gossip_subtitles_pre(args)
     end
 end
 
+function this.mute_gossip_subtitles_pre(args)
+    local hud_config = common.get_hud()
+    if not hud_config then
+        return
+    end
+
+    if hud.get_hud_option("mute_gossip") then
+        local param = sdk.to_managed_object(args[3]) --[[@as app.DialogueDef.DialogueVoiceParam]]
+        local type = param.TalkType
+
+        if type == rl(ace_enum.dialog, "GOSSIP") or type == rl(ace_enum.dialog, "NAGARA") then
+            ---@diagnostic disable-next-line: no-unknown
+            thread.get_hook_storage()["mute"] = true
+        end
+    end
+end
+
+function this.mute_gossip_subtitles_post(args)
+    if thread.get_hook_storage()["mute"] then
+        return false
+    end
+end
+
 function this.disable_area_intro_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("disable_area_intro") then
