@@ -30,15 +30,11 @@ function this.draw()
     local config_mod = config.current.mod
     state.update_state()
 
-    imgui.set_next_window_pos(
-        Vector2f.new(gui_main.pos_x, gui_main.pos_y),
-        not state.redo_win_pos.main and this.window.condition or nil
-    )
+    imgui.set_next_window_pos(Vector2f.new(gui_main.pos_x, gui_main.pos_y), this.window.condition)
     imgui.set_next_window_size(
         Vector2f.new(gui_main.size_x, gui_main.size_y),
-        not state.redo_win_pos.main and this.window.condition or nil
+        this.window.condition
     )
-    state.redo_win_pos.main = false
 
     if config.lang.font then
         imgui.push_font(config.lang.font)

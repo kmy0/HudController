@@ -4,7 +4,6 @@
 ---@field grid_ratio string[]
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
----@field redo_win_pos RedoWinPos
 ---@field set ImguiConfigSet
 ---@field state {
 --- l1_pressed: boolean,
@@ -176,10 +175,6 @@ local this = {
         ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
         ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
     },
-    redo_win_pos = {
-        main = false,
-        debug = false,
-    },
     state = {
         l1_pressed = false,
     },
@@ -208,11 +203,6 @@ function this.translate_combo()
     this.combo.option_mod_bind:translate()
     this.combo.hud_elem:translate()
     this.combo.bind_action_type:translate()
-end
-
-function this.reapply_win_pos()
-    this.redo_win_pos.main = true
-    this.redo_win_pos.debug = true
 end
 
 ---@return boolean, string

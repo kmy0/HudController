@@ -24,7 +24,6 @@ local function reinit()
     state.translate_combo()
     hud.manager.reinit()
     hud.operations.reload()
-    state.reapply_win_pos()
     user.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
@@ -116,7 +115,6 @@ function this.draw()
             if state.input_action ~= config.selector.sorted[config_sel.combo_file] then
                 config.selector:rename_current_file(state.input_action)
                 state.combo.config:swap(config.selector.sorted)
-                state.reapply_win_pos()
             end
 
             state.input_action = nil

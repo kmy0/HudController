@@ -247,15 +247,11 @@ function this.draw()
     local gui_debug = config.gui.current.gui.debug
     local config_debug = config.debug.current.debug
 
-    imgui.set_next_window_pos(
-        Vector2f.new(gui_debug.pos_x, gui_debug.pos_y),
-        not state.redo_win_pos.debug and this.window.condition or nil
-    )
+    imgui.set_next_window_pos(Vector2f.new(gui_debug.pos_x, gui_debug.pos_y), this.window.condition)
     imgui.set_next_window_size(
         Vector2f.new(gui_debug.size_x, gui_debug.size_y),
-        not state.redo_win_pos.debug and this.window.condition or nil
+        this.window.condition
     )
-    state.redo_win_pos.debug = false
 
     if config.lang.font then
         imgui.push_font(config.lang.font)
