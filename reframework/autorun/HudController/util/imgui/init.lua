@@ -251,6 +251,8 @@ function this.menu_item(label, selected_obj, enabled_obj)
 end
 
 ---@param key string
+---@param offset_x number?
+---@param offset_y number?
 function this.open_popup(key, offset_x, offset_y)
     offset_x = offset_x or 0
     offset_y = offset_y or 0
