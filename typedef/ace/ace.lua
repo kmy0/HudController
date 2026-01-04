@@ -44,7 +44,6 @@
 
 ---@class ace.GUIBase : ace.GUIBaseCore
 ---@field get_ID fun(self: ace.GUIBase): app.GUIID.ID
----@field get_GUIController fun(self: ace.GUIBase): via.gui.GUIController
 ---@field _RootWindow via.gui.Control
 ---@field _PartsList System.Array<ace.cGUIPartsBase>
 ---@field _InputCtrls System.Array<ace.cGUIInputCtrl>
