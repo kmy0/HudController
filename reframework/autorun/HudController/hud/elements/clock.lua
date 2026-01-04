@@ -155,7 +155,8 @@ function this:is_map_visible()
     if not self.map_component then
         local map3d = s.get("app.GUIManager"):get_MAP3D()
         local GUI060000 = map3d:get_GUIFront()
-        self.map_component = GUI060000._GUI
+        local gui_ctrl = GUI060000:get_GUIController()
+        self.map_component = gui_ctrl:get_Component()
     end
 
     if not self.map_component then
