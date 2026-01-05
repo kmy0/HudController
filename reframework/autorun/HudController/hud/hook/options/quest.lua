@@ -234,7 +234,7 @@ function this.skip_bowling_result_pre(args)
         end)
 
         local reult_end = sdk.to_managed_object(args[2]) --[[@as app.cBowlingUpdater.cUpdater_ResultEnd]]
-        reult_end._isEnd = true
+        reult_end:setEndTrue()
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end

@@ -32,11 +32,11 @@
 ---@class app.GUI060000 : app.GUIBaseApp
 ---@class app.CONTEXT_HANDLE : System.ValueType
 ---@class app.FacilityBase : via.clr.ManagedObject
----@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
 ---@class app.GUI090901 : app.GUIHudBase
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
 ---@class app.GUI020002_PartsBase : via.clr.ManagedObject
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
+---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -590,8 +590,8 @@
 ---@class app.cBowlingUpdater : via.clr.ManagedObject
 ---@field get_TotalScoreRank fun(self): app.BowlingDef.RANK
 
----@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
----@field _isEnd System.Boolean
+---@class app.cBowlingUpdater.UpdaterBase : via.clr.ManagedObject
+---@field setEndTrue fun(self: app.cBowlingUpdater.UpdaterBase)
 
 ---@class app.GUI020600 : app.GUIHudBase
 ---@field _IsOpen System.Boolean
