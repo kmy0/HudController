@@ -1,3 +1,4 @@
+local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
@@ -169,7 +170,7 @@ function this.update_barrel_score_post(retval)
     local barrel_score, guiid = common.get_elem_consume_t("BarrelScore", "UI090901")
     if barrel_score and guiid then
         local GUI090901 = util_ref.get_this() --[[@as app.GUI090901]]
-        local disp_ctrl = GUI090901._DisplayControl
+        local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(guiid) --[[@as app.cGUIHudDisplayControl]]
         barrel_score:write(GUI090901, guiid, disp_ctrl._TargetControl)
     end
 end

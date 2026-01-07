@@ -31,6 +31,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local mantle = require("HudController.hud.elements.itembar.mantle")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local ace_misc = require("HudController.util.ace.misc")
 local slider = require("HudController.hud.elements.itembar.slider")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
@@ -153,7 +154,7 @@ end
 ---@return via.gui.Control?
 function this:get_mantle()
     local GUI020006 = self:get_GUI020006()
-    local disp_ctrl = GUI020006._DisplayControl
+    local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(GUI020006:get_ID()) --[[@as app.cGUIHudDisplayControl]]
 
     local mantle_ctrl = util_table.normalize(
         ---@diagnostic disable-next-line: param-type-mismatch
