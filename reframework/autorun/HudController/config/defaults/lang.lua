@@ -471,5 +471,7 @@ return {
         list = "List",
         new_message = "New Message",
         recipient = "Recipient",
+        icon_frame = "Icon Frame",
+        cursor = "Cursor",
     },
 }

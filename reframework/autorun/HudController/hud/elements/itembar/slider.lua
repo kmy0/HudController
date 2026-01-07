@@ -11,6 +11,9 @@
 --- keys: HudChild,
 --- text: CtrlChild,
 --- background: CtrlChild,
+--- frame: CtrlChild,
+--- icon_frame: CtrlChild,
+--- cursor: CtrlChild,
 --- slider_part: HudChild,
 --- slider_state: HudChild,
 --- slider_animation: HudChild,
@@ -25,6 +28,9 @@
 --- keys: HudChildConfig,
 --- text: CtrlChildConfig,
 --- background: CtrlChildConfig,
+--- frame: CtrlChildConfig,
+--- icon_frame: CtrlChildConfig,
+--- cursor: CtrlChildConfig,
 --- slider_part: HudChildConfig,
 --- slider_state: HudChildConfig,
 --- slider_animation: HudChildConfig,
@@ -36,6 +42,9 @@
 ---@field keys PlayObjectGetterFn[]
 ---@field text PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
+---@field frame PlayObjectGetterFn[]
+---@field icon_frame PlayObjectGetterFn[]
+---@field cursor PlayObjectGetterFn[]
 ---@field slider_state PlayObjectGetterFn[]
 ---@field slider_animation PlayObjectGetterFn[]
 ---@field mantle_state PlayObjectGetterFn[]
@@ -103,6 +112,74 @@ local control_arguments = {
                 "PNL_ISList",
                 "PNL_blur1",
             },
+        },
+        {
+            play_object.control.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+                "PNL_blur0",
+            },
+        },
+    },
+    frame = {
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "mat_frame03",
+            "via.gui.Material",
+        },
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "mat_frame04",
+            "via.gui.Material",
+        },
+    },
+    icon_frame = {
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "mat_frame02",
+            "via.gui.Material",
+        },
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "tex_base00",
+            "via.gui.Texture",
+        },
+    },
+    cursor = {
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "tex_Active",
+            "via.gui.Texture",
+        },
+        {
+            play_object.child.get,
+            {
+                "PNL_ISActive",
+                "PNL_ISList",
+            },
+            "tex_Active1",
+            "via.gui.Texture",
         },
     },
     slider_state = {
@@ -183,6 +260,19 @@ function this:new(args, parent)
             return play_object.iter_args(ctrl, control_arguments.background)
         end
     )
+    o.children.frame = ctrl_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.frame)
+    end)
+    o.children.icon_frame = ctrl_child:new(
+        args.children.icon_frame,
+        o,
+        function(s, hudbase, gui_id, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.icon_frame)
+        end
+    )
+    o.children.cursor = ctrl_child:new(args.children.cursor, o, function(s, hudbase, gui_id, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.cursor)
+    end)
     o.children.slider_part = hud_child:new(
         args.children.slider_part,
         o,
@@ -365,6 +455,9 @@ function this.get_config()
     children.keys = { name_key = "keybind", hide = false }
     children.text = { name_key = "text", hide = false }
     children.background = { name_key = "background", hide = false }
+    children.frame = { name_key = "frame", hide = false }
+    children.icon_frame = { name_key = "icon_frame", hide = false }
+    children.cursor = { name_key = "cursor", hide = false }
     children.slider_part = { name_key = "slider_part", hide = false }
     children.slider_state = { name_key = "__slider_state", play_state = "" }
     children.slider_animation = { name_key = "__slider_animation", play_state = "" }
