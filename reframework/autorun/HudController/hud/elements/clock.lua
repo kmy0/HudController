@@ -1,6 +1,5 @@
 ---@class (exact) Clock : HudBase
 ---@field hide_map_visible boolean
----@field map_component via.gui.GUI?
 ---@field get_config fun(): ClockConfig
 ---@field reset fun(self: Clock, key: ClockWriteKey)
 ---@field mark_write fun(self: Clock, key: ClockProperty)
@@ -23,12 +22,12 @@
 ---@field frame PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
 
+local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-local s = require("HudController.util.ref.singletons")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -116,7 +115,7 @@ end
 ---@return boolean
 function this:_write(ctrl)
     if self.hide_map_visible then
-        if self:is_map_visible() then
+        if ace_misc.is_map_open() then
             ctrl:set_ForceInvisible(true)
             return false
         else
@@ -148,22 +147,6 @@ function this:set_hide_map_visible(hide)
         self:mark_write("hide_map_visible")
     end
     self.hide_map_visible = hide
-end
-
----@return boolean
-function this:is_map_visible()
-    if not self.map_component then
-        local map3d = s.get("app.GUIManager"):get_MAP3D()
-        local GUI060000 = map3d:get_GUIFront()
-        local gui_ctrl = GUI060000:get_GUIController()
-        self.map_component = gui_ctrl:get_Component()
-    end
-
-    if not self.map_component then
-        return false
-    end
-
-    return self.map_component:get_Enabled()
 end
 
 ---@return ClockConfig
