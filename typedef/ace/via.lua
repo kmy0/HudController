@@ -30,6 +30,16 @@
 ---@field x System.Int32
 ---@field y System.Int32
 
+---@class via.Position
+---@field x System.Double
+---@field y System.Double
+---@field z System.Double
+
+---@class via.Float3
+---@field x System.Single
+---@field y System.Single
+---@field z System.Single
+
 ---@class via.Color
 ---@field rgba System.UInt32
 

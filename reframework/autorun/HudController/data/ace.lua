@@ -72,6 +72,7 @@
 --- game_mode: string[],
 --- pl_state: string[],
 --- }
+---@field map_icon_filter_name_guid_to_index table<string, integer>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -196,6 +197,16 @@ local this = {
             UI020902 = true,
         },
         log_id_to_text = {},
+        map_icon_filter_name_guid_to_index = {
+            ["a4bc964b-b3e8-4701-8bac-f693dde2321a"] = 0,
+            ["9ed781c6-9349-44b5-816c-fee02980792f"] = 1,
+            ["816f3ad4-d696-445a-b088-6a5461fd0842"] = 2,
+            ["a5539fcf-e6f6-47ae-89d8-ce840ee1b7a1"] = 3,
+            ["e79aa493-b68d-45fe-8d5e-6ff90f26cb27"] = 4,
+            ["401ea0fa-2c9e-4617-9dc8-227d847ec67a"] = 5,
+            ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
+            ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
+        },
     },
 }
 
