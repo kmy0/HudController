@@ -35,6 +35,8 @@ local all_bools = {
     "enabled_page_alignment",
     "enabled_num_offset_x",
     "enabled_clock_offset_x",
+    "enabled_fov",
+    "enabled_icon_scale",
 }
 
 ---@class Separator

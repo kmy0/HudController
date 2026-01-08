@@ -25,6 +25,7 @@
 ---@field config Combo
 ---@field config_backup Combo
 ---@field log_id Combo
+---@field map_filter Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -43,8 +44,10 @@ local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
+local game_lang = require("HudController.util.game.lang")
 local gui_util = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
@@ -139,6 +142,7 @@ local this = {
                 util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
             )
         end),
+        map_filter = combo:new(),
     },
     grid_ratio = {
         "1",
@@ -175,6 +179,17 @@ local this = {
         ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
         ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
     },
+    map_filter = {
+        ["option_disable"] = -1,
+        ["a4bc964b-b3e8-4701-8bac-f693dde2321a"] = 0,
+        ["9ed781c6-9349-44b5-816c-fee02980792f"] = 1,
+        ["816f3ad4-d696-445a-b088-6a5461fd0842"] = 2,
+        ["a5539fcf-e6f6-47ae-89d8-ce840ee1b7a1"] = 3,
+        ["e79aa493-b68d-45fe-8d5e-6ff90f26cb27"] = 4,
+        ["401ea0fa-2c9e-4617-9dc8-227d847ec67a"] = 5,
+        ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
+        ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
+    },
     state = {
         l1_pressed = false,
     },
@@ -197,12 +212,26 @@ this.combo.item_decide._translate = function(key)
     return this.item_decide[key].value
 end
 
+this.combo.map_filter.sort = function(a, b)
+    return this.map_filter[a.key] < this.map_filter[b.key]
+end
+this.combo.map_filter._translate = function(key)
+    if key == "option_disable" then
+        return config.lang:tr("hud.option_disable")
+    end
+    local lang = game_lang.get_language()
+    local guid = util_ref.value_type("System.Guid")
+    guid = guid:Parse(key)
+    return game_lang.get_message_local(guid, lang, true)
+end
+
 function this.translate_combo()
     this.combo.item_decide:translate()
     this.combo.option_bind:translate()
     this.combo.option_mod_bind:translate()
     this.combo.hud_elem:translate()
     this.combo.bind_action_type:translate()
+    this.combo.map_filter:translate()
 end
 
 ---@return boolean, string
@@ -233,6 +262,7 @@ function this.init()
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
     this.combo.log_id:swap(ace_enum.log_id)
+    this.combo.map_filter:swap(this.map_filter)
     this.translate_combo()
 end
 

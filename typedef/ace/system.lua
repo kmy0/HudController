@@ -13,6 +13,7 @@
 ---@class System.Enum : integer, System.ValueType
 ---@class System.Single : number, System.ValueType
 ---@class System.Type : System.Reflection.MemberInfo
+---@class System.Double : number, System.ValueType
 
 ---@class System.String : string, via.clr.ManagedObject
 ---@field ToString fun(self: System.String): System.String
@@ -31,6 +32,7 @@
 ---@field mData4_5 System.Byte
 ---@field mData4_6 System.Byte
 ---@field mData4_7 System.Byte
+---@field Parse fun(self: System.Guid, guid_string: string): System.Guid
 
 ---@class System.Nullable<T> : System.ValueType
 ---@field _Value any
