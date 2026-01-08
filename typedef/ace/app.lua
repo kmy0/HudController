@@ -37,6 +37,7 @@
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
+---@class app.cGUIMapPlayerIconController.cMasterPlayerIcon : app.cGUIMapPlayerIconController.cPlayerIconBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -518,6 +519,7 @@
 
 ---@class app.cGUI3DMapIconModelContoller : app.cGUI3DMapModelContollerBase
 ---@field _LineCtrl app.cGUILineModelController
+---@field _PLIconCtrl app.cGUIMapPlayerIconController
 
 ---@class app.cGUILineModelController : via.clr.ManagedObject
 ---@field _Handlers System.Array<app.cGUILineModelController.cGUILineModelHandler>
@@ -616,3 +618,30 @@
 
 ---@class app.DialogueDef.DialogueVoiceParam : via.clr.ManagedObject
 ---@field TalkType app.DialogueType.TYPE
+
+---@class app.cGUIMapCameraController : via.clr.ManagedObject
+---@field _GUICameraParam app.cGUICameraParam
+
+---@class app.cGUICameraParam : via.clr.ManagedObject
+---@field _CurrentCameraParamArg app.cGUICameraParam.cCameraParamArg
+
+---@class app.cGUICameraParam.cCameraParamArg : via.clr.ManagedObject
+---@field set_AttachUPos fun(self: app.cGUICameraParam.cCameraParamArg, pos: via.Position)
+---@field _FOV System.Single
+
+---@class app.cGUIMapIconModelSize : via.clr.ManagedObject
+---@field _IconSizeParam ace.cGUIParamFloat3
+
+---@class app.cGUIFilteringSortPartsCtrl : via.clr.ManagedObject
+
+---@class app.cGUIMapPlayerIconController : via.clr.ManagedObject
+---@field _MasterPlayerIcon app.cGUIMapPlayerIconController.cMasterPlayerIcon
+
+---@class app.cGUIMapPlayerIconController.cPlayerIconBase : via.clr.ManagedObject
+---@field _PlIconPanel via.gui.Panel
+
+---@class app.GUI060101 : app.GUIBaseApp
+---@field _FilterList app.cGUI060101FilterList
+
+---@class app.cGUI060101FilterList : app.cGUIPartsBaseApp
+---@field _FilteringPartsCtrl app.cGUIFilteringSortPartsCtrl

@@ -10,6 +10,7 @@ local this = {
     name_access = require("HudController.hud.hook.elements.name_access"),
     shortcut_keyboard = require("HudController.hud.hook.elements.shortcut_keyboard"),
     chat_log = require("HudController.hud.hook.elements.chat_log"),
+    minimap = require("HudController.hud.hook.elements.minimap"),
 }
 
 return this

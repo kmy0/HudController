@@ -108,3 +108,6 @@
 ---@class ace.cMouseKeyboardInfo : via.clr.ManagedObject
 ---@field isOn fun(self: ace.cMouseKeyboardInfo, key: ace.ACE_MKB_KEY.INDEX): System.Boolean
 ---@field get_MousePos fun(self: ace.cMouseKeyboardInfo): via.Point
+
+---@class ace.cGUIParamFloat3 : ace.cGUIParameterBase
+---@field setValue fun(self: ace.cGUIParamFloat3, float3: via.Float3)

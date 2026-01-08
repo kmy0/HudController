@@ -40,6 +40,9 @@ m.sendEnemyMessage =
     m.wrap(m.get("app.ChatLogUtil.addEnemyLog(app.EnemyDef.ID, app.ChatDef.ENEMY_LOG_TYPE)")) --[[@as fun(em_id: app.EnemyDef.ID, msg_type: app.ChatDef.ENEMY_LOG_TYPE)]]
 m.isGunnerWeapon =
     util.misc.cache.memoize(m.wrap(m.get("app.WeaponUtil.isGunnerWeapon(app.WeaponDef.TYPE)"))) --[[@as fun(weapon_type: app.WeaponDef.TYPE): System.Boolean]]
+m.requestMapFilter = m.wrap_obj(
+    m.get_by_regex("app.cGUIFilteringSortPartsCtrl", "^<requestFilterSortMenu>.-0") --[[@as REMethodDefinition]]
+) --[[@as fun(self: app.cGUIFilteringSortPartsCtrl, control: via.gui.Control?, sel_item: via.gui.SelectItem?, index: System.UInt32)]]
 
 --#region elements
 --#region update
@@ -221,6 +224,22 @@ m.hook(
 --#endregion
 --#region chat_log
 m.hook("app.GUI020101.guiAwake()", hook.elements.chat_log.clear_cache_pre)
+--#endregion
+--#region minimap
+m.hook(
+    "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
+    util.ref.capture_this,
+    hook.elements.minimap.classic_minimap_fov_post
+)
+m.hook(
+    "app.cGUIMapIconModelSize.updateIconSizeParam()",
+    util.ref.capture_this,
+    hook.elements.minimap.classic_minimap_icon_scale_post
+)
+m.hook(
+    "app.cGUI060000Radar.getRadarSizeType(app.cPlayerManageInfo)",
+    hook.elements.minimap.classic_minimap_no_resize_pre
+)
 --#endregion
 --#endregion
 
@@ -410,6 +429,11 @@ m.hook(
     "app.GUI020206.requestBase(System.Guid, System.Guid, app.FieldDef.STAGE, app.FieldDef.LIFE_AREA, System.Boolean)",
     hook.options.misc.disable_area_intro_pre
 )
+m.hook(
+    "app.SoundDialogueTriggerManager.shouldTrigger(app.DialogueDef.DialogueVoiceParam, soundlib.SoundContainer, System.UInt32)",
+    hook.options.misc.mute_gossip_subtitles_pre,
+    hook.options.misc.mute_gossip_subtitles_post
+)
 --#endregion
 --#endregion
 
@@ -421,11 +445,6 @@ m.hook(
     hook.misc.reset_cache_post
 )
 --#endregion
-m.hook(
-    "app.SoundDialogueTriggerManager.shouldTrigger(app.DialogueDef.DialogueVoiceParam, soundlib.SoundContainer, System.UInt32)",
-    hook.options.misc.mute_gossip_subtitles_pre,
-    hook.options.misc.mute_gossip_subtitles_post
-)
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then

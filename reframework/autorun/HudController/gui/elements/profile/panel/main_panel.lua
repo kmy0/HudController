@@ -682,6 +682,100 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_minimap(elem, elem_config, config_key)
+    ---@cast elem_config MinimapConfig
+    ---@cast elem Minimap
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_map"))
+
+    -- the map gui object has to actually exist to get names of options
+    state.translate_map_icon_filter_options()
+
+    local item_config_key = config_key .. ".default_filter"
+    local changed_value = generic.draw_combo(
+        nil,
+        item_config_key,
+        gui_util.tr("hud_element.entry.combo_map_filter"),
+        state.combo.map_filter
+    )
+
+    if changed_value then
+        local value = state.map_filter[changed_value.key]
+        elem:set_default_filter(value)
+        config:set(item_config_key, value)
+    end
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_classic_minimap"))
+    item_config_key = config_key .. ".enabled_classic_minimap"
+    if
+        set:checkbox(gui_util.tr("hud_element.entry.box_enable", item_config_key), item_config_key)
+    then
+        elem:set_enable_classic_minimap(elem_config.enabled_classic_minimap)
+    end
+
+    imgui.separator()
+    imgui.begin_disabled(not elem_config.enabled_classic_minimap)
+
+    if
+        generic.draw_slider_settings({
+            config_key = config_key .. ".children.classic_minimap.enabled_fov",
+            label = gui_util.tr("hud_element.entry.box_enable_map_fov"),
+        }, {
+            {
+                config_key = config_key .. ".children.classic_minimap.fov_map",
+                label = "",
+            },
+        }, 0, 180.0, 0.01, "%.2f")
+    then
+        elem:set_classic_minimap_fov(
+            elem_config.children.classic_minimap.enabled_fov
+                    and elem_config.children.classic_minimap.fov_map
+                or nil
+        )
+    end
+
+    imgui.separator()
+
+    if
+        generic.draw_slider_settings({
+            config_key = config_key .. ".children.classic_minimap.enabled_icon_scale",
+            label = gui_util.tr("hud_element.entry.box_enable_icon_scale"),
+        }, {
+            {
+                config_key = config_key .. ".children.classic_minimap.scale_icon",
+                label = "",
+            },
+        }, 0, 25, 0.01, "%.2f")
+    then
+        elem:set_classic_minimap_icon_scale(
+            elem_config.children.classic_minimap.enabled_icon_scale
+                    and elem_config.children.classic_minimap.scale_icon
+                or nil
+        )
+    end
+
+    item_config_key = config_key .. ".children.pl_icon_pulse.enabled_play_state"
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_hide_pl_icon_pulse", item_config_key),
+            item_config_key
+        )
+    then
+        if not elem_config.children.pl_icon_pulse.enabled_play_state then
+            elem_config.children.pl_icon_pulse.play_state = nil
+        else
+            elem_config.children.pl_icon_pulse.play_state = "DISABLE"
+        end
+
+        elem.children.pl_icon_pulse:set_play_state(elem_config.children.pl_icon_pulse.play_state)
+    end
+
+    imgui.end_disabled()
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -702,5 +796,6 @@ this.funcs[mod.enum.hud_type.SLINGER_RETICLE] = draw_slinger_reticle
 this.funcs[mod.enum.hud_type.SHARPNESS] = draw_sharpness
 this.funcs[mod.enum.hud_type.CLOCK] = draw_clock
 this.funcs[mod.enum.hud_type.SHORTCUT_KEYBOARD] = draw_shortcut_keyboard
+this.funcs[mod.enum.hud_type.MINIMAP] = draw_minimap
 
 return this

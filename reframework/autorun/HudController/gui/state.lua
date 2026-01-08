@@ -2,9 +2,12 @@
 ---@field combo GuiCombo
 ---@field input_action string?
 ---@field grid_ratio string[]
+---@field sharpness_state string[]
+---@field item_decide table<string, {value: string, sort: integer}>
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
 ---@field set ImguiConfigSet
+---@field map_filter table<string, integer>
 ---@field state {
 --- l1_pressed: boolean,
 --- }
@@ -25,16 +28,13 @@
 ---@field config Combo
 ---@field config_backup Combo
 ---@field log_id Combo
+---@field map_filter Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
 ---@field opt_name string
 ---@field listener BindListener
 ---@field collision string?
-
----@class (exact) RedoWinPos
----@field main boolean
----@field debug boolean
 
 local ace_player = require("HudController.util.ace.player")
 local bind_manager = require("HudController.hud.bind.init")
@@ -43,14 +43,18 @@ local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
+local game_lang = require("HudController.util.game.lang")
 local gui_util = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
 local rl = game_data.reverse_lookup
+
+local map_filter_translated = false
 
 ---@class GuiState
 local this = {
@@ -139,6 +143,7 @@ local this = {
                 util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
             )
         end),
+        map_filter = combo:new(),
     },
     grid_ratio = {
         "1",
@@ -175,6 +180,10 @@ local this = {
         ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
         ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
     },
+    map_filter = util_table.merge_t(
+        util_table.deep_copy(ace_map.map_icon_filter_name_guid_to_index),
+        { option_disable = -1 }
+    ),
     state = {
         l1_pressed = false,
     },
@@ -197,12 +206,23 @@ this.combo.item_decide._translate = function(key)
     return this.item_decide[key].value
 end
 
+this.combo.map_filter.sort = function(a, b)
+    return this.map_filter[a.key] < this.map_filter[b.key]
+end
+this.combo.map_filter._translate = function(key)
+    if key == "option_disable" then
+        return config.lang:tr("hud.option_disable")
+    end
+    return key
+end
+
 function this.translate_combo()
     this.combo.item_decide:translate()
     this.combo.option_bind:translate()
     this.combo.option_mod_bind:translate()
     this.combo.hud_elem:translate()
     this.combo.bind_action_type:translate()
+    this.combo.map_filter:translate()
 end
 
 ---@return boolean, string
@@ -216,6 +236,37 @@ end
 function this.update_state()
     this.state.l1_pressed =
         ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+end
+
+function this.translate_map_icon_filter_options()
+    if map_filter_translated then
+        return
+    end
+
+    local lang = game_lang.get_language()
+    ---@type table<string, integer>
+    local res = {}
+    for k, v in pairs(this.map_filter) do
+        if v == -1 then
+            res[k] = v
+            goto continue
+        end
+
+        local guid = util_ref.value_type("System.Guid")
+        guid = guid:Parse(k)
+        local str = game_lang.get_message_local(guid, lang, true)
+        if str == "" then
+            return
+        end
+
+        res[str] = v
+        ::continue::
+    end
+
+    this.map_filter = res
+    this.combo.map_filter:swap(this.map_filter)
+    this.combo.map_filter:translate()
+    map_filter_translated = true
 end
 
 function this.init()
@@ -233,6 +284,7 @@ function this.init()
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
     this.combo.log_id:swap(ace_enum.log_id)
+    this.combo.map_filter:swap(this.map_filter)
     this.translate_combo()
 end
 
