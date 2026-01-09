@@ -108,6 +108,43 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
     return changed
 end
 
+---@param checkbox {config_key: string, label: string}?
+---@param config_key string
+---@param combo Combo
+---@param label string
+---@param default_index integer?
+---@return {key: any, value: string, index: integer}?
+function this.draw_combo(checkbox, config_key, label, combo, default_index)
+    local changed = false
+
+    if checkbox then
+        changed = set:checkbox(
+            string.format("%s##%s", checkbox.label, checkbox.config_key),
+            checkbox.config_key
+        )
+        imgui.begin_disabled(not config:get(checkbox.config_key))
+    else
+        imgui.begin_disabled(false)
+    end
+
+    local item_config_key = config_key .. "_combo"
+    if not config:get(item_config_key) then
+        config:set(item_config_key, default_index or 1)
+    end
+
+    if set:combo(label, item_config_key, combo.values) or changed then
+        imgui.end_disabled()
+        local index = config:get(item_config_key)
+        return {
+            key = combo:get_key(index),
+            value = combo:get_value(index),
+            index = index,
+        }
+    end
+
+    imgui.end_disabled()
+end
+
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
@@ -212,41 +249,26 @@ function this.draw(elem, elem_config, config_key)
     end
 
     if elem_config.enabled_segment ~= nil then
-        local checkbox_key = config_key .. ".enabled_segment"
-        local changed = set:checkbox(
-            string.format(
-                "%s##%s",
-                gui_util.tr("hud_element.entry.box_enable_segment"),
-                checkbox_key
-            ),
-            checkbox_key
+        local item_config_key = config_key .. ".segment"
+        local changed_value = this.draw_combo(
+            {
+                config_key = config_key .. ".enabled_segment",
+                label = string.format(
+                    "%s##%s",
+                    gui_util.tr("hud_element.entry.box_enable_segment"),
+                    config_key
+                ),
+            },
+            item_config_key,
+            "##" .. item_config_key,
+            state.combo.segment,
+            state.combo.segment:get_index(nil, config:get(item_config_key))
         )
 
-        imgui.begin_disabled(not config:get(checkbox_key))
-
-        local item_config_key = config_key .. ".segment"
-        if not config:get(item_config_key .. "_combo") then
-            config:set(
-                item_config_key .. "_combo",
-                state.combo.segment:get_index(nil, config:get(item_config_key))
-            )
-        end
-
-        changed = set:combo(
-            "##" .. item_config_key .. "_combo",
-            item_config_key .. "_combo",
-            state.combo.segment.values
-        ) or changed
-
-        if changed then
-            config:set(
-                item_config_key,
-                state.combo.segment:get_value(config:get(item_config_key .. "_combo"))
-            )
+        if changed_value then
+            config:set(item_config_key, changed_value.value)
             elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
         end
-
-        imgui.end_disabled()
 
         this.separator:draw()
     end

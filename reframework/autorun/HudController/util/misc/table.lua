@@ -132,7 +132,12 @@ function this.merge2(protected, ignore_empty, ...)
     for i = 2, #tables_to_merge do
         local from = tables_to_merge[i]
         for key, value in pairs(from) do
-            if this.contains(protected, key) or ignore_empty and result[key] == nil then
+            if
+                this.contains(protected, key)
+                or ignore_empty
+                    and result[key] == nil
+                    and (type(key) ~= "string" or not key:find("_combo"))
+            then
                 goto continue
             end
 
