@@ -192,3 +192,6 @@
 ---@field get_Position fun(self: via.gui.TextureSet): via.vec3
 ---@field get_Color fun(self: via.gui.TextureSet): via.Color
 ---@field set_Color fun(self: via.gui.TextureSet, color: via.Color)
+
+---@class via.gui.GUIController : via.clr.ManagedObject
+---@field get_Component fun(self: via.gui.GUIController): via.gui.GUI

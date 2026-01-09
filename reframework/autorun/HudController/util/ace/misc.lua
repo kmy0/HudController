@@ -8,8 +8,7 @@ local this = {}
 local function get_map_component()
     local map3d = s.get("app.GUIManager"):get_MAP3D()
     local GUI060000 = map3d:get_GUIFront()
-    local gui_ctrl = GUI060000:get_GUIController()
-    return gui_ctrl:get_Component()
+    return this.get_gui_component(GUI060000)
 end
 
 ---@return app.cGUIHudDisplayManager
@@ -47,10 +46,18 @@ function this.is_map_open()
     return map:get_Enabled()
 end
 
+---@param gui_base ace.GUIBase
+---@return via.gui.GUI
+function this.get_gui_component(gui_base)
+    local gui_ctrl = gui_base:get_GUIController()
+    return gui_ctrl:get_Component()
+end
+
 get_map_component = cache.memoize(get_map_component)
 this.get_hud_manager = cache.memoize(this.get_hud_manager)
 this.get_pad = cache.memoize(this.get_pad)
 this.get_kb = cache.memoize(this.get_kb)
+this.get_gui_component = cache.memoize(this.get_gui_component)
 this.is_map_open = frame_cache.memoize(this.is_map_open)
 
 return this
