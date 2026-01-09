@@ -22,6 +22,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
+local util_mod = require("HudController.util.mod.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -96,7 +97,7 @@ end
 ---@param hudbase app.GUI020400
 ---@return via.gui.Control
 function this:get_scale_panel(hudbase)
-    local root = hudbase._RootWindow
+    local root = util_mod.get_root_window(hudbase)
     return play_object.control.get(root, {
         "PNL_All",
         "PNL_Scale",
