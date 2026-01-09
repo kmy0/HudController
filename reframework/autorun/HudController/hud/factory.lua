@@ -112,7 +112,7 @@ end
 function this.merge(hud_elem)
     return util_table.merge2_t(
         { "hud_type", "name_key", "hud_id", "hud_sub_type" },
-        true,
+        false,
         this.get_config(hud_elem.hud_id),
         hud_elem
     )
