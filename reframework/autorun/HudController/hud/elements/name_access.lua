@@ -16,6 +16,7 @@
 ---@field enemy_type table<string, boolean>
 ---@field npc_draw_distance number
 
+local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -110,9 +111,10 @@ function this:get_all_ctrl()
     local ret = {}
     local hudbase = self:get_GUI020001()
     if hudbase then
-        local disp_ctrl = hudbase._DisplayControl
-        local ctrl = disp_ctrl._TargetControl
         local gui_id = hudbase:get_ID()
+        local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(gui_id) --[[@as app.cGUIHudDisplayControl]]
+        local ctrl = disp_ctrl._TargetControl
+
         local pnl = play_object.control.all(ctrl, "PNL_Pat00", "PNL_Pat", true) --[=[@as via.gui.Control[]]=]
 
         for _, name_pnl in pairs(pnl) do
