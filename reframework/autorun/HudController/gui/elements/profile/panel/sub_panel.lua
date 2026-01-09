@@ -174,103 +174,74 @@ local function draw_scale9(elem, elem_config, config_key)
     local item_config_key
 
     if elem_config.enabled_control_point ~= nil then
-        item_config_key = config_key .. ".enabled_control_point"
-        local changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_scale9_control_point", item_config_key),
-            item_config_key
+        item_config_key = config_key .. ".blend"
+        local changed_value = generic.draw_combo(
+            {
+                config_key = config_key .. ".enabled_control_point",
+                label = gui_util.tr(
+                    "hud_element.entry.box_enable_scale9_control_point",
+                    item_config_key
+                ),
+            },
+            item_config_key,
+            "##" .. item_config_key,
+            state.combo.control_point,
+            state.combo.control_point:get_index(nil, config:get(item_config_key))
         )
 
-        imgui.begin_disabled(not elem_config.enabled_control_point)
-
-        item_config_key = config_key .. ".control_point"
-        if not config:get(item_config_key .. "_combo") then
-            config:set(
-                item_config_key .. "_combo",
-                state.combo.control_point:get_index(nil, config:get(item_config_key))
-            )
+        if changed_value then
+            elem:set_control_point(elem_config.enabled_control_point and changed_value.value or nil)
+            config:set(item_config_key, changed_value.value)
         end
 
-        changed = set:combo(
-            "##" .. item_config_key .. "_combo",
-            item_config_key .. "_combo",
-            state.combo.control_point.values
-        ) or changed
-
-        if changed then
-            local value =
-                state.combo.control_point:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_control_point(elem_config.enabled_control_point and value or nil)
-            config:set(item_config_key, value)
-        end
-
-        imgui.end_disabled()
         separator_scale9:draw()
     end
 
     if elem_config.enabled_blend ~= nil then
-        item_config_key = config_key .. ".enabled_blend"
-        local changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_scale9_blend_type", item_config_key),
-            item_config_key
+        item_config_key = config_key .. ".blend"
+        local changed_value = generic.draw_combo(
+            {
+                config_key = config_key .. ".enabled_blend",
+                label = gui_util.tr(
+                    "hud_element.entry.box_enable_scale9_blend_type",
+                    item_config_key
+                ),
+            },
+            item_config_key,
+            "##" .. item_config_key,
+            state.combo.blend,
+            state.combo.blend:get_index(nil, config:get(item_config_key))
         )
 
-        imgui.begin_disabled(not elem_config.enabled_blend)
-
-        item_config_key = config_key .. ".blend"
-        if not config:get(item_config_key .. "_combo") then
-            config:set(
-                item_config_key .. "_combo",
-                state.combo.blend:get_index(nil, config:get(item_config_key))
-            )
+        if changed_value then
+            elem:set_blend(elem_config.enabled_blend and changed_value.value or nil)
+            config:set(item_config_key, changed_value.value)
         end
 
-        changed = set:combo(
-            "##" .. item_config_key .. "_combo",
-            item_config_key .. "_combo",
-            state.combo.blend.values
-        ) or changed
-
-        if changed then
-            local value = state.combo.blend:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_blend(elem_config.enabled_blend and value or nil)
-            config:set(item_config_key, value)
-        end
-
-        imgui.end_disabled()
         separator_scale9:draw()
     end
 
     if elem_config.enabled_alpha_channel ~= nil then
-        item_config_key = config_key .. ".enabled_alpha_channel"
-        local changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_scale9_alpha_channel", item_config_key),
-            item_config_key
+        item_config_key = config_key .. ".alpha_channel"
+        local changed_value = generic.draw_combo(
+            {
+                config_key = config_key .. ".enabled_alpha_channel",
+                label = gui_util.tr(
+                    "hud_element.entry.box_enable_scale9_alpha_channel",
+                    item_config_key
+                ),
+            },
+            item_config_key,
+            "##" .. item_config_key,
+            state.combo.alpha_channel,
+            state.combo.alpha_channel:get_index(nil, config:get(item_config_key))
         )
 
-        imgui.begin_disabled(not elem_config.enabled_alpha_channel)
-
-        item_config_key = config_key .. ".alpha_channel"
-        if not config:get(item_config_key .. "_combo") then
-            config:set(
-                item_config_key .. "_combo",
-                state.combo.alpha_channel:get_index(nil, config:get(item_config_key))
-            )
+        if changed_value then
+            elem:set_alpha_channel(elem_config.enabled_alpha_channel and changed_value.value or nil)
+            config:set(item_config_key, changed_value.value)
         end
 
-        changed = set:combo(
-            "##" .. item_config_key .. "_combo",
-            item_config_key .. "_combo",
-            state.combo.alpha_channel.values
-        ) or changed
-
-        if changed then
-            local value =
-                state.combo.alpha_channel:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_alpha_channel(elem_config.enabled_alpha_channel and value or nil)
-            config:set(item_config_key, value)
-        end
-
-        imgui.end_disabled()
         separator_scale9:draw()
     end
 
@@ -339,36 +310,23 @@ local function draw_text(elem, elem_config, config_key)
     end
 
     if elem_config.enabled_page_alignment ~= nil then
-        item_config_key = config_key .. ".enabled_page_alignment"
-        changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
-            item_config_key
+        item_config_key = config_key .. ".page_alignment"
+        local changed_value = generic.draw_combo(
+            {
+                config_key = config_key .. ".enabled_page_alignment",
+                label = gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
+            },
+            item_config_key,
+            "##" .. item_config_key,
+            state.combo.page_alignment,
+            state.combo.page_alignment:get_index(nil, config:get(item_config_key))
         )
 
-        imgui.begin_disabled(not elem_config.enabled_page_alignment)
-
-        item_config_key = config_key .. ".page_alignment"
-        if not config:get(item_config_key .. "_combo") then
-            config:set(
-                item_config_key .. "_combo",
-                state.combo.page_alignment:get_index(nil, config:get(item_config_key))
-            )
+        if changed_value then
+            elem:set_page_alignment(changed_value.value)
+            config:set(item_config_key, changed_value.value)
         end
 
-        changed = set:combo(
-            "##" .. item_config_key .. "_combo",
-            item_config_key .. "_combo",
-            state.combo.page_alignment.values
-        ) or changed
-
-        if changed then
-            local value =
-                state.combo.page_alignment:get_value(config:get(item_config_key .. "_combo"))
-            elem:set_page_alignment(value)
-            config:set(item_config_key, value)
-        end
-
-        imgui.end_disabled()
         separator_scale9:draw()
     end
 

@@ -1,5 +1,6 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
 local state = require("HudController.gui.state")
@@ -216,23 +217,16 @@ local function draw_itembar(elem, elem_config, config_key)
     end
 
     item_config_key = config_key .. ".children.all_slider.decide_key"
-    if not config:get(item_config_key .. "_combo") then
-        config:set(
-            item_config_key .. "_combo",
-            state.combo.item_decide:get_index(config:get(item_config_key))
-        )
-    end
+    local changed_value = generic.draw_combo(
+        nil,
+        item_config_key,
+        gui_util.tr("hud_element.entry.combo_expanded_itembar_decide_key"),
+        state.combo.item_decide
+    )
 
-    if
-        set:combo(
-            gui_util.tr("hud_element.entry.combo_expanded_itembar_decide_key"),
-            item_config_key .. "_combo",
-            state.combo.item_decide.values
-        )
-    then
-        local key = state.combo.item_decide:get_key(config:get(item_config_key .. "_combo"))
-        elem.children.all_slider:set_decide_key(key)
-        config:set(item_config_key, key)
+    if changed_value then
+        elem.children.all_slider:set_decide_key(changed_value.key)
+        config:set(item_config_key, changed_value.key)
     end
 end
 
@@ -244,20 +238,17 @@ local function draw_notice(elem, elem_config, config_key)
     ---@cast elem Notice
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
-    local item_config_key = config_key .. ".tools_enemy_message_type"
-    if not config:get(item_config_key .. "_combo") then
-        config:set(item_config_key .. "_combo", 1)
-    end
 
-    if
-        set:combo(
-            gui_util.tr("hud_element.entry.category_notice_enemy"),
-            item_config_key .. "_combo",
-            state.combo.enemy_msg_type.values
-        )
-    then
-        local key = state.combo.enemy_msg_type:get_key(config:get(item_config_key .. "_combo"))
-        config:set(item_config_key, key)
+    local item_config_key = config_key .. ".tools_enemy_message_type"
+    local changed_value = generic.draw_combo(
+        nil,
+        item_config_key,
+        gui_util.tr("hud_element.entry.category_notice_enemy"),
+        state.combo.enemy_msg_type
+    )
+
+    if changed_value then
+        config:set(item_config_key, changed_value.key)
     end
 
     imgui.same_line()
@@ -344,14 +335,12 @@ local function draw_notice(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_id"))
     item_config_key = config_key .. ".log_id"
-    if not config:get(item_config_key .. "_combo") then
-        config:set(item_config_key .. "_combo", 1)
-    end
 
-    set:combo(
+    generic.draw_combo(
+        nil,
+        item_config_key,
         gui_util.tr("hud_element.entry.combo_log_id"),
-        item_config_key .. "_combo",
-        state.combo.log_id.values
+        state.combo.log_id
     )
 
     imgui.same_line()
