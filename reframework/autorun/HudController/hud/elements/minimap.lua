@@ -23,6 +23,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
+local util_mod = require("HudController.util.mod.init")
 
 local ace_enum = data.ace.enum
 local mod = data.mod
@@ -121,9 +122,8 @@ end
 ---@protected
 ---@return via.gui.Control?
 function this._get_panel()
-    local map3d = s.get("app.GUIManager"):get_MAP3D()
-    local GUI060001 = map3d:get_GUIBack()
-    return GUI060001._RootWindow
+    local GUI060001 = util_mod.get_gui_cls("app.GUI060001")
+    return util_mod.get_root_window(GUI060001)
 end
 
 ---@return MinimapConfig
