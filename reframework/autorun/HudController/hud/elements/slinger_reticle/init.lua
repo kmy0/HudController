@@ -19,6 +19,7 @@
 ---@field slinger_state PlayObjectGetterFn[]
 ---@field capture PlayObjectGetterFn[]
 
+local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
 local focus = require("HudController.hud.elements.slinger_reticle.focus")
 local game_data = require("HudController.util.game.data")
@@ -107,13 +108,13 @@ end
 
 ---@return via.gui.Control
 function this:get_GUI020000_pnl()
-    local disp_ctrl = self:get_GUI020000()._DisplayControl
+    local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(self:get_GUI020000():get_ID()) --[[@as app.cGUIHudDisplayControl]]
     return disp_ctrl._TargetControl
 end
 
 ---@return via.gui.Control
 function this:get_GUI020002_pnl()
-    local disp_ctrl = self:get_GUI020002()._DisplayControl
+    local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(self:get_GUI020002():get_ID()) --[[@as app.cGUIHudDisplayControl]]
     return disp_ctrl._TargetControl
 end
 
