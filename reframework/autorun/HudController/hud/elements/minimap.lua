@@ -3,7 +3,7 @@
 ---@field enabled_classic_minimap boolean
 ---@field classic_minimap ClassicMinimap
 ---@field default_filter integer?
----@field pl_icon_controller app.cGUIMapPlayerIconController
+---@field pl_icon_controller app.cGUIMapPlayerIconController?
 ---@field filter_controller app.cGUIFilteringSortPartsCtrl
 ---@field children {
 --- background: HudChild,
@@ -215,8 +215,10 @@ function this:new(args)
         o,
         function(s, hudbase, gui_id, ctrl)
             local icon_ctrl = o:get_pl_icon_controller()
-            local mp_icon = icon_ctrl._MasterPlayerIcon
-            return play_object.control.get(mp_icon._PlIconPanel, "PNL_PLeffects")
+            if icon_ctrl then
+                local mp_icon = icon_ctrl._MasterPlayerIcon
+                return play_object.control.get(mp_icon._PlIconPanel, "PNL_PLeffects")
+            end
         end,
         function(s, ctrl)
             play_object_defaults:check(ctrl)
@@ -293,12 +295,14 @@ function this:set_default_filter(val)
     end
 end
 
----@return app.cGUIMapPlayerIconController
+---@return app.cGUIMapPlayerIconController?
 function this:get_pl_icon_controller()
     if not self.pl_icon_controller then
         local GUI060002 = util_mod.get_gui_cls("app.GUI060002")
         local icon_controller = GUI060002:get_IconController()
-        self.pl_icon_controller = icon_controller._PLIconCtrl
+        if icon_controller then
+            self.pl_icon_controller = icon_controller._PLIconCtrl
+        end
     end
     return self.pl_icon_controller
 end
