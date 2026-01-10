@@ -698,7 +698,7 @@ local function draw_minimap(elem, elem_config, config_key)
 
     if changed_value then
         local value = state.map_filter[changed_value.key]
-        elem:set_default_filter(value ~= -1 and value or nil)
+        elem:set_default_filter(value)
         config:set(item_config_key, value)
     end
 

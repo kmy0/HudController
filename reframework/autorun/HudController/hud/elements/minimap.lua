@@ -289,6 +289,10 @@ end
 
 ---@param val integer?
 function this:set_default_filter(val)
+    if val == -1 then
+        val = nil
+    end
+
     self.default_filter = val
     if self.default_filter then
         self._apply_filter = true
@@ -347,6 +351,7 @@ function this.get_config()
     base.enabled_classic_minimap = false
     base.options.MAP_RADAR_FIXNORTH = -1
     base.options.MAP_RADAR_PITCH_TYPE = -1
+    base.default_filter = -1
 
     children.background = {
         name_key = "background",
