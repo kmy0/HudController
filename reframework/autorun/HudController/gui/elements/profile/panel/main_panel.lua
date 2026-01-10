@@ -688,6 +688,9 @@ local function draw_minimap(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_map"))
 
+    -- the map gui object has to actually exist to get names of options
+    state.translate_map_icon_filter_options()
+
     local item_config_key = config_key .. ".default_filter"
     local changed_value = generic.draw_combo(
         nil,

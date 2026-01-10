@@ -2,9 +2,12 @@
 ---@field combo GuiCombo
 ---@field input_action string?
 ---@field grid_ratio string[]
+---@field sharpness_state string[]
+---@field item_decide table<string, {value: string, sort: integer}>
 ---@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
 ---@field set ImguiConfigSet
+---@field map_filter table<string, integer>
 ---@field state {
 --- l1_pressed: boolean,
 --- }
@@ -33,10 +36,6 @@
 ---@field listener BindListener
 ---@field collision string?
 
----@class (exact) RedoWinPos
----@field main boolean
----@field debug boolean
-
 local ace_player = require("HudController.util.ace.player")
 local bind_manager = require("HudController.hud.bind.init")
 local combo = require("HudController.gui.combo")
@@ -54,6 +53,8 @@ local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
 local rl = game_data.reverse_lookup
+
+local map_filter_translated = false
 
 ---@class GuiState
 local this = {
@@ -179,17 +180,10 @@ local this = {
         ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
         ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
     },
-    map_filter = {
-        ["option_disable"] = -1,
-        ["a4bc964b-b3e8-4701-8bac-f693dde2321a"] = 0,
-        ["9ed781c6-9349-44b5-816c-fee02980792f"] = 1,
-        ["816f3ad4-d696-445a-b088-6a5461fd0842"] = 2,
-        ["a5539fcf-e6f6-47ae-89d8-ce840ee1b7a1"] = 3,
-        ["e79aa493-b68d-45fe-8d5e-6ff90f26cb27"] = 4,
-        ["401ea0fa-2c9e-4617-9dc8-227d847ec67a"] = 5,
-        ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
-        ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
-    },
+    map_filter = util_table.merge_t(
+        util_table.deep_copy(ace_map.map_icon_filter_name_guid_to_index),
+        { option_disable = -1 }
+    ),
     state = {
         l1_pressed = false,
     },
@@ -219,10 +213,7 @@ this.combo.map_filter._translate = function(key)
     if key == "option_disable" then
         return config.lang:tr("hud.option_disable")
     end
-    local lang = game_lang.get_language()
-    local guid = util_ref.value_type("System.Guid")
-    guid = guid:Parse(key)
-    return game_lang.get_message_local(guid, lang, true)
+    return key
 end
 
 function this.translate_combo()
@@ -245,6 +236,37 @@ end
 function this.update_state()
     this.state.l1_pressed =
         ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+end
+
+function this.translate_map_icon_filter_options()
+    if map_filter_translated then
+        return
+    end
+
+    local lang = game_lang.get_language()
+    ---@type table<string, integer>
+    local res = {}
+    for k, v in pairs(this.map_filter) do
+        if v == -1 then
+            res[k] = v
+            goto continue
+        end
+
+        local guid = util_ref.value_type("System.Guid")
+        guid = guid:Parse(k)
+        local str = game_lang.get_message_local(guid, lang, true)
+        if str == "" then
+            return
+        end
+
+        res[str] = v
+        ::continue::
+    end
+
+    this.map_filter = res
+    this.combo.map_filter:swap(this.map_filter)
+    this.combo.map_filter:translate()
+    map_filter_translated = true
 end
 
 function this.init()

@@ -198,7 +198,6 @@ local this = {
         },
         log_id_to_text = {},
         map_icon_filter_name_guid_to_index = {
-            ["option_disable"] = -1,
             ["a4bc964b-b3e8-4701-8bac-f693dde2321a"] = 0,
             ["9ed781c6-9349-44b5-816c-fee02980792f"] = 1,
             ["816f3ad4-d696-445a-b088-6a5461fd0842"] = 2,
