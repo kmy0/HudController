@@ -5,6 +5,7 @@ local this = {}
 
 function this.reset_hud_default_post(retval)
     play_object_defaults:clear()
+    cache.clear_all()
 end
 
 function this.reset_cache_post(retval)
