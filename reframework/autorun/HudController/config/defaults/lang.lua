@@ -281,6 +281,7 @@ return {
             category_enemy_type = "Enemy Type",
             category_pet_behavior = "Pet Behavior",
             category_classic_minimap = "Classic Minimap",
+            category_extra_bar_behavior = "Extra Bar Behavior",
             category_map = "Map Behavior",
             box_hide_slinger_empty = "Hide When Empty",
             box_enable = "Enable",
@@ -357,6 +358,7 @@ return {
             button_hide = "Hide",
             button_remove = "Remove",
             combo_map_filter = "Default Icon Filter",
+            box_hide_pulse = "Hide Pulse",
         },
     },
     hud_subelement = {
@@ -480,5 +482,8 @@ return {
         recipient = "Recipient",
         icon_frame = "Icon Frame",
         cursor = "Cursor",
+        glow = "Glow",
+        bar = "Bar",
+        extra_bar = "Extra Bar",
     },
 }

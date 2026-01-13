@@ -776,6 +776,25 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_stamina(elem, elem_config, config_key)
+    ---@cast elem_config StaminaConfig
+    ---@cast elem Stamina
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_extra_bar_behavior"))
+    local item_config_key = config_key .. ".children.ex.hide_pulse"
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_hide_pulse", item_config_key),
+            item_config_key
+        )
+    then
+        elem.children.ex:set_hide_pulse(elem_config.children.ex.hide_pulse)
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -797,5 +816,6 @@ this.funcs[mod.enum.hud_type.SHARPNESS] = draw_sharpness
 this.funcs[mod.enum.hud_type.CLOCK] = draw_clock
 this.funcs[mod.enum.hud_type.SHORTCUT_KEYBOARD] = draw_shortcut_keyboard
 this.funcs[mod.enum.hud_type.MINIMAP] = draw_minimap
+this.funcs[mod.enum.hud_type.STAMINA] = draw_stamina
 
 return this

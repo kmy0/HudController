@@ -8,6 +8,7 @@
 --- frame_max: HudChild,
 --- light_end: HudChild,
 --- light_start: HudChild,
+--- ex: StaminaEx,
 --- }
 
 ---@class (exact) StaminaConfig : HudBaseConfig
@@ -19,6 +20,7 @@
 --- frame_max: HudChildConfig,
 --- light_end: HudChildConfig,
 --- light_start: HudChildConfig,
+--- ex: StaminaExConfig,
 --- }
 
 ---@class (exact) StaminaControlArguments
@@ -30,6 +32,7 @@
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data.init")
+local ex = require("HudController.hud.elements.stamina.ex")
 local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.stamina.gauge")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -223,6 +226,7 @@ function this:new(args)
             return play_object.iter_args(ctrl, control_arguments.light_start)
         end
     )
+    o.children.ex = ex:new(args.children.ex, o)
 
     return o
 end
@@ -267,6 +271,7 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.STAMINA
 
     children.gauge = gauge.get_config()
+    children.ex = ex.get_config()
     children.background = {
         name_key = "background",
         hide = false,
