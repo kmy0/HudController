@@ -249,6 +249,7 @@ return {
             TU3_DEBUFF = "TU3 Debuff",
             TU3_CANVAS = "TU3 Canvas",
             CHAT_LOG = "Chat Log",
+            QUEST_END_TIMER = "Quest End Timer",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

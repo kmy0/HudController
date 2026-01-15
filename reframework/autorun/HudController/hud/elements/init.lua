@@ -33,6 +33,7 @@ local this = {
     shortcut_keyboard = require("HudController.hud.elements.shortcut_keyboard.init"),
     barrel_score = require("HudController.hud.elements.barrel_score.init"),
     chat_log = require("reframework.autorun.HudController.hud.elements.chat_log.init"),
+    quest_end_timer = require("HudController.hud.elements.quest_end_timer"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.HEALTH] = require("HudController.hud.elements.health.init"),
@@ -65,6 +66,7 @@ local this = {
     [hud_enum.SHORTCUT_KEYBOARD] = require("HudController.hud.elements.shortcut_keyboard.init"),
     [hud_enum.BARREL_BOWLING_SCORE] = require("HudController.hud.elements.barrel_score.init"),
     [hud_enum.CHAT_LOG] = require("reframework.autorun.HudController.hud.elements.chat_log.init"),
+    [hud_enum.QUEST_END_TIMER] = require("HudController.hud.elements.quest_end_timer"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -96,6 +98,7 @@ local this = {
     ShortcutKeyboard = "SHORTCUT_KEYBOARD",
     BarrelScore = "BARREL_BOWLING_SCORE",
     ChatLog = "CHAT_LOG",
+    QuestEndTimer = "QUEST_END_TIMER",
     --
     HEALTH = require("HudController.hud.elements.health.init"),
     WEAPON = require("HudController.hud.elements.weapon.init"),
@@ -127,6 +130,7 @@ local this = {
     SHORTCUT_KEYBOARD = require("HudController.hud.elements.shortcut_keyboard.init"),
     BARREL_BOWLING_SCORE = require("HudController.hud.elements.barrel_score.init"),
     CHAT_LOG = require("reframework.autorun.HudController.hud.elements.chat_log.init"),
+    QUEST_END_TIMER = require("HudController.hud.elements.quest_end_timer"),
 }
 
 return this

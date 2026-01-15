@@ -198,6 +198,16 @@ function this.update_chat_log_menu_button_guide_post(retval)
     end
 end
 
+function this.update_quest_end_timer_post(retval)
+    local quest_end_timer, guiid = common.get_elem_consume_t("QuestEndTimer", "UI020202")
+    if quest_end_timer and guiid then
+        local GUI020202 = util_ref.get_this() --[[@as app.GUI020202]]
+        local root = util_mod.get_root_window(GUI020202)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        quest_end_timer:write(GUI020202, guiid, root)
+    end
+end
+
 get_write_args = cache.memoize(get_write_args)
 
 return this

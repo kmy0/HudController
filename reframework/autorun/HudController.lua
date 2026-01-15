@@ -241,6 +241,12 @@ m.hook(
     hook.elements.minimap.classic_minimap_no_resize_pre
 )
 --#endregion
+--#region quest_end_timer
+m.hook(
+    "app.GUI020202.guiVisibleUpdate()",
+    util.ref.capture_this,
+    hook.elements.update.update_quest_end_timer_post
+)
 --#endregion
 
 --#region options
