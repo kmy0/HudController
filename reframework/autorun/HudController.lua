@@ -229,7 +229,7 @@ m.hook("app.GUI020101.guiAwake()", hook.elements.chat_log.clear_cache_pre)
 m.hook(
     "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
     util.ref.capture_this,
-    hook.elements.minimap.classic_minimap_fov_post
+    hook.elements.minimap.classic_minimap_param_update_post
 )
 m.hook(
     "app.cGUIMapIconModelSize.updateIconSizeParam()",

@@ -360,6 +360,7 @@ return {
             button_remove = "Remove",
             combo_map_filter = "Default Icon Filter",
             box_hide_pulse = "Hide Pulse",
+            box_enable_angle = "Enable Angle",
         },
     },
     hud_subelement = {

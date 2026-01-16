@@ -8,7 +8,7 @@ local icon_size = util_ref.value_type("via.Float3")
 
 attach_up_pos.x, attach_up_pos.y, attach_up_pos.z = 0, 0, 0
 
-function this.classic_minimap_fov_post(retval)
+function this.classic_minimap_param_update_post(retval)
     local minimap = common.get_elem_t("Minimap")
     if minimap and minimap.enabled_classic_minimap then
         local cam_ctrl = util_ref.get_this() --[[@as app.cGUIMapCameraController]]
@@ -18,6 +18,14 @@ function this.classic_minimap_fov_post(retval)
         arg:set_AttachUPos(attach_up_pos)
         if minimap.classic_minimap.fov_map then
             arg._FOV = 180 - minimap.classic_minimap.fov_map
+        end
+
+        if minimap.classic_minimap.angle_map then
+            arg._RotPitchDeg = -minimap.classic_minimap.angle_map
+        end
+
+        if minimap.classic_minimap.rot_map then
+            arg._RotYawDeg = minimap.classic_minimap.rot_map
         end
     end
 end

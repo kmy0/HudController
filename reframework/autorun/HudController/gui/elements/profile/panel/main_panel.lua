@@ -754,6 +754,42 @@ local function draw_minimap(elem, elem_config, config_key)
         )
     end
 
+    if
+        generic.draw_slider_settings({
+            config_key = config_key .. ".children.classic_minimap.enabled_rot_map",
+            label = gui_util.tr("hud_element.entry.box_enable_rotation"),
+        }, {
+            {
+                config_key = config_key .. ".children.classic_minimap.rot_map",
+                label = "",
+            },
+        }, 0, 360, 0.01, "%.1f")
+    then
+        elem:set_classic_minimap_rot(
+            elem_config.children.classic_minimap.enabled_rot_map
+                    and elem_config.children.classic_minimap.rot_map
+                or nil
+        )
+    end
+
+    if
+        generic.draw_slider_settings({
+            config_key = config_key .. ".children.classic_minimap.enabled_angle_map",
+            label = gui_util.tr("hud_element.entry.box_enable_angle"),
+        }, {
+            {
+                config_key = config_key .. ".children.classic_minimap.angle_map",
+                label = "",
+            },
+        }, 0, 90, 0.01, "%.1f")
+    then
+        elem:set_classic_minimap_angle(
+            elem_config.children.classic_minimap.enabled_angle_map
+                    and elem_config.children.classic_minimap.angle_map
+                or nil
+        )
+    end
+
     item_config_key = config_key .. ".children.pl_icon_pulse.enabled_play_state"
     if
         set:checkbox(

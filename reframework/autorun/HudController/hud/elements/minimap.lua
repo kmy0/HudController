@@ -53,12 +53,18 @@
 ---@class (exact) ClassicMinimap
 ---@field fov_map number?
 ---@field scale_icon number?
+---@field rot_map number?
+---@field angle_map number?
 
 ---@class (exact) ClassicMinimapConfig : HudChildConfig
 ---@field enabled_fov boolean
 ---@field enabled_icon_scale boolean
+---@field enabled_rot_map boolean
+---@field enabled_angle_map boolean
 ---@field fov_map number
 ---@field scale_icon number
+---@field rot_map number
+---@field angle_map number
 
 local data = require("HudController.data.init")
 local game_data = require("HudController.util.game.data")
@@ -154,10 +160,7 @@ function this:new(args)
         enabled_classic_minimap = true,
         default_filter = true,
     })
-    o.classic_minimap = {
-        scale_icon = 1,
-        fov_map = 1,
-    }
+    o.classic_minimap = {}
 
     o.children.background = hud_child:new(
         args.children.background,
@@ -252,6 +255,14 @@ function this:new(args)
         o:set_classic_minimap_icon_scale(args.children.classic_minimap.scale_icon)
     end
 
+    if args.children.classic_minimap.enabled_rot_map then
+        o:set_classic_minimap_rot(args.children.classic_minimap.rot_map)
+    end
+
+    if args.children.classic_minimap.enabled_angle_map then
+        o:set_classic_minimap_angle(args.children.classic_minimap.angle_map)
+    end
+
     if args.default_filter then
         o:set_default_filter(args.default_filter)
     end
@@ -284,6 +295,16 @@ end
 ---@param val number?
 function this:set_classic_minimap_icon_scale(val)
     self.classic_minimap.scale_icon = val
+end
+
+---@param val number?
+function this:set_classic_minimap_rot(val)
+    self.classic_minimap.rot_map = val
+end
+
+---@param val number?
+function this:set_classic_minimap_angle(val)
+    self.classic_minimap.angle_map = val
 end
 
 ---@param val integer?
@@ -377,6 +398,10 @@ function this.get_config()
         fov_map = 100,
         enabled_icon_scale = false,
         scale_icon = 1,
+        enabled_rot_map = false,
+        rot_map = 0,
+        enabled_angle_map = false,
+        angle_map = 0,
     }
     children.front = {
         name_key = "__front",

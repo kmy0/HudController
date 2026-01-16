@@ -628,6 +628,8 @@
 ---@class app.cGUICameraParam.cCameraParamArg : via.clr.ManagedObject
 ---@field set_AttachUPos fun(self: app.cGUICameraParam.cCameraParamArg, pos: via.Position)
 ---@field _FOV System.Single
+---@field _RotPitchDeg System.Single
+---@field _RotYawDeg System.Single
 
 ---@class app.cGUIMapIconModelSize : via.clr.ManagedObject
 ---@field _IconSizeParam ace.cGUIParamFloat3
