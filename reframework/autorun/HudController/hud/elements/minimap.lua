@@ -261,7 +261,6 @@ end
 
 ---@param val boolean
 function this:set_enable_classic_minimap(val)
-    self:reset()
     self.enabled_classic_minimap = val
 
     if self.enabled_classic_minimap then
