@@ -1,17 +1,23 @@
 ---@class ModData
 ---@field map ModMap
+---@field enum ModEnum
 ---@field pause boolean
 ---@field initialized boolean
 
 ---@class (exact) ModMap
----@field options_hud string[]
----@field options_mod string[]
+---@field options_hud table<string, string>
+---@field options_mod table<string, string>
+
+---@class (exact) ModEnum
+---@field hud_type HudType.*
+---@field hud_sub_type HudSubType.*
 
 local ace_misc = require("HudController.util.ace.misc")
 local s = require("HudController.util.ref.singletons")
 
 ---@class ModData
 local this = {
+    ---@diagnostic disable-next-line: missing-fields
     enum = {},
     map = {
         options_hud = {
@@ -55,7 +61,7 @@ local this = {
     pause = false,
 }
 ---@enum HudType
-this.enum.hud_type = {
+this.enum.hud_type = { ---@class HudType.*
     BASE = 1,
     HEALTH = 2,
     WEAPON = 3,
@@ -90,7 +96,7 @@ this.enum.hud_type = {
     QUEST_END_TIMER = 33,
 }
 ---@enum HudSubType
-this.enum.hud_sub_type = {
+this.enum.hud_sub_type = { ---@class HudSubType.*
     BASE = 1,
     MATERIAL = 2,
     SCALE9 = 3,
