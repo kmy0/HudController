@@ -26,6 +26,7 @@ end
 function this:clear()
     self._bind_base.keys = {}
     self._bind_base.name = ""
+    self._bind_base.name_display = ""
 end
 
 ---@param type string

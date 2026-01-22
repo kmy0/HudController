@@ -95,7 +95,6 @@ return {
             disable_weapon_binds_timed = "Disable Weapon Binds Timed",
             disable_weapon_binds_held_tooltip = "Disable Weapon Binds while Hud key bind is held",
             disable_weapon_binds_timed_tooltip = "Disable Weapon Binds for n seconds after Hud key bind is pressed",
-            show_order_buttons_tooltip = "Display sorting buttons for manual element reordering",
         },
         language = {
             name = "Language",
