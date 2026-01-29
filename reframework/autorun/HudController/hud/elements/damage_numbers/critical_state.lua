@@ -50,14 +50,14 @@ function this:new(args, parent)
         nil,
         nil,
         function(a_key, b_key)
-            if a_key == "ALL" then
+            if a_key.name_key == "ALL" then
                 return true
             end
 
-            if b_key == "ALL" then
+            if b_key.name_key == "ALL" then
                 return false
             end
-            return a_key < b_key
+            return a_key.name_key < b_key.name_key
         end,
         true
     )

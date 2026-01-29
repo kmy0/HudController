@@ -3,6 +3,7 @@
 ---@field GUI020020 app.GUI020020[]?
 ---@field state table<app.GUI020020.DAMAGE_INFO, {[string]: any}>
 ---@field written table<app.GUI020020.DAMAGE_INFO, boolean>
+---@field actual_written table<app.GUI020020.DAMAGE_INFO, boolean>
 ---@field children {[string]: DamageNumbersCriticalState}
 
 ---@class (exact) DamageNumbersConfig : DamageNumbersOffsetConfig, HudBaseConfig
@@ -30,14 +31,14 @@ setmetatable(this, { __index = hud_base })
 ---@return DamageNumbers
 function this:new(args)
     local o = hud_base.new(self, args, nil, nil, true, true, function(a_key, b_key)
-        if a_key == "ALL" then
+        if a_key.name_key == "ALL" then
             return true
         end
 
-        if b_key == "ALL" then
+        if b_key.name_key == "ALL" then
             return false
         end
-        return a_key < b_key
+        return a_key.name_key < b_key.name_key
     end)
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
@@ -45,6 +46,7 @@ function this:new(args)
 
     o.state = {}
     o.written = {}
+    o.actual_written = {}
 
     for _, state in pairs(ace_enum.critical_state) do
         o.children[state] = critical_state:new(args.children[state], o)
@@ -133,6 +135,7 @@ function this:reset(key)
     self.state = {}
     self.written = {}
     self.pos_cache = {}
+    self.actual_written = {}
     util_table.do_something(self:get_all_panels(), function(_, _, value)
         self:reset_ctrl(value, key)
         ---@diagnostic disable-next-line: param-type-mismatch
@@ -167,6 +170,15 @@ function this:write(hudbase, gui_id, ctrl)
     ctrl = self:get_state_value(hudbase, "<ParentPanel>k__BackingField")
 
     if not pnl_wrap:get_Visible() then
+        self.pos_cache[pnl_wrap] = nil
+        self.written[hudbase] = nil
+        self.state[hudbase] = nil
+        self.actual_written[hudbase] = nil
+
+        if not self.actual_written[hudbase] then
+            return
+        end
+
         local crit_state = self:get_state_value(hudbase, "<criticalState>k__BackingField")
         local dmg_state = self:get_state_value(hudbase, "<State>k__BackingField")
         local crit_child = self.children[ace_enum.critical_state[crit_state]]
@@ -183,11 +195,10 @@ function this:write(hudbase, gui_id, ctrl)
         ---@diagnostic disable-next-line: param-type-mismatch
         dmg_child:reset_specific(nil, nil, ctrl)
 
-        self.pos_cache[pnl_wrap] = nil
-        self.written[hudbase] = nil
         return
     end
 
+    self.actual_written[hudbase] = true
     self:adjust_offset(hudbase)
     ---@diagnostic disable-next-line: param-type-mismatch
     hud_base.write(self, hudbase, gui_id, ctrl)

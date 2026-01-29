@@ -187,34 +187,49 @@ function this:new(args, parent)
         o,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(ctrl, control_arguments.horizontal_line)
-        end
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
     )
     o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
-    end)
+    end, nil, nil, nil, nil, true)
     o.children.wound = ctrl_child:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.wound)
-    end)
+    end, nil, nil, nil, nil, true)
     o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.circle)
-    end)
+    end, nil, nil, nil, nil, true)
     o.children.affinity = ctrl_child:new(
         args.children.affinity,
         o,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(ctrl, control_arguments.affinity)
-        end
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
     )
     o.children.negative_affinity = ctrl_child:new(
         args.children.negative_affinity,
         o,
         function(s, hudbase, gui_id, ctrl)
             return play_object.iter_args(ctrl, control_arguments.negative_affinity)
-        end
+        end,
+        nil,
+        nil,
+        nil,
+        nil,
+        true
     )
     o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
-    end)
+    end, nil, nil, nil, nil, true)
 
     ---@diagnostic disable-next-line: no-unknown
     for _, child in pairs(o.children) do
