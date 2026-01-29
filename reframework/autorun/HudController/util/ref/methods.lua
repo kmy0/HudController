@@ -5,11 +5,15 @@ local types = require("HudController.util.ref.types")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.util")
 local logger = require("HudController.util.misc.logger").g
+local util_table = require("HudController.util.misc.table")
 
 ---@class MethodUtil
 local this = {
     methods = {},
 }
+---@type table<string, integer>
+local _debug = {}
+local is_debug = false
 
 ---@param name string
 ---@return REMethodDefinition
@@ -93,24 +97,68 @@ end
 ---@param post_cb (fun(retval?: userdata): any?)?
 ---@param ignore_jmp_object? boolean
 function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
+    local method_name = ""
+    local method_def = type(method) == "string" and this.get(method) or method --[[@as REMethodDefinition]]
+
+    if type(method) == "string" then
+        method_name = method
+    else
+        method_name = method_def:get_name()
+    end
+
+    method_name = string.format(
+        "%s [%s]",
+        method_name,
+        util_misc.integer_to_hex(util_ref.to_int(method_def:get_function()))
+    )
+
     if not pre_cb and not post_cb then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        local method_name = type(method) == "string" and method or method:get_name()
         logger:error("No callbacks: " .. method_name)
+    end
+
+    if is_debug then
+        pre_cb = pre_cb or function(args) end
+        if post_cb then
+            local o_post_cb = post_cb
+            post_cb = function(retval)
+                if not _debug[method_name] then
+                    _debug[method_name] = 1
+                else
+                    _debug[method_name] = _debug[method_name] + 1
+                end
+                return o_post_cb(retval)
+            end
+        end
+
+        local o_pre_cb = pre_cb
+        pre_cb = function(args)
+            if not _debug[method_name] then
+                _debug[method_name] = 1
+            else
+                _debug[method_name] = _debug[method_name] + 1
+            end
+            return o_pre_cb(args)
+        end
     end
 
     util_misc.try(function()
         sdk.hook(
             ---@diagnostic disable-next-line: param-type-mismatch
-            type(method) == "string" and this.get(method) or method,
+            method_def,
             pre_cb or function(args) end,
             post_cb and util_ref.hook_ret(post_cb) or nil,
             ignore_jmp_object
         )
     end, function(err)
         ---@diagnostic disable-next-line: param-type-mismatch
-        local method_name = type(method) == "string" and method or method:get_name()
         logger:error(string.format("Failed to hook %s: %s", method_name, err))
+    end)
+end
+
+if is_debug then
+    re.on_frame(function()
+        util_table.print(_debug)
+        _debug = {}
     end)
 end
 
