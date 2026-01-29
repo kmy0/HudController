@@ -92,6 +92,14 @@ function this.is_a(obj, type)
     return obj_type:is_a(type)
 end
 
+---@param obj string
+---@param type string
+---@return boolean
+function this.is_a_str(obj, type)
+    local obj_type = sdk.find_type_definition(obj) --[[@as RETypeDefinition]]
+    return obj_type:is_a(type)
+end
+
 ---@param obj REManagedObject
 ---@param ... string
 ---@return string?

@@ -30,6 +30,21 @@ function this.get_root_window(gui_base)
     return play_object.control.get(gui:get_View(), "RootWindow") --[[@as via.gui.Control]]
 end
 
+---@param type string app.GUIXXXXXX
+---@return [app.GUIHudBase, app.GUIID.ID, via.gui.Control]?
+function this.get_hud_write_args(type)
+    local cls = this.get_gui_cls(type) --[[@as app.GUIHudBase]]
+
+    if not cls then
+        return
+    end
+
+    local disp_ctrl = cls._DisplayControl
+    local gui_id = cls:get_ID()
+    return { cls, gui_id, disp_ctrl._TargetControl }
+end
+
 this.get_root_window = cache.memoize(this.get_root_window)
+this.get_hud_write_args = cache.memoize(this.get_hud_write_args)
 
 return this

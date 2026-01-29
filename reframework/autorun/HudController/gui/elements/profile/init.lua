@@ -4,6 +4,7 @@ local drag_util = require("HudController.gui.drag")
 local factory = require("HudController.hud.factory")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
+local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local operations = require("HudController.hud.operations")
 local panel = require("HudController.gui.elements.profile.panel.init")
@@ -373,6 +374,8 @@ local function draw_options()
             end
         )
     end
+
+    hook.hook_options()
 end
 
 local function draw_elements()

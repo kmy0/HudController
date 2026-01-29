@@ -30,6 +30,8 @@ local hud_base = require("HudController.hud.def.hud_base")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
+---@module "HudController.hud.hook.init"
+local h
 
 local ace_enum = data.ace.enum
 local ace_map = data.ace.map
@@ -62,6 +64,16 @@ local function override_scar_option(key, value)
             end
         end
     end
+end
+
+--FIXME: bleh
+---@protected
+function this._hook()
+    if not h then
+        h = require("HudController.hud.hook.init")
+    end
+
+    return h
 end
 
 function fade_callbacks.switch_profile()
@@ -119,10 +131,14 @@ function this.update_elements(elements)
     for _, elem in pairs(elements) do
         this.by_hudid[elem.hud_id] = factory.new_elem(elem)
 
+        this._hook().hook_hud(elem.hud_id, elem.hud_type)
+
         for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
             this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
         end
     end
+
+    this._hook().hook_options()
 end
 
 ---@protected
@@ -143,11 +159,15 @@ function this._update_elements_partial(elements)
         if not elem.hide and (not elem.enabled_opacity or elem.opacity > 0) then
             this.by_hudid[elem.hud_id] = factory.new_elem(elem)
 
+            this._hook().hook_hud(elem.hud_id, elem.hud_type)
+
             for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
                 this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
             end
         end
     end
+
+    this._hook().hook_options()
 end
 
 function this.reset_elements()
