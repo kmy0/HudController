@@ -3,54 +3,30 @@ local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 local dmg_static = false
 
----@param disp_ctrl app.cGUIHudDisplayControl
----@return [app.GUIHudBase, app.GUIID.ID, via.gui.Control]
-local function get_write_args(disp_ctrl)
-    local hudbase = disp_ctrl:get_Owner()
-    local gui_id = hudbase:get_ID()
-    return { hudbase, gui_id, disp_ctrl._TargetControl }
-end
-
 --#region update
-function this.update_pre(args)
-    if not common.is_ok() then
+function this.update_post(type)
+    local args = util_mod.get_hud_write_args(type)
+    if not args then
         return
     end
 
-    util_ref.capture_this(args, 3)
-end
-
-function this.update_post(retval)
-    if not common.is_ok() then
-        return
-    end
-
-    local disp_ctrl = util_ref.get_this() --[[@as app.cGUIHudDisplayControl?]]
-    if not disp_ctrl then
-        return
-    end
-
-    local hudbase, gui_id, target_ctrl = table.unpack(get_write_args(disp_ctrl))
+    local hudbase, gui_id, target_ctrl = table.unpack(args)
 
     call_queue.consume(gui_id)
 
     local hud_elem = hud.get_element_by_guiid(gui_id)
 
-    -- NamesAccess is updated here @update_name_access_icons_post
-    if not hud_elem or hud_elem.hud_id == rl(ace_enum.hud, "NAME_ACCESSIBLE") then
+    if not hud_elem then
         return
     end
 
@@ -207,7 +183,5 @@ function this.update_quest_end_timer_post(retval)
         quest_end_timer:write(GUI020202, guiid, root)
     end
 end
-
-get_write_args = cache.memoize(get_write_args)
 
 return this

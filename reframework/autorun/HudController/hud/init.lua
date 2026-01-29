@@ -107,6 +107,8 @@ function this.overwrite_hud_option(key, new_value)
         func(key, this.manager.overridden_options[key])
     end
 
+    ---@diagnostic disable-next-line: invisible
+    this.manager._hook().hook_option(key)
     return this.manager.overridden_options[key]
 end
 
