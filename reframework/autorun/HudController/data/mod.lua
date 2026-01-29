@@ -47,6 +47,7 @@ local this = {
             disable_porter_tracking = "box_disable_porter_tracking",
             hide_weapon = "box_hide_weapon",
             hide_pet = "box_hide_pet",
+            mute_gossip = "box_mute_gossip",
         },
         options_mod = {
             enable_fade = "enable_fade",
