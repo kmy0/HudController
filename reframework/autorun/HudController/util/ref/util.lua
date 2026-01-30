@@ -116,17 +116,29 @@ end
 ---@param index integer?
 function this.capture_this(args, index)
     index = index or 2
-    ---@diagnostic disable-next-line: no-unknown
-    thread.get_hook_storage()["this"] = args[index]
+    this.thread_store(args[index])
 end
 
 ---@return REManagedObject?
 function this.get_this()
-    local userdata = thread.get_hook_storage()["this"] --[[@as userdata]]
+    local userdata = this.thread_get()
     if not userdata then
         return
     end
     return sdk.to_managed_object(userdata)
+end
+
+---@param value any
+---@return table
+function this.thread_store(value)
+    local ret = thread.get_hook_storage() --[[@as table]]
+    ret["__value"] = value
+    return ret
+end
+
+---@return any?
+function this.thread_get()
+    return thread.get_hook_storage()["__value"]
 end
 
 ---@param name string

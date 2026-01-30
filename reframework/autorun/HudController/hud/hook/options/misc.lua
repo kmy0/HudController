@@ -54,14 +54,13 @@ function this.mute_gossip_subtitles_pre(args)
         local type = param.TalkType
 
         if type == rl(ace_enum.dialog, "GOSSIP") or type == rl(ace_enum.dialog, "NAGARA") then
-            ---@diagnostic disable-next-line: no-unknown
-            thread.get_hook_storage()["mute"] = true
+            util_ref.thread_store(true)
         end
     end
 end
 
 function this.mute_gossip_subtitles_post(args)
-    if thread.get_hook_storage()["mute"] then
+    if util_ref.thread_get() then
         return false
     end
 end

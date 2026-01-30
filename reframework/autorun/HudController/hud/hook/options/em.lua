@@ -139,15 +139,13 @@ function this.get_near_monsters_pre(args)
         end)
 
         if not util_table.empty(arr) then
-            ---@diagnostic disable-next-line: no-unknown
-            thread.get_hook_storage()["ret"] =
-                util_game.lua_array_to_system_array(arr, "app.cEnemyManageInfo")
+            util_ref.thread_store(util_game.lua_array_to_system_array(arr, "app.cEnemyManageInfo"))
         end
     end
 end
 
 function this.get_near_monsters_post(retval)
-    local ret = thread.get_hook_storage()["ret"] --[[@as System.Array<app.cEnemyManageInfo>?]]
+    local ret = util_ref.thread_get() --[[@as System.Array<app.cEnemyManageInfo>?]]
     if ret then
         return ret
     end
