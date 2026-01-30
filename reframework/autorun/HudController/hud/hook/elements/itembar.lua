@@ -273,4 +273,16 @@ function this.clear_cache_pre(args)
     end
 end
 
+function this.hide_radial_post(retval)
+    local itembar = common.get_elem_t("Itembar")
+    if
+        itembar
+        and itembar.start_expanded
+        and (not this.expanded.visible or this.expanded.frame < 2)
+        and ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+    then
+        return false
+    end
+end
+
 return this

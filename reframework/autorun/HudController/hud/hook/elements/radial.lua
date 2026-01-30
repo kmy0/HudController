@@ -10,16 +10,6 @@ local rl = game_data.reverse_lookup
 local this = {}
 
 function this.hide_radial_post(retval)
-    local itembar = common.get_elem_t("Itembar")
-    if
-        itembar
-        and itembar.start_expanded
-        and (not hook_itembar.expanded.visible or hook_itembar.expanded.frame < 2)
-        and ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
-    then
-        return false
-    end
-
     local shortcut = common.get_elem_t("Radial")
     if not shortcut then
         return

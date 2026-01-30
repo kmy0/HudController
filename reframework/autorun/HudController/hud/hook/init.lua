@@ -173,6 +173,7 @@ function this.hud_hooks.itembar()
         "app.GUI020006PartsAllSlider.updateDispItems(System.Int32, via.gui.SelectItem, System.Int32)",
         elements.itembar.clear_cache_pre
     )
+    m.hook("app.GUI020008.checkOpen()", util_ref.capture_this, elements.itembar.hide_radial_post)
 end
 
 function this.hud_hooks.ammo()
@@ -437,7 +438,7 @@ function this.option_hooks.skip_quest_result()
     m.hook("app.cBowlingUpdater.cUpdater_ResultEnd.onInit", options.quest.skip_bowling_result_pre)
 end
 
-function this.option_hooks.disable_scar()
+function this.option_hooks.scar()
     m.hook(
         "app.EnemyScar.requestScarStamp(app.cEmModuleScar.cScarParts.STATE)",
         options.scar.disable_scar_stamp_pre
@@ -450,9 +451,6 @@ function this.option_hooks.disable_scar()
         "app.mcEnemyScarManager.changeState(System.Int32, app.cEmModuleScar.cScarParts.STATE, app.EnemyScar.CreateInfo, System.Boolean, System.Boolean)",
         options.scar.disable_scar_state_pre
     )
-end
-
-function this.option_hooks.hide_show_scar()
     m.hook(
         "app.cEnemyLoopEffectHighlight.isActivate()",
         util_ref.capture_this,
@@ -592,7 +590,11 @@ function this.init()
     this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
     this.option["hide_porter"] = this.option_hooks.hide_porter
     this.option["disable_porter_tracking"] = this.option_hooks.disable_porter_tracking
-    this.option["hide_monster_icon"] = this.option_hooks.hide_monster_icon
+    this.option["hide_monster_icon"] = {
+        this.option_hooks.hide_monster_icon,
+        this.hud_hooks.name_access,
+        this.option_hooks.disable_scoutflies,
+    }
     this.option["hide_lock_target"] = this.option_hooks.hide_monster_icon
     this.option["hide_small_monsters"] = this.option_hooks.hide_small_monsters
     this.option["monster_ignore_camp"] = this.option_hooks.monster_ignore_camp
@@ -604,12 +606,13 @@ function this.init()
     this.option["disable_quest_end_outro"] =
         { this.option_hooks.disable_quest_intro, this.option_hooks.disable_quest_end_outro }
     this.option["disable_quest_end_camera"] = this.option_hooks.disable_quest_end_camera
-    this.option["skip_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
+    this.option["skip_quest_end_timer"] =
+        { this.option_hooks.skip_quest_end_timer, this.option_hooks.mute_gui }
     this.option["hide_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
     this.option["skip_quest_result"] = this.option_hooks.skip_quest_result
-    this.option["disable_scar"] = this.option_hooks.disable_scar
-    this.option["show_scar"] = this.option_hooks.hide_show_scar
-    this.option["hide_scar"] = this.option_hooks.hide_show_scar
+    this.option["disable_scar"] = this.option_hooks.scar
+    this.option["show_scar"] = this.option_hooks.scar
+    this.option["hide_scar"] = this.option_hooks.scar
     this.option["hide_danger"] = this.option_hooks.hide_danger
     this.option["hide_weapon"] = this.option_hooks.hide_weapon
     this.option["hide_subtitles"] = this.option_hooks.hide_subtitles
