@@ -48,6 +48,7 @@ local this = {
             hide_weapon = "box_hide_weapon",
             hide_pet = "box_hide_pet",
             mute_gossip = "box_mute_gossip",
+            hide_aggro = "box_hide_aggro",
         },
         options_mod = {
             enable_fade = "enable_fade",

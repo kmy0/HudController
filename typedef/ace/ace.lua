@@ -24,6 +24,7 @@
 ---@class ace.mcGimmickBase : ace.minicomponent.cUpdatableBase
 ---@class ace.minicomponent.cUpdatableBase : ace.minicomponent.cMiniComponent
 ---@class ace.user_data.ExcelUserData.cData : via.clr.ManagedObject
+---@class ace.cGameMessage : via.clr.ManagedObject
 
 ---@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
 ---@field _Array System.Array<any>

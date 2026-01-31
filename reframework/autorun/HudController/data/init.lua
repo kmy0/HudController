@@ -240,6 +240,7 @@ function this.init()
     game_data.get_enum("app.OtomoDef.CONTINUE_FLAG", ace_enum.otomo_continue_flag)
     game_data.get_enum("app.cGUIMapFlowCtrl.FLAG", ace_enum.map_flow_flag)
     game_data.get_enum("app.ChatDef.LOG_ID", ace_enum.log_id)
+    game_data.get_enum("app.EnemyDef.AI_TARGET_STATE", ace_enum.ai_target_state)
 
     if
         util_table.any(

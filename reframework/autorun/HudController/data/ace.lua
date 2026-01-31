@@ -51,6 +51,7 @@
 ---@field otomo_continue_flag table<app.OtomoDef.CONTINUE_FLAG, string>
 ---@field map_flow_flag table<app.cGUIMapFlowCtrl.FLAG, string>
 ---@field log_id table<app.ChatDef.LOG_ID, string>
+---@field ai_target_state table<app.EnemyDef.AI_TARGET_STATE, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -134,6 +135,7 @@ local this = {
         otomo_continue_flag = {},
         map_flow_flag = {},
         log_id = {},
+        ai_target_state = {},
     },
     map = {
         hudid_to_guiid = {},

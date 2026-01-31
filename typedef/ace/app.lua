@@ -647,3 +647,6 @@
 
 ---@class app.cGUI060101FilterList : app.cGUIPartsBaseApp
 ---@field _FilteringPartsCtrl app.cGUIFilteringSortPartsCtrl
+
+---@class app.game_message.cEmChangeState : ace.cGameMessage
+---@field get_StateMsg fun(self: app.game_message.cEmChangeState): app.EnemyDef.AI_TARGET_STATE

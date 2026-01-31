@@ -35,6 +35,7 @@
 ---@field hide_weapon boolean
 ---@field hide_pet boolean
 ---@field mute_gossip boolean
+---@field hide_aggro boolean
 
 local data = require("HudController.data.init")
 local hud_elements = require("HudController.hud.elements.init")
@@ -90,6 +91,7 @@ function this.get_hud_profile_config(key, name)
         hide_weapon = false,
         hide_pet = false,
         mute_gossip = false,
+        hide_aggro = false,
     }
 end
 

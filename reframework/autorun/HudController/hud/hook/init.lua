@@ -505,6 +505,13 @@ function this.option_hooks.mute_gossip()
     )
 end
 
+function this.option_hooks.hide_aggro()
+    m.hook(
+        "app.mcReceivedEnemyStatePool.push(app.game_message.cEmChangeState)",
+        options.player.hide_aggro_pre
+    )
+end
+
 ---@param fn fun()|fun()[]
 local function hook_fn(fn)
     if type(fn) ~= "table" then
@@ -619,6 +626,7 @@ function this.init()
     this.option["mute_gui"] = this.option_hooks.mute_gui
     this.option["disable_area_intro"] = this.option_hooks.disable_area_intro
     this.option["mute_gossip"] = this.option_hooks.mute_gossip
+    this.option["hide_aggro"] = this.option_hooks.hide_aggro
 
     return true
 end

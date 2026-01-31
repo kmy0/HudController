@@ -147,6 +147,13 @@ local function draw_options()
     check_overriden(box, "hide_danger")
     check_overriden(
         set:checkbox(
+            gui_util.tr("hud.box_hide_aggro"),
+            string.format("mod.hud.int:%s.hide_aggro", config_mod.combo.hud)
+        ),
+        "hide_aggro"
+    )
+    check_overriden(
+        set:checkbox(
             gui_util.tr("hud.box_disable_scoutflies"),
             string.format("mod.hud.int:%s.disable_scoutflies", config_mod.combo.hud)
         ),
