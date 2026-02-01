@@ -1,5 +1,6 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local game_data = require("HudController.util.game.data")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
@@ -11,6 +12,8 @@ local util_table = require("HudController.util.misc.table")
 local mod = data.mod
 local set = state.set
 local ace_map = data.ace.map
+local ace_enum = data.ace.enum
+local rl = game_data.reverse_lookup
 
 local this = {
     ---@type table<HudType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
@@ -21,9 +24,17 @@ local this = {
 ---@param t table<string, boolean>
 ---@param t_config_key string
 ---@param f fun(self: HudBase, name_key: string, val: boolean)
-local function group_things(elem, t, t_config_key, f)
+---@param tr (fun(key: string): string)?
+---@param chunk_size integer?
+local function group_things(elem, t, t_config_key, f, tr, chunk_size)
     local sorted = util_table.sort(util_table.keys(t))
-    local chunks = util_table.chunks(sorted, 5)
+    local chunks = util_table.chunks(sorted, chunk_size or 5)
+
+    if not tr then
+        tr = function(key)
+            return key
+        end
+    end
 
     for i = 1, #chunks do
         local chunk = chunks[i]
@@ -44,7 +55,7 @@ local function group_things(elem, t, t_config_key, f)
                     string.format(
                         "%s %s##%s",
                         config.lang:tr("hud_element.entry.box_hide"),
-                        key,
+                        tr(key),
                         item_config_key
                     ),
                     item_config_key
@@ -436,6 +447,22 @@ local function draw_notice(elem, elem_config, config_key)
         elem_config.lobby_log,
         string.format("%s.%s", config_key, "lobby_log"),
         elem.set_lobby_log
+    )
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_auto_id"))
+    group_things(
+        elem,
+        elem_config.auto_id,
+        string.format("%s.%s", config_key, "auto_id"),
+        elem.set_auto_id,
+        function(key)
+            local ret = ace_map.auto_id_to_text[rl(ace_enum.auto_id, key)]
+            if not ret then
+                ret = config.lang:tr("misc.text_unknown")
+            end
+            return ret
+        end,
+        12
     )
 end
 

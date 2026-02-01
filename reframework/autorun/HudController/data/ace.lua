@@ -52,6 +52,7 @@
 ---@field map_flow_flag table<app.cGUIMapFlowCtrl.FLAG, string>
 ---@field log_id table<app.ChatDef.LOG_ID, string>
 ---@field ai_target_state table<app.EnemyDef.AI_TARGET_STATE, string>
+---@field auto_id table<app.Communication.AUTO_ID, string>
 
 ---@class (exact) AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
@@ -68,6 +69,7 @@
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
+---@field auto_id_to_text table<app.Communication.AUTO_ID, string>
 ---@field weapon_binds {
 --- additional_weapon: string[],
 --- game_mode: string[],
@@ -136,6 +138,7 @@ local this = {
         map_flow_flag = {},
         log_id = {},
         ai_target_state = {},
+        auto_id = {},
     },
     map = {
         hudid_to_guiid = {},
@@ -211,6 +214,7 @@ local this = {
             ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
             ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
         },
+        auto_id_to_text = {},
     },
 }
 

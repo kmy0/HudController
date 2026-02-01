@@ -116,6 +116,18 @@ function this.skip_lobby_message_pre(args)
         if notice.lobby_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
+
+        local log_name = ""
+        local log_t = {}
+        if util_ref.is_a(def, "app.ChatDef.AutoMessage") then
+            ---@cast def app.ChatDef.AutoMessage
+            log_name = ace_enum.auto_id[def:get_AutoId()]
+            log_t = notice.auto_id
+        end
+
+        if log_t[log_name] then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
     end
 end
 

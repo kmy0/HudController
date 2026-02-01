@@ -38,6 +38,7 @@
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 ---@class app.cGUIMapPlayerIconController.cMasterPlayerIcon : app.cGUIMapPlayerIconController.cPlayerIconBase
+---@class app.ChatDef.ChatMessage : app.ChatDef.ChatBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -650,3 +651,9 @@
 
 ---@class app.game_message.cEmChangeState : ace.cGameMessage
 ---@field get_StateMsg fun(self: app.game_message.cEmChangeState): app.EnemyDef.AI_TARGET_STATE
+
+---@class app.user_data.AutoData.cData : ace.user_data.ExcelUserData.cData
+---@field get_Explain fun(self: app.user_data.AutoData.cData): System.Guid
+
+---@class app.ChatDef.AutoMessage : app.ChatDef.ChatMessage
+---@field get_AutoId fun(self: app.ChatDef.AutoMessage): app.Communication.AUTO_ID

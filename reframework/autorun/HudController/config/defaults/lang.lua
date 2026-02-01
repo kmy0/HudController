@@ -263,6 +263,7 @@ return {
             category_notice_system = "System Message",
             category_notice_lobby = "Lobby Message",
             category_notice_lobby_target = "Lobby Message Target",
+            category_notice_auto_id = "Auto Shoutouts",
             category_notice_enemy = "Enemy Message Type",
             category_notice_camp = "Camp Message Type",
             category_object_category = "Object Category",

@@ -18,6 +18,7 @@ local ace_enum = this.ace.enum
 local rl = util_game.data.reverse_lookup
 
 m.ChatLogIDData = m.wrap(m.get("app.ChatDef.Data(app.ChatDef.LOG_ID)")) --[[@as fun(log_id: app.ChatDef.LOG_ID): app.user_data.ChatLogData.cData]]
+m.ChatLogAUTO_IDData = m.wrap(m.get("app.Communication.Data(app.Communication.AUTO_ID)")) --[[@as fun(auto_id: app.Communication.AUTO_ID): app.user_data.AutoData.cData]]
 
 ---@return boolean
 local function get_hud_setting()
@@ -135,6 +136,14 @@ local function get_log_id_text()
         end
         ace_map.log_id_to_text[log_id] = table.concat(stripped, ", ")
     end
+
+    for auto_id, _ in pairs(ace_enum.auto_id) do
+        local data = m.ChatLogAUTO_IDData(auto_id)
+        if data then
+            ace_map.auto_id_to_text[auto_id] =
+                game_lang.get_message_local(data:get_Explain(), lang, true)
+        end
+    end
 end
 
 ---@param config_table MainSettings
@@ -241,6 +250,7 @@ function this.init()
     game_data.get_enum("app.cGUIMapFlowCtrl.FLAG", ace_enum.map_flow_flag)
     game_data.get_enum("app.ChatDef.LOG_ID", ace_enum.log_id)
     game_data.get_enum("app.EnemyDef.AI_TARGET_STATE", ace_enum.ai_target_state)
+    game_data.get_enum("app.Communication.AUTO_ID", ace_enum.auto_id)
 
     if
         util_table.any(

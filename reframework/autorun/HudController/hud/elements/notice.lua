@@ -7,6 +7,7 @@
 ---@field camp_log table<string, boolean>
 ---@field chat_log table<string, boolean>
 ---@field log_id table<string, integer>
+---@field auto_id table<string, boolean>
 ---@field message_log_cache CircularBuffer<CachedMessage>
 ---@field protected _queued_callbacks table<app.cGUI020100PanelBase, boolean>
 ---@field get_cls_name_short fun(cls_name: string): string
@@ -42,8 +43,7 @@
 ---@field camp_log table<string, boolean>
 ---@field chat_log table<string, boolean>
 ---@field log_id table<string, integer>
----@field contains {hide: boolean, pattern: string}
----@field not_contains {hide: boolean, pattern: string}
+---@field auto_id table<string, boolean>
 ---@field children {
 --- Item: HudChildConfig,
 --- Tutorial: HudChildConfig,
@@ -113,6 +113,7 @@ function this:new(args)
     o.camp_log = args.camp_log
     o.chat_log = args.chat_log
     o.cache_msg = args.cache_msg
+    o.auto_id = args.auto_id
     o._queued_callbacks = {}
     o:_set_log_id(args.log_id)
 
@@ -180,6 +181,12 @@ end
 ---@param hide boolean
 function this:set_chat_log(name_key, hide)
     self.chat_log[name_key] = hide
+end
+
+---@param name_key string
+---@param hide boolean
+function this:set_auto_id(name_key, hide)
+    self.auto_id[name_key] = hide
 end
 
 ---@param val boolean
@@ -270,6 +277,7 @@ function this.get_config()
     base.camp_log = {}
     base.cache_msg = false
     base.log_id = {}
+    base.auto_id = {}
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
@@ -301,6 +309,10 @@ function this.get_config()
         -- required because of merge2, merge2 removes all keys that do not exist in default config
         ---@diagnostic disable-next-line: assign-type-mismatch
         base.log_id[tostring(e)] = "dummy"
+    end
+
+    for _, name in pairs(ace_enum.auto_id) do
+        base.auto_id[name] = false
     end
 
     return base
