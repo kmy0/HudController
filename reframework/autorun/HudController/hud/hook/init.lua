@@ -1,10 +1,10 @@
 ---@class ModHook
----@field is_hud_hooked table<HudType, boolean>
+---@field is_hud_hooked table<string, boolean>
 ---@field is_option_hooked table<string, boolean>
 ---@field is_fun_hooked table<fun(), true>
 ---@field hud_hooks table<string, fun(...)>
 ---@field option_hooks table<string, fun()>
----@field hud table<HudType, fun()|fun()[]>
+---@field hud table<string, fun()|fun()[]>
 ---@field option table<string, fun()|fun()[]>
 
 local common = require("HudController.hud.hook.common")
@@ -527,14 +527,16 @@ local function hook_fn(fn)
 end
 
 ---@param hud_id app.GUIHudDef.TYPE
----@param hud_type HudType
-function this.hook_hud(hud_id, hud_type)
-    if this.is_hud_hooked[hud_type] then
-        return
-    end
-
+---@param hud_name string
+function this.hook_hud(hud_id, hud_name)
     for _, gui_id in pairs(ace_map.hudid_to_guiid[hud_id]) do
         local gui_type = string.format("app.G%s", ace_enum.gui_id[gui_id])
+        local key = string.format("%s|%s", hud_name, gui_type)
+
+        if this.is_hud_hooked[key] then
+            goto continue
+        end
+
         -- NamesAccess is updated here @update_name_access_icons_post
         if
             util_ref.is_a_str(gui_type, "app.GUIHudBase")
@@ -543,13 +545,14 @@ function this.hook_hud(hud_id, hud_type)
             on_render_hooks[gui_type] = true
         end
 
-        local fn = this.hud[hud_type]
+        local fn = this.hud[hud_name]
         if fn then
             hook_fn(fn)
         end
-    end
 
-    this.is_hud_hooked[hud_type] = true
+        this.is_hud_hooked[key] = true
+        ::continue::
+    end
 end
 
 function this.hook_option(option_key)
@@ -573,25 +576,25 @@ end
 
 ---@return boolean
 function this.init()
-    this.hud[mod_enum.hud_type.TARGET_RETICLE] = this.hud_hooks.target_reticle
-    this.hud[mod_enum.hud_type.MENU_BUTTON_GUIDE] = this.hud_hooks.menu_button_guide
-    this.hud[mod_enum.hud_type.DAMAGE_NUMBERS] = this.hud_hooks.damage_numbers
-    this.hud[mod_enum.hud_type.SUBTITLES] = this.hud_hooks.subtitles
-    this.hud[mod_enum.hud_type.SUBTITLES_CHOICE] = this.hud_hooks.subtitles
-    this.hud[mod_enum.hud_type.TRAINING_ROOM_HUD] = this.hud_hooks.training_room_hud
-    this.hud[mod_enum.hud_type.NAME_ACCESS] = this.hud_hooks.name_access
-    this.hud[mod_enum.hud_type.BARREL_BOWLING_SCORE] = this.hud_hooks.barrel_bowling_score
-    this.hud[mod_enum.hud_type.CHAT_LOG] = this.hud_hooks.chat_log
-    this.hud[mod_enum.hud_type.RADIAL] = this.hud_hooks.radial
-    this.hud[mod_enum.hud_type.ITEMBAR] = this.hud_hooks.itembar
-    this.hud[mod_enum.hud_type.AMMO] = this.hud_hooks.ammo
-    this.hud[mod_enum.hud_type.NAME_OTHER] = this.hud_hooks.name_other
-    this.hud[mod_enum.hud_type.CONTROL] = this.hud_hooks.control
-    this.hud[mod_enum.hud_type.PROGRESS] = this.hud_hooks.progress
-    this.hud[mod_enum.hud_type.NOTICE] = this.hud_hooks.notice
-    this.hud[mod_enum.hud_type.SHORTCUT_KEYBOARD] = this.hud_hooks.shortcut_keyboard
-    this.hud[mod_enum.hud_type.MINIMAP] = this.hud_hooks.minimap
-    this.hud[mod_enum.hud_type.QUEST_END_TIMER] = this.hud_hooks.quest_end_timer
+    this.hud["TARGET_RETICLE"] = this.hud_hooks.target_reticle
+    this.hud["MENU_BUTTON_GUIDE"] = this.hud_hooks.menu_button_guide
+    this.hud["DAMAGE_NUMBERS"] = this.hud_hooks.damage_numbers
+    this.hud["SUBTITLES"] = this.hud_hooks.subtitles
+    this.hud["SUBTITLES_CHOICE"] = this.hud_hooks.subtitles
+    this.hud["TRAINING_ROOM_HUD"] = this.hud_hooks.training_room_hud
+    this.hud["NAME_ACCESS"] = this.hud_hooks.name_access
+    this.hud["BARREL_BOWLING_SCORE"] = this.hud_hooks.barrel_bowling_score
+    this.hud["CHAT_LOG"] = this.hud_hooks.chat_log
+    this.hud["RADIAL"] = this.hud_hooks.radial
+    this.hud["ITEMBAR"] = this.hud_hooks.itembar
+    this.hud["AMMO"] = this.hud_hooks.ammo
+    this.hud["NAME_OTHER"] = this.hud_hooks.name_other
+    this.hud["CONTROL"] = this.hud_hooks.control
+    this.hud["PROGRESS"] = this.hud_hooks.progress
+    this.hud["NOTICE"] = this.hud_hooks.notice
+    this.hud["SHORTCUT_KEYBOARD"] = this.hud_hooks.shortcut_keyboard
+    this.hud["MINIMAP"] = this.hud_hooks.minimap
+    this.hud["QUEST_END_TIMER"] = this.hud_hooks.quest_end_timer
     --
     this.option["disable_scoutflies"] = this.option_hooks.disable_scoutflies
     this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
