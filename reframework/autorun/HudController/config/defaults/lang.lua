@@ -158,6 +158,9 @@ return {
             name = "User Scripts",
             text_no_scripts = "Scripts will be listed here...",
         },
+        tools = {
+            name = "Tools",
+        },
     },
     hud = {
         button_new = "New",

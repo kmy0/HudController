@@ -626,22 +626,8 @@ local function draw_grid_menu()
     imgui.spacing()
 end
 
-function this.draw()
-    draw_menu(gui_util.tr("menu.config.name"), draw_mod_menu)
-    draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
-    draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
-    draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
-
-    draw_menu(
-        gui_util.tr("menu.user_scripts.name"),
-        draw_user_scripts_menu,
-        nil,
-        user.is_need_attention() and state.colors.info or nil
-    )
-
-    util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
-
-    if imgui.button(gui_util.tr("selector.name")) then
+local function draw_tools_menu()
+    if util_imgui.menu_item(gui_util.tr("selector.name"), nil, nil, true) then
         mod.pause = true
         gui_selector.is_opened = true
         gui_debug.close()
@@ -651,11 +637,26 @@ function this.draw()
         state.combo.config_backup:swap(config.selector.sorted_backup)
     end
 
-    if imgui.button(gui_util.tr("debug.name")) then
+    if util_imgui.menu_item(gui_util.tr("debug.name"), nil, nil, true) then
         local config_debug = config.gui.current.gui.debug
         config_debug.is_opened = not config_debug.is_opened
         config.save_global()
     end
+end
+
+function this.draw()
+    draw_menu(gui_util.tr("menu.config.name"), draw_mod_menu)
+    draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
+    draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
+    draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
+    draw_menu(
+        gui_util.tr("menu.user_scripts.name"),
+        draw_user_scripts_menu,
+        nil,
+        user.is_need_attention() and state.colors.info or nil
+    )
+    util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
+    draw_menu(gui_util.tr("menu.tools.name"), draw_tools_menu)
 end
 
 return this
