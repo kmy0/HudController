@@ -38,7 +38,9 @@
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 ---@class app.cGUIMapPlayerIconController.cMasterPlayerIcon : app.cGUIMapPlayerIconController.cPlayerIconBase
----@class app.ChatDef.ChatMessage : app.ChatDef.ChatBase
+---@class app.net_packet.cChatMessage : app.net_packet.cChatBase
+---@class app.net_packet.cChatBase : app.net_packet.cPacketBase
+---@class app.net_packet.cPacketBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -655,5 +657,5 @@
 ---@class app.user_data.AutoData.cData : ace.user_data.ExcelUserData.cData
 ---@field get_Explain fun(self: app.user_data.AutoData.cData): System.Guid
 
----@class app.ChatDef.AutoMessage : app.ChatDef.ChatMessage
----@field get_AutoId fun(self: app.ChatDef.AutoMessage): app.Communication.AUTO_ID
+---@class app.net_packet.cSysChatAutoTemplate : app.net_packet.cChatMessage
+---@field AutoId System.Int16

@@ -116,16 +116,19 @@ function this.skip_lobby_message_pre(args)
         if notice.lobby_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
+    end
+end
 
-        local log_name = ""
-        local log_t = {}
-        if util_ref.is_a(def, "app.ChatDef.AutoMessage") then
-            ---@cast def app.ChatDef.AutoMessage
-            log_name = ace_enum.auto_id[def:get_AutoId()]
-            log_t = notice.auto_id
-        end
+function this.skip_auto_message_pre(args)
+    local notice = common.get_elem_t("Notice")
+    if notice then
+        local chat_base = sdk.to_managed_object(args[3]) --[[@as app.net_packet.cChatBase]]
+        if
+            util_ref.is_a(chat_base, "app.net_packet.cSysChatAutoTemplate")
+            ---@cast chat_base app.net_packet.cSysChatAutoTemplate
 
-        if log_t[log_name] then
+            and notice.auto_id[ace_enum.auto_id[chat_base.AutoId]]
+        then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

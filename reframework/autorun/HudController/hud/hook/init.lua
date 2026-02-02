@@ -223,6 +223,10 @@ function this.hud_hooks.notice()
         "app.ChatManager.pushBackSystemLog(app.ChatDef.SystemMessage, System.Boolean)",
         elements.notice.skip_system_message_pre
     )
+    m.hook(
+        "app.ChatManager.onReceiveSystem(app.net_packet.cChatBase, System.Boolean, System.Boolean, app.net_session_manager.SESSION_TYPE, System.Int32, System.Boolean, System.Boolean)",
+        elements.notice.skip_auto_message_pre
+    )
 end
 
 function this.hud_hooks.shortcut_keyboard()
