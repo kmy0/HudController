@@ -21,8 +21,8 @@ local init = util.misc.init_chain:new(
     util.ace.porter.init,
     config_menu.init,
     hud.manager.init,
-    data.mod.init,
     hook.init,
+    data.mod.init,
     user.init
 )
 ---@class MethodUtil
