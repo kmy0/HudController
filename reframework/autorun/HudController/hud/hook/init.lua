@@ -41,6 +41,15 @@ m.hook(
     nil,
     misc.reset_cache_post
 )
+m.hook("app.GUIManager.lateUpdateApp()", nil, function(retval)
+    if not common.is_ok() then
+        return
+    end
+
+    for gui_type in pairs(on_render_hooks) do
+        elements.update.update_post(gui_type)
+    end
+end)
 
 function this.hud_hooks.target_reticle()
     m.hook(
@@ -637,15 +646,5 @@ function this.init()
 
     return true
 end
-
-re.on_application_entry("RenderGUI", function()
-    if not common.is_ok() then
-        return
-    end
-
-    for gui_type in pairs(on_render_hooks) do
-        elements.update.update_post(gui_type)
-    end
-end)
 
 return this

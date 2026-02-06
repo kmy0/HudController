@@ -353,7 +353,7 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    if self._apply_filter and self.default_filter ~= -1 then
+    if self._apply_filter and self.default_filter and self.default_filter ~= -1 then
         local filter = self:get_filter_controller()
         m.requestMapFilter(filter, nil, nil, self.default_filter)
         self._apply_filter = false
