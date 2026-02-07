@@ -15,8 +15,8 @@
 ---@field background PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
@@ -24,9 +24,7 @@ local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 -- PNL_Scale
 ---@type SubtitlesControlArguments
@@ -62,20 +60,20 @@ function this:new(args)
     ---@cast o Subtitles
 
     for _, child in pairs(args.children) do
-        o.children[child.name_key] = hud_child:new(child, o, function(s, hudbase, gui_id, ctrl)
+        o.children[child.name_key] = hud_child:new(child, o, function(sel, hudbase, _, ctrl)
             ---@cast hudbase app.GUI020400
-            local category = ace_enum.subtitles_category[hudbase._SubtitlesCategory]
+            local category = e.get("app.GUI020400.SUBTITLES_CATEGORY")[hudbase._SubtitlesCategory]
 
-            if o.previous_category and o.previous_category ~= category and not s:any() then
-                s:reset()
+            if o.previous_category and o.previous_category ~= category and not sel:any() then
+                sel:reset()
                 o.previous_category = nil
             end
 
-            if category ~= s.name_key then
+            if category ~= sel.name_key then
                 return {}
             end
 
-            if s:any() then
+            if sel:any() then
                 o.previous_category = category
             end
 
@@ -86,7 +84,7 @@ function this:new(args)
     o.children.background = scale9:new(
         args.children.background --[[@as Scale9Config]],
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.background)
         end
     )
@@ -125,12 +123,12 @@ end
 
 ---@return SubtitlesConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "SUBTITLES"), "SUBTITLES") --[[@as SubtitlesConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SUBTITLES, "SUBTITLES") --[[@as SubtitlesConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.SUBTITLES
 
-    for _, name in pairs(ace_enum.subtitles_category) do
+    for name, _ in e.iter("app.GUI020400.SUBTITLES_CATEGORY") do
         children[name] = hud_child.get_config(name)
     end
 

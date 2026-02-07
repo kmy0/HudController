@@ -4,15 +4,10 @@
 ---@field name string
 ---@field func_name string
 
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local util_ref = require("HudController.util.ref.init")
-local util_table = require("HudController.util.misc.table")
 
 local this = {
-    enum = {
-        ---@type table<via.gui.Material.ParamType, string>
-        param_type = {},
-    },
     map = {
         type_to_func = {
             Float = "get_VariableFloat%s",
@@ -37,10 +32,6 @@ local material_map = {
 ---@param obj via.gui.Material
 ---@return MaterialVariable[]
 function this.get_variables(obj)
-    if util_table.empty(this.enum.param_type) then
-        game_data.get_enum("via.gui.Material.ParamType", this.enum.param_type)
-    end
-
     ---@type MaterialVariable[]
     local ret = {}
     local param_count = obj:get_MaterialParamsCount()
@@ -54,7 +45,7 @@ function this.get_variables(obj)
         local struct = {}
         local string_start = offset_name + (i - 1) * material_map.name.struct_size
         local type_offset = offset_type + (i - 1) * material_map.type.struct_size
-        local type = this.enum.param_type[obj:read_byte(type_offset)]
+        local type = e.get("via.gui.Material.ParamType")[obj:read_byte(type_offset)]
 
         s._stringLength = obj:read_byte(string_start + material_map.name.length_offset)
         s._firstChar = sdk.to_valuetype(address + string_start, "System.Char") --[[@as System.Char]]

@@ -59,16 +59,16 @@ local control_arguments = {
 ---@param parent ShortcutKeyboard
 ---@return ShortcutKeyboardPallet
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.pallet)
     end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardPallet
 
-    o.children.keybind = hud_child:new(args.children.keybind, o, function(s, hudbase, gui_id, ctrl)
+    o.children.keybind = hud_child:new(args.children.keybind, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keybind)
     end)
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
 

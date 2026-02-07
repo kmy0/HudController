@@ -60,7 +60,7 @@ local control_arguments = {
 ---@param parent ShortcutKeyboard
 ---@return ShortcutKeyboardItem
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, hudbase, _, _)
         ---@cast hudbase app.GUI020600
         local ret = {}
         -- items are recreated every time ShortcutKeyboard is opened, so play_object.control.all cannot be used,
@@ -79,17 +79,13 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardItem
 
-    o.children.keybind = hud_child:new(args.children.keybind, o, function(s, hudbase, gui_id, ctrl)
+    o.children.keybind = hud_child:new(args.children.keybind, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keybind)
     end)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
 

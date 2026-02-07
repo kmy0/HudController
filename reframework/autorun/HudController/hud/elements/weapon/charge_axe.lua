@@ -27,13 +27,9 @@
 ---@field background PlayObjectGetterFn[]
 ---@field frame PlayObjectGetterFn[]
 
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class ChargeAxe
 local this = {}
@@ -114,31 +110,27 @@ function this:new(args, parent)
         nil,
         nil,
         nil,
-        rl(ace_enum.gui_id, "UI020034")
+        e.get("app.GUIID.ID").UI020034
     )
     setmetatable(o, self)
     ---@cast o ChargeAxe
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.axe = hud_child:new(args.children.axe, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.axe = hud_child:new(args.children.axe, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.axe)
     end)
-    o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
+    o.children.shield = hud_child:new(args.children.shield, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
     end)
-    o.children.sword = hud_child:new(args.children.sword, o, function(s, hudbase, gui_id, ctrl)
+    o.children.sword = hud_child:new(args.children.sword, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.sword)
     end)
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.phials = hud_child:new(args.children.phials, o, function(s, hudbase, gui_id, ctrl)
+    o.children.phials = hud_child:new(args.children.phials, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.phials)
     end)
 

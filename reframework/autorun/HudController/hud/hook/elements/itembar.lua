@@ -1,17 +1,13 @@
 local ace_misc = require("HudController.util.ace.misc")
 local ace_player = require("HudController.util.ace.player")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {
     ---@type {
@@ -30,7 +26,7 @@ local this = {
     },
 }
 
-function this.open_expanded_itembar_pre(args)
+function this.open_expanded_itembar_pre(_)
     local itembar = common.get_elem_t("Itembar")
     if not itembar then
         return
@@ -39,7 +35,7 @@ function this.open_expanded_itembar_pre(args)
     if itembar and itembar.start_expanded then
         local GUI020006 = itembar:get_GUI020006()
         local flag =
-            ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+            ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
 
         if not this.expanded.visible and flag then
             if GUI020006:get_IsAllSliderMode() then
@@ -68,14 +64,14 @@ function this.open_expanded_itembar_pre(args)
     end
 end
 
-function this.keep_ammo_open_pre(args)
+function this.keep_ammo_open_pre(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar and itembar.children.all_slider.ammo_visible then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
-function this.keep_slinger_open1_post(retval)
+function this.keep_slinger_open1_post(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar and itembar.children.all_slider.slinger_visible then
         local GUI020017 = util_ref.get_this() --[[@as app.GUI020017]]
@@ -85,7 +81,7 @@ function this.keep_slinger_open1_post(retval)
     end
 end
 
-function this.keep_slinger_open0_post(retval)
+function this.keep_slinger_open0_post(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar then
         local GUI020017 = util_ref.get_this() --[[@as app.GUI020017]]
@@ -99,15 +95,15 @@ function this.keep_slinger_open0_post(retval)
     end
 end
 
-function this.unblock_camera_control_post(retval)
+function this.unblock_camera_control_post(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar and itembar.children.all_slider.disable_right_stick then
         if itembar:get_GUI020006():get_IsAllSliderMode() then
-            local flag = 1 << rl(ace_enum.button_mask, "CAMERA") --[[@as integer]]
+            local flag = 1 << e.get("app.PlayerDef.ButtonMask.USER").CAMERA --[[@as integer]]
             local inputman = s.get("app.GameInputManager")
             local bit_flags = inputman._PlayerButtonMaskFlagStore
 
-            util_game.do_something(bit_flags, function(system_array, index, bit_flag)
+            util_game.do_something(bit_flags, function(_, index, bit_flag)
                 local value = bit_flag._Value
 
                 if value & flag == flag then
@@ -119,7 +115,7 @@ function this.unblock_camera_control_post(retval)
     end
 end
 
-function this.expanded_itembar_mouse_control_post(retval)
+function this.expanded_itembar_mouse_control_post(_)
     local itembar = common.get_elem_t("Itembar")
     if not itembar then
         return
@@ -129,7 +125,8 @@ function this.expanded_itembar_mouse_control_post(retval)
         itembar
         and itembar.children.all_slider.enable_mouse_control
         and itembar:get_GUI020006():get_IsAllSliderMode()
-        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+        and e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
+                :get_LastInputDeviceIgnoreMouseMove()]
             ~= "PAD"
     then
         local all_slider = util_ref.get_this() --[[@as app.GUI020006PartsAllSlider]]
@@ -158,7 +155,7 @@ function this.expanded_itembar_mouse_control_post(retval)
 
             -- when expanded item bar is in 'Selected Stack Only' mode, all icons of a stack are in the same place before mouseover
             -- iterating in reverse makes sure that correct icon is selected
-            util_game.do_something(all_slider:get__GridParts(), function(system_array, index, item)
+            util_game.do_something(all_slider:get__GridParts(), function(_, _, item)
                 local sel = item:get__BaseItem()
                 local sel_index = sel:get_ListIndex()
 
@@ -179,7 +176,7 @@ function this.expanded_itembar_mouse_control_post(retval)
                 end
             end, true)
 
-            if mouse_over and ace_misc.get_kb():isOn(rl(ace_enum.kb_btn, "L_CLICK")) then
+            if mouse_over and ace_misc.get_kb():isOn(e.get("ace.ACE_MKB_KEY.INDEX").L_CLICK) then
                 all_slider:callbackOther(
                     all_slider.SLOT_ITEM_USE,
                     fsg_ctrl,
@@ -207,7 +204,7 @@ function this.force_mouse_pos_pre(args)
     end
 end
 
-function this.force_cursor_visible_post(retval)
+function this.force_cursor_visible_post(_)
     local itembar = common.get_elem_t("Itembar")
     if not itembar then
         return
@@ -217,7 +214,8 @@ function this.force_cursor_visible_post(retval)
         itembar
         and itembar.children.all_slider.enable_mouse_control
         and itembar:get_GUI020006():get_IsAllSliderMode()
-        and ace_enum.input_device[s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()]
+        and e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
+                :get_LastInputDeviceIgnoreMouseMove()]
             ~= "PAD"
     then
         this.expanded.skip_mouse_update = true
@@ -228,7 +226,7 @@ function this.force_cursor_visible_post(retval)
 end
 
 -- prevents mouse cursor flicker to 0,0 when closing itembar
-function this.skip_mouse_update_pre(args)
+function this.skip_mouse_update_pre(_)
     if this.expanded.skip_mouse_update then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
@@ -257,14 +255,14 @@ function this.move_next_item_pre(args)
     if
         not itembar:get_GUI020006():get_IsAllSliderMode()
         and itembar:get_GUI020006():get_SelectedItemId() == item_id
-        and m.getItemNum(item_id, rl(ace_enum.stock_type, "POUCH")) == 1
+        and m.getItemNum(item_id, e.get("app.ItemUtil.STOCK_TYPE").POUCH) == 1
     then
         local slider = itembar.children.slider:get_part()
         slider:callbackOther(slider.SLOT_LEFT, nil, nil, 0)
     end
 end
 
-function this.clear_cache_pre(args)
+function this.clear_cache_pre(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar then
         itembar.children.all_slider:do_something_to_children(function(hudchild)
@@ -273,13 +271,13 @@ function this.clear_cache_pre(args)
     end
 end
 
-function this.hide_radial_post(retval)
+function this.hide_radial_post(_)
     local itembar = common.get_elem_t("Itembar")
     if
         itembar
         and itembar.start_expanded
         and (not this.expanded.visible or this.expanded.frame < 2)
-        and ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+        and ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
     then
         return false
     end

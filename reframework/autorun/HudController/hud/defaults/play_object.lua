@@ -3,13 +3,12 @@
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local json_cache = require("HudController.util.misc.json_cache")
 local m = require("HudController.util.ref.methods")
 local util_game = require("HudController.util.game.init")
-local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
-local ace_enum = data.ace.enum
 
 ---@class PlayObjectDefaultJsonCache
 local this = {}
@@ -100,7 +99,7 @@ function this:create_default(obj)
     local hudid = ace_map.guiid_to_hudid[guiid]
 
     if hudid and ace_map.hudid_to_can_hide[hudid] then
-        display = ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(hudid)]
+        display = e.get("app.GUIHudDef.DISPLAY")[ace_misc.get_hud_manager():getHudDisplay(hudid)]
     end
 
     local scale = obj:get_Scale()
@@ -114,7 +113,7 @@ function this:create_default(obj)
         play_state = obj:get_PlayState(),
         color_scale = { x = color.x, y = color.y, z = color.z },
         display = display,
-        segment = ace_enum.draw_segment[obj:get_Segment()],
+        segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[obj:get_Segment()],
     }
 
     return ret

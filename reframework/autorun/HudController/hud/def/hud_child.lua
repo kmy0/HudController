@@ -80,7 +80,7 @@ function this:new(
         o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter)
     end
 
-    o.ctrl_getter = ctrl_getter or function(s, hudbase, gui_id, ctrl)
+    o.ctrl_getter = ctrl_getter or function(_, _, _, ctrl)
         return ctrl
     end
     o.ctrl_writer = ctrl_writer

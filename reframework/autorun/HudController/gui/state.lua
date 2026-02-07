@@ -42,17 +42,15 @@ local combo = require("HudController.gui.combo")
 local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
 local gui_util = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 local map_filter_translated = false
 
@@ -62,7 +60,8 @@ local this = {
         hud_elem = combo:new(
             nil,
             function(a, b)
-                return rl(ace_enum.hud, a.key) < rl(ace_enum.hud, b.key)
+                local enum = e.get("app.GUIHudDef.TYPE")
+                return enum[a.key] < enum[b.key]
             end,
             nil,
             function(key)
@@ -122,7 +121,7 @@ local this = {
         config = combo:new(),
         config_backup = combo:new(),
         bind_action_type = combo:new(
-            util_table.filter(bind_manager.action_type, function(key, value)
+            util_table.filter(bind_manager.action_type, function(_, value)
                 return value ~= bind_manager.action_type.NONE
             end),
             function(a, b)
@@ -136,7 +135,7 @@ local this = {
         log_id = combo:new(nil, function(a, b)
             return tonumber(a.key) < tonumber(b.key)
         end, function(value)
-            local id = rl(ace_enum.log_id, value)
+            local id = e.get("app.ChatDef.LOG_ID")[value]
             return string.format(
                 "%s - %s",
                 id,
@@ -235,7 +234,7 @@ end
 
 function this.update_state()
     this.state.l1_pressed =
-        ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+        ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
 end
 
 function this.translate_map_icon_filter_options()
@@ -272,18 +271,21 @@ end
 function this.init()
     this.combo.hud_elem:swap(ace_map.hudid_name_to_local_name)
     this.combo.hud:swap(config.current.mod.hud)
-    this.combo.control_point:swap(ace_enum.control_point)
-    this.combo.blend:swap(ace_enum.blend)
-    this.combo.alpha_channel:swap(ace_enum.alpha_channel)
+    this.combo.control_point:swap(e.get("via.gui.ControlPoint").enum_to_field)
+    this.combo.blend:swap(e.get("via.gui.BlendType").enum_to_field)
+
+    this.combo.alpha_channel:swap(e.get("via.gui.AlphaChannelType").enum_to_field)
     this.combo.item_decide:swap(this.item_decide)
-    this.combo.segment:swap(util_table.filter(ace_enum.draw_segment, function(key, value)
-        return not value:match("RADAR.-")
-    end))
-    this.combo.page_alignment:swap(ace_enum.page_alignment)
-    this.combo.enemy_msg_type:swap(ace_enum.enemy_log)
+    this.combo.segment:swap(
+        util_table.filter(e.get("app.GUIDefApp.DRAW_SEGMENT").enum_to_field, function(_, value)
+            return not value:match("RADAR.-")
+        end)
+    )
+    this.combo.page_alignment:swap(e.get("via.gui.PageAlignment").enum_to_field)
+    this.combo.enemy_msg_type:swap(e.get("app.ChatDef.ENEMY_LOG_TYPE").enum_to_field)
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
-    this.combo.log_id:swap(ace_enum.log_id)
+    this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
     this.combo.map_filter:swap(this.map_filter)
     this.translate_combo()
 end

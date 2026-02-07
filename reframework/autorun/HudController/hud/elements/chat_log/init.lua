@@ -31,9 +31,9 @@
 ---@field new_message PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local filter = require("HudController.hud.elements.chat_log.filter")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
@@ -41,9 +41,7 @@ local recipient = require("HudController.hud.elements.chat_log.recipient")
 local text_box = require("HudController.hud.elements.chat_log.text_box")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class ChatLog
 local this = {}
@@ -124,37 +122,25 @@ function this:new(args)
 
     o.get_all_panel = frame_cache.memoize(o.get_all_panel)
 
-    o.children.button_guide = hud_child:new(
-        args.children.button_guide,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            local GUI000008 = o:get_GUI000008()
-            if GUI000008 then
-                return play_object.control.get(util_mod.get_root_window(GUI000008), "PNL_All")
-            end
+    o.children.button_guide = hud_child:new(args.children.button_guide, o, function(_, _, _, _)
+        local GUI000008 = o:get_GUI000008()
+        if GUI000008 then
+            return play_object.control.get(util_mod.get_root_window(GUI000008), "PNL_All")
         end
-    )
+    end)
     o.children.recipient = recipient:new(args.children.recipient, o)
     o.children.text_box = text_box:new(args.children.text_box, o)
     o.children.filter = filter:new(args.children.filter, o)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.list = hud_child:new(args.children.list, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.list = hud_child:new(args.children.list, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.list)
     end)
-    o.children.new_message = hud_child:new(
-        args.children.new_message,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.new_message)
-        end
-    )
-    o.children.keybind = hud_child:new(args.children.keybind, o, function(s, hudbase, gui_id, ctrl)
+    o.children.new_message = hud_child:new(args.children.new_message, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.new_message)
+    end)
+    o.children.keybind = hud_child:new(args.children.keybind, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keybind)
     end)
     return o
@@ -195,7 +181,7 @@ end
 
 ---@return ChatLogConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "CHAT_LOG"), "CHAT_LOG") --[[@as ChatLogConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").CHAT_LOG, "CHAT_LOG") --[[@as ChatLogConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.CHAT_LOG
 

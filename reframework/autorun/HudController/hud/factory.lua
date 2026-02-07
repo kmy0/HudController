@@ -38,10 +38,10 @@
 ---@field hide_aggro boolean
 
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local hud_elements = require("HudController.hud.elements.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
 
 local this = {}
@@ -98,7 +98,7 @@ end
 ---@param hud_id app.GUIHudDef.TYPE
 ---@return HudBaseConfig
 function this.get_config(hud_id)
-    local hud_name = ace_enum.hud[hud_id]
+    local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local cls = hud_elements[hud_name]
 
     if not cls then
@@ -128,7 +128,7 @@ function this.verify_elements(elements)
             not elem.hud_id
             or not elem.hud_type
             or not elem.name_key
-            or ace_enum.hud[elem.hud_id] ~= elem.name_key
+            or e.get("app.GUIHudDef.TYPE")[elem.hud_id] ~= elem.name_key
         then
             elements[key] = nil
         else

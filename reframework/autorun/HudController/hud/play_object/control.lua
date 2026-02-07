@@ -1,10 +1,10 @@
 local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 
 local this = {}
@@ -63,23 +63,20 @@ function this.all(ctrl, chain, target, lowercase)
     else
         ---@type string[]
         local names = {}
-        util_game.do_something(
-            child:getChildren(control_type),
-            function(system_array, index, candidate)
-                ---@cast candidate via.gui.Control
-                local o_candidate_name = candidate:get_Name() --[[@as string]]
-                local candidate_name = o_candidate_name
-                ---@type string
-                if lowercase then
-                    candidate_name = candidate_name:lower()
-                end
-
-                if candidate_name == target or candidate_name:find(target) then
-                    table.insert(ret, candidate)
-                    table.insert(names, o_candidate_name)
-                end
+        util_game.do_something(child:getChildren(control_type), function(_, _, candidate)
+            ---@cast candidate via.gui.Control
+            local o_candidate_name = candidate:get_Name() --[[@as string]]
+            local candidate_name = o_candidate_name
+            ---@type string
+            if lowercase then
+                candidate_name = candidate_name:lower()
             end
-        )
+
+            if candidate_name == target or candidate_name:find(target) then
+                table.insert(ret, candidate)
+                table.insert(names, o_candidate_name)
+            end
+        end)
 
         all_cache:set(key, names)
     end
@@ -182,7 +179,7 @@ end
 function this.get_all_hud_control()
     ---@type table<app.GUIHudDef.TYPE, via.gui.Control[]>
     local ret = {}
-    for hud_id, _ in pairs(ace_enum.hud) do
+    for _, hud_id in e.iter("app.GUIHudDef.TYPE") do
         local elements = this.get_hud_control(hud_id)
         if not util_table.empty(elements) then
             ret[hud_id] = elements

@@ -1,9 +1,5 @@
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {
     manager = require("HudController.hud.manager"),
@@ -29,7 +25,7 @@ end
 ---@return HudBase?
 function this.get_element(element)
     if type(element) == "string" then
-        element = rl(ace_enum.hud, element)
+        element = e.get("app.GUIHudDef.TYPE")[element]
     end
 
     if not element then

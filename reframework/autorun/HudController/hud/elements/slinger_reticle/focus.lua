@@ -24,7 +24,7 @@ setmetatable(this, { __index = hud_child })
 ---@param parent SlingerReticle
 ---@return SlingerReticleFocus
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, _)
         if parent:is_GUI020002_visible() then
             parent:reset_slinger()
             return parent:get_GUI020002_pnl()
@@ -34,7 +34,7 @@ function this:new(args, parent)
     ---@cast o SlingerReticleFocus
 
     ---@diagnostic disable-next-line: missing-fields
-    o.children.slinger = slinger:new({}, o, function(s, hudbase, gui_id, ctrl)
+    o.children.slinger = slinger:new({}, o, function(s, _, _, _)
         return s:get_slinger_pnl()
     end, nil, nil, true, nil, true)
     return o

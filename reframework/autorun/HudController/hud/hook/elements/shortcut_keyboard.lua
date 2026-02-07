@@ -1,10 +1,6 @@
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 local gui_flags = {
@@ -23,23 +19,23 @@ function this.reveal_minimap_pre(args)
     if is_reveal() then
         local flow = sdk.to_managed_object(args[2]) --[[@as app.cGUIMapFlowCtrl]]
         local flags = flow:get_Flags()
-        flags:set_Item(rl(ace_enum.map_flow_flag, "CLOSE"), false)
+        flags:set_Item(e.get("app.cGUIMapFlowCtrl.FLAG").CLOSE, false)
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
-function this.reveal_elements_post(retval)
+function this.reveal_elements_post(_)
     if is_reveal() then
         local guiman = s.get("app.GUIManager")
         local flags = guiman:get_AppContinueFlag()
 
         for _, flag in pairs(gui_flags) do
-            flags:off(rl(ace_enum.gui_continue_flag, flag))
+            flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG")[flag])
         end
     end
 end
 
-function this.clear_cache_pre(args)
+function this.clear_cache_pre(_)
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
     if shortcut_keyboard then
         shortcut_keyboard:do_something_to_children(function(hudchild)

@@ -3,11 +3,10 @@
 ---@field porter_quest_interrupts string[]
 
 local cache = require("HudController.util.misc.cache")
+local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
-
-local rl = util_game.data.reverse_lookup
 
 ---@class Porterutil
 local this = {
@@ -89,8 +88,8 @@ function this.is_master_quest_interrupt()
     local ctx = master_porter:get_Context()
     local command_info = ctx:get_CommandInfo()
 
-    return util_table.any(this.porter_quest_interrupts, function(key, value)
-        return command_info:isExecuted(rl(this.porter_command, value))
+    return util_table.any(this.porter_quest_interrupts, function(_, value)
+        return command_info:isExecuted(e.get("app.PorterDef.COMMUNICATOR_COMMAND")[value])
     end)
 end
 
@@ -118,7 +117,7 @@ function this.get_porter(hunter)
     ---@type app.PorterCharacter?
     local ret
     local arr = s.get("app.PorterManager"):get_InstancedPorterList()
-    util_game.do_something(arr, function(system_array, index, value)
+    util_game.do_something(arr, function(_, _, value)
         local info = value:get_PorterInfo()
         local holder = info:get_ContextHolder()
         local ctx = holder:get_Pt()
@@ -170,11 +169,16 @@ end
 
 ---@return boolean
 function this.init()
-    util_game.data.get_enum("app.PorterDef.COMMUNICATOR_COMMAND", this.porter_command)
-
-    if util_table.empty(this.porter_command) then
+    if
+        util_table.any({
+            e.new("app.PorterDef.COMMUNICATOR_COMMAND"),
+        }, function(_, value)
+            return not value.ok
+        end)
+    then
         return false
     end
+
     return true
 end
 

@@ -47,13 +47,9 @@
 ---@alias Scale9WriteKey CtrlChildWriteKey | Scale9Property
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local e = require("HudController.util.game.enum")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Scale9
 local this = {}
@@ -127,7 +123,7 @@ end
 function this:set_alpha_channel(alpha_channel)
     if alpha_channel then
         self:mark_write("alpha_channel")
-        self.alpha_channel = rl(ace_enum.alpha_channel, alpha_channel)
+        self.alpha_channel = e.get("via.gui.AlphaChannelType")[alpha_channel]
     else
         self:reset("alpha_channel")
         self.color = alpha_channel
@@ -139,7 +135,8 @@ end
 function this:set_control_point(control_point)
     if control_point then
         self:mark_write("control_point")
-        self.control_point = rl(ace_enum.control_point, control_point)
+
+        self.control_point = e.get("via.gui.ControlPoint")[control_point]
     else
         self:reset("control_point")
         self.color = control_point
@@ -151,7 +148,7 @@ end
 function this:set_blend(blend)
     if blend then
         self:mark_write("blend")
-        self.blend = rl(ace_enum.blend, blend)
+        self.blend = e.get("via.gui.BlendType")[blend]
     else
         self:reset("blend")
         self.color = blend
