@@ -41,7 +41,6 @@ local best_timer = require("HudController.hud.elements.progress.best_timer")
 local clock = require("HudController.hud.elements.progress.clock")
 local data = require("HudController.data.init")
 local faint = require("HudController.hud.elements.progress.faint")
-local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.progress.gauge")
 local guide_assign = require("HudController.hud.elements.progress.guide_assign")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -50,15 +49,14 @@ local name_sub = require("HudController.hud.elements.progress.name_sub")
 local part_task = require("HudController.hud.elements.progress.task")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local e = require("HudController.util.game.enum")
 local quest_timer = require("HudController.hud.elements.progress.quest_timer")
 local text_part = require("HudController.hud.elements.progress.text_part")
 local timer = require("HudController.hud.elements.progress.timer")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Progress
 local this = {}
@@ -107,7 +105,7 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Progress
 
-    o.children.task = part_task:new(args.children.task, o, function(s, hudbase, gui_id, ctrl)
+    o.children.task = part_task:new(args.children.task, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.task)
     end)
     o.children.name_main = name_main:new(args.children.name_main, o)
@@ -115,28 +113,19 @@ function this:new(args)
     o.children.guide_assign = guide_assign:new(args.children.guide_assign, o)
     o.children.gauge = gauge:new(args.children.gauge, o)
     o.children.text_part = text_part:new(args.children.text_part, o)
-    o.children.timer = timer:new(args.children.timer, o, function(s, hudbase, gui_id, ctrl)
+    o.children.timer = timer:new(args.children.timer, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.timer)
     end)
     o.children.clock = clock:new(args.children.clock, o)
-    o.children.quest_timer = quest_timer:new(
-        args.children.quest_timer,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            ---@diagnostic disable-next-line: invisible
-            local pnl = s._get_panel(s)
-            if pnl then
-                ---@diagnostic disable-next-line: param-type-mismatch
-                o.children.timer:reset_specific(nil, nil, pnl)
-            end
-            return pnl
-        end,
-        nil,
-        nil,
-        nil,
-        nil,
-        true
-    )
+    o.children.quest_timer = quest_timer:new(args.children.quest_timer, o, function(s, _, _, _)
+        ---@diagnostic disable-next-line: invisible
+        local pnl = s._get_panel(s)
+        if pnl then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            o.children.timer:reset_specific(nil, nil, pnl)
+        end
+        return pnl
+    end, nil, nil, nil, nil, true)
     o.children.best_timer = best_timer:new(args.children.best_timer, o)
     o.children.faint = faint:new(args.children.faint, o)
     return o
@@ -178,7 +167,7 @@ end
 
 ---@return ProgressConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "PROGRESS"), "PROGRESS") --[[@as ProgressConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").PROGRESS, "PROGRESS") --[[@as ProgressConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.PROGRESS
     base.options.ELAPSED_TIME_DISP = -1

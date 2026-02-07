@@ -63,7 +63,7 @@ local control_arguments = {
 ---@param parent Whistle
 ---@return WhistlePerform
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.perform)
     end)
     setmetatable(o, self)
@@ -73,12 +73,12 @@ function this:new(args, parent)
         o.children["melody" .. i] = hud_child:new(
             args.children["melody" .. i],
             o,
-            function(s, hudbase, gui_id, ctrl)
+            function(_, _, _, ctrl)
                 return play_object.control.get(ctrl, "PNL_PMelody0" .. i - 1)
             end
         )
     end
-    o.children.arrow = hud_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
+    o.children.arrow = hud_child:new(args.children.arrow, o, function(_, _, _, ctrl)
         local melody = play_object.iter_args(ctrl, control_arguments.melody)
         return play_object.iter_args(melody, control_arguments.arrow)
     end)

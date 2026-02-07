@@ -16,7 +16,7 @@ setmetatable(this, { __index = quest_timer })
 ---@param parent Progress
 ---@return ProgressQuestTimerBest
 function this:new(args, parent)
-    local o = quest_timer.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = quest_timer.new(self, args, parent, function(s, _, _, _)
         local pnl = this._get_panel(s)
         if pnl then
             ---@diagnostic disable-next-line: param-type-mismatch

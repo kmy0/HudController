@@ -28,14 +28,12 @@
 ---@alias ProgressPartTextWriteKey ProgressPartTextProperty | TextProperties
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local part_base = require("HudController.hud.elements.progress.part_base")
 local text = require("HudController.hud.def.text")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class ProgressPartText
 local this = {}
@@ -115,7 +113,7 @@ function this:set_align_left(align_left)
     if align_left then
         self:mark_write("align_left")
         self.align_left = align_left
-        self.page_alignment = rl(ace_enum.page_alignment, "LeftCenter")
+        self.page_alignment = e.get("via.gui.PageAlignment").LeftCenter
     else
         self:reset("page_alignment")
         self.align_left = align_left

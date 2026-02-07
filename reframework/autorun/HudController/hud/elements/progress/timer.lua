@@ -82,10 +82,10 @@ function this:new(
     setmetatable(o, self)
     ---@cast o ProgressTimer
 
-    o.children.text = part_base:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = part_base:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end, nil, { hide = false })
-    o.children.rank = part_base:new(args.children.rank, o, function(s, hudbase, gui_id, ctrl)
+    o.children.rank = part_base:new(args.children.rank, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.rank)
     end, nil, { hide = false })
 

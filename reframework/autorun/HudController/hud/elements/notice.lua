@@ -67,18 +67,16 @@
 local call_queue = require("HudController.hud.call_queue")
 local circular_buffer = require("HudController.util.misc.circular_buffer")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Notice
 local this = {
@@ -122,7 +120,7 @@ function this:new(args)
         o.children[cls_short] = hud_child:new(
             args.children[cls_short],
             o,
-            function(s, hudbase, gui_id, ctrl)
+            function(s, hudbase, _, _)
                 ---@cast hudbase app.GUI020100
                 ---@diagnostic disable-next-line: invisible
                 return o:_notice_ctrl_getter(s, hudbase, cls_short)
@@ -246,7 +244,7 @@ end
 function this:_get_active_notifications(hudbase)
     ---@type NoticePnlCache
     local ret = {}
-    util_game.do_something(hudbase:get__LogPanels(), function(system_array, index, value)
+    util_game.do_something(hudbase:get__LogPanels(), function(_, _, value)
         -- notifcations with other elements attached to it (important, result etc.)
         if not value:get_IsFix() then
             local cls_name = this.get_cls_name_short(util_ref.whoami(value))
@@ -267,7 +265,7 @@ end
 
 ---@return NoticeConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "NOTICE"), "NOTICE") --[[@as NoticeConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NOTICE, "NOTICE") --[[@as NoticeConfig]]
 
     base.hud_type = mod.enum.hud_type.NOTICE
     base.system_log = { ALL = false }
@@ -285,33 +283,33 @@ function this.get_config()
         base.children[cls_short].hide = nil
     end
 
-    for _, name in pairs(ace_enum.system_msg) do
+    for name, _ in e.iter("app.ChatDef.SYSTEM_MSG_TYPE") do
         base.system_log[name] = false
     end
 
-    for _, name in pairs(ace_enum.send_target) do
+    for name, _ in e.iter("app.ChatDef.SEND_TARGET") do
         base.lobby_log[name] = false
     end
 
-    for _, name in pairs(ace_enum.enemy_log) do
+    for name, _ in e.iter("app.ChatDef.ENEMY_LOG_TYPE") do
         base.enemy_log[name] = false
     end
 
-    for _, name in pairs(ace_enum.camp_log) do
+    for name, _ in e.iter("app.ChatDef.CAMP_LOG_TYPE") do
         base.camp_log[name] = false
     end
 
-    for _, name in pairs(ace_enum.chat_log) do
+    for name, _ in e.iter("app.ChatDef.MSG_TYPE") do
         base.chat_log[name] = false
     end
 
-    for e, _ in pairs(ace_enum.log_id) do
+    for _, id in e.iter("app.ChatDef.LOG_ID") do
         -- required because of merge2, merge2 removes all keys that do not exist in default config
         ---@diagnostic disable-next-line: assign-type-mismatch
-        base.log_id[tostring(e)] = "dummy"
+        base.log_id[tostring(id)] = "dummy"
     end
 
-    for _, name in pairs(ace_enum.auto_id) do
+    for name, _ in e.iter("app.Communication.AUTO_ID") do
         base.auto_id[name] = false
     end
 

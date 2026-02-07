@@ -1,4 +1,5 @@
-local enum = require("HudController.util.game.bind.enum")
+local e = require("HudController.util.game.enum")
+local util_table = require("HudController.util.misc.table")
 
 local this = {
     listener = require("HudController.util.game.bind.listener"),
@@ -8,7 +9,21 @@ local this = {
 
 ---@return boolean
 function this.init()
-    return enum.init()
+    if
+        util_table.any({
+            e.new("ace.ACE_PAD_KEY.BITS", function(key, _)
+                return not util_table.contains({ "HOME", "DECIDE", "CANCEL" }, key)
+            end),
+            e.new("ace.ACE_MKB_KEY.INDEX"),
+            e.new("ace.GUIDef.INPUT_DEVICE"),
+        }, function(_, value)
+            return not value.ok
+        end)
+    then
+        return false
+    end
+
+    return true
 end
 
 return this

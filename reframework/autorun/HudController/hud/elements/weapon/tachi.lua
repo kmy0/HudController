@@ -10,13 +10,9 @@
 ---@class (exact) TachiControlArguments
 ---@field background PlayObjectGetterFn[]
 
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Tachi
 local this = {}
@@ -54,18 +50,14 @@ function this:new(args, parent)
         nil,
         nil,
         nil,
-        rl(ace_enum.gui_id, "UI020023")
+        e.get("app.GUIID.ID").UI020023
     )
     setmetatable(o, self)
     ---@cast o Tachi
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
 
     return o
 end

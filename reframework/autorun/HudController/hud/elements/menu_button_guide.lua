@@ -22,15 +22,13 @@
 ---@field group3 PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 -- RootWindow
 ---@type MenuButtonGuideControlArguments
@@ -74,19 +72,19 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o MenuButtonGuide
 
-    o.children.tooltip = hud_child:new(args.children.tooltip, o, function(s, hudbase, gui_id, ctrl)
+    o.children.tooltip = hud_child:new(args.children.tooltip, o, function(_, _, _, _)
         local GUI000005 = o:get_GUI000005()
         if GUI000005 then
             return GUI000005:get_HelpPanel()
         end
     end)
-    o.children.group1 = hud_child:new(args.children.group1, o, function(s, hudbase, gui_id, ctrl)
+    o.children.group1 = hud_child:new(args.children.group1, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.group1)
     end)
-    o.children.group2 = hud_child:new(args.children.group2, o, function(s, hudbase, gui_id, ctrl)
+    o.children.group2 = hud_child:new(args.children.group2, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.group2)
     end)
-    o.children.group3 = hud_child:new(args.children.group3, o, function(s, hudbase, gui_id, ctrl)
+    o.children.group3 = hud_child:new(args.children.group3, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.group3)
     end)
     return o
@@ -120,7 +118,8 @@ end
 
 ---@return MenuButtonGuideConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "MENU_BUTTON_GUIDE"), "MENU_BUTTON_GUIDE") --[[@as MenuButtonGuideConfig]]
+    local base =
+        hud_base.get_config(e.get("app.GUIHudDef.TYPE").MENU_BUTTON_GUIDE, "MENU_BUTTON_GUIDE") --[[@as MenuButtonGuideConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.MENU_BUTTON_GUIDE

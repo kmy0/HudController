@@ -1,14 +1,12 @@
 local bind_manager = require("HudController.hud.bind.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local hud_manager = require("HudController.hud.manager")
 local state = require("HudController.gui.state")
-local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
-local rl = util_game.data.reverse_lookup
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 
 local this = {}
@@ -65,7 +63,7 @@ end
 ---@return HudProfileConfig
 function this._new()
     local _key = 1
-    util_table.do_something(config.current.mod.hud, function(t, key, value)
+    util_table.do_something(config.current.mod.hud, function(_, _, value)
         _key = math.max(_key, value.key + 1) --[[@as integer]]
     end)
 
@@ -106,7 +104,7 @@ end
 ---@param hud_config HudProfileConfig
 function this.remove(hud_config)
     local config_mod = config.current.mod
-    local i = util_table.key(config_mod.hud, function(key, value)
+    local i = util_table.key(config_mod.hud, function(_, value)
         return value.key == hud_config.key
     end)
 
@@ -115,7 +113,7 @@ function this.remove(hud_config)
     end
 
     local hud_names = get_weapon_bind_hud_names()
-    config_mod.hud = util_table.remove(config_mod.hud, function(t, i2, j)
+    config_mod.hud = util_table.remove(config_mod.hud, function(_, i2, _)
         return i ~= i2
     end)
     state.combo.hud:swap(config_mod.hud)
@@ -182,7 +180,7 @@ function this.add_element(name_key)
         key = math.max(key, elem.key + 1)
     end
 
-    local hud_elem = factory.get_config(rl(ace_enum.hud, name_key))
+    local hud_elem = factory.get_config(e.get("app.GUIHudDef.TYPE")[name_key])
     hud_elem.key = key
 
     _hud.elements[name_key] = hud_elem

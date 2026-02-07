@@ -32,7 +32,7 @@
 ---@alias AceElem AceControl | AceBase
 
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
@@ -41,8 +41,6 @@ local play_object = require("HudController.hud.play_object.init")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
 
 ---@class HudDebug
 local this = {
@@ -75,7 +73,7 @@ local function get_ctrl(ctrl)
 
     util_game.do_something(
         ctrl:get_PlayStateNames() --[[@as System.Array<System.String>]],
-        function(system_array, index, value)
+        function(_, _, value)
             table.insert(ret.states, value)
         end
     )
@@ -218,7 +216,7 @@ function this.get_keys(enabled_only)
     enabled_only = enabled_only == nil and true or enabled_only
     local keys = util_table.filter(
         util_table.sort(util_table.keys(this.elements)),
-        function(key, value)
+        function(_, value)
             local gui_elem = this.elements[value]
             return not enabled_only or gui_elem.gui:get_Enabled()
         end
@@ -237,7 +235,7 @@ function this.add_all_element_profile()
     new_config.elements = {}
     local key = 1
 
-    for enum, name in pairs(ace_enum.hud) do
+    for name, enum in e.iter("app.GUIHudDef.TYPE") do
         local hud_elem = factory.get_config(enum)
         hud_elem.key = key
         new_config.elements[name] = hud_elem
@@ -276,6 +274,7 @@ function this.perf_test()
 
     ---@param stats PerfStats
     ---@return boolean
+    ---@diagnostic disable-next-line: unused-local
     local function predicate(stats)
         return true
         -- return stats.trimmed_mean >= 50
@@ -286,7 +285,7 @@ function this.perf_test()
     ---@param measurements number[]
     local function callback(name, stats, measurements)
         this.perf.completed = this.perf.completed + 1
-        this.perf.obj = util_table.remove(this.perf.obj, function(t, i, j)
+        this.perf.obj = util_table.remove(this.perf.obj, function(t, i, _)
             return t[i] ~= name
         end)
 
@@ -377,7 +376,7 @@ end
 ---@param keys string[]
 ---@return string[]
 function this.filter(keys)
-    keys = util_table.filter(keys, function(key, value)
+    keys = util_table.filter(keys, function(_, value)
         return not util_table.contains(this.snapshot, value)
     end)
     return util_table.sort(util_table.values(keys))

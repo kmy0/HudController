@@ -67,7 +67,6 @@
 ---@field angle_map number
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local m = require("HudController.util.ref.methods")
@@ -75,11 +74,10 @@ local play_object = require("HudController.hud.play_object.init")
 local util_ace = require("HudController.util.ace.init")
 local util_table = require("HudController.util.misc.table")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local e = require("HudController.util.game.enum")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Minimap
 local this = {}
@@ -162,27 +160,17 @@ function this:new(args)
     })
     o.classic_minimap = {}
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            ---@diagnostic disable-next-line: invisible
-            local root = o:_get_panel()
-            ---@cast hudbase app.GUI060010
-            if root then
-                return play_object.iter_args(root, control_arguments.background)
-            end
-        end,
-        nil,
-        nil,
-        nil,
-        nil,
-        true
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, _)
+        ---@diagnostic disable-next-line: invisible
+        local root = o:_get_panel()
+        if root then
+            return play_object.iter_args(root, control_arguments.background)
+        end
+    end, nil, nil, nil, nil, true)
     o.children.out_frame_icon = hud_child:new(
         args.children.out_frame_icon,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
             return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
         end,
@@ -196,7 +184,7 @@ function this:new(args)
     o.children.classic_minimap = hud_child:new(
         args.children.classic_minimap,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return ctrl
         end,
         nil,
@@ -206,38 +194,28 @@ function this:new(args)
         nil,
         176
     )
-    o.children.front = hud_child:new(args.children.front, o, function(s, hudbase, gui_id, ctrl)
+    o.children.front = hud_child:new(args.children.front, o, function(_, hudbase, _, _)
         local gui = util_ace.misc.get_gui_component(hudbase)
         return play_object.iter_args(gui:get_View(), control_arguments.front)
     end, nil, nil, true, nil, nil, 176)
-    o.children.mask = hud_child:new(args.children.mask, o, function(s, hudbase, gui_id, ctrl)
+    o.children.mask = hud_child:new(args.children.mask, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.mask)
     end, nil, nil, true, nil, nil, 177)
-    o.children.pl_icon_pulse = hud_child:new(
-        args.children.pl_icon_pulse,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            local icon_ctrl = o:get_pl_icon_controller()
-            if icon_ctrl then
-                local mp_icon = icon_ctrl._MasterPlayerIcon
-                return play_object.control.get(mp_icon._PlIconPanel, "PNL_PLeffects")
-            end
-        end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+    o.children.pl_icon_pulse = hud_child:new(args.children.pl_icon_pulse, o, function(_, _, _, _)
+        local icon_ctrl = o:get_pl_icon_controller()
+        if icon_ctrl then
+            local mp_icon = icon_ctrl._MasterPlayerIcon
+            return play_object.control.get(mp_icon._PlIconPanel, "PNL_PLeffects")
+        end
+    end, function(s, ctrl)
+        play_object_defaults:check(ctrl)
 
-            if s.play_state then
-                ctrl:set_PlayState(s.play_state)
-            end
+        if s.play_state then
+            ctrl:set_PlayState(s.play_state)
+        end
 
-            return true
-        end,
-        nil,
-        true,
-        nil,
-        nil,
-        177
-    )
+        return true
+    end, nil, true, nil, nil, 177)
 
     o._mask_scale = Vector3f.new(10, 10, 1)
     o._mask_offset = Vector3f.new(-1500, 1500, 1)
@@ -364,7 +342,7 @@ end
 
 ---@return MinimapConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "MINIMAP"), "MINIMAP") --[[@as MinimapConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").MINIMAP, "MINIMAP") --[[@as MinimapConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.MINIMAP
 

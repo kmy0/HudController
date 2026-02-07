@@ -5,7 +5,8 @@ local this = {
 
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
-local game_data = require("HudController.util.game.data")
+local deprecated = require("HudController.data.deprecated")
+local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")
@@ -14,23 +15,20 @@ local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map
-local ace_enum = this.ace.enum
-local rl = util_game.data.reverse_lookup
 
 m.ChatLogIDData = m.wrap(m.get("app.ChatDef.Data(app.ChatDef.LOG_ID)")) --[[@as fun(log_id: app.ChatDef.LOG_ID): app.user_data.ChatLogData.cData]]
 m.ChatLogAUTO_IDData = m.wrap(m.get("app.Communication.Data(app.Communication.AUTO_ID)")) --[[@as fun(auto_id: app.Communication.AUTO_ID): app.user_data.AutoData.cData]]
 
 ---@return boolean
 local function get_hud_setting()
-    util_table.clear(ace_enum.hud)
-    game_data.get_enum("app.GUIHudDef.TYPE", ace_enum.hud)
+    e.new("app.GUIHudDef.TYPE")
 
     local var_setting = s.get("app.VariousDataManager"):get_Setting()
     local gui_data = var_setting:get_GUIVariousData()
     local hud_data = gui_data:get_HudDisplayOptionData()
     local lang = game_lang.get_language()
 
-    for id, name in pairs(ace_enum.hud) do
+    for name, id in e.iter("app.GUIHudDef.TYPE") do
         local hud_setting = hud_data:getSetting(id)
         local message = game_lang.get_message_local(hud_setting:get_Name(), lang, true)
 
@@ -55,9 +53,9 @@ local function get_hud_map()
         local setting = hudsettings_enum:get_Current() --[[@as app.user_data.GUIHudData.cSetting]]
         local hudid = setting:get_Type()
 
-        if ace_enum.hud[hudid] then
+        if e.get("app.GUIHudDef.TYPE")[hudid] then
             local guiid = setting:get_Id()
-            local guiid_name = ace_enum.gui_id[guiid]
+            local guiid_name = e.get("app.GUIID.ID")[guiid]
             if not ace_map.guiid_ignore[guiid_name] then
                 util_table.insert_nested_value(ace_map.hudid_to_guiid, { hudid }, guiid)
                 ace_map.guiid_to_hudid[guiid] = hudid
@@ -70,10 +68,10 @@ local function set_additional_hud()
     for i = 1, #ace_map.additional_hud do
         local name = ace_map.additional_hud[i]
         local guiid_name = ace_map.additional_hud_to_guiid_name[name]
-        local guiid = rl(ace_enum.gui_id, guiid_name)
+        local guiid = e.get("app.GUIID.ID")[guiid_name]
         local enum = ace_map.additional_hud_index + i
 
-        ace_enum.hud[enum] = name
+        e.get("app.GUIHudDef.TYPE"):add(name, enum)
         ace_map.hudid_to_can_hide[enum] = false
         ace_map.hudid_name_to_local_name[name] = ace_map.hud_tr_flag
         ace_map.guiid_to_hudid[guiid] = enum
@@ -81,8 +79,8 @@ local function set_additional_hud()
     end
 
     for gui, target in pairs(ace_map.hudless_to_hud) do
-        local guiid = rl(ace_enum.gui_id, gui)
-        local guiid_target = rl(ace_enum.gui_id, target)
+        local guiid = e.get("app.GUIID.ID")[gui]
+        local guiid_target = e.get("app.GUIID.ID")[target]
         local hudid = ace_map.guiid_to_hudid[guiid_target]
         ace_map.guiid_to_hudid[guiid] = hudid
         util_table.insert_nested_value(ace_map.hudid_to_guiid, { hudid }, guiid)
@@ -91,7 +89,7 @@ end
 
 local function get_option_map()
     local lang = game_lang.get_language()
-    for id, name in pairs(ace_enum.option) do
+    for name, id in e.iter("app.Option.ID") do
         local option_data = m.getOptionData(id)
 
         if not option_data then
@@ -104,7 +102,7 @@ local function get_option_map()
             items = {},
         }
 
-        util_game.do_something(option_data:get_Items(), function(system_array, index, value)
+        util_game.do_something(option_data:get_Items(), function(_, index, value)
             table.insert(ace_map.option[name].items, {
                 index = index,
                 name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true),
@@ -117,7 +115,7 @@ end
 local function get_log_id_text()
     local lang = game_lang.get_language()
 
-    for log_id, _ in pairs(ace_enum.log_id) do
+    for _, log_id in e.iter("app.ChatDef.LOG_ID") do
         local data = m.ChatLogIDData(log_id)
         local msgs = {
             game_lang.get_message_local(data:get_Title(), lang, true),
@@ -137,7 +135,7 @@ local function get_log_id_text()
         ace_map.log_id_to_text[log_id] = table.concat(stripped, ", ")
     end
 
-    for auto_id, _ in pairs(ace_enum.auto_id) do
+    for _, auto_id in e.iter("app.Communication.AUTO_ID") do
         local data = m.ChatLogAUTO_IDData(auto_id)
         if data then
             ace_map.auto_id_to_text[auto_id] =
@@ -168,7 +166,7 @@ function this.get_weapon_bind_map(config_table)
         end
     end
 
-    for id, name in pairs(ace_enum.weapon) do
+    for name, id in e.iter("app.WeaponDef.TYPE") do
         ace_map.weaponid_name_to_local_name[name] =
             game_lang.get_message_local(m.getWeaponName(id), lang, true)
         local weapon_base = util_table.deep_copy(base)
@@ -197,68 +195,56 @@ function this.init()
         return false
     end
 
-    game_data.get_enum("app.GUI020018.GUIDE_PANEL_TYPE", ace_enum.guide_panel)
-    game_data.get_enum("via.gui.RegionFitType", ace_enum.region_fit)
-    game_data.get_enum("app.WeaponDef.TYPE", ace_enum.weapon)
-    game_data.get_enum("app.Option.ID", ace_enum.option)
-    game_data.get_enum("app.GUIHudDef.DISPLAY", ace_enum.hud_display)
-    game_data.get_enum("app.DialogueType.TYPE", ace_enum.dialog)
-    game_data.get_enum("app.HunterDef.CONTINUE_FLAG", ace_enum.hunter_continue_flag)
-    game_data.get_enum("ace.GUIDef.INPUT_DEVICE", ace_enum.input_device)
-    game_data.get_enum("app.GUIFunc.TYPE", ace_enum.gui_func)
-    game_data.get_enum("app.PlayerDef.ButtonMask.USER", ace_enum.button_mask)
-    game_data.get_enum("ace.ACE_MKB_KEY.INDEX", ace_enum.kb_btn)
-    game_data.get_enum("app.ChatDef.SYSTEM_MSG_TYPE", ace_enum.system_msg)
-    game_data.get_enum("app.ChatDef.SEND_TARGET", ace_enum.send_target)
-    game_data.get_enum("via.gui.ControlPoint", ace_enum.control_point)
-    game_data.get_enum("via.gui.BlendType", ace_enum.blend)
-    game_data.get_enum("via.gui.AlphaChannelType", ace_enum.alpha_channel)
-    game_data.get_enum("app.ItemUtil.STOCK_TYPE", ace_enum.stock_type)
-    game_data.get_enum("app.GUIAccessIconControl.OBJECT_CATEGORY", ace_enum.object_access_category)
-    game_data.get_enum("app.PorterDef.CONTINUE_FLAG", ace_enum.porter_continue_flag)
-    game_data.get_enum("ace.ActionDef.UPDATE_RESULT", ace_enum.action_update_result)
-    game_data.get_enum("app.NpcDef.ID", ace_enum.npc_id)
-    game_data.get_enum("app.NpcDef.CHARA_CONTINUE_FLAG", ace_enum.npc_continue_flag)
-    game_data.get_enum("app.GUI020201.TYPE", ace_enum.quest_gui_type)
-    game_data.get_enum("app.cGUIMemberPartsDef.MemberType", ace_enum.nameplate_type)
-    game_data.get_enum("app.GUI020007.BulletSliderStatus", ace_enum.bullet_slider_status)
-    game_data.get_enum(
-        "app.GUIDefApp.DRAW_SEGMENT",
-        ace_enum.draw_segment,
-        nil,
-        { "LOWEST", "HIGHEST" }
-    )
-    game_data.get_enum("app.cGUIQuestResultInfo.MODE", ace_enum.quest_result_mode)
-    game_data.get_enum("app.GUIManager.APP_CONTINUE_FLAG", ace_enum.gui_continue_flag)
-    game_data.get_enum("app.GUIID.ID", ace_enum.gui_id)
-    game_data.get_enum("app.GUI020400.SUBTITLES_CATEGORY", ace_enum.subtitles_category)
-    game_data.get_enum("app.EnemyDef.CONTINUE_FLAG", ace_enum.enemy_continue_flag)
-    game_data.get_enum("app.GUI020020.State", ace_enum.damage_state)
-    game_data.get_enum("app.GUI020020.CRITICAL_STATE", ace_enum.critical_state)
-    game_data.get_enum("app.HunterDef.SLINGER_AMMO_TYPE", ace_enum.slinger_ammo)
-    game_data.get_enum("via.gui.PageAlignment", ace_enum.page_alignment)
-    game_data.get_enum("app.ChatDef.CAMP_LOG_TYPE", ace_enum.camp_log)
-    game_data.get_enum("app.ChatDef.ENEMY_LOG_TYPE", ace_enum.enemy_log)
-    game_data.get_enum("app.ChatDef.MSG_TYPE", ace_enum.chat_log)
-    game_data.get_enum("app.GUI020001PanelParams.NPC_TYPE", ace_enum.interact_npc_type)
-    game_data.get_enum("app.GUI020001PanelParams.GOSSIP_TYPE", ace_enum.interact_gossip_type)
-    game_data.get_enum("app.GUI020001PanelParams.PANEL_TYPE", ace_enum.interact_panel_type)
-    game_data.get_enum("app.cEmModuleScar.cScarParts.STATE", ace_enum.scar_state)
-    game_data.get_enum("app.GUI020015.DEFAULT_STATUS", ace_enum.sharpness_state)
-    game_data.get_enum("app.TARGET_ACCESS_KEY.CATEGORY", ace_enum.target_access)
-    game_data.get_enum("app.OtomoDef.CONTINUE_FLAG", ace_enum.otomo_continue_flag)
-    game_data.get_enum("app.cGUIMapFlowCtrl.FLAG", ace_enum.map_flow_flag)
-    game_data.get_enum("app.ChatDef.LOG_ID", ace_enum.log_id)
-    game_data.get_enum("app.EnemyDef.AI_TARGET_STATE", ace_enum.ai_target_state)
-    game_data.get_enum("app.Communication.AUTO_ID", ace_enum.auto_id)
-
     if
-        util_table.any(
-            this.ace.enum --[[@as table<string, table<integer, string>>]],
-            function(key, value)
-                return util_table.empty(value)
-            end
-        )
+        not e.wrap_init(function()
+            e.new("app.WeaponDef.TYPE")
+            e.new("app.Option.ID")
+            e.new("app.GUIHudDef.DISPLAY")
+            e.new("app.DialogueType.TYPE")
+            e.new("app.HunterDef.CONTINUE_FLAG")
+            e.new("ace.GUIDef.INPUT_DEVICE")
+            e.new("app.GUIFunc.TYPE")
+            e.new("app.PlayerDef.ButtonMask.USER")
+            e.new("app.ChatDef.SYSTEM_MSG_TYPE")
+            e.new("app.ChatDef.SEND_TARGET")
+            e.new("via.gui.ControlPoint")
+            e.new("via.gui.BlendType")
+            e.new("via.gui.AlphaChannelType")
+            e.new("app.ItemUtil.STOCK_TYPE")
+            e.new("app.GUIAccessIconControl.OBJECT_CATEGORY")
+            e.new("app.PorterDef.CONTINUE_FLAG")
+            e.new("app.NpcDef.ID")
+            e.new("app.NpcDef.CHARA_CONTINUE_FLAG")
+            e.new("app.GUI020201.TYPE")
+            e.new("app.cGUIMemberPartsDef.MemberType")
+            e.new("app.GUI020007.BulletSliderStatus")
+            e.new("app.GUIDefApp.DRAW_SEGMENT", function(key, _)
+                return key ~= "LOWEST" and key ~= "HIGHEST"
+            end, true)
+            e.new("app.cGUIQuestResultInfo.MODE")
+            e.new("app.GUIManager.APP_CONTINUE_FLAG")
+            e.new("app.GUIID.ID")
+            e.new("app.GUI020400.SUBTITLES_CATEGORY")
+            e.new("app.EnemyDef.CONTINUE_FLAG")
+            e.new("app.GUI020020.State")
+            e.new("app.GUI020020.CRITICAL_STATE")
+            e.new("app.HunterDef.SLINGER_AMMO_TYPE")
+            e.new("via.gui.PageAlignment")
+            e.new("app.ChatDef.CAMP_LOG_TYPE")
+            e.new("app.ChatDef.ENEMY_LOG_TYPE")
+            e.new("app.ChatDef.MSG_TYPE")
+            e.new("app.GUI020001PanelParams.NPC_TYPE")
+            e.new("app.GUI020001PanelParams.GOSSIP_TYPE")
+            e.new("app.GUI020001PanelParams.PANEL_TYPE")
+            e.new("app.cEmModuleScar.cScarParts.STATE")
+            e.new("app.GUI020015.DEFAULT_STATUS")
+            e.new("app.TARGET_ACCESS_KEY.CATEGORY")
+            e.new("app.OtomoDef.CONTINUE_FLAG")
+            e.new("app.cGUIMapFlowCtrl.FLAG")
+            e.new("app.ChatDef.LOG_ID")
+            e.new("app.EnemyDef.AI_TARGET_STATE")
+            e.new("app.Communication.AUTO_ID")
+        end)
     then
         return false
     end
@@ -269,15 +255,17 @@ function this.init()
     get_option_map()
     get_log_id_text()
 
-    util_table.do_something(
-        { ace_enum.subtitles_category, ace_enum.damage_state, ace_enum.critical_state },
-        function(t, key, value)
-            util_table.do_something(value, function(_, _, name)
-                ace_map.no_lang_key[name] = true
-            end)
-        end
-    )
+    for field_name, _ in
+        e.iter_many({
+            "app.GUI020400.SUBTITLES_CATEGORY",
+            "app.GUI020020.State",
+            "app.GUI020020.CRITICAL_STATE",
+        })
+    do
+        ace_map.no_lang_key[field_name] = true
+    end
 
+    deprecated.init()
     return true
 end
 

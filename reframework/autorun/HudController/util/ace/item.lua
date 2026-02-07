@@ -1,11 +1,9 @@
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local lang = require("HudController.util.game.lang")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")
-
-local rl = game_data.reverse_lookup
 
 m.addMoney = m.wrap(m.get("app.BasicParamUtil.addMoney(System.Int32, System.Boolean)")) --[[@as fun(money: integer, round: boolean)]]
 m.addPoints = m.wrap(m.get("app.BasicParamUtil.addPoint(System.Int32, System.Boolean)")) --[[@as fun(points: integer, round: boolean)]]
@@ -21,9 +19,8 @@ local function get_item_map()
         return
     end
 
-    local item_ids = game_data.get_enum("app.ItemDef.ID", {})
     local current_lang = lang.get_language()
-    for item_id, _ in pairs(item_ids) do
+    for _, item_id in e.iter("app.ItemDef.ID") do
         local item_data = m.getItemData(item_id)
         local local_name = lang.get_message_local(item_data:get_RawName(), current_lang, true)
         this.local_name_to_item_id[local_name] = item_id

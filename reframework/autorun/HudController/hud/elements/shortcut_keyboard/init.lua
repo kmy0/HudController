@@ -45,8 +45,8 @@
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local frame_timer = require("HudController.util.misc.frame_timer")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local item = require("HudController.hud.elements.shortcut_keyboard.item")
@@ -57,9 +57,7 @@ local tab = require("HudController.hud.elements.shortcut_keyboard.tab")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class ShortcutKeyboard
 local this = {}
@@ -136,24 +134,20 @@ function this:new(args)
     o.children.background_blur = ctrl_child:new(
         args.children.background_blur,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.background_blur)
         end
     )
-    o.children.arrow = hud_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
+    o.children.arrow = hud_child:new(args.children.arrow, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.arrow)
     end)
-    o.children.frame = ctrl_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame = ctrl_child:new(args.children.frame, o, function(_, _, _, ctrl)
         local tabs = play_object.iter_args(ctrl, control_arguments.tabs)
         return play_object.iter_args(tabs, control_arguments.frame)
     end)
-    o.children.line_cursor = hud_child:new(
-        args.children.line_cursor,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.line_cursor)
-        end
-    )
+    o.children.line_cursor = hud_child:new(args.children.line_cursor, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.line_cursor)
+    end)
     o.children.tab = tab:new(args.children.tab, o)
     o.children.item = item:new(args.children.item, o)
     o.children.pallet = pallet:new(args.children.pallet, o)
@@ -187,7 +181,8 @@ end
 
 ---@return ShortcutKeyboardConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "SHORTCUT_KEYBOARD"), "SHORTCUT_KEYBOARD") --[[@as ShortcutKeyboardConfig]]
+    local base =
+        hud_base.get_config(e.get("app.GUIHudDef.TYPE").SHORTCUT_KEYBOARD, "SHORTCUT_KEYBOARD") --[[@as ShortcutKeyboardConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.SHORTCUT_KEYBOARD

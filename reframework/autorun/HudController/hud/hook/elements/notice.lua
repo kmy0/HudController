@@ -1,11 +1,9 @@
 local common = require("HudController.hud.hook.common")
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local play_object = require("HudController.hud.play_object.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
 
 local this = {}
 
@@ -17,7 +15,7 @@ function this.skip_system_message_pre(args)
         end
 
         local def = sdk.to_managed_object(args[3]) --[[@as app.ChatDef.SystemMessage]]
-        local name = ace_enum.system_msg[def:get_SystemMsgType()]
+        local name = e.get("app.ChatDef.SYSTEM_MSG_TYPE")[def:get_SystemMsgType()]
 
         if notice.system_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
@@ -35,11 +33,11 @@ function this.skip_system_message_pre(args)
         local log_t = {}
         if util_ref.is_a(def, "app.ChatDef.EnemyMessage") then
             ---@cast def app.ChatDef.EnemyMessage
-            log_name = ace_enum.enemy_log[def:get_EnemyLogType()]
+            log_name = e.get("app.ChatDef.ENEMY_LOG_TYPE")[def:get_EnemyLogType()]
             log_t = notice.enemy_log
         elseif util_ref.is_a(def, "app.ChatDef.CampMessage") then
             ---@cast def app.ChatDef.CampMessage
-            log_name = ace_enum.camp_log[def:get_CampLogType()]
+            log_name = e.get("app.ChatDef.CAMP_LOG_TYPE")[def:get_CampLogType()]
             log_t = notice.camp_log
         end
 
@@ -59,7 +57,7 @@ function this.cache_message_pre(args)
         local txts = play_object.child.all_type(ctrl, nil, "via.gui.Text")
         local msgs = {}
 
-        util_table.do_something(txts, function(t, key, value)
+        util_table.do_something(txts, function(_, _, value)
             local msg = value:get_Message()
             if msg then
                 local stripped_msg, _ = msg:gsub("<[^>]*>", "")
@@ -78,20 +76,23 @@ function this.cache_message_pre(args)
         if util_ref.is_a(message_elem, "app.ChatDef.SystemMessage") then
             ---@cast message_elem app.ChatDef.SystemMessage
             cached_msg.type = config.lang:tr("misc.text_system")
-            cached_msg.sub_type = ace_enum.system_msg[message_elem:get_SystemMsgType()]
+            cached_msg.sub_type =
+                e.get("app.ChatDef.SYSTEM_MSG_TYPE")[message_elem:get_SystemMsgType()]
 
             if util_ref.is_a(message_elem, "app.ChatDef.EnemyMessage") then
                 ---@cast message_elem app.ChatDef.EnemyMessage
-                cached_msg.other_type = ace_enum.enemy_log[message_elem:get_EnemyLogType()]
+                cached_msg.other_type =
+                    e.get("app.ChatDef.ENEMY_LOG_TYPE")[message_elem:get_EnemyLogType()]
             elseif util_ref.is_a(message_elem, "app.ChatDef.CampMessage") then
                 ---@cast message_elem app.ChatDef.CampMessage
-                cached_msg.other_type = ace_enum.camp_log[message_elem:get_CampLogType()]
+                cached_msg.other_type =
+                    e.get("app.ChatDef.CAMP_LOG_TYPE")[message_elem:get_CampLogType()]
             end
         elseif util_ref.is_a(message_elem, "app.ChatDef.ChatBase") then
             ---@cast message_elem app.ChatDef.ChatBase
             cached_msg.type = config.lang:tr("misc.text_lobby")
-            cached_msg.sub_type = ace_enum.chat_log[message_elem:get_MsgType()]
-            cached_msg.other_type = ace_enum.send_target[message_elem:get_SendTarget()]
+            cached_msg.sub_type = e.get("app.ChatDef.MSG_TYPE")[message_elem:get_MsgType()]
+            cached_msg.other_type = e.get("app.ChatDef.SEND_TARGET")[message_elem:get_SendTarget()]
         end
 
         notice:push_back(cached_msg)
@@ -106,13 +107,13 @@ function this.skip_lobby_message_pre(args)
         end
 
         local def = sdk.to_managed_object(args[3]) --[[@as app.ChatDef.ChatBase]]
-        local name = ace_enum.chat_log[def:get_MsgType()]
+        local name = e.get("app.ChatDef.MSG_TYPE")[def:get_MsgType()]
 
         if notice.chat_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
 
-        name = ace_enum.send_target[def:get_SendTarget()]
+        name = e.get("app.ChatDef.SEND_TARGET")[def:get_SendTarget()]
         if notice.lobby_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
@@ -127,7 +128,7 @@ function this.skip_auto_message_pre(args)
             util_ref.is_a(chat_base, "app.net_packet.cSysChatAutoTemplate")
             ---@cast chat_base app.net_packet.cSysChatAutoTemplate
 
-            and notice.auto_id[ace_enum.auto_id[chat_base.AutoId]]
+            and notice.auto_id[e.get("app.Communication.AUTO_ID")[chat_base.AutoId]]
         then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end

@@ -77,31 +77,19 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return ProgressClock
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.clock)
     end, nil, { hide = false })
     setmetatable(o, self)
     ---@cast o ProgressClock
 
-    o.children.frame_base = hud_child:new(
-        args.children.frame_base,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.frame_base)
-        end,
-        nil,
-        { hide = false }
-    )
-    o.children.frame_main = hud_child:new(
-        args.children.frame_main,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.frame_main)
-        end,
-        nil,
-        { hide = false }
-    )
-    o.children.limit = hud_child:new(args.children.limit, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame_base = hud_child:new(args.children.frame_base, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.frame_base)
+    end, nil, { hide = false })
+    o.children.frame_main = hud_child:new(args.children.frame_main, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.frame_main)
+    end, nil, { hide = false })
+    o.children.limit = hud_child:new(args.children.limit, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.limit)
     end, nil, { hide = false })
 

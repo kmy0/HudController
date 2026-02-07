@@ -5,12 +5,10 @@
 ---@field callback fun()?
 ---@field step_mod number
 
-local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
 local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
 
 ---@class FadeManager
 local this = {
@@ -43,7 +41,7 @@ end
 ---@param hud_id app.GUIHudDef.TYPE
 ---@return integer
 local function get_new_opacity(hud_config, hud_id)
-    local hud_name = ace_enum.hud[hud_id]
+    local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local hud_elem_config = hud_config.elements[hud_name]
 
     if hud_elem_config then

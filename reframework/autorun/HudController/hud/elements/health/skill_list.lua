@@ -69,13 +69,13 @@ function this:new(args, parent, ctrl_getter)
     setmetatable(o, self)
     ---@cast o HealthSkillList
 
-    o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
+    o.children.icon = hud_child:new(args.children.icon, o, function(_, _, _, ctrl)
         return util_table.array_merge_t(
             play_object.iter_args(ctrl, control_arguments.virus),
             get_icons(ctrl)
         )
     end)
-    o.children.timer = hud_child:new(args.children.timer, o, function(s, hudbase, gui_id, ctrl)
+    o.children.timer = hud_child:new(args.children.timer, o, function(_, _, _, ctrl)
         return play_object.iter_args(get_icons(ctrl), control_arguments.timer)
     end)
 

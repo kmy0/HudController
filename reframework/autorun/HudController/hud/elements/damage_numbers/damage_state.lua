@@ -34,12 +34,12 @@
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
 local play_object = require("HudController.hud.play_object.init")
 local text = require("HudController.hud.def.text")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
 
 ---@class DamageNumbersDamageState
@@ -162,7 +162,7 @@ local control_arguments = {
 ---@param parent DamageNumbersCriticalState
 ---@return DamageNumbersDamageState
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(s, hudbase, _, ctrl)
         ---@cast hudbase app.GUI020020.DAMAGE_INFO?
         ---@cast s DamageNumbersDamageState
 
@@ -173,7 +173,7 @@ function this:new(args, parent)
         end
 
         local state = s.root:get_state_value(hudbase, "<State>k__BackingField") --[[@as app.GUI020020.State]]
-        if args.name_key == "ALL" or ace_enum.damage_state[state] == args.name_key then
+        if args.name_key == "ALL" or e.get("app.GUI020020.State")[state] == args.name_key then
             s:adjust_offset(hudbase)
             return ctrl
         end
@@ -185,7 +185,7 @@ function this:new(args, parent)
     o.children.horizontal_line = ctrl_child:new(
         args.children.horizontal_line,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.horizontal_line)
         end,
         nil,
@@ -194,31 +194,22 @@ function this:new(args, parent)
         nil,
         true
     )
-    o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end, nil, nil, nil, nil, true)
-    o.children.wound = ctrl_child:new(args.children.wound, o, function(s, hudbase, gui_id, ctrl)
+    o.children.wound = ctrl_child:new(args.children.wound, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.wound)
     end, nil, nil, nil, nil, true)
-    o.children.circle = hud_child:new(args.children.circle, o, function(s, hudbase, gui_id, ctrl)
+    o.children.circle = hud_child:new(args.children.circle, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.circle)
     end, nil, nil, nil, nil, true)
-    o.children.affinity = ctrl_child:new(
-        args.children.affinity,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.affinity)
-        end,
-        nil,
-        nil,
-        nil,
-        nil,
-        true
-    )
+    o.children.affinity = ctrl_child:new(args.children.affinity, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.affinity)
+    end, nil, nil, nil, nil, true)
     o.children.negative_affinity = ctrl_child:new(
         args.children.negative_affinity,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.negative_affinity)
         end,
         nil,
@@ -227,7 +218,7 @@ function this:new(args, parent)
         nil,
         true
     )
-    o.children.shield = hud_child:new(args.children.shield, o, function(s, hudbase, gui_id, ctrl)
+    o.children.shield = hud_child:new(args.children.shield, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
     end, nil, nil, nil, nil, true)
 

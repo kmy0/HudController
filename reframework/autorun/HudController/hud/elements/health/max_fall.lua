@@ -53,10 +53,10 @@ function this:new(args, parent, ctrl_getter)
     setmetatable(o, self)
     ---@cast o HealthMaxFall
 
-    o.children.timer = hud_child:new(args.children.timer, o, function(s, hudbase, gui_id, ctrl)
+    o.children.timer = hud_child:new(args.children.timer, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.timer)
     end)
-    o.children.point = hud_child:new(args.children.point, o, function(s, hudbase, gui_id, ctrl)
+    o.children.point = hud_child:new(args.children.point, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.point)
     end)
 

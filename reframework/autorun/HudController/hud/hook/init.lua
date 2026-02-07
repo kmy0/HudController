@@ -9,17 +9,15 @@
 
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.hook.elements.init")
-local game_data = require("HudController.util.game.data")
 local m = require("HudController.util.ref.methods")
 local misc = require("HudController.hud.hook.misc")
 local options = require("HudController.hud.hook.options.init")
 local util_ref = require("HudController.util.ref.init")
 
 local ace_map = data.ace.map
-local ace_enum = data.ace.enum
 local mod_map = data.mod.map
-local rl = game_data.reverse_lookup
 
 ---@class ModHook
 local this = {
@@ -40,7 +38,7 @@ m.hook(
     nil,
     misc.reset_cache_post
 )
-m.hook("app.GUIManager.lateUpdateApp()", nil, function(retval)
+m.hook("app.GUIManager.lateUpdateApp()", nil, function(_)
     if not common.is_ok() then
         return
     end
@@ -542,7 +540,7 @@ end
 ---@param hud_name string
 function this.hook_hud(hud_id, hud_name)
     for _, gui_id in pairs(ace_map.hudid_to_guiid[hud_id]) do
-        local gui_type = string.format("app.G%s", ace_enum.gui_id[gui_id])
+        local gui_type = string.format("app.G%s", e.get("app.GUIID.ID")[gui_id])
         local key = string.format("%s|%s", hud_name, gui_type)
 
         if this.is_hud_hooked[key] then
@@ -552,7 +550,7 @@ function this.hook_hud(hud_id, hud_name)
         -- NamesAccess is updated here @update_name_access_icons_post
         if
             util_ref.is_a_str(gui_type, "app.GUIHudBase")
-            and hud_id ~= rl(ace_enum.hud, "NAME_ACCESSIBLE")
+            and hud_id ~= e.get("app.GUIHudDef.TYPE").NAME_ACCESSIBLE
         then
             on_render_hooks[gui_type] = true
         end

@@ -62,13 +62,13 @@ local control_arguments = {
 ---@param parent Whistle
 ---@return WhistleNotice
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.notice)
     end)
     setmetatable(o, self)
     ---@cast o WhistleNotice
 
-    o.children.arrow = ctrl_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
+    o.children.arrow = ctrl_child:new(args.children.arrow, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.arrow)
     end)
 

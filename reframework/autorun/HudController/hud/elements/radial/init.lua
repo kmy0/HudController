@@ -41,17 +41,15 @@
 ---@field select_base PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local game_data = require("HudController.util.game.data")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local pallet = require("HudController.hud.elements.radial.pallet")
 local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Radial
 local this = {}
@@ -201,50 +199,35 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Radial
 
-    o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
+    o.children.keys = hud_child:new(args.children.keys, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keys)
     end)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return util_table.array_merge_t(
-                play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
-                play_object.iter_args(ctrl, control_arguments.background)
-            )
-        end
-    )
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return util_table.array_merge_t(
+            play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
+            play_object.iter_args(ctrl, control_arguments.background)
+        )
+    end)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
-    o.children.center = hud_child:new(args.children.center, o, function(s, hudbase, gui_id, ctrl)
+    o.children.center = hud_child:new(args.children.center, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.center)
     end)
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(get_icons(ctrl), control_arguments.frame)
     end)
-    o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
+    o.children.select = hud_child:new(args.children.select, o, function(_, _, _, ctrl)
         return play_object.iter_args(get_icons(ctrl), control_arguments.select)
     end)
-    o.children.select_base = hud_child:new(
-        args.children.select_base,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(get_icons(ctrl), control_arguments.select_base)
-        end
-    )
-    o.children.radial_state = hud_child:new(
-        args.children.radial_state,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.radial_state)
-        end,
-        nil,
-        nil,
-        true
-    )
+    o.children.select_base = hud_child:new(args.children.select_base, o, function(_, _, _, ctrl)
+        return play_object.iter_args(get_icons(ctrl), control_arguments.select_base)
+    end)
+    o.children.radial_state = hud_child:new(args.children.radial_state, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.radial_state)
+    end, nil, nil, true)
     o.children.pallet = pallet:new(args.children.pallet, o)
-    o.children.craft = hud_child:new(args.children.craft, o, function(s, hudbase, gui_id, ctrl)
+    o.children.craft = hud_child:new(args.children.craft, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.craft)
     end)
 
@@ -266,7 +249,8 @@ end
 
 ---@return RadialConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "SHORTCUT_GAMEPAD"), "SHORTCUT_GAMEPAD") --[[@as RadialConfig]]
+    local base =
+        hud_base.get_config(e.get("app.GUIHudDef.TYPE").SHORTCUT_GAMEPAD, "SHORTCUT_GAMEPAD") --[[@as RadialConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.RADIAL

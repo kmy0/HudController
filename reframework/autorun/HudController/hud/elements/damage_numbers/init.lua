@@ -11,15 +11,13 @@
 
 local critical_state = require("HudController.hud.elements.damage_numbers.critical_state")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class DamageNumbers
 local this = {}
@@ -48,8 +46,8 @@ function this:new(args)
     o.written = {}
     o.actual_written = {}
 
-    for _, state in pairs(ace_enum.critical_state) do
-        o.children[state] = critical_state:new(args.children[state], o)
+    for name, _ in e.iter("app.GUI020020.CRITICAL_STATE") do
+        o.children[name] = critical_state:new(args.children[name], o)
     end
 
     o.children.ALL = critical_state:new(args.children.ALL, o)
@@ -73,7 +71,7 @@ function this:get_all_panels()
     util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
         local arr = GUI020020._DamageInfo
         if arr then
-            util_game.do_something(arr, function(system_array, index, value)
+            util_game.do_something(arr, function(_, _, value)
                 table.insert(
                     ret,
                     self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]]
@@ -90,7 +88,7 @@ function this:get_dmg()
     util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
         local arr = GUI020020._DamageInfoList
         if arr then
-            util_game.do_something(arr, function(system_array, index, value)
+            util_game.do_something(arr, function(_, _, value)
                 if not self.written[value] then
                     self:get_state_value(value, "<criticalState>k__BackingField", true)
                     self:get_state_value(value, "<State>k__BackingField", true)
@@ -108,7 +106,7 @@ function this:get_dmg_static()
     util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
         local arr = GUI020020._DamageInfo
         if arr then
-            util_game.do_something(arr, function(system_array, index, value)
+            util_game.do_something(arr, function(_, _, value)
                 if not self.written[value] then
                     local pnl_wrap = self:get_state_value(value, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
                     if not pnl_wrap:get_Visible() then
@@ -179,16 +177,21 @@ function this:write(hudbase, gui_id, ctrl)
             return
         end
 
-        local crit_state = self:get_state_value(hudbase, "<criticalState>k__BackingField")
-        local dmg_state = self:get_state_value(hudbase, "<State>k__BackingField")
-        local crit_child = self.children[ace_enum.critical_state[crit_state]]
-        local dmg_child = crit_child.children[ace_enum.damage_state[dmg_state]]
+        local crit_state = self:get_state_value(hudbase, "<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
+        local dmg_state = self:get_state_value(hudbase, "<State>k__BackingField") --[[@as app.GUI020020.State]]
+        local crit_child = self.children[e.get("app.GUI020020.CRITICAL_STATE")[crit_state]]
+        local dmg_child = crit_child.children[e.get("app.GUI020020.State")[dmg_state]]
 
         self.children.ALL:reset_ctrl(ctrl)
         ---@diagnostic disable-next-line: param-type-mismatch
         self.children.ALL.children.ALL:reset_specific(nil, nil, ctrl)
-        ---@diagnostic disable-next-line: param-type-mismatch
-        self.children.ALL.children[ace_enum.damage_state[dmg_state]]:reset_specific(nil, nil, ctrl)
+        self.children.ALL.children[e.get("app.GUI020020.State")[dmg_state]]:reset_specific(
+            ---@diagnostic disable-next-line: param-type-mismatch
+            nil,
+            ---@diagnostic disable-next-line: param-type-mismatch
+            nil,
+            ctrl
+        )
         crit_child:reset_ctrl(ctrl)
         ---@diagnostic disable-next-line: param-type-mismatch
         crit_child.children.ALL:reset_specific(nil, nil, ctrl)
@@ -206,15 +209,15 @@ end
 
 ---@return DamageNumbersConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "DAMAGE_NUMBERS"), "DAMAGE_NUMBERS") --[[@as DamageNumbersConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").DAMAGE_NUMBERS, "DAMAGE_NUMBERS") --[[@as DamageNumbersConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.DAMAGE_NUMBERS
     base.box = { x = 0, y = 0, w = 0, h = 0 }
     base.enabled_box = false
 
-    for _, state in pairs(ace_enum.critical_state) do
-        base.children[state] = critical_state.get_config(state)
+    for name, _ in e.iter("app.GUI020020.CRITICAL_STATE") do
+        base.children[name] = critical_state.get_config(name)
     end
     children.ALL = critical_state.get_config("ALL")
 

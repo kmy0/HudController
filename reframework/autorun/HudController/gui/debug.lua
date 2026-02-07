@@ -9,7 +9,6 @@ local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
 local gui_util = require("HudController.gui.util")
 local hud_debug = require("HudController.hud.debug.init")
-local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 

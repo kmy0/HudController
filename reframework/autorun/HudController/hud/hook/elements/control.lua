@@ -18,7 +18,7 @@ function this.set_control_global_pos_pre(args)
     end
 end
 
-function this.set_control_global_pos_post(retval)
+function this.set_control_global_pos_post(_)
     local GUI020014 = util_ref.get_this() --[[@as app.GUI020014]]
     if GUI020014 then
         local control_guide00 = GUI020014:get__PNL_ControlGuide00()
