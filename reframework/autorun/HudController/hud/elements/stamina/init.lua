@@ -32,8 +32,8 @@
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local ex = require("HudController.hud.elements.stamina.ex")
-local game_data = require("HudController.util.game.data")
 local gauge = require("HudController.hud.elements.stamina.gauge")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -42,8 +42,6 @@ local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 
 local mod = data.mod
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 -- PNL_Scale
 ---@type StaminaControlArguments
@@ -194,38 +192,22 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Stamina
 
-    o.children.light_end = hud_child:new(
-        args.children.light_end,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_end)
-        end
-    )
+    o.children.light_end = hud_child:new(args.children.light_end, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_end)
+    end)
     o.children.gauge = gauge:new(args.children.gauge, o)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.frame_max = hud_child:new(
-        args.children.frame_max,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.frame_max)
-        end
-    )
-    o.children.light_start = hud_child:new(
-        args.children.light_start,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_start)
-        end
-    )
+    o.children.frame_max = hud_child:new(args.children.frame_max, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.frame_max)
+    end)
+    o.children.light_start = hud_child:new(args.children.light_start, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_start)
+    end)
     o.children.ex = ex:new(args.children.ex, o)
 
     return o
@@ -265,7 +247,7 @@ end
 
 ---@return StaminaConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "STAMINA"), "STAMINA") --[[@as StaminaConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").STAMINA, "STAMINA") --[[@as StaminaConfig]]
     local children = base.children
     base.options.AUTO_SCALING_STAMINA = -1
     base.hud_type = mod.enum.hud_type.STAMINA

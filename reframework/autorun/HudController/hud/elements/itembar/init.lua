@@ -32,16 +32,13 @@ local mantle = require("HudController.hud.elements.itembar.mantle")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local ace_misc = require("HudController.util.ace.misc")
+local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local slider = require("HudController.hud.elements.itembar.slider")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
-
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Itembar
 local this = {}
@@ -83,39 +80,25 @@ function this:new(args)
 
     o.children.slider = slider:new(args.children.slider, o)
     o.children.all_slider = all_slider:new(args.children.all_slider, o)
-    o.children.akuma_bar = hud_child:new(
-        args.children.akuma_bar,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.akuma_bar)
-        end
-    )
+    o.children.akuma_bar = hud_child:new(args.children.akuma_bar, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.akuma_bar)
+    end)
     o.children.mantle = mantle:new(args.children.mantle, o)
-    o.children.slider_part = hud_child:new(
-        args.children.slider,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.slider)
-        end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+    o.children.slider_part = hud_child:new(args.children.slider, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.slider)
+    end, function(s, ctrl)
+        play_object_defaults:check(ctrl)
 
-            if s.hide then
-                if
-                    o:get_GUI020006():get_IsAllSliderMode()
-                    or ctrl:get_PlayState() == "FADE_OUT"
-                then
-                    ctrl:set_ForceInvisible(true)
-                    return false
-                else
-                    ctrl:set_ForceInvisible(false)
-                end
+        if s.hide then
+            if o:get_GUI020006():get_IsAllSliderMode() or ctrl:get_PlayState() == "FADE_OUT" then
+                ctrl:set_ForceInvisible(true)
+                return false
+            else
+                ctrl:set_ForceInvisible(false)
             end
-            return true
-        end,
-        nil,
-        true
-    )
+        end
+        return true
+    end, nil, true)
 
     o.hide_write = true
     if args.start_expanded then
@@ -181,7 +164,7 @@ end
 
 ---@return ItembarConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "SLIDER_ITEM"), "SLIDER_ITEM") --[[@as ItembarConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SLIDER_ITEM, "SLIDER_ITEM") --[[@as ItembarConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.ITEMBAR
 

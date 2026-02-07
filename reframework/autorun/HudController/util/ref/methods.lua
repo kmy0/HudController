@@ -117,7 +117,7 @@ function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
     end
 
     if is_debug then
-        pre_cb = pre_cb or function(args) end
+        pre_cb = pre_cb or function(_) end
         if post_cb then
             local o_post_cb = post_cb
             post_cb = function(retval)
@@ -145,7 +145,7 @@ function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
         sdk.hook(
             ---@diagnostic disable-next-line: param-type-mismatch
             method_def,
-            pre_cb or function(args) end,
+            pre_cb or function(_) end,
             post_cb and util_ref.hook_ret(post_cb) or nil,
             ignore_jmp_object
         )

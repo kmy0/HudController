@@ -8,7 +8,7 @@ local icon_size = util_ref.value_type("via.Float3")
 
 attach_up_pos.x, attach_up_pos.y, attach_up_pos.z = 0, 0, 0
 
-function this.classic_minimap_param_update_post(retval)
+function this.classic_minimap_param_update_post(_)
     local minimap = common.get_elem_t("Minimap")
     if minimap and minimap.enabled_classic_minimap then
         local cam_ctrl = util_ref.get_this() --[[@as app.cGUIMapCameraController]]
@@ -30,7 +30,7 @@ function this.classic_minimap_param_update_post(retval)
     end
 end
 
-function this.classic_minimap_icon_scale_post(retval)
+function this.classic_minimap_icon_scale_post(_)
     local minimap = common.get_elem_t("Minimap")
     if
         minimap
@@ -47,7 +47,7 @@ function this.classic_minimap_icon_scale_post(retval)
     end
 end
 
-function this.classic_minimap_no_resize_pre(args)
+function this.classic_minimap_no_resize_pre(_)
     local minimap = common.get_elem_t("Minimap")
     if minimap and minimap.enabled_classic_minimap then
         return sdk.PreHookResult.SKIP_ORIGINAL

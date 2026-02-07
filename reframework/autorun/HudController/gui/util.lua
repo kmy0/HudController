@@ -186,13 +186,13 @@ function this.is_only_thing(elem_config, thing)
     end
 
     if elem_config.name_key == "text" then
-        util_table.any(all_bools, function(key, value)
+        util_table.any(all_bools, function(_, value)
             return elem_config[value] ~= nil
         end)
     end
     if
         (elem_config.children and not util_table.empty(elem_config.children))
-        or util_table.any(all_bools, function(key, value)
+        or util_table.any(all_bools, function(_, value)
             if value == thing then
                 return false
             end

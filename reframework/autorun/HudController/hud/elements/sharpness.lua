@@ -39,16 +39,14 @@
 ---@field edge PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Sharpness
 local this = {}
@@ -149,29 +147,21 @@ function this:new(args)
     o.properties = util_table.merge_t(o.properties, {
         state = true,
     })
-    o.children.anim_max = hud_child:new(
-        args.children.anim_max,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.anim_max)
-        end
-    )
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.anim_max = hud_child:new(args.children.anim_max, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.anim_max)
+    end)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.next = hud_child:new(args.children.next, o, function(s, hudbase, gui_id, ctrl)
+    o.children.next = hud_child:new(args.children.next, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.next)
     end)
-    o.children.edge = hud_child:new(args.children.edge, o, function(s, hudbase, gui_id, ctrl)
+    o.children.edge = hud_child:new(args.children.edge, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.edge)
     end)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
 
     if args.state ~= -1 then
         o:set_state(args.state)
@@ -204,7 +194,7 @@ end
 
 ---@return boolean
 function this:any()
-    return util_table.any(self.properties, function(key, value)
+    return util_table.any(self.properties, function(key, _)
         if (key == "state" and self[key] ~= -1) or (key ~= "state" and self[key]) then
             return true
         end
@@ -217,9 +207,9 @@ end
 ---@return boolean
 function this:_write(ctrl)
     if self.state == 0 then
-        self:get_GUI020015():setGaugeModeStatus(rl(ace_enum.sharpness_state, "DEFAULT"))
+        self:get_GUI020015():setGaugeModeStatus(e.get("app.GUI020015.DEFAULT_STATUS").DEFAULT)
     elseif self.state == 1 then
-        self:get_GUI020015():setGaugeModeStatus(rl(ace_enum.sharpness_state, "SELECT"))
+        self:get_GUI020015():setGaugeModeStatus(e.get("app.GUI020015.DEFAULT_STATUS").SELECT)
     end
 
     return hud_base._write(self, ctrl)
@@ -227,7 +217,7 @@ end
 
 ---@return SharpnessConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "SHARPNESS"), "SHARPNESS") --[[@as SharpnessConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SHARPNESS, "SHARPNESS") --[[@as SharpnessConfig]]
     local children = base.children
     base.options.AUTO_SCALING_SHARPNESS = -1
     base.hud_type = mod.enum.hud_type.SHARPNESS

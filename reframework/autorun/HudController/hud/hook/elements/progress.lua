@@ -3,7 +3,7 @@ local common = require("HudController.hud.hook.common")
 local this = {}
 local do_reset = false
 
-function this.reset_progress_default_pre(args)
+function this.reset_progress_default_pre(_)
     local progress = common.get_elem_t("Progress")
 
     if progress then
@@ -15,14 +15,14 @@ function this.reset_progress_default_pre(args)
     end
 end
 
-function this.reset_progress_mission_pre(args)
+function this.reset_progress_mission_pre(_)
     local progress = common.get_elem_t("Progress")
     if progress then
         do_reset = true
     end
 end
 
-function this.clear_cache_pre(args)
+function this.clear_cache_pre(_)
     local progress = common.get_elem_t("Progress")
     if progress then
         local GUI020018 = progress:get_GUI020018()

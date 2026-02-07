@@ -125,23 +125,19 @@ function this:new(
     setmetatable(o, self)
     ---@cast o ProgressPartTask
 
-    o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
-    o.children.checkbox = part_base:new(
-        args.children.checkbox,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.checkbox)
-        end
-    )
-    o.children.icon = part_base:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
+    o.children.checkbox = part_base:new(args.children.checkbox, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.checkbox)
+    end)
+    o.children.icon = part_base:new(args.children.icon, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.icon)
     end)
-    o.children.num = part_base:new(args.children.num, o, function(s, hudbase, gui_id, ctrl)
+    o.children.num = part_base:new(args.children.num, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.num)
     end)
-    o.children.light = part_base:new(args.children.light, o, function(s, hudbase, gui_id, ctrl)
+    o.children.light = part_base:new(args.children.light, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.light)
     end)
 

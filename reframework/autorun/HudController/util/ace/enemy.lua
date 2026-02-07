@@ -13,7 +13,7 @@ function this.is_paintballed_ctx(em_ctx)
     local any = false
 
     if arr then
-        util_game.do_something(arr, function(system_array, index, value)
+        util_game.do_something(arr, function(_, _, value)
             if value.enable then
                 any = true
                 return false
@@ -36,7 +36,7 @@ function this.is_paintballed_char(char_base)
     local any = false
 
     if arr then
-        util_game.do_something(arr, function(system_array, index, value)
+        util_game.do_something(arr, function(_, _, value)
             if value.enable then
                 any = true
                 return false

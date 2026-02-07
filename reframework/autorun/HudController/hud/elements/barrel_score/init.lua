@@ -18,15 +18,13 @@
 ---@field points2 PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local name = require("HudController.hud.elements.barrel_score.name")
 local play_object = require("HudController.hud.play_object.init")
 local points = require("HudController.hud.elements.barrel_score.points")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class BarrelScore
 local this = {}
@@ -65,10 +63,10 @@ function this:new(args)
 
     ---@cast o BarrelScore
     o.children.name = name:new(args.children.name, o)
-    o.children.points1 = points:new(args.children.points1, o, function(s, hudbase, gui_id, ctrl)
+    o.children.points1 = points:new(args.children.points1, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.points1)
     end)
-    o.children.points2 = points:new(args.children.points2, o, function(s, hudbase, gui_id, ctrl)
+    o.children.points2 = points:new(args.children.points2, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.points2)
     end)
 
@@ -77,8 +75,10 @@ end
 
 ---@return BarrelScoreConfig
 function this.get_config()
-    local base =
-        hud_base.get_config(rl(ace_enum.hud, "BARREL_BOWLING_SCORE"), "BARREL_BOWLING_SCORE") --[[@as BarrelScoreConfig]]
+    local base = hud_base.get_config(
+        e.get("app.GUIHudDef.TYPE").BARREL_BOWLING_SCORE,
+        "BARREL_BOWLING_SCORE"
+    ) --[[@as BarrelScoreConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.BARREL_BOWLING_SCORE

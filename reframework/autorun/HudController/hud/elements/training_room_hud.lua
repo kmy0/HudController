@@ -23,15 +23,13 @@
 ---@field combo_guide PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class TrainingRoomHud
 local this = {}
@@ -86,27 +84,19 @@ function this:new(args)
     o.children.command_history = hud_child:new(
         args.children.command_history,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.command_history)
         end
     )
-    o.children.button_guide = hud_child:new(
-        args.children.button_guide,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.button_guide)
-        end
-    )
-    o.children.damage = hud_child:new(args.children.damage, o, function(s, hudbase, gui_id, ctrl)
+    o.children.button_guide = hud_child:new(args.children.button_guide, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.button_guide)
+    end)
+    o.children.damage = hud_child:new(args.children.damage, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.damage)
     end)
-    o.children.combo_guide = hud_child:new(
-        args.children.combo_guide,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.combo_guide)
-        end
-    )
+    o.children.combo_guide = hud_child:new(args.children.combo_guide, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.combo_guide)
+    end)
 
     return o
 end
@@ -146,7 +136,8 @@ end
 
 ---@return TrainingRoomHudConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "TRAINING_ROOM_HUD"), "TRAINING_ROOM_HUD") --[[@as TrainingRoomHudConfig]]
+    local base =
+        hud_base.get_config(e.get("app.GUIHudDef.TYPE").TRAINING_ROOM_HUD, "TRAINING_ROOM_HUD") --[[@as TrainingRoomHudConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.TRAINING_ROOM_HUD
 

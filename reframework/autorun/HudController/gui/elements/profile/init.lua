@@ -367,7 +367,7 @@ local function draw_options()
         local sorted = util_table.sort(
             util_table.remove(
                 util_table.keys(config_mod.hud[config_mod.combo.hud].options),
-                function(t, i, j)
+                function(t, i, _)
                     return dummy_hud.options[t[i]] ~= nil and ace_map.option[t[i]] ~= nil
                 end
             )

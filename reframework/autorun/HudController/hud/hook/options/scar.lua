@@ -1,11 +1,7 @@
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local util_ref = require("HudController.util.ref.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -13,7 +9,7 @@ function this.disable_scar_stamp_pre(args)
     local hud_config = common.get_hud()
     if hud_config and (hud.get_hud_option("disable_scar") or hud.get_hud_option("hide_scar")) then
         local state = sdk.to_int64(args[3]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if state ~= rl(ace_enum.scar_state, "NORMAL") then
+        if state ~= e.get("app.cEmModuleScar.cScarParts.STATE").NORMAL then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -23,7 +19,10 @@ function this.disable_scar_activate_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("disable_scar") then
         local state = sdk.to_int64(args[6]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if state == rl(ace_enum.scar_state, "RAW") or state == rl(ace_enum.scar_state, "TEAR") then
+        if
+            state == e.get("app.cEmModuleScar.cScarParts.STATE").RAW
+            or state == e.get("app.cEmModuleScar.cScarParts.STATE").TEAR
+        then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -33,13 +32,16 @@ function this.disable_scar_state_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("disable_scar") then
         local state = sdk.to_int64(args[4]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
-        if state == rl(ace_enum.scar_state, "RAW") or state == rl(ace_enum.scar_state, "TEAR") then
+        if
+            state == e.get("app.cEmModuleScar.cScarParts.STATE").RAW
+            or state == e.get("app.cEmModuleScar.cScarParts.STATE").TEAR
+        then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
 end
 
-function this.scar_state_post(retval)
+function this.scar_state_post(_)
     local hud_config = common.get_hud()
     if
         hud_config

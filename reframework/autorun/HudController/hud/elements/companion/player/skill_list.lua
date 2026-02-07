@@ -47,13 +47,13 @@ local control_arguments = {
 ---@param parent CompanionPlayer
 ---@return CompanionPlayerSkillList
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.skill_list)
     end)
     setmetatable(o, self)
     ---@cast o CompanionPlayerSkillList
 
-    o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
+    o.children.icon = hud_child:new(args.children.icon, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.icon)
     end)
 

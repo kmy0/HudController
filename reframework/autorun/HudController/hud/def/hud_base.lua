@@ -106,9 +106,9 @@ local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
+local e = require("HudController.util.game.enum")
 local fade_manager = require("HudController.hud.fade.init")
 local frame_timer = require("HudController.util.misc.frame_timer")
-local game_data = require("HudController.util.game.data")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
@@ -118,10 +118,8 @@ local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud.init"
 local hud
 
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class HudBase
 local this = {}
@@ -206,7 +204,8 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
     if
         o.hud_id
         and not o.hide
-        and ace_enum.hud_display[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)] == "HIDDEN"
+        and e.get("app.GUIHudDef.DISPLAY")[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)]
+            == "HIDDEN"
     then
         ---@diagnostic disable-next-line: param-type-mismatch
         o:change_visibility(nil, true, "DEFAULT")
@@ -253,7 +252,7 @@ end
 ---@param segment string?
 function this:set_segment(segment)
     if segment then
-        self.segment = rl(ace_enum.draw_segment, segment)
+        self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment]
         self:mark_write("segment")
     else
         self:reset("segment")
@@ -464,19 +463,15 @@ end
 ---@param hud_display string?
 function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
+        local enum = e.get("app.GUIHudDef.DISPLAY")
+
         if not visible then
-            ace_misc
-                .get_hud_manager()
-                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "HIDDEN"))
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, enum.HIDDEN)
         elseif visible and hud_display then
-            hud_display = hud_display ~= "HIDDEN" and hud_display or "DEFAULT"
-            ace_misc
-                .get_hud_manager()
-                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, hud_display))
+            hud_display = hud_display ~= "HIDDEN" and hud_display or "DEFAULT" --[[@as string]]
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, enum[hud_display])
         else
-            ace_misc
-                .get_hud_manager()
-                :setHudDisplay(self.hud_id, rl(ace_enum.hud_display, "DEFAULT"))
+            ace_misc.get_hud_manager():setHudDisplay(self.hud_id, enum.DEFAULT)
         end
 
         -- hiding root till FADE_IN or FADE_OUT finishes, there doesn't seem to be a way to instantly finish those
@@ -492,7 +487,7 @@ function this:change_visibility(ctrl, visible, hud_display)
             and not (
                 (self.name_key == "SLIDER_BULLET" or self.name_key == "SLIDER_ITEM")
                 and ace_player.check_continue_flag(
-                    rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER")
+                    e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER
                 )
             )
         then
@@ -549,7 +544,7 @@ function this:get_all_ctrl()
                 table.concat(hudbase, ", "),
                 self:whoami(),
                 self:whoami_cls(),
-                ace_enum.hud[self.hud_id]
+                e.get("app.GUIHudDef.TYPE")[self.hud_id]
             ),
             hud_debug_log.log_debug_type.GAME_CLASS
         )
@@ -583,7 +578,7 @@ end
 
 ---@return boolean
 function this:any()
-    return util_table.any(self.properties, function(key, value)
+    return util_table.any(self.properties, function(key, _)
         if self[key] then
             return true
         end
@@ -703,7 +698,7 @@ function this:reset_ctrl(ctrl, key)
     end
 
     if self.segment and (not key or key == "segment") and default.segment then
-        ctrl:set_Segment(rl(ace_enum.draw_segment, default.segment))
+        ctrl:set_Segment(e.get("app.GUIDefApp.DRAW_SEGMENT")[default.segment])
     end
 
     if not key then

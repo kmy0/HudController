@@ -9,11 +9,11 @@
 
 local damage_state = require("HudController.hud.elements.damage_numbers.damage_state")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local numbers_offset = require("HudController.hud.elements.damage_numbers.numbers_offset")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
 
 ---@class DamageNumbersCriticalState
@@ -30,7 +30,7 @@ function this:new(args, parent)
         self,
         args,
         parent,
-        function(s, hudbase, gui_id, ctrl)
+        function(s, hudbase, _, ctrl)
             ---@cast hudbase app.GUI020020.DAMAGE_INFO?
             ---@cast s DamageNumbersCriticalState
 
@@ -41,7 +41,10 @@ function this:new(args, parent)
             end
 
             local state = s.root:get_state_value(hudbase, "<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
-            if args.name_key == "ALL" or ace_enum.critical_state[state] == args.name_key then
+            if
+                args.name_key == "ALL"
+                or e.get("app.GUI020020.CRITICAL_STATE")[state] == args.name_key
+            then
                 s:adjust_offset(hudbase)
                 return ctrl
             end
@@ -66,8 +69,8 @@ function this:new(args, parent)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbersCriticalState
 
-    for _, state in pairs(ace_enum.damage_state) do
-        o.children[state] = damage_state:new(args.children[state], o)
+    for name, _ in e.iter("app.GUI020020.State") do
+        o.children[name] = damage_state:new(args.children[name], o)
     end
 
     o.children.ALL = damage_state:new(args.children.ALL, o)
@@ -90,7 +93,7 @@ function this:reset(key)
     end
 
     self.pos_cache = {}
-    util_table.do_something(self.root:get_all_panels(), function(t, _, value)
+    util_table.do_something(self.root:get_all_panels(), function(_, _, value)
         ---@diagnostic disable-next-line: param-type-mismatch
         local ctrl = self:ctrl_getter(nil, nil, value)
 
@@ -114,8 +117,8 @@ function this.get_config(name_key)
     base.box = { x = 0, y = 0, w = 0, h = 0 }
     base.enabled_box = false
 
-    for _, state in pairs(ace_enum.damage_state) do
-        children[state] = damage_state.get_config(state)
+    for name, _ in e.iter("app.GUI020020.State") do
+        children[name] = damage_state.get_config(name)
     end
     children.ALL = damage_state.get_config("ALL")
 

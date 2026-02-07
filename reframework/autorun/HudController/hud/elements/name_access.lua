@@ -18,15 +18,13 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class NameAccess
 local this = {}
@@ -136,7 +134,7 @@ end
 
 ---@return NameAccessConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "NAME_ACCESSIBLE"), "NAME_ACCESSIBLE") --[[@as NameAccessConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NAME_ACCESSIBLE, "NAME_ACCESSIBLE") --[[@as NameAccessConfig]]
 
     base.enabled_offset = nil
     base.hud_type = mod.enum.hud_type.NAME_ACCESS
@@ -151,19 +149,19 @@ function this.get_config()
         ANIMAL = false,
     }
 
-    for _, name in pairs(ace_enum.object_access_category) do
+    for name, _ in e.iter("app.GUIAccessIconControl.OBJECT_CATEGORY") do
         base.object_category[name] = false
     end
 
-    for _, name in pairs(ace_enum.interact_gossip_type) do
+    for name, _ in e.iter("app.GUI020001PanelParams.GOSSIP_TYPE") do
         base.gossip_type[name] = false
     end
 
-    for _, name in pairs(ace_enum.interact_npc_type) do
+    for name, _ in e.iter("app.GUI020001PanelParams.NPC_TYPE") do
         base.npc_type[name] = false
     end
 
-    for _, name in pairs(ace_enum.interact_panel_type) do
+    for name, _ in e.iter("app.GUI020001PanelParams.PANEL_TYPE") do
         base.panel_type[name] = false
     end
 

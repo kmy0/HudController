@@ -1,11 +1,8 @@
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local state = require("HudController.gui.state")
 local util_ace = require("HudController.util.ace.init")
 local util_game = require("HudController.util.game.init")
-
-local rl = util_game.data.reverse_lookup
-local ace_enum = data.ace.enum
 
 local this = {}
 
@@ -44,7 +41,7 @@ function this.draw()
     util_ace.scene_fade.set(
         config_grid.fade_alpha,
         config_grid.color_fade,
-        rl(ace_enum.draw_segment, "HUD_WORLD")
+        e.get("app.GUIDefApp.DRAW_SEGMENT").HUD_WORLD
     )
 end
 

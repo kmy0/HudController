@@ -140,7 +140,7 @@ local control_arguments = {
 ---@param parent Stamina
 ---@return StaminaEx
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.ex)
     end)
     setmetatable(o, self)
@@ -149,7 +149,7 @@ function this:new(args, parent)
     for i = 1, 2 do
         local key = "bar" .. i
         ---@diagnostic disable-next-line: no-unknown
-        o.children[key] = hud_child:new(args.children[key], o, function(s, hudbase, gui_id, ctrl)
+        o.children[key] = hud_child:new(args.children[key], o, function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments[key])
         end) --[[@as StaminaExBar]]
 
@@ -159,7 +159,7 @@ function this:new(args, parent)
         children_o.frame = material:new(
             children_args.frame,
             o.children[key],
-            function(s, hudbase, gui_id, ctrl)
+            function(_, _, _, ctrl)
                 local frame = play_object.iter_args(ctrl, control_arguments.frame_pnl)
                 if frame[1] then
                     return play_object.iter_args(frame[1], control_arguments.frame_mat)
@@ -169,7 +169,7 @@ function this:new(args, parent)
         children_o.background = scale9:new(
             children_args.background,
             o.children[key],
-            function(s, hudbase, gui_id, ctrl)
+            function(_, _, _, ctrl)
                 local frame = play_object.iter_args(ctrl, control_arguments.frame_pnl)
                 if frame[1] then
                     return play_object.iter_args(frame[1], control_arguments.background)
@@ -179,20 +179,16 @@ function this:new(args, parent)
         children_o.light_end = hud_child:new(
             children_args.light_end,
             o.children[key],
-            function(s, hudbase, gui_id, ctrl)
+            function(_, _, _, ctrl)
                 return play_object.iter_args(ctrl, control_arguments.light_end)
             end
         )
-        children_o.glow = hud_child:new(
-            children_args.glow,
-            o.children[key],
-            function(s, hudbase, gui_id, ctrl)
-                return play_object.iter_args(ctrl, control_arguments.glow)
-            end
-        )
+        children_o.glow = hud_child:new(children_args.glow, o.children[key], function(_, _, _, ctrl)
+            return play_object.iter_args(ctrl, control_arguments.glow)
+        end)
     end
 
-    o.children.pulse = hud_child:new(args.children.pulse, o, function(s, hudbase, gui_id, ctrl)
+    o.children.pulse = hud_child:new(args.children.pulse, o, function(_, _, _, ctrl)
         return util_table.array_merge_t(
             play_object.iter_args(ctrl, control_arguments.bar1),
             play_object.iter_args(ctrl, control_arguments.bar2)

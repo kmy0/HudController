@@ -4,11 +4,9 @@
 ---@field patch number
 ---@field commit number
 
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local util_misc = require("HudController.util.misc.util")
 local util_table = require("HudController.util.misc.table")
-
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -126,11 +124,8 @@ end
 
 ---@param config table
 local function to_0_1_0_keybinds(config)
-    ---@type table<ace.ACE_PAD_KEY.BITS, string>
-    local pad_enum = {}
-    local kb_enum = {}
-    game_data.get_enum("ace.ACE_PAD_KEY.BITS", pad_enum)
-    game_data.get_enum("ace.ACE_MKB_KEY.INDEX", kb_enum)
+    local pad_enum = e.get("ace.ACE_PAD_KEY.BITS")
+    local kb_enum = e.get("ace.ACE_MKB_KEY.INDEX")
 
     if util_table.empty(pad_enum) or util_table.empty(kb_enum) then
         error("Bind Enum, not found. Please press Reset Scripts button.")

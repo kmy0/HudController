@@ -24,6 +24,7 @@ local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
+local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade.init")
 local hud_base = require("HudController.hud.def.hud_base")
@@ -33,7 +34,6 @@ local timer = require("HudController.util.misc.timer")
 ---@module "HudController.hud.hook.init"
 local h
 
-local ace_enum = data.ace.enum
 local ace_map = data.ace.map
 local mod = data.mod
 
@@ -298,7 +298,7 @@ function this.update_weapon_bind_state()
         weapon_config = t["GLOBAL"]
     else
         local weapon_type = ace_player.get_weapon_type()
-        local weapon_name = ace_enum.weapon[weapon_type]
+        local weapon_name = e.get("app.WeaponDef.TYPE")[weapon_type]
 
         if not weapon_name then
             return

@@ -183,7 +183,7 @@ end
 
 ---@return boolean
 function this:any_gui()
-    return util_table.any(self.properties, function(key, value)
+    return util_table.any(self.properties, function(key, _)
         if (key == "clock_offset_x" or key == "num_offset_x") and not self.offset_x then
             return false
         end

@@ -1,11 +1,7 @@
 local ace_player = require("HudController.util.ace.player")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local play_object = require("HudController.hud.play_object.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 local ammo_slider = {
@@ -21,7 +17,7 @@ function this.no_hide_ammo_slider_parts_pre(args)
         -- or its opened with ctrl
         local GUI020007 = sdk.to_managed_object(args[2]) --[[@as app.GUI020007]]
         local flag =
-            ace_player.check_continue_flag(rl(ace_enum.hunter_continue_flag, "OPEN_ITEM_SLIDER"))
+            ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
         local open_timer = GUI020007:get__OpenTimer()
         local is_rapid = GUI020007:get_IsRapidMode()
 
@@ -31,7 +27,7 @@ function this.no_hide_ammo_slider_parts_pre(args)
         then
             -- this is necessary when in rapid mode, to avoid fade in of energy bar
             GUI020007:setBulletSliderState("UNFOCUS")
-            GUI020007:set__SliderStatus(rl(ace_enum.bullet_slider_status, "Default"))
+            GUI020007:set__SliderStatus(e.get("app.GUI020007.BulletSliderStatus").Default)
 
             -- prevents lingering after opening with ctrl
             GUI020007:set__OpenTimer(0.0)
@@ -39,14 +35,14 @@ function this.no_hide_ammo_slider_parts_pre(args)
             ammo_slider.item_slider_open = false
         end
 
-        if GUI020007:get__SliderStatus() == rl(ace_enum.bullet_slider_status, "Default") then
+        if GUI020007:get__SliderStatus() == e.get("app.GUI020007.BulletSliderStatus").Default then
             ammo_slider.open = false
             ammo_slider.item_slider_open = false
         end
 
         -- opened with scroll
         if open_timer > 0 then
-            GUI020007:set__SliderStatus(rl(ace_enum.bullet_slider_status, "Active"))
+            GUI020007:set__SliderStatus(e.get("app.GUI020007.BulletSliderStatus").Active)
             ammo_slider.open = true
         end
 
@@ -55,7 +51,7 @@ function this.no_hide_ammo_slider_parts_pre(args)
             ammo_slider.open = true
             ammo_slider.item_slider_open = true
 
-            GUI020007:set__SliderStatus(rl(ace_enum.bullet_slider_status, "Active"))
+            GUI020007:set__SliderStatus(e.get("app.GUI020007.BulletSliderStatus").Active)
             -- opening with scroll instead,
             GUI020007:callbackOther(GUI020007.SLOT_DOWN, nil, nil, 0)
             GUI020007:callbackOther(GUI020007.SLOT_UP, nil, nil, 0)
@@ -89,7 +85,7 @@ function this.no_hide_ammo_slider_reload_pre(args)
             "PNL_reload",
         }) --[[@as via.gui.Control]]
 
-        if GUI020007:get__SliderStatus() ~= rl(ace_enum.bullet_slider_status, "Active") then
+        if GUI020007:get__SliderStatus() ~= e.get("app.GUI020007.BulletSliderStatus").Active then
             return
         end
 

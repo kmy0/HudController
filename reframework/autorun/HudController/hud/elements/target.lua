@@ -22,14 +22,12 @@
 ---@field life_line PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Target
 local this = {}
@@ -85,32 +83,24 @@ function this:new(args)
     setmetatable(o, self)
 
     ---@cast o Target
-    o.children.pin = hud_child:new(args.children.pin, o, function(s, hudbase, gui_id, ctrl)
+    o.children.pin = hud_child:new(args.children.pin, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.pin)
     end)
-    o.children.key = hud_child:new(args.children.key, o, function(s, hudbase, gui_id, ctrl)
+    o.children.key = hud_child:new(args.children.key, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.key)
     end)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.life_line = hud_child:new(
-        args.children.life_line,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.life_line)
-        end
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.life_line = hud_child:new(args.children.life_line, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.life_line)
+    end)
     return o
 end
 
 ---@return TargetConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "TARGET"), "TARGET") --[[@as TargetConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").TARGET, "TARGET") --[[@as TargetConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.TARGET

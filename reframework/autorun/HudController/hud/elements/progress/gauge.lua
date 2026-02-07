@@ -62,16 +62,16 @@ local control_arguments = {
 ---@param parent Progress
 ---@return ProgressPartGauge
 function this:new(args, parent)
-    local o = part_base.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = part_base.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge_part)
     end)
     setmetatable(o, self)
     ---@cast o ProgressPartGauge
 
-    o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
-    o.children.gauge = part_base:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
+    o.children.gauge = part_base:new(args.children.gauge, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
 

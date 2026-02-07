@@ -1,14 +1,8 @@
 local ace_player = require("HudController.util.ace.player")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
-local m = require("HudController.util.ref.methods")
 local util_misc = require("HudController.util.misc.init")
-
-local ace_enum = data.ace.enum
-local ace_map = data.ace.map
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -21,15 +15,15 @@ function this.hide_danger_line_post(retval)
 end
 
 --#region hide_weapon
-function this.hide_weapon_pre(args)
+function this.hide_weapon_pre(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_weapon") then
         -- weapon cant be drawn otherwise
-        ace_player.set_continue_flag(rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"), false)
+        ace_player.set_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").WP_ALPHA_ZERO, false)
     end
 end
 
-function this.hide_weapon_post(retval)
+function this.hide_weapon_post(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_weapon") then
         util_misc.try(function()
@@ -39,14 +33,14 @@ function this.hide_weapon_post(retval)
                 master_player
                 and not master_player:get_IsWeaponOnAction()
                 and not ace_player.check_continue_flag(
-                    rl(ace_enum.hunter_continue_flag, "PORTER_WP_CHANGE")
+                    e.get("app.HunterDef.CONTINUE_FLAG").PORTER_WP_CHANGE
                 )
                 and not ace_player.check_continue_flag(
-                    rl(ace_enum.hunter_continue_flag, "OPEN_KIREAJI_HUD")
+                    e.get("app.HunterDef.CONTINUE_FLAG").OPEN_KIREAJI_HUD
                 )
             then
                 ace_player.set_continue_flag(
-                    rl(ace_enum.hunter_continue_flag, "WP_ALPHA_ZERO"),
+                    e.get("app.HunterDef.CONTINUE_FLAG").WP_ALPHA_ZERO,
                     true
                 )
             end
@@ -59,7 +53,7 @@ function this.hide_aggro_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_aggro") then
         local state = sdk.to_managed_object(args[3]) --[[@as app.game_message.cEmChangeState]]
-        local msg_type = ace_enum.ai_target_state[state:get_StateMsg()]
+        local msg_type = e.get("app.EnemyDef.AI_TARGET_STATE")[state:get_StateMsg()]
         if msg_type == "EM_LEAD" then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
