@@ -105,39 +105,27 @@ local control_arguments = {
 ---@param parent CompanionPlayer
 ---@return CompanionPlayerGauge
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
     setmetatable(o, self)
     ---@cast o CompanionPlayerGauge
 
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.light_end = hud_child:new(
-        args.children.light_end,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_end)
-        end
-    )
-    o.children.light_start = hud_child:new(
-        args.children.light_start,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_start)
-        end
-    )
-    o.children.line = material:new(args.children.line, o, function(s, hudbase, gui_id, ctrl)
+    o.children.light_end = hud_child:new(args.children.light_end, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_end)
+    end)
+    o.children.light_start = hud_child:new(args.children.light_start, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_start)
+    end)
+    o.children.line = material:new(args.children.line, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line)
     end)
-    o.children.line_shadow = material:new(
-        args.children.line_shadow,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.line_shadow)
-        end
-    )
+    o.children.line_shadow = material:new(args.children.line_shadow, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.line_shadow)
+    end)
 
     return o
 end

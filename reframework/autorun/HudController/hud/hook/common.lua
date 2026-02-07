@@ -1,13 +1,11 @@
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.elements.init")
-local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -36,7 +34,7 @@ function this.get_elem_consume_t(element_type, guiid)
     end
 
     if type(guiid) == "string" then
-        guiid = rl(ace_enum.gui_id, guiid)
+        guiid = e.get("app.GUIID.ID")[guiid]
     end
 
     call_queue.consume(guiid)

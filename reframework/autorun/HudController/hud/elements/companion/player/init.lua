@@ -99,10 +99,10 @@ function this:new(
 
     o.children.gauge = gauge:new(args.children.gauge, o)
     o.children.skill_list = skill_list:new(args.children.skill_list, o)
-    o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
+    o.children.icon = hud_child:new(args.children.icon, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.icon)
     end)
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
     return o

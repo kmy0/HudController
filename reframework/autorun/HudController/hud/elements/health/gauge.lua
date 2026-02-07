@@ -92,26 +92,18 @@ function this:new(args, parent, ctrl_getter)
     setmetatable(o, self)
     ---@cast o HealthGauge
 
-    o.children.line1 = material:new(args.children.line1, o, function(s, hudbase, gui_id, ctrl)
+    o.children.line1 = material:new(args.children.line1, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line1)
     end)
-    o.children.line2 = material:new(args.children.line2, o, function(s, hudbase, gui_id, ctrl)
+    o.children.line2 = material:new(args.children.line2, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line2)
     end)
-    o.children.line1_shadow = material:new(
-        args.children.line1_shadow,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.line1_shadow)
-        end
-    )
-    o.children.line2_shadow = material:new(
-        args.children.line2_shadow,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.line2_shadow)
-        end
-    )
+    o.children.line1_shadow = material:new(args.children.line1_shadow, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.line1_shadow)
+    end)
+    o.children.line2_shadow = material:new(args.children.line2_shadow, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.line2_shadow)
+    end)
 
     return o
 end

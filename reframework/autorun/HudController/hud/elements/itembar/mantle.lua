@@ -53,44 +53,30 @@ local always_visible_states = {
 ---@param args ItembarMantleConfig
 ---@param parent Itembar
 function this:new(args, parent)
-    local o = hud_child:new(args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child:new(args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.mantle)
     end)
     setmetatable(o, self)
     ---@cast o ItembarMantle
 
-    o.children.mantle_state = hud_child:new(
-        args.children.mantle_state,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.control.get_parent(ctrl, "PNL_mantleSet")
-        end,
-        function(s, ctrl)
-            if s.play_state then
-                ctrl:set_PlayState("DEFAULT")
-            end
+    o.children.mantle_state = hud_child:new(args.children.mantle_state, o, function(_, _, _, ctrl)
+        return play_object.control.get_parent(ctrl, "PNL_mantleSet")
+    end, function(s, ctrl)
+        if s.play_state then
+            ctrl:set_PlayState("DEFAULT")
+        end
 
-            return true
-        end,
-        nil,
-        true
-    )
-    o.children.visible_state = hud_child:new(
-        args.children.visible_state,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.control.get_parent(ctrl, "PNL_mantleSetMove")
-        end,
-        function(s, ctrl)
-            if s.play_state then
-                ctrl:set_Visible(true)
-            end
+        return true
+    end, nil, true)
+    o.children.visible_state = hud_child:new(args.children.visible_state, o, function(_, _, _, ctrl)
+        return play_object.control.get_parent(ctrl, "PNL_mantleSetMove")
+    end, function(s, ctrl)
+        if s.play_state then
+            ctrl:set_Visible(true)
+        end
 
-            return true
-        end,
-        nil,
-        true
-    )
+        return true
+    end, nil, true)
 
     if args.always_visible then
         o:set_always_visible(args.always_visible)
@@ -111,7 +97,7 @@ end
 
 ---@return boolean
 function this:any_gui()
-    return util_table.any(self.properties, function(key, value)
+    return util_table.any(self.properties, function(key, _)
         if key ~= "always_visible" and self[key] then
             return true
         end

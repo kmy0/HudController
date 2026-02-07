@@ -3,9 +3,8 @@ local ace_player = require("HudController.util.ace.player")
 local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local game_data = require("HudController.util.game.data")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
@@ -13,9 +12,6 @@ local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 local handler = {
@@ -37,23 +33,20 @@ local function get_pets()
 
     ---@type app.OtomoCharacter[]
     local ret = {}
-    util_game.do_something(
-        util_game.get_all_components("app.OtomoCharacter"),
-        function(system_array, index, value)
-            if value:get_OwnerHunterCharacter() then
-                table.insert(ret, value)
-            end
+    util_game.do_something(util_game.get_all_components("app.OtomoCharacter"), function(_, _, value)
+        if value:get_OwnerHunterCharacter() then
+            table.insert(ret, value)
         end
-    )
+    end)
 
     return ret
 end
 
-function this.hide_handler_post(retval)
+function this.hide_handler_post(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_handler") then
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
-        local handler_id = ace_npc.get_npc_id_from_fixed(handler_id_fixed)
+        local handler_id = e.to_enum("app.NpcDef.ID", handler_id_fixed)
 
         if
             not handler.hide_timer:started()
@@ -68,12 +61,12 @@ function this.hide_handler_post(retval)
 
             ace_npc.set_continue_flag(
                 handler_id,
-                rl(ace_enum.npc_continue_flag, "DISABLE_TALK"),
+                e.get("app.NpcDef.CHARA_CONTINUE_FLAG").DISABLE_TALK,
                 true
             )
             ace_npc.set_continue_flag(
                 handler_id,
-                rl(ace_enum.npc_continue_flag, "ALPHA_ZERO"),
+                e.get("app.NpcDef.CHARA_CONTINUE_FLAG").ALPHA_ZERO,
                 true
             )
             handler.hidden = true
@@ -85,12 +78,12 @@ function this.hide_handler_post(retval)
 
             ace_porter.set_continue_flag(
                 handler_porter,
-                rl(ace_enum.porter_continue_flag, "DISABLE_RIDE_HUNTER"),
+                e.get("app.PorterDef.CONTINUE_FLAG").DISABLE_RIDE_HUNTER,
                 true
             )
             ace_porter.set_continue_flag(
                 handler_porter,
-                rl(ace_enum.porter_continue_flag, "ALPHA_ZERO"),
+                e.get("app.PorterDef.CONTINUE_FLAG").DISABLALPHA_ZERO,
                 true
             )
             return
@@ -119,21 +112,21 @@ function this.hide_no_talk_npc_pre(args)
         then
             ace_npc.set_continue_flag(
                 npc_base,
-                rl(data.ace.enum.npc_continue_flag, "ALPHA_ZERO"),
+                e.get("app.NpcDef.CHARA_CONTINUE_FLAG").ALPHA_ZERO,
                 true
             )
         end
     end
 end
 
-function this.hide_pet_pre(args)
+function this.hide_pet_pre(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_pet") then
         util_misc.try(function()
             local pets = get_pets()
             if pets then
-                util_table.do_something(pets, function(t, key, value)
-                    value:onOtomoContinueFlag(rl(ace_enum.otomo_continue_flag, "DRAW_OFF"))
+                util_table.do_something(pets, function(_, _, value)
+                    value:onOtomoContinueFlag(e.get("app.OtomoDef.CONTINUE_FLAG").DRAW_OFF)
                 end)
             end
         end)

@@ -61,7 +61,7 @@
 
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local gauge = require("HudController.hud.elements.health.gauge")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
@@ -72,8 +72,6 @@ local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 
 local mod = data.mod
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Health
 local this = {}
@@ -328,76 +326,48 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Health
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.frame_max = hud_child:new(
-        args.children.frame_max,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.frame_max)
-        end
-    )
-    o.children.light_end = hud_child:new(
-        args.children.light_end,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_end)
-        end
-    )
-    o.children.light_start = hud_child:new(
-        args.children.light_start,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.light_start)
-        end
-    )
-    o.children.skill_list = skill_list:new(
-        args.children.skill_list,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.skill_list)
-        end
-    )
-    o.children.skill_line = hud_child:new(
-        args.children.skill_line,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.skill_line)
-        end
-    )
+    o.children.frame_max = hud_child:new(args.children.frame_max, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.frame_max)
+    end)
+    o.children.light_end = hud_child:new(args.children.light_end, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_end)
+    end)
+    o.children.light_start = hud_child:new(args.children.light_start, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.light_start)
+    end)
+    o.children.skill_list = skill_list:new(args.children.skill_list, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.skill_list)
+    end)
+    o.children.skill_line = hud_child:new(args.children.skill_line, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.skill_line)
+    end)
     o.children.anim_low_health = hud_child:new(
         args.children.anim_low_health,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.anim_low_health)
         end
     )
-    o.children.red_health = hud_child:new(
-        args.children.red_health,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.red_health)
-        end
-    )
+    o.children.red_health = hud_child:new(args.children.red_health, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.red_health)
+    end)
     o.children.incoming_health = hud_child:new(
         args.children.incoming_health,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.incoming_health)
         end
     )
-    o.children.max_fall = max_fall:new(args.children.max_fall, o, function(s, hudbase, gui_id, ctrl)
+    o.children.max_fall = max_fall:new(args.children.max_fall, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.max_fall)
     end)
-    o.children.gauge = gauge:new(args.children.gauge, o, function(s, hudbase, gui_id, ctrl)
+    o.children.gauge = gauge:new(args.children.gauge, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
 
@@ -432,7 +402,7 @@ end
 
 ---@return HealthConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "HEALTH"), "HEALTH") --[[@as HealthConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").HEALTH, "HEALTH") --[[@as HealthConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.HEALTH

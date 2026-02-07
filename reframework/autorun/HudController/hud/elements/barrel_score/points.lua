@@ -103,20 +103,16 @@ function this:new(
     setmetatable(o, self)
 
     ---@cast o BarrelScorePoints
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.line = hud_child:new(args.children.line, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.line = hud_child:new(args.children.line, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line)
     end)
-    o.children.name = hud_child:new(args.children.name, o, function(s, hudbase, gui_id, ctrl)
+    o.children.name = hud_child:new(args.children.name, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.name)
     end)
-    o.children.points = hud_child:new(args.children.points, o, function(s, hudbase, gui_id, ctrl)
+    o.children.points = hud_child:new(args.children.points, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.points)
     end)
 

@@ -77,19 +77,19 @@ local control_arguments = {
 ---@param parent Ammo
 ---@return AmmoBowPhial
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.bow_phials)
     end)
     setmetatable(o, self)
     ---@cast o AmmoBowPhial
 
-    o.children.arrow = ctrl_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
+    o.children.arrow = ctrl_child:new(args.children.arrow, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.arrow)
     end)
-    o.children.light = hud_child:new(args.children.light, o, function(s, hudbase, gui_id, ctrl)
+    o.children.light = hud_child:new(args.children.light, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.light)
     end)
-    o.children.phial = hud_child:new(args.children.phial, o, function(s, hudbase, gui_id, ctrl)
+    o.children.phial = hud_child:new(args.children.phial, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.phial)
     end)
 

@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
@@ -12,8 +12,6 @@ local util_table = require("HudController.util.misc.table")
 local mod = data.mod
 local set = state.set
 local ace_map = data.ace.map
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {
     ---@type table<HudType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
@@ -456,7 +454,7 @@ local function draw_notice(elem, elem_config, config_key)
         string.format("%s.%s", config_key, "auto_id"),
         elem.set_auto_id,
         function(key)
-            local ret = ace_map.auto_id_to_text[rl(ace_enum.auto_id, key)]
+            local ret = ace_map.auto_id_to_text[e.get("app.Communication.AUTO_ID")[key]]
             if not ret then
                 ret = config.lang:tr("misc.text_unknown")
             end

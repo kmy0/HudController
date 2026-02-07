@@ -93,26 +93,22 @@ local control_arguments = {
 ---@param parent Stamina
 ---@return StaminaGauge
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
     setmetatable(o, self)
     ---@cast o StaminaGauge
 
-    o.children.line1 = material:new(args.children.line1, o, function(s, hudbase, gui_id, ctrl)
+    o.children.line1 = material:new(args.children.line1, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line1)
     end)
-    o.children.line2 = material:new(args.children.line2, o, function(s, hudbase, gui_id, ctrl)
+    o.children.line2 = material:new(args.children.line2, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line2)
     end)
-    o.children.line1_shadow = material:new(
-        args.children.line1_shadow,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.line1_shadow)
-        end
-    )
-    o.children.line3 = scale9:new(args.children.line3, o, function(s, hudbase, gui_id, ctrl)
+    o.children.line1_shadow = material:new(args.children.line1_shadow, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.line1_shadow)
+    end)
+    o.children.line3 = scale9:new(args.children.line3, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.line3)
     end)
 

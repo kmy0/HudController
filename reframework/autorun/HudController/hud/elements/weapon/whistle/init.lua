@@ -22,15 +22,11 @@
 ---@field resonance PlayObjectGetterFn[]
 ---@field melody PlayObjectGetterFn[]
 
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local notice = require("HudController.hud.elements.weapon.whistle.notice")
 local perform = require("HudController.hud.elements.weapon.whistle.perform")
 local play_object = require("HudController.hud.play_object.init")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Whistle
 local this = {}
@@ -87,26 +83,18 @@ function this:new(args, parent)
         nil,
         nil,
         nil,
-        rl(ace_enum.gui_id, "UI020030")
+        e.get("app.GUIID.ID").UI020030
     )
     setmetatable(o, self)
     ---@cast o Whistle
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.resonance = hud_child:new(
-        args.children.resonance,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.resonance)
-        end
-    )
-    o.children.melody = hud_child:new(args.children.melody, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.resonance = hud_child:new(args.children.resonance, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.resonance)
+    end)
+    o.children.melody = hud_child:new(args.children.melody, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.melody)
     end)
     o.children.notice = notice:new(args.children.notice, o)

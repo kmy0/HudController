@@ -1,13 +1,9 @@
 local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
 ---@module "HudController.hud.play_object.init"
 local play_object
+local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -15,7 +11,7 @@ local this = {}
 ---@param type `T` app.GUIXXXXXX
 ---@return T
 function this.get_gui_cls(type)
-    return s.get("app.GUIManager"):getGUI(rl(ace_enum.gui_id, string.sub(type, 6)))
+    return s.get("app.GUIManager"):getGUI(e.get("app.GUIID.ID")[string.sub(type, 6)])
 end
 
 --- roundabout way o getting RootWindow, reframework 1208 cant read parent fields properly

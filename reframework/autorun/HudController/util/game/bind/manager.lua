@@ -104,7 +104,7 @@ end
 
 ---@param bind Bind
 function this:unregister(bind)
-    self.binds = util_table.remove(self.binds, function(t, i, j)
+    self.binds = util_table.remove(self.binds, function(_, i, _)
         return self.binds[i].name ~= bind.name
     end)
     self.sorted = self:_sort_binds()
@@ -114,7 +114,7 @@ end
 ---@return Bind[]
 function this:get_base_binds()
     local ret = util_table.deep_copy(self.binds)
-    util_table.do_something(ret, function(t, key, value)
+    util_table.do_something(ret, function(_, _, value)
         value.action = nil
     end)
     return ret

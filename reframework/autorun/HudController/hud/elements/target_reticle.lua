@@ -4,13 +4,11 @@
 ---@class (exact) TargetReticleConfig : HudBaseConfig
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local util_mod = require("HudController.util.mod.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class TargetReticle
 local this = {}
@@ -47,7 +45,7 @@ end
 
 ---@return TargetReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "TARGET_RETICLE"), "TARGET_RETICLE") --[[@as TargetReticleConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").TARGET_RETICLE, "TARGET_RETICLE") --[[@as TargetReticleConfig]]
     base.hud_type = mod.enum.hud_type.TARGET_RETICLE
     return base
 end
