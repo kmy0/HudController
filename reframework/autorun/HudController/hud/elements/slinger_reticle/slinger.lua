@@ -19,14 +19,10 @@
 ---@class (exact) SlingerReticleSlingerControlArguments
 ---@field slinger PlayObjectGetterFn[]
 
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class SlingerReticleSlinger
 local this = {}
@@ -106,7 +102,7 @@ function this:is_no_ammo()
     end
 
     local GUI020000 = self.root:get_GUI020000()
-    return GUI020000:get__SetMainAmmoType() == rl(ace_enum.slinger_ammo, "NONE")
+    return GUI020000:get__SetMainAmmoType() == e.get("app.HunterDef.SLINGER_AMMO_TYPE").NONE
 end
 
 ---@return via.gui.Control

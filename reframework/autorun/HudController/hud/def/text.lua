@@ -48,14 +48,10 @@
 ---@alias TextWriteKey CtrlChildWriteKey | TextProperty
 
 local ctrl_child = require("HudController.hud.def.ctrl_child")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local e = require("HudController.util.game.enum")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 ---@class Text
 local this = {}
@@ -127,7 +123,7 @@ end
 function this:set_page_alignment(page_alignment)
     if page_alignment then
         self:mark_write("page_alignment")
-        self.page_alignment = rl(ace_enum.page_alignment, page_alignment)
+        self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment]
     else
         self:reset("page_alignment")
         self.page_alignment = page_alignment

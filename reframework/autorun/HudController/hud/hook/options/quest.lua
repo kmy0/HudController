@@ -1,15 +1,11 @@
 local ace_item = require("HudController.util.ace.item")
 local common = require("HudController.hud.hook.common")
-local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
-
-local ace_enum = data.ace.enum
-local rl = game_data.reverse_lookup
 
 local this = {}
 
@@ -23,7 +19,7 @@ local function is_result_skip()
     return skip, skip_seamless
 end
 
-function this.disable_quest_end_camera_post(args)
+function this.disable_quest_end_camera_post(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("disable_quest_end_camera") then
         return false
@@ -31,12 +27,12 @@ function this.disable_quest_end_camera_post(args)
 end
 
 --#region disable_quest_end_outro/disable_quest_intro
-function this.disable_quest_intro_outro_post(retval)
+function this.disable_quest_intro_outro_post(_)
     local hud_config = common.get_hud()
     if hud_config then
         local GUI020201 = util_ref.get_this() --[[@as app.GUI020201]]
         local type = GUI020201._CurType
-        local name = ace_enum.quest_gui_type[type]
+        local name = e.get("app.GUI020201.TYPE")[type]
 
         if
             (name == "START" and hud.get_hud_option("disable_quest_intro"))
@@ -48,7 +44,7 @@ function this.disable_quest_intro_outro_post(retval)
     end
 end
 
-function this.stop_hide_gui_post(retval)
+function this.stop_hide_gui_post(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("disable_quest_end_outro") then
         local quest_dir = util_ref.get_this() --[[@as app.cQuestDirector]]
@@ -65,13 +61,13 @@ function this.stop_hide_gui_post(retval)
         }
 
         if
-            util_table.any(flows, function(key, value)
+            util_table.any(flows, function(_, value)
                 return util_ref.is_a(flow, value)
             end)
         then
             local guiman = s.get("app.GUIManager")
             local flags = guiman:get_AppContinueFlag()
-            flags:off(rl(ace_enum.gui_continue_flag, "HIDE_GUI"))
+            flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG").HIDE_GUI)
         end
     end
 end
@@ -101,7 +97,7 @@ function this.skip_quest_end_animation_pre(args)
         end
 
         if
-            util_table.any(flows, function(key, value)
+            util_table.any(flows, function(_, value)
                 return util_ref.is_a(flow, value)
             end)
         then
@@ -112,7 +108,7 @@ end
 --#endregion
 
 --#region result skip
-function this.hide_quest_result_setup_post(retval)
+function this.hide_quest_result_setup_post(_)
     local skip, skip_seamless = is_result_skip()
     if not skip and not skip_seamless then
         return
@@ -123,7 +119,7 @@ function this.hide_quest_result_setup_post(retval)
         flow:set_SkipReward(true)
     elseif skip_seamless then
         local mode = flow:getMode()
-        if ace_enum.quest_result_mode[mode] == "SEAMLESS" then
+        if e.get("app.cGUIQuestResultInfo.MODE")[mode] == "SEAMLESS" then
             flow:set_SkipReward(true)
         end
     end
@@ -146,7 +142,7 @@ function this.hide_quest_result_pre(args)
     end
 end
 
-function this.hide_quest_result_post(retval)
+function this.hide_quest_result_post(_)
     local skip, skip_seamless = is_result_skip()
     if not skip and not skip_seamless then
         return
@@ -164,7 +160,7 @@ function this.hide_quest_result_post(retval)
         local judge_items = quest_result:get_JudgeItems()
         local item_infos = judge_items:get_ItemInfoList()
 
-        util_game.do_something(item_infos, function(system_array, index, value)
+        util_game.do_something(item_infos, function(_, _, value)
             value:getReward(true, false)
         end)
     end
@@ -185,13 +181,13 @@ function this.skip_quest_end_timer_open_pre(args)
     if
         hud_config
         and (hud.get_hud_option("skip_quest_end_timer"))
-        and sdk.to_int64(args[3]) == rl(ace_enum.gui_id, "UI020202")
+        and sdk.to_int64(args[3]) == e.get("app.GUIID.ID").UI020202
     then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
-function this.skip_quest_end_timer_pre(args)
+function this.skip_quest_end_timer_pre(_)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("skip_quest_end_timer") then
         local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
@@ -229,7 +225,7 @@ function this.skip_bowling_result_pre(args)
         local reward_rank = bowlup:get_TotalScoreRank()
         local rewards = bowlfac:getRewardItems(reward_rank)
 
-        util_game.do_something(rewards, function(system_array, index, value)
+        util_game.do_something(rewards, function(_, _, value)
             ace_item.add_item(value:get_ItemId(), value.Num)
         end)
 

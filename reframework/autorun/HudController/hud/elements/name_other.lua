@@ -10,12 +10,10 @@
 ---@field pet_draw_distance number
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class NameOther
 local this = {}
@@ -54,14 +52,14 @@ end
 
 ---@return NameOtherConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "NAME_OTHER"), "NAME_OTHER") --[[@as NameOtherConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NAME_OTHER, "NAME_OTHER") --[[@as NameOtherConfig]]
 
     base.hud_type = mod.enum.hud_type.NAME_OTHER
     base.nameplate_type = { ALL = false }
     base.pl_draw_distance = 0
     base.pet_draw_distance = 0
 
-    for _, name in pairs(ace_enum.nameplate_type) do
+    for name, _ in e.iter("app.cGUIMemberPartsDef.MemberType") do
         base.nameplate_type[name] = false
     end
 

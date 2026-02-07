@@ -151,36 +151,32 @@ local control_arguments = {
 ---@param parent ShortcutKeyboard
 ---@return ShortcutKeyboardTab
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.tabs)
     end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardTab
 
-    o.children.keybind = hud_child:new(args.children.keybind, o, function(s, hudbase, gui_id, ctrl)
+    o.children.keybind = hud_child:new(args.children.keybind, o, function(_, _, _, ctrl)
         local items = play_object.iter_args(ctrl, control_arguments.item)
         return play_object.iter_args(items, control_arguments.keybind)
     end)
-    o.children.background = ctrl_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            local select_base = play_object.iter_args(ctrl, control_arguments.select_base)
-            return play_object.iter_args(select_base, control_arguments.background)
-        end
-    )
-    o.children.frame = ctrl_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = ctrl_child:new(args.children.background, o, function(_, _, _, ctrl)
+        local select_base = play_object.iter_args(ctrl, control_arguments.select_base)
+        return play_object.iter_args(select_base, control_arguments.background)
+    end)
+    o.children.frame = ctrl_child:new(args.children.frame, o, function(_, _, _, ctrl)
         local select_base = play_object.iter_args(ctrl, control_arguments.select_base)
         return play_object.iter_args(select_base, control_arguments.frame)
     end)
     o.children.cursor_background = hud_child:new(
         args.children.cursor_background,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.cursor_background)
         end
     )
-    o.children.icon = hud_child:new(args.children.icon, o, function(s, hudbase, gui_id, ctrl)
+    o.children.icon = hud_child:new(args.children.icon, o, function(_, _, _, ctrl)
         local items = play_object.iter_args(ctrl, control_arguments.item)
         return play_object.iter_args(items, control_arguments.icon)
     end)

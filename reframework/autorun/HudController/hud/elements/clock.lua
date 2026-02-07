@@ -24,15 +24,13 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class Clock
 local this = {}
@@ -89,19 +87,15 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Clock
 
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.frame)
     end)
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
 
     if args.hide_map_visible then
         o:set_hide_map_visible(args.hide_map_visible)
@@ -151,7 +145,7 @@ end
 
 ---@return ClockConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "CLOCK"), "CLOCK") --[[@as ClockConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").CLOCK, "CLOCK") --[[@as ClockConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.CLOCK

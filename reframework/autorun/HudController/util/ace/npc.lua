@@ -4,9 +4,7 @@ local s = require("HudController.util.ref.singletons")
 local m = require("HudController.util.ref.methods")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
-local util_ref = require("HudController.util.ref.init")
 
-m.NpcIDfromFIXED = m.wrap(m.get("app.NpcDef.getIDFromFixed(app.NpcDef.ID_Fixed, app.NpcDef.ID)")) --[[@as fun(id_fixed: app.NpcDef.ID_Fixed, out: app.NpcDef.ID): System.Boolean]]
 m.isEnableTalk = m.wrap(m.get("app.NpcUtil.isEnableTalk(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 m.isEnableFacility = m.wrap(m.get("app.NpcUtil.isEnableFacility(app.cNpcContext)")) --[[@as fun(ctx: app.cNpcContext): System.Boolean]]
 
@@ -161,14 +159,6 @@ function this.get_pos(npc)
     return char:get_Pos()
 end
 
----@param npc_id_fixed app.NpcDef.ID_Fixed
----@return app.NpcDef.ID
-function this.get_npc_id_from_fixed(npc_id_fixed)
-    local npc_id = util_ref.value_type("app.NpcDef.ID")
-    m.NpcIDfromFIXED(npc_id_fixed, npc_id)
-    return npc_id:get_field("value__")
-end
-
 this.is_facility = cache.memoize(this.is_facility)
 this.is_talk = cache.memoize(this.is_talk)
 this.get_flags = cache.memoize(this.get_flags)
@@ -181,7 +171,7 @@ this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
     return cached_value:get_Valid()
 end)
 
-function this.on_dialogue_update_post(retval)
+function this.on_dialogue_update_post(_)
     ---@diagnostic disable-next-line: undefined-field
     this.is_facility.clear()
     ---@diagnostic disable-next-line: undefined-field

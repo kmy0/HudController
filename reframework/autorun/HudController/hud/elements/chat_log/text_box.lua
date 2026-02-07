@@ -92,27 +92,19 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return ChatLogTextBox
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text_box)
     end)
     setmetatable(o, self)
     ---@cast o ChatLogTextBox
 
-    o.children.background = scale9:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.new_message = hud_child:new(
-        args.children.new_message,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.new_message)
-        end
-    )
-    o.children.text = text:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = scale9:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.new_message = hud_child:new(args.children.new_message, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.new_message)
+    end)
+    o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
 

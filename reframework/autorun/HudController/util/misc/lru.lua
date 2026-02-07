@@ -140,7 +140,7 @@ function this.memoize(func, size, predicate, do_hash, deep_hash_table, key_index
         end,
     }
     setmetatable(wrapped, {
-        __call = function(self, ...)
+        __call = function(_, ...)
             ---@type any
             local key
             if do_hash then

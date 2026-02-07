@@ -292,41 +292,37 @@ end
 ---@param args RadialPalletConfig
 ---@param parent Radial
 function this:new(args, parent)
-    local o = hud_child:new(args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child:new(args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.pallet)
     end)
     setmetatable(o, self)
     ---@cast o RadialPallet
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
-    o.children.frame = hud_child:new(args.children.frame, o, function(s, hudbase, gui_id, ctrl)
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
+    o.children.frame = hud_child:new(args.children.frame, o, function(_, _, _, ctrl)
         return util_table.array_merge_t(
             play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.frame),
             play_object.iter_args(ctrl, control_arguments.frame),
             play_object.iter_args(get_pallet_icon_center(ctrl), control_arguments.icon_center.frame)
         )
     end)
-    o.children.keys = hud_child:new(args.children.keys, o, function(s, hudbase, gui_id, ctrl)
+    o.children.keys = hud_child:new(args.children.keys, o, function(_, _, _, ctrl)
         return util_table.array_merge_t(
             play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.keys),
             play_object.iter_args(ctrl, control_arguments.keys)
         )
     end)
 
-    o.children.text = hud_child:new(args.children.text, o, function(s, hudbase, gui_id, ctrl)
+    o.children.text = hud_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.text)
     end)
     for i = 1, 8 do
         o.children.text.children["text" .. i] = hud_child:new(
             args.children.text.children["text" .. i],
             o.children.text,
-            function(s, hudbase, gui_id, ctrl)
+            function(_, _, _, ctrl)
                 local ps =
                     play_object.control.get(get_icl(ctrl), { "SCG_PS_" .. i, "ITM_PS_" .. i }) --[[@as via.gui.Control]]
                 return play_object.iter_args(ps, control_arguments.text)
@@ -334,33 +330,19 @@ function this:new(args, parent)
         )
     end
 
-    o.children.select = hud_child:new(args.children.select, o, function(s, hudbase, gui_id, ctrl)
+    o.children.select = hud_child:new(args.children.select, o, function(_, _, _, ctrl)
         --FIXME: icons 1, 3, 6, 8 don't have texset, it's probably not worth to filter those out?
         return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select)
     end)
-    o.children.select_arrow = hud_child:new(
-        args.children.select_arrow,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(
-                get_pallet_icon_ps(ctrl),
-                control_arguments.icons.select_arrow
-            )
-        end
-    )
-    o.children.center = hud_child:new(args.children.center, o, function(s, hudbase, gui_id, ctrl)
+    o.children.select_arrow = hud_child:new(args.children.select_arrow, o, function(_, _, _, ctrl)
+        return play_object.iter_args(get_pallet_icon_ps(ctrl), control_arguments.icons.select_arrow)
+    end)
+    o.children.center = hud_child:new(args.children.center, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.center)
     end)
-    o.children.pallet_state = hud_child:new(
-        args.children.pallet_state,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.pallet_state)
-        end,
-        nil,
-        nil,
-        true
-    )
+    o.children.pallet_state = hud_child:new(args.children.pallet_state, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.pallet_state)
+    end, nil, nil, true)
 
     if args.expanded then
         o:set_expanded(args.expanded)

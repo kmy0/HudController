@@ -330,7 +330,7 @@ local function draw_key_bind_menu()
                 ---@type string
                 local col_name
                 if manager.name == bind_manager.manager_names.HUD then
-                    col_name = util_table.value(config_mod.hud, function(key, value)
+                    col_name = util_table.value(config_mod.hud, function(_, value)
                         return col.bound_value == value.key
                     end).name
                 elseif manager.name == bind_manager.manager_names.OPTION_HUD then

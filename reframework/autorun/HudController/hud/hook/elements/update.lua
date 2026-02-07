@@ -1,5 +1,4 @@
 local ace_misc = require("HudController.util.ace.misc")
-local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
@@ -34,7 +33,7 @@ function this.update_post(type)
 end
 --#endregion
 
-function this.update_target_reticle_post(retval)
+function this.update_target_reticle_post(_)
     local hud_elem, guiid = common.get_elem_consume_t(
         "TargetReticle",
         ace_map.additional_hud_to_guiid_name["TARGET_RETICLE"]
@@ -48,7 +47,7 @@ function this.update_target_reticle_post(retval)
     hud_elem:write(hudbase, guiid, hudbase:get__Main())
 end
 
-function this.update_menu_button_guide_post(retval)
+function this.update_menu_button_guide_post(_)
     local hud_elem, guiid =
         common.get_elem_consume_t(nil, ace_map.additional_hud_to_guiid_name["MENU_BUTTON_GUIDE"])
     if not hud_elem then
@@ -65,7 +64,7 @@ function this.update_damage_numbers_static_pre(args)
     dmg_static = util_ref.to_bool(args[9])
 end
 
-function this.update_damage_numbers_post(retval)
+function this.update_damage_numbers_post(_)
     local dmg, guiid = common.get_elem_consume_t(
         "DamageNumbers",
         (util_ref.get_this() --[[@as app.GUI020020]]):get_ID()
@@ -84,7 +83,7 @@ function this.update_damage_numbers_post(retval)
 end
 --#endregion
 
-function this.update_training_room_hud_post(retval)
+function this.update_training_room_hud_post(_)
     local training_room_hud, guiid = common.get_elem_consume_t(
         "TrainingRoomHud",
         ace_map.additional_hud_to_guiid_name["TRAINING_ROOM_HUD"]
@@ -99,7 +98,7 @@ function this.update_training_room_hud_post(retval)
     end
 end
 
-function this.update_name_access_icons_post(retval)
+function this.update_name_access_icons_post(_)
     local name_access = common.get_elem_t("NameAccess")
     if name_access then
         local GUI020001PanelBase = util_ref.get_this() --[[@as app.GUI020001PanelBase]]
@@ -142,7 +141,7 @@ function this.update_subtitles_pre(args)
     end
 end
 
-function this.update_barrel_score_post(retval)
+function this.update_barrel_score_post(_)
     local barrel_score, guiid = common.get_elem_consume_t("BarrelScore", "UI090901")
     if barrel_score and guiid then
         local GUI090901 = util_ref.get_this() --[[@as app.GUI090901]]
@@ -151,7 +150,7 @@ function this.update_barrel_score_post(retval)
     end
 end
 
-function this.update_chat_log_post(retval)
+function this.update_chat_log_post(_)
     local chat_log, guiid = common.get_elem_consume_t("ChatLog", "UI020101")
     if chat_log and guiid then
         ---@cast chat_log ChatLog
@@ -161,7 +160,7 @@ function this.update_chat_log_post(retval)
     end
 end
 
-function this.update_chat_log_menu_button_guide_post(retval)
+function this.update_chat_log_menu_button_guide_post(_)
     local chat_log = common.get_elem_t("ChatLog")
 
     if
@@ -174,7 +173,7 @@ function this.update_chat_log_menu_button_guide_post(retval)
     end
 end
 
-function this.update_quest_end_timer_post(retval)
+function this.update_quest_end_timer_post(_)
     local quest_end_timer, guiid = common.get_elem_consume_t("QuestEndTimer", "UI020202")
     if quest_end_timer and guiid then
         local GUI020202 = util_ref.get_this() --[[@as app.GUI020202]]

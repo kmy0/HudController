@@ -109,27 +109,23 @@ local control_arguments = {
 ---@param parent ShortcutKeyboard
 ---@return ShortcutKeyboardPrepare
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, gui_id, ctrl)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.prepare)
     end)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboardPrepare
 
-    o.children.background = hud_child:new(
-        args.children.background,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.background)
-        end
-    )
+    o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.background)
+    end)
     o.children.item_background = hud_child:new(
         args.children.item_background,
         o,
-        function(s, hudbase, gui_id, ctrl)
+        function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.item_background)
         end
     )
-    o.children.arrow = hud_child:new(args.children.arrow, o, function(s, hudbase, gui_id, ctrl)
+    o.children.arrow = hud_child:new(args.children.arrow, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.arrow)
     end)
 

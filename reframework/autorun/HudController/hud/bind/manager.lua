@@ -45,7 +45,7 @@ end
 
 ---@param bind ModBind
 function this:unregister(bind)
-    self.binds = util_table.remove(self.binds --[==[@as ModBind[]]==], function(t, i, j)
+    self.binds = util_table.remove(self.binds --[==[@as ModBind[]]==], function(_, i, _)
         return self.binds[i].bound_value ~= bind.bound_value or self.binds[i].name ~= bind.name
     end)
     self.sorted = self:_sort_binds()

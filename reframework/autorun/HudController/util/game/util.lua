@@ -205,6 +205,39 @@ function this.get_component_any_cached(type)
     return this.get_component_any(type)
 end
 
+---@param type_def string | RETypeDefinition
+---@param predicate (fun(key: string, value: any): boolean)?
+---@return table<string, any>
+function this.get_fields(type_def, predicate)
+    ---@type table<string, any>
+    local ret = {}
+
+    if type(type_def) == "string" then
+        type_def = util_ref.types.get(type_def)
+    end
+
+    if not type_def then
+        return ret
+    end
+
+    local bad_keys = { max = 1, value__ = 1, invalid = 1 }
+    local fields = type_def:get_fields()
+    for _, field in pairs(fields) do
+        local name = field:get_name()
+        local name_lower = string.lower(name)
+        local data = field:get_data()
+
+        if bad_keys[name_lower] or (predicate and not predicate(name, data)) then
+            goto continue
+        end
+
+        ret[name] = data
+        ::continue::
+    end
+
+    return ret
+end
+
 this.get_component_any_cached = cache.memoize(this.get_component_any_cached)
 
 return this

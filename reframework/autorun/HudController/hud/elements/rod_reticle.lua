@@ -19,15 +19,13 @@
 ---@field extract_frame PlayObjectGetterFn[]
 
 local data = require("HudController.data.init")
-local game_data = require("HudController.util.game.data")
+local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local material = require("HudController.hud.def.material")
 local play_object = require("HudController.hud.play_object.init")
 
-local ace_enum = data.ace.enum
 local mod = data.mod
-local rl = game_data.reverse_lookup
 
 ---@class RodReticle
 local this = {}
@@ -86,26 +84,22 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o RodReticle
 
-    o.children.reticle = hud_child:new(args.children.reticle, o, function(s, hudbase, gui_id, ctrl)
+    o.children.reticle = hud_child:new(args.children.reticle, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.reticle)
     end)
-    o.children.extract = hud_child:new(args.children.extract, o, function(s, hudbase, gui_id, ctrl)
+    o.children.extract = hud_child:new(args.children.extract, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.extract)
     end)
 
-    o.children.extract_frame = material:new(
-        args.children.extract_frame,
-        o,
-        function(s, hudbase, gui_id, ctrl)
-            return play_object.iter_args(ctrl, control_arguments.extract_frame)
-        end
-    )
+    o.children.extract_frame = material:new(args.children.extract_frame, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.extract_frame)
+    end)
     return o
 end
 
 ---@return RodReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(rl(ace_enum.hud, "ROD_RETICLE"), "ROD_RETICLE") --[[@as RodReticleConfig]]
+    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").ROD_RETICLE, "ROD_RETICLE") --[[@as RodReticleConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.ROD_RETICLE
