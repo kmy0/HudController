@@ -136,7 +136,7 @@ function this.memoize(func, size, predicate, do_hash, deep_hash_table, key_index
 
     local wrapped = {
         clear = function()
-            cache:clear()
+            _cache:clear()
         end,
     }
     setmetatable(wrapped, {
