@@ -614,7 +614,8 @@ function this.init()
     --
     this.option["disable_scoutflies"] = this.option_hooks.disable_scoutflies
     this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
-    this.option["hide_porter"] = this.option_hooks.hide_porter
+    this.option["hide_porter"] =
+        { this.option_hooks.hide_porter, this.option_hooks.disable_porter_call }
     this.option["disable_porter_tracking"] = this.option_hooks.disable_porter_tracking
     this.option["hide_monster_icon"] = {
         this.option_hooks.hide_monster_icon,
