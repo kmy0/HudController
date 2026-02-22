@@ -1,7 +1,6 @@
 ---@class (exact) DamageNumbersOffset : HudBase
 ---@field offset Vector3f?
 ---@field root DamageNumbers
----@field pos_cache table<via.gui.Control, Vector2f>
 ---@field box {x: integer, y: integer, w: integer, h: integer}?
 ---@field protected _get_real_text_size fun(text: via.gui.Text): number, number
 ---@field protected _clamp_offset fun(pos_x: number, pos_y: number, text_x: number, text_y: number): number, number
@@ -18,7 +17,6 @@ local cls = {}
 ---@param args DamageNumbersConfig | DamageNumbersDamageStateConfig | DamageNumbersCriticalStateConfig
 function this.wrap(o_cls, args)
     ---@cast o_cls DamageNumbersDamageState | DamageNumbers | DamageNumbersCriticalState
-    o_cls.pos_cache = {}
 
     ---@diagnostic disable-next-line: no-unknown
     for k, v in pairs(cls) do
@@ -51,51 +49,40 @@ function cls:set_box(box)
     self.box = box
 end
 
----@param hudbase app.GUI020020.DAMAGE_INFO
-function cls:adjust_offset(hudbase)
+---@param damage_info DamageInfo
+function cls:adjust_offset(damage_info)
     if self.box then
-        self:screen_to_box(hudbase)
+        self:screen_to_box(damage_info)
     elseif self.offset then
-        self:set_offset_from_original_pos(hudbase)
+        self:set_offset_from_original_pos(damage_info)
     end
 end
 
----@param hudbase app.GUI020020.DAMAGE_INFO
-function cls:screen_to_box(hudbase)
-    local pnl = self.root:get_state_value(hudbase, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
-    if not self.pos_cache[pnl] then
-        self.pos_cache[pnl] = hudbase:get_field("<ScreenPos>k__BackingField") --[[@as Vector2f]]
-    end
+---@param damage_info DamageInfo
+function cls:screen_to_box(damage_info)
+    local pos = damage_info.screen_pos
+    local norm_x = pos.x / 1920
+    local norm_y = pos.y / 1080
 
-    if self.pos_cache[pnl] then
-        local pos = self.pos_cache[pnl]
-        local norm_x = pos.x / 1920
-        local norm_y = pos.y / 1080
-
-        local scaled_x = self.box.x + (norm_x * self.box.w)
-        local scaled_y = self.box.y + (norm_y * self.box.h)
-        self.offset = Vector3f.new(scaled_x, scaled_y, 0)
-    end
+    local scaled_x = self.box.x + (norm_x * self.box.w)
+    local scaled_y = self.box.y + (norm_y * self.box.h)
+    self.offset = Vector3f.new(scaled_x, scaled_y, 0)
 end
 
----@param hudbase app.GUI020020.DAMAGE_INFO
-function cls:set_offset_from_original_pos(hudbase)
-    local pos = hudbase:get_field("<ScreenPos>k__BackingField") --[[@as Vector2f]]
-    if pos.x ~= 0 or pos.y ~= 0 then
-        ---@type number, number
-        local x, y
-        local self_config = self:get_current_config()
-        local text_x, text_y = self._get_real_text_size(
-            self.root:get_state_value(hudbase, "<TextDamage>k__BackingField") --[[@as via.gui.Text]]
-        )
-        x, y = self._clamp_offset(
-            pos.x + self_config.offset.x,
-            pos.y + self_config.offset.y,
-            text_x,
-            text_y
-        )
-        self.offset = Vector3f.new(x, y, 0)
-    end
+---@param damage_info DamageInfo
+function cls:set_offset_from_original_pos(damage_info)
+    local pos = damage_info.screen_pos
+    ---@type number, number
+    local x, y
+    local self_config = self:get_current_config()
+    local text_x, text_y = self._get_real_text_size(damage_info.txt_damage)
+    x, y = self._clamp_offset(
+        pos.x + self_config.offset.x,
+        pos.y + self_config.offset.y,
+        text_x,
+        text_y
+    )
+    self.offset = Vector3f.new(x, y, 0)
 end
 
 ---@protected

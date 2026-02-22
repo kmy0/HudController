@@ -23,7 +23,6 @@ local this = {
 function this.iter_args(ctrl, args)
     ---@type PlayObject[]
     local ret = {}
-
     if type(ctrl) ~= "table" then
         ctrl = { ctrl }
     end

@@ -156,7 +156,7 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
     return ret
 end
 
-function this:clear_cache()
+function this:cache_clear()
     util_misc.try(function()
         ---@diagnostic disable-next-line: undefined-field
         self._ctrl_getter.clear()

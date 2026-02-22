@@ -28,7 +28,7 @@ function this.clear_cache_pre(_)
         local GUI020018 = progress:get_GUI020018()
         if GUI020018._FadeInWaitPanelList:get_Count() > 0 then
             progress:do_something_to_children(function(hudchild)
-                hudchild:clear_cache()
+                hudchild:cache_clear()
             end)
         end
     end

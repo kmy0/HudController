@@ -162,20 +162,21 @@ local control_arguments = {
 ---@param parent DamageNumbersCriticalState
 ---@return DamageNumbersDamageState
 function this:new(args, parent)
-    local o = hud_child.new(self, args, parent, function(s, hudbase, _, ctrl)
-        ---@cast hudbase app.GUI020020.DAMAGE_INFO?
+    local o = hud_child.new(self, args, parent, function(s, pnl_wrap, _, pnl_parent)
+        ---@cast pnl_wrap via.gui.Panel
         ---@cast s DamageNumbersDamageState
 
-        if
-            not hudbase -- reset only
-        then
-            return ctrl
+        local damage_info = s.root.panels[pnl_wrap]
+        if not damage_info then -- reset
+            return pnl_parent
         end
 
-        local state = s.root:get_state_value(hudbase, "<State>k__BackingField") --[[@as app.GUI020020.State]]
-        if args.name_key == "ALL" or e.get("app.GUI020020.State")[state] == args.name_key then
-            s:adjust_offset(hudbase)
-            return ctrl
+        if
+            args.name_key == "ALL"
+            or e.get("app.GUI020020.State")[damage_info.state] == args.name_key
+        then
+            s:adjust_offset(damage_info)
+            return pnl_parent
         end
     end, nil, nil, nil, nil, true)
     setmetatable(o, self)
@@ -192,20 +193,22 @@ function this:new(args, parent)
         nil,
         nil,
         nil,
-        true
+        nil,
+        nil,
+        2
     )
     o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
-    end, nil, nil, nil, nil, true)
+    end, nil, nil, nil, nil, nil, nil, 2)
     o.children.wound = ctrl_child:new(args.children.wound, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.wound)
-    end, nil, nil, nil, nil, true)
+    end, nil, nil, nil, nil, nil, nil, 2)
     o.children.circle = hud_child:new(args.children.circle, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.circle)
-    end, nil, nil, nil, nil, true)
+    end, nil, nil, nil, nil, nil, nil, 2)
     o.children.affinity = ctrl_child:new(args.children.affinity, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.affinity)
-    end, nil, nil, nil, nil, true)
+    end, nil, nil, nil, nil, nil, nil, 2)
     o.children.negative_affinity = ctrl_child:new(
         args.children.negative_affinity,
         o,
@@ -216,11 +219,13 @@ function this:new(args, parent)
         nil,
         nil,
         nil,
-        true
+        nil,
+        nil,
+        2
     )
     o.children.shield = hud_child:new(args.children.shield, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
-    end, nil, nil, nil, nil, true)
+    end, nil, nil, nil, nil, nil, nil, 2)
 
     ---@diagnostic disable-next-line: no-unknown
     for _, child in pairs(o.children) do
@@ -236,6 +241,7 @@ function this:new(args, parent)
     return o
 end
 
+---@protected
 ---@param obj via.gui.Text
 ---@param key TextWriteKey
 function this:_text_reset(obj, key)

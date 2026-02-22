@@ -30,23 +30,22 @@ function this:new(args, parent)
         self,
         args,
         parent,
-        function(s, hudbase, _, ctrl)
-            ---@cast hudbase app.GUI020020.DAMAGE_INFO?
+        function(s, pnl_wrap, _, pnl_parent)
+            ---@cast pnl_wrap via.gui.Panel
             ---@cast s DamageNumbersCriticalState
 
-            if
-                not hudbase -- reset only
-            then
-                return ctrl
+            local damage_info = s.root.panels[pnl_wrap]
+            if not damage_info then -- reset
+                return pnl_parent
             end
 
-            local state = s.root:get_state_value(hudbase, "<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
             if
                 args.name_key == "ALL"
-                or e.get("app.GUI020020.CRITICAL_STATE")[state] == args.name_key
+                or e.get("app.GUI020020.CRITICAL_STATE")[damage_info.critical_state]
+                    == args.name_key
             then
-                s:adjust_offset(hudbase)
-                return ctrl
+                s:adjust_offset(damage_info)
+                return pnl_parent
             end
         end,
         nil,
@@ -92,11 +91,9 @@ function this:reset(key)
         return
     end
 
-    self.pos_cache = {}
     util_table.do_something(self.root:get_all_panels(), function(_, _, value)
         ---@diagnostic disable-next-line: param-type-mismatch
         local ctrl = self:ctrl_getter(nil, nil, value)
-
         if type(ctrl) ~= "table" then
             ctrl = { ctrl }
         end
