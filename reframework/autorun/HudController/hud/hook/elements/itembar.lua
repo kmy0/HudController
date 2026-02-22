@@ -266,7 +266,7 @@ function this.clear_cache_pre(_)
     local itembar = common.get_elem_t("Itembar")
     if itembar then
         itembar.children.all_slider:do_something_to_children(function(hudchild)
-            hudchild:clear_cache()
+            hudchild:cache_clear()
         end)
     end
 end

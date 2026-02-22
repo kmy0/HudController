@@ -1,13 +1,22 @@
 ---@class (exact) DamageNumbers : DamageNumbersOffset, HudBase
 ---@field get_config fun(): DamageNumbersConfig
 ---@field GUI020020 app.GUI020020[]?
----@field state table<app.GUI020020.DAMAGE_INFO, {[string]: any}>
----@field written table<app.GUI020020.DAMAGE_INFO, boolean>
----@field actual_written table<app.GUI020020.DAMAGE_INFO, boolean>
+---@field panels table<via.gui.Panel, DamageInfo>>
+---@field panels_by_cls table<app.GUI020020, table<via.gui.Panel, DamageInfo>>
 ---@field children {[string]: DamageNumbersCriticalState}
 
 ---@class (exact) DamageNumbersConfig : DamageNumbersOffsetConfig, HudBaseConfig
 ---@field children {[string]: DamageNumbersCriticalStateConfig}
+
+---@class (exact) DamageInfo
+---@field cls app.GUI020020
+---@field written boolean
+---@field state app.GUI020020.State
+---@field critical_state app.GUI020020.CRITICAL_STATE
+---@field pnl_wrap via.gui.Panel
+---@field pnl_parent via.gui.Panel
+---@field screen_pos Vector3f
+---@field txt_damage via.gui.Text
 
 local critical_state = require("HudController.hud.elements.damage_numbers.critical_state")
 local data = require("HudController.data.init")
@@ -42,9 +51,8 @@ function this:new(args)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbers
 
-    o.state = {}
-    o.written = {}
-    o.actual_written = {}
+    o.panels = {}
+    o.panels_by_cls = {}
 
     for name, _ in e.iter("app.GUI020020.CRITICAL_STATE") do
         o.children[name] = critical_state:new(args.children[name], o)
@@ -65,17 +73,17 @@ function this:get_GUI020020()
     return self.GUI020020
 end
 
----@return via.gui.Panel[]
+---@return [via.gui.Panel, via.gui.Panel][]
 function this:get_all_panels()
     local ret = {}
     util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
         local arr = GUI020020._DamageInfo
         if arr then
             util_game.do_something(arr, function(_, _, value)
-                table.insert(
-                    ret,
-                    self:get_state_value(value, "<ParentPanel>k__BackingField") --[[@as via.gui.Panel]]
-                )
+                table.insert(ret, {
+                    value:get_field("<PanelWrap>k__BackingField"),
+                    value:get_field("<ParentPanel>k__BackingField"),
+                })
             end)
         end
     end)
@@ -83,45 +91,86 @@ function this:get_all_panels()
     return ret
 end
 
----@return table<app.GUI020020.DAMAGE_INFO, true>
-function this:get_dmg()
-    util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
-        local arr = GUI020020._DamageInfoList
-        if arr then
-            util_game.do_something(arr, function(_, _, value)
-                if not self.written[value] then
-                    self:get_state_value(value, "<criticalState>k__BackingField", true)
-                    self:get_state_value(value, "<State>k__BackingField", true)
-                    self.written[value] = true
-                end
-            end)
-        end
-    end)
-
-    return self.written
+---@protected
+---@param GUI020020 app.GUI020020
+---@param pnl_wrap via.gui.Panel
+---@param damage_info app.GUI020020.DAMAGE_INFO
+---@return DamageInfo
+function this:_get_damage_info(GUI020020, pnl_wrap, damage_info)
+    local pnl_parent = damage_info:get_field("<ParentPanel>k__BackingField")
+    ---@type DamageInfo
+    return {
+        cls = GUI020020,
+        written = false,
+        pnl_parent = pnl_parent,
+        pnl_wrap = pnl_wrap,
+        screen_pos = pnl_parent:get_Position(),
+        critical_state = damage_info:get_field("<criticalState>k__BackingField"),
+        state = damage_info:get_field("<State>k__BackingField"),
+        txt_damage = damage_info:get_field("<TextDamage>k__BackingField"),
+    }
 end
 
----@return table<app.GUI020020.DAMAGE_INFO, true>
-function this:get_dmg_static()
-    util_table.do_something(self:get_GUI020020(), function(_, _, GUI020020)
-        local arr = GUI020020._DamageInfo
-        if arr then
-            util_game.do_something(arr, function(_, _, value)
-                if not self.written[value] then
-                    local pnl_wrap = self:get_state_value(value, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
-                    if not pnl_wrap:get_Visible() then
-                        return
-                    end
+---@protected
+---@param GUI020020 app.GUI020020
+---@param info app.GUI020020.DAMAGE_INFO
+function this:_set_damage_info(GUI020020, info)
+    local pnl_wrap = info:get_field("<PanelWrap>k__BackingField")
+    if pnl_wrap:get_Visible() and not self.panels[pnl_wrap] then
+        local pnl_parent = info:get_field("<ParentPanel>k__BackingField")
+        ---@type DamageInfo
+        local damage_info = {
+            cls = GUI020020,
+            written = false,
+            pnl_parent = pnl_parent,
+            pnl_wrap = pnl_wrap,
+            screen_pos = pnl_parent:get_Position(),
+            critical_state = info:get_field("<criticalState>k__BackingField"),
+            state = info:get_field("<State>k__BackingField"),
+            txt_damage = info:get_field("<TextDamage>k__BackingField"),
+        }
+        self.panels[pnl_wrap] = damage_info
+        util_table.set_nested_value(self.panels_by_cls, { GUI020020, pnl_wrap }, damage_info)
+    end
+end
 
-                    self:get_state_value(value, "<criticalState>k__BackingField", true)
-                    self:get_state_value(value, "<State>k__BackingField", true)
-                    self.written[value] = true
-                end
-            end)
-        end
-    end)
+---@param GUI020020 app.GUI020020
+---@return table<via.gui.Panel, DamageInfo>
+function this:get_dmg(GUI020020)
+    local arr = GUI020020._DamageInfoList
+    if arr then
+        util_game.do_something(arr, function(_, _, value)
+            self:_set_damage_info(GUI020020, value)
+        end)
+    end
 
-    return self.written
+    return self.panels_by_cls[GUI020020]
+end
+
+---@param GUI020020 app.GUI020020
+---@return table<via.gui.Panel, DamageInfo>
+function this:get_dmg_static(GUI020020)
+    local arr = GUI020020._DamageInfo
+    if arr then
+        util_game.do_something(arr, function(_, _, value)
+            self:_set_damage_info(GUI020020, value)
+        end)
+    end
+
+    return self.panels_by_cls[GUI020020]
+end
+
+---@param GUI020020 app.GUI020020
+---@param gui_id app.GUIID.ID
+function this:write_dmg(GUI020020, gui_id)
+    local dmg = self.panels_by_cls[GUI020020]
+    if not dmg then
+        return
+    end
+
+    for _, damage_info in pairs(dmg) do
+        self:write(damage_info.pnl_wrap, gui_id, damage_info.pnl_parent)
+    end
 end
 
 ---@param key HudBaseWriteKey
@@ -130,81 +179,57 @@ function this:reset(key)
         return
     end
 
-    self.state = {}
-    self.written = {}
-    self.pos_cache = {}
-    self.actual_written = {}
+    self.panels = {}
+    self.panels_by_cls = {}
+
     util_table.do_something(self:get_all_panels(), function(_, _, value)
-        self:reset_ctrl(value, key)
+        self:reset_ctrl(value[2], key)
         ---@diagnostic disable-next-line: param-type-mismatch
-        self:reset_children(nil, nil, value, key)
+        self:reset_children(value[1], nil, value, key)
     end)
 end
 
----@param hudbase app.GUI020020.DAMAGE_INFO
----@param field_name string
----@param clear boolean?
----@return any
-function this:get_state_value(hudbase, field_name, clear)
-    local t = self.state[hudbase]
-    if not t then
-        self.state[hudbase] = {}
-        t = self.state[hudbase]
-    end
-
-    local ret = t[field_name]
-    if clear or not ret then
-        t[field_name] = hudbase:get_field(field_name)
-        ret = t[field_name]
-    end
-    return ret
-end
-
----@param hudbase app.GUI020020.DAMAGE_INFO
+---@param pnl_wrap via.gui.Panel
 ---@param gui_id app.GUIID.ID
----@param ctrl via.gui.Control?
-function this:write(hudbase, gui_id, ctrl)
-    local pnl_wrap = self:get_state_value(hudbase, "<PanelWrap>k__BackingField") --[[@as via.gui.Control]]
-    ctrl = self:get_state_value(hudbase, "<ParentPanel>k__BackingField")
+---@param pnl_parent via.gui.Control?
+function this:write(pnl_wrap, gui_id, pnl_parent)
+    local damage_info = self.panels[pnl_wrap]
+    pnl_parent = damage_info.pnl_parent
 
-    if not pnl_wrap:get_Visible() then
-        self.pos_cache[pnl_wrap] = nil
-        self.written[hudbase] = nil
-        self.state[hudbase] = nil
-        self.actual_written[hudbase] = nil
+    if not damage_info.pnl_wrap:get_Visible() then
+        self.panels[pnl_wrap] = nil
+        self.panels_by_cls[damage_info.cls][pnl_wrap] = nil
 
-        if not self.actual_written[hudbase] then
+        if not damage_info.written then
             return
         end
 
-        local crit_state = self:get_state_value(hudbase, "<criticalState>k__BackingField") --[[@as app.GUI020020.CRITICAL_STATE]]
-        local dmg_state = self:get_state_value(hudbase, "<State>k__BackingField") --[[@as app.GUI020020.State]]
-        local crit_child = self.children[e.get("app.GUI020020.CRITICAL_STATE")[crit_state]]
-        local dmg_child = crit_child.children[e.get("app.GUI020020.State")[dmg_state]]
+        local crit_child =
+            self.children[e.get("app.GUI020020.CRITICAL_STATE")[damage_info.critical_state]]
+        local dmg_child = crit_child.children[e.get("app.GUI020020.State")[damage_info.state]]
 
-        self.children.ALL:reset_ctrl(ctrl)
+        self.children.ALL:reset_ctrl(pnl_parent)
         ---@diagnostic disable-next-line: param-type-mismatch
-        self.children.ALL.children.ALL:reset_specific(nil, nil, ctrl)
-        self.children.ALL.children[e.get("app.GUI020020.State")[dmg_state]]:reset_specific(
+        self.children.ALL.children.ALL:reset_specific(pnl_wrap, gui_id, pnl_parent)
+        self.children.ALL.children[e.get("app.GUI020020.State")[damage_info.state]]:reset_specific(
             ---@diagnostic disable-next-line: param-type-mismatch
-            nil,
-            ---@diagnostic disable-next-line: param-type-mismatch
-            nil,
-            ctrl
+            pnl_wrap,
+            gui_id,
+            pnl_parent
         )
-        crit_child:reset_ctrl(ctrl)
+        crit_child:reset_ctrl(pnl_parent)
         ---@diagnostic disable-next-line: param-type-mismatch
-        crit_child.children.ALL:reset_specific(nil, nil, ctrl)
+        crit_child.children.ALL:reset_specific(pnl_wrap, gui_id, pnl_parent)
         ---@diagnostic disable-next-line: param-type-mismatch
-        dmg_child:reset_specific(nil, nil, ctrl)
+        dmg_child:reset_specific(pnl_wrap, gui_id, pnl_parent)
 
         return
     end
 
-    self.actual_written[hudbase] = true
-    self:adjust_offset(hudbase)
+    damage_info.written = true
+    self:adjust_offset(damage_info)
     ---@diagnostic disable-next-line: param-type-mismatch
-    hud_base.write(self, hudbase, gui_id, ctrl)
+    hud_base.write(self, pnl_wrap, gui_id, pnl_parent)
 end
 
 ---@return DamageNumbersConfig

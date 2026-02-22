@@ -5,7 +5,6 @@ local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
-local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 
@@ -65,18 +64,17 @@ function this.update_damage_numbers_static_pre(args)
 end
 
 function this.update_damage_numbers_post(_)
-    local dmg, guiid = common.get_elem_consume_t(
-        "DamageNumbers",
-        (util_ref.get_this() --[[@as app.GUI020020]]):get_ID()
-    )
+    local GUI020020 = util_ref.get_this() --[[@as app.GUI020020]]
+    local dmg, guiid = common.get_elem_consume_t("DamageNumbers", GUI020020:get_ID())
 
     if dmg and guiid then
-        util_table.do_something(
-            dmg_static and dmg:get_dmg_static() or dmg:get_dmg(),
-            function(_, key, _)
-                dmg:write(key, guiid, nil)
-            end
-        )
+        if dmg_static then
+            dmg:get_dmg_static(GUI020020)
+        else
+            dmg:get_dmg(GUI020020)
+        end
+
+        dmg:write_dmg(GUI020020, guiid)
     end
 
     dmg_static = false

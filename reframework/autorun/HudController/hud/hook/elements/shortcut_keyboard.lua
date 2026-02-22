@@ -39,7 +39,7 @@ function this.clear_cache_pre(_)
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
     if shortcut_keyboard then
         shortcut_keyboard:do_something_to_children(function(hudchild)
-            hudchild:clear_cache()
+            hudchild:cache_clear()
         end)
     end
 end
