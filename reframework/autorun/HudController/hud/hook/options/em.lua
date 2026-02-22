@@ -102,13 +102,6 @@ function this.skip_monster_select_pre(args)
     end
 end
 
-function this.reveal_monster_icon_post(retval)
-    local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_lock_target") then
-        return true
-    end
-end
-
 --#region fix lock target
 function this.get_near_monsters_pre(args)
     local hud_config = common.get_hud()
