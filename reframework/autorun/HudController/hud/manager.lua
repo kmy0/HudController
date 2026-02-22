@@ -80,6 +80,7 @@ function fade_callbacks.switch_profile()
     defaults.play_object:with_dump(function()
         defaults.option:with_dump(function()
             this.overridden_options = {}
+            this._hook().hook_options(this.requested_hud)
             this.apply_options(this.requested_hud.options)
             this.update_elements(this.requested_hud.elements)
             this.current_hud = this.requested_hud
@@ -91,6 +92,7 @@ function fade_callbacks.switch_profile_partial()
     defaults.play_object:with_dump(function()
         defaults.option:with_dump(function()
             this.overridden_options = {}
+            this._hook().hook_options(this.requested_hud)
             this.apply_options(this.requested_hud.options)
             this._update_elements_partial(this.requested_hud.elements)
             this.current_hud = this.requested_hud
@@ -137,8 +139,6 @@ function this.update_elements(elements)
             this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
         end
     end
-
-    this._hook().hook_options()
 end
 
 ---@protected
@@ -166,8 +166,6 @@ function this._update_elements_partial(elements)
             end
         end
     end
-
-    this._hook().hook_options()
 end
 
 function this.reset_elements()

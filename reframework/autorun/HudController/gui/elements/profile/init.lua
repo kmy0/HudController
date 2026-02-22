@@ -382,7 +382,7 @@ local function draw_options()
         )
     end
 
-    hook.hook_options()
+    hook.hook_options(config_mod.hud[config_mod.combo.hud])
 end
 
 local function draw_elements()

@@ -581,9 +581,12 @@ function this.hook_option(option_key)
     this.is_option_hooked[option_key] = true
 end
 
-function this.hook_options()
+---@param profile_config  HudProfileConfig
+function this.hook_options(profile_config)
     for k, _ in pairs(mod_map.options_hud) do
-        this.hook_option(k)
+        if profile_config[k] then
+            this.hook_option(k)
+        end
     end
 end
 
