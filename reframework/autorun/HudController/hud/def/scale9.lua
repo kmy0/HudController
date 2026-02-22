@@ -66,6 +66,7 @@ setmetatable(this, { __index = ctrl_child })
 ---@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 ---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
 ---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
+---@param cache_index integer? by_default, 1
 ---@return Scale9
 function this:new(
     args,
@@ -76,7 +77,8 @@ function this:new(
     gui_ignore,
     children_sort,
     no_cache,
-    valid_guiid
+    valid_guiid,
+    cache_index
 )
     local o = ctrl_child.new(
         self,
@@ -88,7 +90,8 @@ function this:new(
         gui_ignore,
         children_sort,
         no_cache,
-        valid_guiid
+        valid_guiid,
+        cache_index
     )
     o.properties = util_table.merge_t(o.properties, {
         ignore_alpha = true,

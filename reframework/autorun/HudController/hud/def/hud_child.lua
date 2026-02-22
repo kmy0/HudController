@@ -58,6 +58,7 @@ setmetatable(this, { __index = hud_base })
 ---@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 ---@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
 ---@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
+---@param cache_index integer? by_default, 1
 ---@return HudChild
 function this:new(
     args,
@@ -68,7 +69,8 @@ function this:new(
     gui_ignore,
     children_sort,
     no_cache,
-    valid_guiid
+    valid_guiid,
+    cache_index
 )
     local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore, nil, children_sort)
     setmetatable(o, self)
@@ -77,7 +79,8 @@ function this:new(
     if not no_cache and not config.debug.current.debug.disable_cache then
         local max_frame = 60
         local jitter = 120
-        o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter)
+        o._ctrl_getter =
+            frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter, cache_index)
     end
 
     o.ctrl_getter = ctrl_getter or function(_, _, _, ctrl)
