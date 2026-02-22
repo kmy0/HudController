@@ -253,6 +253,7 @@ return {
             TU3_CANVAS = "TU3 Canvas",
             CHAT_LOG = "Chat Log",
             QUEST_END_TIMER = "Quest End Timer",
+            BUTTON_PRESS = "Button Press",
         },
         entry = {
             category_ingame_settings = "Ingame Settings",

@@ -167,6 +167,7 @@ local this = {
             "TU3_CANVAS",
             "CHAT_LOG",
             "QUEST_END_TIMER",
+            "BUTTON_PRESS",
         },
         weapon_binds = {
             additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
@@ -191,7 +192,7 @@ local this = {
             TU3_CANVAS = "UI020902",
             CHAT_LOG = "UI020101",
             QUEST_END_TIMER = "UI020202",
-            -- GUI020026 qte?
+            BUTTON_PRESS = "UI020026",
             -- GUI120200 some notification thing?
             -- GUI090902 barrels rewards
         },

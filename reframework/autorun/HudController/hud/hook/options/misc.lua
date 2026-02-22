@@ -5,6 +5,7 @@ local hud = require("HudController.hud.init")
 local util_ref = require("HudController.util.ref.init")
 
 local ace_enum = data.ace.enum
+local ace_map = data.ace.map
 local rl = game_data.reverse_lookup
 
 local this = {}
@@ -15,14 +16,20 @@ function this.disable_gui_sound_pre(args)
         return
     end
 
-    if
-        hud.get_hud_option("mute_gui")
-        or (
-            hud.get_hud_option("skip_quest_end_timer")
-            and util_ref.to_short(args[3]) == rl(ace_enum.gui_id, "UI020202")
-        )
-    then
+    if hud.get_hud_option("mute_gui") then
         return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+
+    local guiid = util_ref.to_short(args[3])
+    if hud.get_hud_option("skip_quest_end_timer") and ace_enum.gui_id[guiid] == "UI020202" then
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+
+    if ace_enum.gui_id[guiid] == ace_map.additional_hud_to_guiid_name["BUTTON_PRESS"] then
+        local hud_elem, _ = common.get_elem_consume_t(nil, guiid)
+        if hud_elem and hud_elem.hide then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
     end
 end
 

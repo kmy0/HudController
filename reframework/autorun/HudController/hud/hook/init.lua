@@ -18,7 +18,6 @@ local util_ref = require("HudController.util.ref.init")
 
 local ace_map = data.ace.map
 local ace_enum = data.ace.enum
-local mod_enum = data.mod.enum
 local mod_map = data.mod.map
 local rl = game_data.reverse_lookup
 
@@ -611,6 +610,7 @@ function this.init()
     this.hud["SHORTCUT_KEYBOARD"] = this.hud_hooks.shortcut_keyboard
     this.hud["MINIMAP"] = this.hud_hooks.minimap
     this.hud["QUEST_END_TIMER"] = this.hud_hooks.quest_end_timer
+    this.hud["BUTTON_PRESS"] = this.option_hooks.mute_gui
     --
     this.option["disable_scoutflies"] = this.option_hooks.disable_scoutflies
     this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
