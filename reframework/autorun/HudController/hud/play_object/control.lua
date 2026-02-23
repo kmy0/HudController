@@ -2,10 +2,12 @@ local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
+local id_cache = require("HudController.hud.play_object.id_cache")
 local util_game = require("HudController.util.game.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
+local mod = data.mod
 
 local this = {}
 
@@ -16,18 +18,29 @@ local all_cache = cache:new()
 ---@param chain string[] | string
 ---@return via.gui.Control?
 function this.get(ctrl, chain)
-    if type(chain) == "string" then
-        chain = { chain }
+    if not mod.is_reset then
+        local id_array = id_cache:get(ctrl, chain)
+        if id_array then
+            return ctrl:call("getObject(System.UInt32[], System.Type)", id_array, control_type)
+        end
     end
 
+    local chain_array = type(chain) == "string" and { chain } or chain
     ---@type via.gui.Control?
     local child = ctrl
-    for i = 1, #chain do
-        if not child then
-            return
-        end
+    ---@type integer[]
+    local id_chain = {}
 
-        child = child:call("getObject(System.String, System.Type)", chain[i], control_type) --[[@as via.gui.Control?]]
+    for i = 1, #chain_array do
+        child = child
+            and child:call("getObject(System.String, System.Type)", chain_array[i], control_type) --[[@as via.gui.Control?]]
+        if child and not mod.is_reset then
+            id_chain[i] = child:read_dword(0x58)
+        end
+    end
+
+    if child and not mod.is_reset then
+        id_cache:set(ctrl, chain, id_chain)
     end
 
     return child

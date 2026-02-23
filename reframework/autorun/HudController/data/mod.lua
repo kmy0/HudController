@@ -3,6 +3,7 @@
 ---@field enum ModEnum
 ---@field pause boolean
 ---@field initialized boolean
+---@field is_reset boolean
 
 ---@class (exact) ModMap
 ---@field options_hud table<string, string>
@@ -60,6 +61,7 @@ local this = {
         },
     },
     initialized = false,
+    is_reset = false,
     pause = false,
 }
 ---@enum HudType
