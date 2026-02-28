@@ -595,12 +595,12 @@ function this.init()
     this.hud["SUBTITLES"] = this.hud_hooks.subtitles
     this.hud["SUBTITLES_CHOICE"] = this.hud_hooks.subtitles
     this.hud["TRAINING_ROOM_HUD"] = this.hud_hooks.training_room_hud
-    this.hud["NAME_ACCESS"] = this.hud_hooks.name_access
+    this.hud["NAME_ACCESSIBLE"] = this.hud_hooks.name_access
     this.hud["BARREL_BOWLING_SCORE"] = this.hud_hooks.barrel_bowling_score
     this.hud["CHAT_LOG"] = this.hud_hooks.chat_log
-    this.hud["RADIAL"] = this.hud_hooks.radial
-    this.hud["ITEMBAR"] = this.hud_hooks.itembar
-    this.hud["AMMO"] = this.hud_hooks.ammo
+    this.hud["SHORTCUT_GAMEPAD"] = this.hud_hooks.radial
+    this.hud["SLIDER_ITEM"] = this.hud_hooks.itembar
+    this.hud["SLIDER_BULLET"] = this.hud_hooks.ammo
     this.hud["NAME_OTHER"] = this.hud_hooks.name_other
     this.hud["CONTROL"] = this.hud_hooks.control
     this.hud["PROGRESS"] = this.hud_hooks.progress
