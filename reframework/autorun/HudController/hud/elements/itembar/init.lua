@@ -120,7 +120,7 @@ end
 
 function this:keep_mantle_in_place()
     local mantle = self:get_mantle()
-    if mantle then
+    if mantle and not self.children.mantle.offset then
         mantle:set_PlayState("DEFAULT")
     end
 end
