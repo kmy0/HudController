@@ -144,6 +144,16 @@ local function draw_itembar(elem, elem_config, config_key)
         elem.children.mantle:set_always_visible(elem_config.children.mantle.always_visible)
     end
 
+    item_config_key = config_key .. ".children.mantle.timer_visible"
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_timer_visible", item_config_key),
+            item_config_key
+        )
+    then
+        elem.children.mantle:set_timer_visible(elem_config.children.mantle.timer_visible)
+    end
+
     util_imgui.separator_text(
         config.lang:tr("hud_element.entry.category_expanded_itembar_behavior")
     )

@@ -2,22 +2,27 @@
 ---@field get_config fun(): ItembarMantleConfig
 ---@field parent Itembar
 ---@field always_visible boolean
+---@field timer_visible boolean
 ---@field ctrl_getter fun(self: ItembarMantle, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ItembarMantle, ctrl: via.gui.Control): boolean)?
 ---@field children {
 --- mantle_state: HudChild,
 --- visible_state: HudChild,
+--- timer_state: HudChild,
 --- }
 
 ---@class (exact) ItembarMantleConfig : HudChildConfig
 ---@field always_visible boolean
+---@field timer_visible boolean
 ---@field children {
 --- mantle_state: HudChildConfig,
 --- visible_state: HudChildConfig,
+--- timer_state: HudChildConfig,
 --- }
 
 ---@class (exact) ItembarMantleArguments
 ---@field mantle PlayObjectGetterFn[]
+---@field timer PlayObjectGetterFn[]
 
 local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
@@ -40,6 +45,22 @@ local control_arguments = {
                 "PNL_mantleSet",
                 "PNL_mantleSetMove",
                 "PNL_mantleSetMode",
+            },
+        },
+    },
+    timer = {
+        {
+            play_object.control.get,
+            {
+                "PNL_mantle00",
+                "PNL_mantleTimer",
+            },
+        },
+        {
+            play_object.control.get,
+            {
+                "PNL_mantle01",
+                "PNL_mantleTimer",
             },
         },
     },
@@ -77,9 +98,16 @@ function this:new(args, parent)
 
         return true
     end, nil, true)
+    o.children.timer_state = hud_child:new(args.children.timer_state, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.timer)
+    end, nil, nil, true)
 
     if args.always_visible then
         o:set_always_visible(args.always_visible)
+    end
+
+    if args.timer_visible then
+        o:set_timer_visible(args.timer_visible)
     end
 
     return o
@@ -95,10 +123,20 @@ function this:set_always_visible(always_visible)
     end
 end
 
+---@param timer_visible boolean
+function this:set_timer_visible(timer_visible)
+    self.timer_visible = timer_visible
+    if self.timer_visible then
+        self.children.timer_state:set_opacity(1.0)
+    else
+        self.children.timer_state:set_opacity(nil)
+    end
+end
+
 ---@return boolean
 function this:any_gui()
     return util_table.any(self.properties, function(key, _)
-        if key ~= "always_visible" and self[key] then
+        if key ~= "always_visible" and key ~= "timer_visible" and self[key] then
             return true
         end
         return false
@@ -111,9 +149,11 @@ function this.get_config()
     local children = base.children
 
     base.always_visible = false
+    base.timer_visible = false
 
     children.mantle_state = { name_key = "__mantle_state", play_state = "" }
     children.visible_state = { name_key = "__visible_state", play_state = "" }
+    children.timer_state = { name_key = "__timer_state", opacity = 0.0 }
 
     return base
 end

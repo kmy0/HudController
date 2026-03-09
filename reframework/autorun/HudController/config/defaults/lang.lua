@@ -366,6 +366,7 @@ return {
             combo_map_filter = "Default Icon Filter",
             box_hide_pulse = "Hide Pulse",
             box_enable_angle = "Enable Angle",
+            box_timer_visible = "Timer Always Visible",
         },
     },
     hud_subelement = {
