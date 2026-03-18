@@ -105,7 +105,7 @@ function this.is_in_village()
         return false
     end
 
-    local is_village = master_player:get_IsInBaseCamp()
+    local is_village = master_player:get_IsInLifeArea()
     if not is_village and this.is_village_frame and this.is_fast_travel() then
         return true
     end
