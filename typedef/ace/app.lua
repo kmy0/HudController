@@ -151,6 +151,7 @@
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator
 ---@field get_IsInBaseCamp fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsInTent fun(self: app.HunterCharacter): System.Boolean
+---@field get_IsInLifeArea fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
 ---@field _HunterBTableCommandFlag ace.cSafeContinueFlag
 
