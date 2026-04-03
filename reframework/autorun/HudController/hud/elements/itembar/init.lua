@@ -139,6 +139,10 @@ function this:get_mantle()
     local GUI020006 = self:get_GUI020006()
     local disp_ctrl = ace_misc.get_hud_manager():findDisplayControl(GUI020006:get_ID()) --[[@as app.cGUIHudDisplayControl]]
 
+    if not disp_ctrl then
+        return
+    end
+
     local mantle_ctrl = util_table.normalize(
         ---@diagnostic disable-next-line: param-type-mismatch
         self.children.mantle:ctrl_getter(GUI020006, nil, disp_ctrl._TargetControl)
