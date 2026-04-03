@@ -25,6 +25,7 @@
 ---@class ace.minicomponent.cUpdatableBase : ace.minicomponent.cMiniComponent
 ---@class ace.user_data.ExcelUserData.cData : via.clr.ManagedObject
 ---@class ace.cGameMessage : via.clr.ManagedObject
+---@class ace.GameStateBase : via.clr.ManagedObject
 
 ---@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
 ---@field _Array System.Array<any>
@@ -112,3 +113,9 @@
 
 ---@class ace.cGUIParamFloat3 : ace.cGUIParameterBase
 ---@field setValue fun(self: ace.cGUIParamFloat3, float3: via.Float3)
+
+---@class ace.GameFlowManagerBase : ace.GAElement
+---@field _CurrentRequest ace.GameFlowManagerBase.cGameStateChangeRequest
+
+---@class ace.GameFlowManagerBase.cGameStateChangeRequest : via.clr.ManagedObject
+---@field get_NextGameState fun(self: ace.GameFlowManagerBase.cGameStateChangeRequest): ace.GameStateBase

@@ -410,7 +410,11 @@ function this.clear()
     fade_manager.abort()
 
     this.by_guiid = {}
-    this.reset_elements()
+
+    if not ace_misc.is_title_request() then
+        this.reset_elements()
+    end
+
     this.by_hudid = {}
     this.overridden_options = {}
     this.combat_state_frame = false

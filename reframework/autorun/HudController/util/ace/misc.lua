@@ -1,6 +1,7 @@
 local cache = require("HudController.util.misc.cache")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local s = require("HudController.util.ref.singletons")
+local util_ref = require("HudController.util.ref.init")
 
 ---@class AceMiscUtil
 local this = {}
@@ -51,6 +52,12 @@ end
 function this.get_gui_component(gui_base)
     local gui_ctrl = gui_base:get_GUIController()
     return gui_ctrl:get_Component()
+end
+
+---@return boolean
+function this.is_title_request()
+    local request = s.get("ace.GameFlowManagerBase")._CurrentRequest
+    return request and util_ref.is_a(request:get_NextGameState(), "app.TitleState") or false
 end
 
 get_map_component = cache.memoize(get_map_component)

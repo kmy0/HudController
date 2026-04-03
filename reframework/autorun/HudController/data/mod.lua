@@ -4,6 +4,7 @@
 ---@field pause boolean
 ---@field initialized boolean
 ---@field is_reset boolean
+---@field is_title_request boolean
 
 ---@class (exact) ModMap
 ---@field options_hud table<string, string>
@@ -63,6 +64,7 @@ local this = {
     initialized = false,
     is_reset = false,
     pause = false,
+    is_title_request = false,
 }
 ---@enum HudType
 this.enum.hud_type = { ---@class HudType.*
@@ -113,7 +115,14 @@ this.enum.hud_sub_type = { ---@class HudSubType.*
 
 ---@return boolean
 function this.is_ok()
-    if not this.initialized or not s.get("app.GUIManager") or not ace_misc.get_hud_manager() then
+    this.is_title_request = ace_misc.is_title_request()
+
+    if
+        not this.initialized
+        or not s.get("app.GUIManager")
+        or not ace_misc.get_hud_manager()
+        or this.is_title_request
+    then
         return false
     end
 

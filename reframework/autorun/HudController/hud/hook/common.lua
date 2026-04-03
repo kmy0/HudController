@@ -10,7 +10,7 @@ local mod = data.mod
 local this = {}
 
 function this.is_ok()
-    return mod.initialized and config.current.mod.enabled
+    return mod.initialized and config.current.mod.enabled and not mod.is_title_request
 end
 
 ---@generic T
@@ -37,6 +37,7 @@ function this.get_elem_consume_t(element_type, guiid)
         guiid = e.get("app.GUIID.ID")[guiid]
     end
 
+    ---@cast guiid app.GUIID.ID
     call_queue.consume(guiid)
 
     ---@type HudBase?
