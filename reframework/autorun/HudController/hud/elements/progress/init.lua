@@ -147,7 +147,8 @@ function this:write(hudbase, gui_id, ctrl)
         return
     end
 
-    if self:get_GUI020018()._DispSmallMissionTargetList:get_Count() > 0 then
+    local mission_target_list = self:get_GUI020018()._DispSmallMissionTargetList
+    if mission_target_list and mission_target_list:get_Count() > 0 then
         self:write_children(hudbase, gui_id, ctrl)
     end
 end
