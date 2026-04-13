@@ -179,14 +179,14 @@ function this:reset(key)
         return
     end
 
+    util_table.do_something(self.panels, function(_, _, value)
+        self:reset_ctrl(value.pnl_parent, key)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        self:reset_children(value.pnl_wrap, nil, { value.pnl_parent, value.pnl_wrap }, key)
+    end)
+
     self.panels = {}
     self.panels_by_cls = {}
-
-    util_table.do_something(self:get_all_panels(), function(_, _, value)
-        self:reset_ctrl(value[2], key)
-        ---@diagnostic disable-next-line: param-type-mismatch
-        self:reset_children(value[1], nil, value, key)
-    end)
 end
 
 ---@param pnl_wrap via.gui.Panel
