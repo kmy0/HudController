@@ -123,6 +123,21 @@ end
 function this.update_elements(elements)
     this.by_guiid = {}
 
+    --[[
+        hiding main hud elements happens over a few frames.
+        when an element is hidden in the current profile and hidden in the new profile,
+        resetting the element to be visible again makes it flicker for a frame.
+        this just makes the reset skip the hide setting, not exactly great but better than nothing.
+    ]]
+    for _, elem in pairs(elements) do
+        if ace_map.hudid_to_can_hide[elem.hud_id] then
+            local old_elem = this.by_hudid[elem.hud_id]
+            if old_elem and elem.hide and old_elem.hide then
+                old_elem.hide = false
+            end
+        end
+    end
+
     for _, elem in pairs(this.by_hudid) do
         call_queue.queue_func(elem.hud_id, function()
             elem:reset()
