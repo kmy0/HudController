@@ -113,6 +113,7 @@ local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
 ---@module"HudController.hud.init"
@@ -159,7 +160,7 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         gui_ignore = gui_ignore,
         gui_header_children = gui_header_children,
         children_sort = children_sort,
-        hide_timer = frame_timer:new(5),
+        hide_timer = frame_timer:new(15),
     }
     setmetatable(o, self)
     ---@cast o HudBase
@@ -479,9 +480,6 @@ function this:change_visibility(ctrl, visible, hud_display)
         if
             ctrl
             and self.hide_changed
-            -- minimap is actually 2 elements in one, cba to create some ass edge case just for one element
-
-            and not self.name_key == "MINIMAP"
             -- ignore when game is force revealing item bar or ammo bar
 
             and not (
@@ -496,16 +494,20 @@ function this:change_visibility(ctrl, visible, hud_display)
             if root_window then
                 root_window:set_ForceInvisible(true)
                 self.hide_timer:restart()
+                call_queue.queue_func(self.hud_id, self:_make_restore_visibility_fn(root_window))
 
-                local function restore_vis()
-                    if self:_is_fade_state_finished(root_window) or self.hide_timer:finished() then
-                        root_window:set_ForceInvisible(false)
-                    else
-                        call_queue.queue_func_next(self.hud_id, restore_vis)
+                if self.name_key == "MINIMAP" then
+                    local GUI060010 = util_mod.get_gui_cls("app.GUI060010")
+                    local GUI060010_root = util_mod.get_root_window(GUI060010)
+
+                    if GUI060010_root then
+                        GUI060010_root:set_ForceInvisible(true)
+                        call_queue.queue_func(
+                            self.hud_id,
+                            self:_make_restore_visibility_fn(root_window, GUI060010_root)
+                        )
                     end
                 end
-
-                call_queue.queue_func(self.hud_id, restore_vis)
             end
         end
     else
@@ -833,6 +835,21 @@ function this:_set_opacity(ctrl, val)
     local color = ctrl:get_ColorScale()
     color.w = val
     ctrl:set_ColorScale(color)
+end
+
+---@protected
+---@param root_window via.gui.Control
+---@param ctrl via.gui.Control?
+function this:_make_restore_visibility_fn(root_window, ctrl)
+    local function ret()
+        if self:_is_fade_state_finished(root_window) or self.hide_timer:finished() then
+            (ctrl and ctrl or root_window):set_ForceInvisible(false)
+        else
+            call_queue.queue_func_next(self.hud_id, ret)
+        end
+    end
+
+    return ret
 end
 
 function this:clear()
