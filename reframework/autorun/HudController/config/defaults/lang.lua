@@ -133,6 +133,8 @@ return {
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
                 singleplayer_only = "Force Singleplayer Settings",
                 tooltip_singleplayer_only = "Always use Singleplayer settings regardless of the current game mode. Multiplayer-specific settings will be ignored.",
+                button_copy_singleplayer = "Copy Singleplayer → Multiplayer",
+                button_copy_multiplayer = "Copy Multiplayer → Singleplayer",
             },
             key = {
                 name = "Key",

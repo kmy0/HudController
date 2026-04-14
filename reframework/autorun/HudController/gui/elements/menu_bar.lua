@@ -18,6 +18,8 @@ local mod = data.mod
 local set = state.set
 
 local this = {}
+---@type fun()?
+local weapon_binds_copy_fn
 
 ---@param label string
 ---@param draw_func fun()
@@ -501,6 +503,36 @@ local function draw_weapon_bind_menu()
         config_mod.bind.slider.weapon_bind == 1 and config.lang:tr("menu.bind.weapon.singleplayer")
             or config.lang:tr("menu.bind.weapon.multiplayer")
     )
+
+    if imgui.button(gui_util.tr("menu.bind.weapon.button_copy_singleplayer")) then
+        util_imgui.open_popup("weapon_bind_copy", 62, 30)
+        weapon_binds_copy_fn = function()
+            config_mod.bind.weapon.multiplayer =
+                util_table.deep_copy(config_mod.bind.weapon.singleplayer)
+        end
+    end
+    imgui.same_line()
+    if imgui.button(gui_util.tr("menu.bind.weapon.button_copy_multiplayer")) then
+        util_imgui.open_popup("weapon_bind_copy", 62, 30)
+        weapon_binds_copy_fn = function()
+            config_mod.bind.weapon.singleplayer =
+                util_table.deep_copy(config_mod.bind.weapon.multiplayer)
+        end
+    end
+
+    if
+        util_imgui.popup_yesno(
+            "weapon_bind_copy",
+            config.lang:tr("misc.text_rusure"),
+            config.lang:tr("misc.text_yes"),
+            config.lang:tr("misc.text_no")
+        )
+    then
+        ---@cast weapon_binds_copy_fn fun()
+        weapon_binds_copy_fn()
+        weapon_binds_copy_fn = nil
+        config:save()
+    end
 
     local key = config_mod.bind.slider.weapon_bind == 1 and "singleplayer" or "multiplayer"
     local sorted = util_table.sort(
