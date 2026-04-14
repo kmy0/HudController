@@ -305,9 +305,15 @@ function this.update_weapon_bind_state()
 
     this.combat_state_frame = is_combat
 
-    local t = bind_weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
     ---@type WeaponBindConfig
     local weapon_config
+    ---@type table<string, WeaponBindConfig>
+    local t
+    if config_mod.bind.weapon.singleplayer_only then
+        t = bind_weapon.singleplayer
+    else
+        t = bind_weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
+    end
 
     if t["GLOBAL"].enabled then
         weapon_config = t["GLOBAL"]

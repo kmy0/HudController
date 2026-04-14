@@ -488,6 +488,11 @@ local function draw_weapon_bind_menu()
 
     imgui.separator()
 
+    set:checkbox(
+        gui_util.tr("menu.bind.weapon.singleplayer_only"),
+        "mod.bind.weapon.singleplayer_only"
+    )
+    util_imgui.tooltip(config.lang:tr("menu.bind.weapon.tooltip_singleplayer_only"), true)
     set:slider_int(
         gui_util.tr("menu.bind.weapon.game_mode"),
         "mod.bind.slider.weapon_bind",

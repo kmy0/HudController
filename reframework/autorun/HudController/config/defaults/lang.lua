@@ -131,6 +131,8 @@ return {
                 quest_in_combat = "Quest = In Combat",
                 ride_ignore_combat = "Riding = Out of Combat",
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
+                singleplayer_only = "Force Singleplayer Settings",
+                tooltip_singleplayer_only = "Always use Singleplayer settings regardless of the current game mode. Multiplayer-specific settings will be ignored.",
             },
             key = {
                 name = "Key",

@@ -31,6 +31,7 @@
 ---@field in_combat_delay integer
 ---@field quest_in_combat boolean
 ---@field ride_ignore_combat boolean
+---@field singleplayer_only boolean
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
 
@@ -110,6 +111,7 @@ return {
                 out_of_combat_delay = 0,
                 in_combat_delay = 0,
                 ride_ignore_combat = false,
+                singleplayer_only = false,
                 singleplayer = {},
                 multiplayer = {},
             },
