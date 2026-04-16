@@ -316,6 +316,11 @@ function this.draw()
         util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
         set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
+        set:checkbox(
+            gui_util.tr("debug.box_disable_config_save_on_bind"),
+            "debug.disable_config_save_on_bind"
+        )
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_config_save_on_bind"))
         set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
         imgui.same_line()
         set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")

@@ -61,6 +61,8 @@ return {
         tooltip_snapshot = "Save all element keys to be used with the filter",
         tooltip_filter = "Filter out elements present in the snapshot",
         tooltip_copy_args = "Copy arguments for use with hud.play_object.control.get\nor hud.play_object.child.get functions",
+        box_disable_config_save_on_bind = "Disable Bind Config Save",
+        tooltip_disable_config_save_on_bind = "Config is not saved when a setting is changed through a bind",
     },
     selector = {
         name = "Config Manager",

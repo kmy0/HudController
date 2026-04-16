@@ -51,7 +51,9 @@ local function action_hud(bind)
         return o.key == bind.bound_value
     end) --[[@as integer]]
 
-    config:save()
+    if not config.debug.current.debug.disable_config_save_on_bind then
+        config:save()
+    end
 end
 
 ---@param bind ModBind
@@ -124,7 +126,9 @@ local function action_option_mod(bind)
         )
     end
 
-    config:save()
+    if not config.debug.current.debug.disable_config_save_on_bind then
+        config:save()
+    end
 end
 
 ---@return boolean

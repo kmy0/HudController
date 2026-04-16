@@ -354,7 +354,10 @@ function this.update_weapon_bind_state()
 
         config_mod.combo.hud = state_config.combo
         this.request_hud(hud_config)
-        config.save_global()
+
+        if not config.debug.current.debug.disable_config_save_on_bind then
+            config.save_global()
+        end
     end
 end
 
