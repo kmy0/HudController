@@ -466,6 +466,17 @@ function this:change_visibility(ctrl, visible, hud_display)
     if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
         local enum = e.get("app.GUIHudDef.DISPLAY")
 
+        if self.hide_changed then
+            local current_hud_display = ace_misc.get_hud_manager():getHudDisplay(self.hud_id)
+
+            if
+                (visible and current_hud_display ~= enum.HIDDEN)
+                or (not visible and current_hud_display == enum.HIDDEN)
+            then
+                self.hide_changed = false
+            end
+        end
+
         if not visible then
             ace_misc.get_hud_manager():setHudDisplay(self.hud_id, enum.HIDDEN)
         elseif visible and hud_display then
