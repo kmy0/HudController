@@ -35,6 +35,7 @@ this.action_type = {
     TOGGLE = "TOGGLE",
     ENABLE = "ENABLE",
     DISABLE = "DISABLE",
+    TOGGLE_HOLD = "TOGGLE_HOLD",
 }
 
 ---@param bind ModBind
@@ -57,7 +58,8 @@ local function action_hud(bind)
 end
 
 ---@param bind ModBind
-local function action_option_hud(bind)
+---@param toggle_hold_value boolean? internal, dont use
+local function action_option_hud(bind, toggle_hold_value)
     if not hud then
         hud = require("HudController.hud.init")
     end
@@ -68,6 +70,17 @@ local function action_option_hud(bind)
         new_value = true
     elseif bind.action_type == this.action_type.DISABLE then
         new_value = false
+    elseif bind.action_type == this.action_type.TOGGLE_HOLD then
+        if toggle_hold_value == nil then
+            local old_value = hud.get_hud_option(bind.bound_value)
+            new_value = not old_value
+
+            this.monitor:register_on_release_callback(bind.name, function()
+                action_option_hud(bind, old_value)
+            end)
+        else
+            new_value = toggle_hold_value
+        end
     end
 
     local val = hud.overwrite_hud_option(bind.bound_value --[[@as string]], new_value)
@@ -88,7 +101,8 @@ local function action_option_hud(bind)
 end
 
 ---@param bind ModBind
-local function action_option_mod(bind)
+---@param toggle_hold_value boolean? internal, dont use
+local function action_option_mod(bind, toggle_hold_value)
     if not hud then
         hud = require("HudController.hud.init")
     end
@@ -101,19 +115,27 @@ local function action_option_mod(bind)
         new_value = true
     elseif bind.action_type == this.action_type.DISABLE then
         new_value = false
+    elseif bind.action_type == this.action_type.TOGGLE then
+        new_value = config_mod[bind.bound_value] --[[@as boolean]]
+    elseif bind.action_type == this.action_type.TOGGLE_HOLD then
+        if toggle_hold_value == nil then
+            local old_value = config_mod[bind.bound_value] --[[@as boolean]]
+            new_value = not old_value
+
+            this.monitor:register_on_release_callback(bind.name, function()
+                action_option_mod(bind, old_value)
+            end)
+        else
+            new_value = toggle_hold_value
+        end
     end
 
     if config_mod[bind.bound_value] == new_value then
         return
     end
 
-    if new_value == nil then
-        ---@diagnostic disable-next-line: no-unknown
-        config_mod[bind.bound_value] = not config_mod[bind.bound_value]
-    else
-        ---@diagnostic disable-next-line: no-unknown
-        config_mod[bind.bound_value] = new_value
-    end
+    ---@diagnostic disable-next-line: no-unknown
+    config_mod[bind.bound_value] = new_value
 
     if config.current.mod.enable_notification then
         ace_misc.send_message(

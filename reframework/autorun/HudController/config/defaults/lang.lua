@@ -156,6 +156,7 @@ return {
                     TOGGLE = "Toggle",
                     ENABLE = "Enable",
                     DISABLE = "Disable",
+                    TOGGLE_HOLD = "Toggle Hold",
                 },
                 tooltip_action_type = "Bind Action",
             },
