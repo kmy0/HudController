@@ -310,6 +310,7 @@ end
 function this:_buffer_keys(device)
     if self.key_buffer.device ~= device then
         self.key_buffer.device = device
+        self.key_buffer.snapshot = {}
         self:_clear_buffer()
     end
 
