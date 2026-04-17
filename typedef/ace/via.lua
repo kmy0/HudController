@@ -92,6 +92,8 @@
 ---@field get_PlayState fun(self: via.gui.Control): System.String
 ---@field get_PlayStateNames fun(self: via.gui.Control): via.gui.Control.WrappedArrayContainer_PlayStateNames
 ---@field hitTest fun(self: via.gui.Control, point: via.Point): System.Boolean
+---@field get_PlayFrame fun(self: via.gui.Control): System.Single
+---@field get_StateFinishFrame fun(self: via.gui.Control): System.Single
 
 ---@class via.gui.Control.WrappedArrayContainer_PlayStateNames : via.clr.ManagedObject
 ---@field get_Count fun(self: via.gui.Control.WrappedArrayContainer_PlayStateNames): System.Int32

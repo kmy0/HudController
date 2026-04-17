@@ -775,14 +775,6 @@ function this:reset_play_states(child_to_play_state)
 end
 
 ---@protected
----@param root_window via.gui.Control
----@return boolean
-function this:_is_fade_state_finished(root_window)
-    local play_state = self.hide and "DISABLE" or "DEFAULT"
-    return root_window:get_PlayState() == play_state
-end
-
----@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
@@ -842,7 +834,10 @@ end
 ---@param ctrl via.gui.Control?
 function this:_make_restore_visibility_fn(root_window, ctrl)
     local function ret()
-        if self:_is_fade_state_finished(root_window) or self.hide_timer:finished() then
+        if
+            root_window:get_PlayFrame() == root_window:get_StateFinishFrame()
+            or self.hide_timer:finished()
+        then
             (ctrl and ctrl or root_window):set_ForceInvisible(false)
         else
             call_queue.queue_func_next(self.hud_id, ret)
