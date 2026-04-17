@@ -3,6 +3,7 @@
 ---@module "HudController.hud.init"
 local hud
 local bind_monitor = require("HudController.util.game.bind.monitor")
+local fade_manager = require("HudController.hud.fade.init")
 
 ---@class ModBindMonitor
 local this = {}
@@ -29,7 +30,17 @@ function this:execute_actions()
 
     for i = 1, #self.managers["hud"].actions do
         local bind = self.managers["hud"].actions[i]
-        if not current_hud or bind.bound_value ~= current_hud.key then
+
+        if
+            not current_hud
+            or bind.bound_value ~= current_hud.key
+            or (
+                bind.bound_value == current_hud.key
+                and fade_manager.is_active()
+                and hud.manager.requested_hud
+                and bind.bound_value ~= hud.manager.requested_hud.key
+            )
+        then
             table.insert(hud_callback, bind)
             break
         end
