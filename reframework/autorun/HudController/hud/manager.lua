@@ -229,8 +229,13 @@ function this.request_hud(new_hud, force)
             and new_hud.fade_opacity
             and (not new_hud.fade_opacity_both or this.current_hud.fade_opacity)
         then
+            local requested_hud = this.requested_hud
+            local current_hud = this.current_hud
+            ---@cast current_hud HudProfileConfig
+            ---@cast requested_hud HudProfileConfig
+
             fade_callbacks.switch_profile_partial()
-            fade_manager.fade_partial(this.current_hud, this.requested_hud, function()
+            fade_manager.fade_partial(current_hud, requested_hud, function()
                 this.update_elements(this.current_hud.elements)
                 fade_callbacks.finish()
             end)

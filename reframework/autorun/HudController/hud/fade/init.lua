@@ -40,7 +40,7 @@ end
 ---@param hud_config HudProfileConfig
 ---@param hud_id app.GUIHudDef.TYPE
 ---@return integer
-local function get_new_opacity(hud_config, hud_id)
+local function get_hud_opacity(hud_config, hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local hud_elem_config = hud_config.elements[hud_name]
 
@@ -74,7 +74,7 @@ local function fade(hud_config, type, callback)
             local fader_obj = fader:new(
                 hud_id,
                 get_opacity(ctrl),
-                type == this.type.fade_in and get_new_opacity(hud_config, hud_id) or 0,
+                type == this.type.fade_in and get_hud_opacity(hud_config, hud_id) or 0,
                 type == this.type.fade_in and hud_config.fade_in or hud_config.fade_out,
                 ctrl
             )
@@ -111,8 +111,8 @@ function this.fade_partial(from_hud_config, to_hud_config, callback)
 
     for hud_id, ctrls in pairs(elements) do
         for _, ctrl in pairs(ctrls) do
-            local from = get_opacity(ctrl)
-            local to = get_new_opacity(to_hud_config, hud_id)
+            local from = get_hud_opacity(from_hud_config, hud_id)
+            local to = get_hud_opacity(to_hud_config, hud_id)
             ---@type number
             local time
 
