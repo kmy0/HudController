@@ -159,17 +159,14 @@ end
 ---@protected
 ---@param elements table<string, HudBaseConfig>
 function this._update_elements_partial(elements)
-    this.by_guiid = {}
-
     for _, elem in pairs(this.by_hudid) do
-        if not elements[elem.name_key] or (not elem.hide and not elem.opacity == 0) then
+        if not elements[elem.name_key] or (not elem.hide and elem.opacity ~= 0) then
             call_queue.queue_func(elem.hud_id, function()
                 elem:reset()
             end)
         end
     end
 
-    this.by_hudid = {}
     for _, elem in pairs(elements) do
         if not elem.hide and (not elem.enabled_opacity or elem.opacity > 0) then
             this.by_hudid[elem.hud_id] = factory.new_elem(elem)
