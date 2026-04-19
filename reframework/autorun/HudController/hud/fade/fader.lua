@@ -7,6 +7,8 @@
 ---@field progress number
 ---@field ctrl via.gui.Control
 ---@field current_opacity number
+---@field next Fader?
+---@field callback fun(fader: Fader)?
 
 local util_game = require("HudController.util.game.init")
 
@@ -20,8 +22,10 @@ this.__index = this
 ---@param to number
 ---@param time number
 ---@param ctrl via.gui.Control
+---@param callback fun(fader: Fader)?
+---@param next Fader?
 ---@return Fader
-function this:new(hud_type, from, to, time, ctrl)
+function this:new(hud_type, from, to, time, ctrl, callback, next)
     local dir = to > from and 1 or -1
     local dist = math.abs(from - to)
 
@@ -36,6 +40,8 @@ function this:new(hud_type, from, to, time, ctrl)
         ) * dir,
         progress = 0,
         current_opacity = from,
+        next = next,
+        callback = callback,
     }
     setmetatable(o, self)
     ---@cast o Fader
@@ -53,7 +59,6 @@ end
 function this:update()
     if not self:is_done() then
         self.current_opacity = self.current_opacity + self.step
-
         ---@type number
         local val
         if self.dir > 0 then
@@ -66,12 +71,37 @@ function this:update()
         self.progress = 1 - math.abs(val - self.to)
         return false
     end
+
+    if self.callback then
+        self:callback()
+    end
+
+    if self.next then
+        local next = self.next.next
+        local callback = self.next.callback
+        ---@diagnostic disable-next-line: no-unknown
+        for k, v in pairs(self.next) do
+            ---@diagnostic disable-next-line: no-unknown
+            self[k] = v
+        end
+
+        self.next = next
+        self.callback = callback
+
+        return false
+    end
+
     return true
 end
 
 ---@return boolean
 function this:is_done()
     return self.progress >= 1
+end
+
+---@return boolean
+function this:is_done_no_next()
+    return self.progress >= 1 and not self.next
 end
 
 return this

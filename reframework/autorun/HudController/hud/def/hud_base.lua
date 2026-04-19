@@ -29,6 +29,8 @@
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
 ---@field restore_all_force_invis fun()
 ---@field hide_timer FrameTimer
+---@field disable_fade boolean?
+---@field disable_fade_opacity boolean?
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -53,6 +55,8 @@
 ---@field enabled_color_scale boolean?
 ---@field options table<string, integer>?
 ---@field children table<string, HudChildConfig>?
+---@field disable_fade boolean?
+---@field disable_fade_opacity boolean?
 
 ---@class (exact) HudBaseDefault
 ---@field scale {x:number, y:number}
@@ -161,6 +165,8 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
         gui_header_children = gui_header_children,
         children_sort = children_sort,
         hide_timer = frame_timer:new(15),
+        disable_fade = args.disable_fade,
+        disable_fade_opacity = args.disable_fade_opacity,
     }
     setmetatable(o, self)
     ---@cast o HudBase
@@ -321,6 +327,16 @@ function this:set_play_state(play_state)
         self.play_state = play_state
         self:mark_idle("play_state")
     end
+end
+
+---@param val boolean
+function this:set_disable_fade(val)
+    self.disable_fade = val
+end
+
+---@param val boolean
+function this:set_disable_fade_opacity(val)
+    self.disable_fade_opacity = val
 end
 
 ---@return string
@@ -677,7 +693,7 @@ function this:reset_ctrl(ctrl, key)
         --FIXME: hide_changed = true here?
         self:change_visibility(ctrl, not default.hide, "DEFAULT")
 
-        if self.hud_id and not fade_manager.is_active() then
+        if self.hud_id and not fade_manager.is_active_element(self.hud_id) then
             fade_manager.restore_opacity(self.hud_id, ctrl)
         end
     end
@@ -698,7 +714,12 @@ function this:reset_ctrl(ctrl, key)
         ctrl:set_PlayState(default.play_state)
     end
 
-    if self.opacity and (not key or key == "opacity") and default.opacity then
+    if
+        self.opacity
+        and (not key or key == "opacity")
+        and default.opacity
+        and (not self.hud_id or not fade_manager.is_active_element(self.hud_id))
+    then
         self:_set_opacity(ctrl, default.opacity)
     end
 
@@ -791,7 +812,7 @@ end
 function this:_write(ctrl)
     play_object_defaults:check(ctrl)
 
-    if self.hide and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
+    if self.hide and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:change_visibility(ctrl, not self.hide)
         if not self.hide_write then
             return false
@@ -814,7 +835,7 @@ function this:_write(ctrl)
         ctrl:set_PlayState(self.play_state)
     end
 
-    if self.opacity and (not self.hud_id or (self.hud_id and not fade_manager.is_active())) then
+    if self.opacity and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:_set_opacity(ctrl, self.opacity)
     end
 
@@ -943,6 +964,8 @@ function this.get_config(hud_id, name_key)
         enabled_scale = false,
         enabled_opacity = false,
         enabled_segment = false,
+        disable_fade = false,
+        disable_fade_opacity = false,
         segment = "HUD",
         hide = false,
         scale = { x = 1, y = 1 },

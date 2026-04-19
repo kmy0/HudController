@@ -374,6 +374,10 @@ return {
             box_hide_pulse = "Hide Pulse",
             box_enable_angle = "Enable Angle",
             box_timer_visible = "Timer Always Visible",
+            box_disable_fade = "Disable Fade",
+            box_disable_fade_opacity = "Disable Opacity Fade",
+            tooltip_disable_fade = "Make element ignore Fade settings",
+            tooltip_disable_fade_opacity = "Make element ignore the 'Fade only opacity-modified elements' setting",
         },
     },
     hud_subelement = {

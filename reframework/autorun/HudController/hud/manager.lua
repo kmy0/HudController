@@ -66,6 +66,49 @@ local function override_scar_option(key, value)
     end
 end
 
+---@param element HudBaseConfig
+local function add_element(element)
+    this.by_hudid[element.hud_id] = factory.new_elem(element)
+
+    this._hook().hook_hud(element.hud_id, element.name_key)
+
+    for _, gui_id in pairs(ace_map.hudid_to_guiid[element.hud_id]) do
+        this.by_guiid[gui_id] = this.by_hudid[element.hud_id]
+    end
+end
+
+---@param hud_config HudProfileConfig
+---@return table<app.GUIHudDef.TYPE, FadeDisableType>
+local function make_disable_fade_args(hud_config)
+    ---@type table<app.GUIHudDef.TYPE, FadeDisableType>
+    local ret = {}
+    for _, elem in pairs(hud_config.elements) do
+        if elem.disable_fade then
+            ret[elem.hud_id] = fade_manager.fade_disable_type.DISABLE
+        elseif elem.disable_fade_opacity then
+            ret[elem.hud_id] = fade_manager.fade_disable_type.DISABLE_OPACITY
+        end
+    end
+
+    return ret
+end
+
+---@param hud_config HudProfileConfig
+---@return table<app.GUIHudDef.TYPE, fun(fader: Fader)>
+local function make_disable_fade_opacity_args(hud_config)
+    ---@type table<app.GUIHudDef.TYPE, fun(fader: Fader)>
+    local ret = {}
+    for _, elem in pairs(hud_config.elements) do
+        if elem.disable_fade_opacity then
+            ret[elem.hud_id] = function(_)
+                add_element(elem)
+            end
+        end
+    end
+
+    return ret
+end
+
 --FIXME: bleh
 ---@protected
 function this._hook()
@@ -146,13 +189,7 @@ function this.update_elements(elements)
 
     this.by_hudid = {}
     for _, elem in pairs(elements) do
-        this.by_hudid[elem.hud_id] = factory.new_elem(elem)
-
-        this._hook().hook_hud(elem.hud_id, elem.name_key)
-
-        for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
-            this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
-        end
+        add_element(elem)
     end
 end
 
@@ -168,14 +205,14 @@ function this._update_elements_partial(elements)
     end
 
     for _, elem in pairs(elements) do
-        if not elem.hide and (not elem.enabled_opacity or elem.opacity > 0) then
-            this.by_hudid[elem.hud_id] = factory.new_elem(elem)
-
-            this._hook().hook_hud(elem.hud_id, elem.name_key)
-
-            for _, gui_id in pairs(ace_map.hudid_to_guiid[elem.hud_id]) do
-                this.by_guiid[gui_id] = this.by_hudid[elem.hud_id]
-            end
+        if
+            (
+                not elem.hide
+                and (not elem.enabled_opacity or elem.opacity > 0)
+                and not elem.disable_fade_opacity
+            ) or elem.disable_fade
+        then
+            add_element(elem)
         end
     end
 end
@@ -223,22 +260,26 @@ function this.request_hud(new_hud, force)
             and fade_manager.current_fade.hud_key == new_hud.key
         then
             this.notify = false
-            fade_manager.fade_in(this.current_hud, fade_callbacks.finish)
+            fade_manager.fade_in(
+                this.current_hud,
+                fade_callbacks.finish,
+                make_disable_fade_args(this.current_hud)
+            )
         elseif
             this.current_hud
             and new_hud.fade_opacity
             and (not new_hud.fade_opacity_both or this.current_hud.fade_opacity)
         then
-            local requested_hud = this.requested_hud
             local current_hud = this.current_hud
             ---@cast current_hud HudProfileConfig
-            ---@cast requested_hud HudProfileConfig
 
             fade_callbacks.switch_profile_partial()
-            fade_manager.fade_partial(current_hud, requested_hud, function()
+            fade_manager.fade_partial(current_hud, new_hud, function()
                 this.update_elements(this.current_hud.elements)
                 fade_callbacks.finish()
-            end)
+            end, make_disable_fade_args(new_hud), make_disable_fade_opacity_args(
+                new_hud
+            ))
         elseif this.current_hud then
             if fade_manager.is_active(fade_manager.type.fade_out) then
                 fade_manager.clear()
@@ -246,8 +287,12 @@ function this.request_hud(new_hud, force)
 
             fade_manager.fade_out(this.current_hud, function()
                 fade_callbacks.switch_profile()
-                fade_manager.fade_in(this.requested_hud, fade_callbacks.finish)
-            end)
+                fade_manager.fade_in(
+                    this.requested_hud,
+                    fade_callbacks.finish,
+                    make_disable_fade_args(this.requested_hud)
+                )
+            end, make_disable_fade_args(this.current_hud))
         else
             fade_callbacks.switch_profile()
             fade_callbacks.finish()
