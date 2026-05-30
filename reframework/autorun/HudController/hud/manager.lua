@@ -6,8 +6,6 @@
 ---@field notify boolean
 ---@field overridden_options table<string, boolean>
 ---@field overridden_options_func table<string, fun(key: string, value: boolean)>
----@field combat_state_frame boolean
----@field combat_state boolean
 ---@field is_cleared boolean
 
 ---@class (exact) FadeCallbacks
@@ -16,21 +14,18 @@
 ---@field finish fun()
 
 local ace_misc = require("HudController.util.ace.misc")
-local ace_player = require("HudController.util.ace.player")
-local ace_porter = require("HudController.util.ace.porter")
 local bind_manager = require("HudController.hud.bind.init")
+local bind_weapon = require("HudController.hud.bind_weapon.init")
 local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
-local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade.init")
 local hud_base = require("HudController.hud.def.hud_base")
-local m = require("HudController.util.ref.methods")
-local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
+local util_table = require("HudController.util.misc.table")
 ---@module "HudController.hud.hook.init"
 local h
 
@@ -48,8 +43,6 @@ local this = {
 ---@class FadeCallbacks
 local fade_callbacks = {}
 local timers = {
-    out_of_combat = timer:new(0),
-    in_combat = timer:new(0),
     disable_weapon_binds = timer:new(0),
 }
 
@@ -107,6 +100,34 @@ local function make_disable_fade_opacity_args(hud_config)
     end
 
     return ret
+end
+
+---@return boolean is_held
+local function update_key_binds(config_mod)
+    bind_manager.monitor:monitor()
+
+    if bind_manager.monitor:is_triggered("hud") and config_mod.disable_weapon_binds_timed then
+        if config_mod.disable_weapon_binds_held then
+            bind_manager.monitor:register_on_release_callback(
+                bind_manager.monitor:get_held_key_names("hud"),
+                function()
+                    timers.disable_weapon_binds:restart()
+                end
+            )
+        else
+            timers.disable_weapon_binds:restart()
+        end
+    end
+
+    local is_held = config_mod.enable_weapon_binds
+        and config_mod.disable_weapon_binds_held
+        and bind_manager.monitor:is_held("hud")
+
+    if not config_mod.disable_weapon_binds_timed and not is_held then
+        timers.disable_weapon_binds:abort()
+    end
+
+    return is_held
 end
 
 --FIXME: bleh
@@ -303,118 +324,13 @@ function this.request_hud(new_hud, force)
     end
 end
 
-function this.update_weapon_bind_state()
-    local is_combat = ace_player.is_combat()
-
-    if is_combat == nil then
-        return
-    end
-
-    local config_mod = config.current.mod
-    local bind_weapon = config_mod.bind.weapon
-    local in_quest = bind_weapon.quest_in_combat
-        and s.get("app.MissionManager"):get_QuestDirector():isPlayingQuest()
-    local is_riding = bind_weapon.ride_ignore_combat and ace_porter.is_master_riding()
-    local is_village = ace_player.is_in_village()
-
-    timers.out_of_combat:update_args(bind_weapon.out_of_combat_delay)
-    timers.in_combat:update_args(bind_weapon.in_combat_delay)
-
-    if not in_quest and not is_village then
-        if this.combat_state_frame and not is_combat and this.combat_state then
-            timers.out_of_combat:restart()
-        elseif not this.combat_state_frame and is_combat and not this.combat_state then
-            timers.in_combat:restart()
-        end
-
-        if not is_combat and timers.in_combat:active() then
-            timers.in_combat:restart()
-        elseif is_combat and timers.out_of_combat:active() then
-            timers.out_of_combat:restart()
-        end
-
-        if not timers.in_combat:active() and not timers.out_of_combat:active() then
-            if is_riding and is_combat and not this.combat_state then
-                this.combat_state = false
-            else
-                this.combat_state = is_combat
-            end
-        end
-    elseif is_village then
-        this.combat_state = false
-        timers.in_combat:abort()
-        timers.out_of_combat:abort()
-    elseif in_quest then
-        this.combat_state = true
-        timers.in_combat:abort()
-        timers.out_of_combat:abort()
-    end
-
-    this.combat_state_frame = is_combat
-
-    ---@type WeaponBindConfig
-    local weapon_config
-    ---@type table<string, WeaponBindConfig>
-    local t
-    if config_mod.bind.weapon.singleplayer_only then
-        t = bind_weapon.singleplayer
-    else
-        t = bind_weapon[ace_misc.is_multiplayer() and "multiplayer" or "singleplayer"] --[[@as table<string, WeaponBindConfig>]]
-    end
-
-    if t["GLOBAL"].enabled then
-        weapon_config = t["GLOBAL"]
-    else
-        local weapon_type = ace_player.get_weapon_type()
-        local weapon_name = e.get("app.WeaponDef.TYPE")[weapon_type]
-
-        if not weapon_name then
-            return
-        end
-
-        weapon_config = t[weapon_name]
-        if not weapon_config.enabled then
-            if not t["MELEE"].enabled and not t["RANGED"].enabled then
-                return
-            end
-
-            if m.isGunnerWeapon(weapon_type) then
-                weapon_config = t["RANGED"]
-            else
-                weapon_config = t["MELEE"]
-            end
-        end
-    end
-
-    if weapon_config.enabled then
-        local state_config =
-            weapon_config[is_village and "camp" or (this.combat_state and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
-        local hud_config = config_mod.hud[state_config.combo]
-
-        if
-            state_config.hud_key ~= hud_config.key
-            or (hud_config.key == this.current_hud.key and not this.requested_hud)
-            or (this.requested_hud and hud_config.key == this.requested_hud.key)
-        then
-            return
-        end
-
-        config_mod.combo.hud = state_config.combo
-        this.request_hud(hud_config)
-
-        if not config.debug.current.debug.disable_config_save_on_bind then
-            config.save_global()
-        end
-    end
-end
-
 function this.update()
     local config_mod = config.current.mod
+
     if not config_mod.enabled or not mod.is_ok() then
         if not this.is_cleared then
             this.clear()
         end
-
         return
     end
 
@@ -428,48 +344,36 @@ function this.update()
     end
 
     fade_manager.update()
-
     if mod.pause then
         return
     end
 
-    local is_held = false
     timers.disable_weapon_binds:update_args(config_mod.disable_weapon_binds_time)
 
-    if config_mod.enable_key_binds then
-        bind_manager.monitor:monitor()
+    local is_held = config_mod.enable_key_binds and update_key_binds(config_mod)
 
-        if bind_manager.monitor:is_triggered("hud") and config_mod.disable_weapon_binds_timed then
-            if config_mod.disable_weapon_binds_held then
-                bind_manager.monitor:register_on_release_callback(
-                    bind_manager.monitor:get_held_key_names("hud"),
-                    function()
-                        timers.disable_weapon_binds:restart()
-                    end
-                )
-            else
-                timers.disable_weapon_binds:restart()
-            end
-        end
-
-        if config_mod.enable_weapon_binds and config_mod.disable_weapon_binds_held then
-            is_held = bind_manager.monitor:is_held("hud")
-        end
-
-        if
-            not config_mod.disable_weapon_binds_timed
-            and (not config_mod.disable_weapon_binds_held or not is_held)
-        then
-            timers.disable_weapon_binds:abort()
-        end
+    if not config_mod.enable_weapon_binds or timers.disable_weapon_binds:active() or is_held then
+        return
     end
 
-    if
-        config_mod.enable_weapon_binds
-        and not timers.disable_weapon_binds:active()
-        and (not config_mod.disable_weapon_binds_held or not is_held)
-    then
-        this.update_weapon_bind_state()
+    local hud_config = bind_weapon.update()
+    if not hud_config then
+        return
+    end
+
+    local target_key = this.requested_hud and this.requested_hud.key or this.current_hud.key
+    if hud_config.key == target_key then
+        return
+    end
+
+    config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
+        return o.key == hud_config.key
+    end) --[[@as integer]]
+
+    this.request_hud(hud_config)
+
+    if not config.debug.current.debug.disable_config_save_on_bind then
+        config.save_global()
     end
 end
 
@@ -488,8 +392,7 @@ function this.clear()
 
     this.by_hudid = {}
     this.overridden_options = {}
-    this.combat_state_frame = false
-    this.combat_state = false
+    bind_weapon.reset()
 
     this.current_hud = nil
     this.requested_hud = nil
