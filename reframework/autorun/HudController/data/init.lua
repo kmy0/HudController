@@ -155,6 +155,7 @@ function this.get_weapon_bind_map(config_table)
         combat_in = { hud_key = -1, combo = 1 },
         combat_out = { hud_key = -1, combo = 1 },
         camp = { hud_key = -1, combo = 1 },
+        custom = {},
     }
 
     local function copy_base(name, wp_base)
