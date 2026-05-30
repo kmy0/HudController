@@ -581,13 +581,13 @@ local function draw_weapon_bind_menu()
                 changed = set:combo(
                     string.format("##%s_%s_%s", weapon.name, sub_key, key),
                     config_key,
-                    state.combo.hud.values
+                    state.combo.hud_weapon_bind.values
                 ) or changed
 
                 if changed then
                     config:set(
                         string.format("mod.bind.weapon.%s.%s.%s.hud_key", key, weapon.name, sub_key),
-                        config_mod.hud[config:get(config_key)].key
+                        state.combo.hud_weapon_bind:get_key(config:get(config_key))
                     )
                 end
 
