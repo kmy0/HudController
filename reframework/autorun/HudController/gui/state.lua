@@ -11,6 +11,7 @@
 ---@field state {
 --- l1_pressed: boolean,
 --- }
+---@field hud_weapon_bind table<integer, string>
 
 ---@class (exact) GuiCombo
 ---@field hud_elem Combo
@@ -29,6 +30,7 @@
 ---@field config_backup Combo
 ---@field log_id Combo
 ---@field map_filter Combo
+---@field hud_weapon_bind Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -143,6 +145,9 @@ local this = {
             )
         end),
         map_filter = combo:new(),
+        hud_weapon_bind = combo:new(nil, function(a, b)
+            return a.key < b.key
+        end),
     },
     grid_ratio = {
         "1",
@@ -187,6 +192,7 @@ local this = {
         l1_pressed = false,
     },
     set = config_set:new(config),
+    hud_weapon_bind = {},
 }
 ---@enum GuiColors
 this.colors = {
@@ -268,9 +274,46 @@ function this.translate_map_icon_filter_options()
     map_filter_translated = true
 end
 
+---@param key_to_value table
+function this.swap_hud(key_to_value)
+    this.combo.hud:swap(key_to_value)
+    this.hud_weapon_bind = {}
+
+    for _, hud in
+        pairs(key_to_value --[=[@as HudProfileConfig[]]=])
+    do
+        this.hud_weapon_bind[hud.key] = hud.name
+    end
+
+    this.hud_weapon_bind[-1] = gui_util.tr("misc.text_disabled")
+    this.combo.hud_weapon_bind:swap(this.hud_weapon_bind)
+
+    local config_mod = config.current.mod
+    for _, game_mode in pairs(ace_map.weapon_binds.game_mode) do
+        for _, wp_config in
+            pairs(config_mod.bind.weapon[game_mode] --[[@as table<string, WeaponBindConfig>]])
+        do
+            for _, pl_state in pairs(ace_map.weapon_binds.pl_state) do
+                local state_config = wp_config[pl_state] --[[@as WeaponBindConfigData]]
+
+                local index = util_table.index(this.combo.hud_weapon_bind.values, function(o)
+                    return o == this.hud_weapon_bind[state_config.hud_key]
+                end)
+
+                if not index then
+                    state_config.hud_key = -1
+                    state_config.combo = 1
+                    wp_config.enabled = false
+                else
+                    state_config.combo = index
+                end
+            end
+        end
+    end
+end
+
 function this.init()
     this.combo.hud_elem:swap(ace_map.hudid_name_to_local_name)
-    this.combo.hud:swap(config.current.mod.hud)
     this.combo.control_point:swap(e.get("via.gui.ControlPoint").enum_to_field)
     this.combo.blend:swap(e.get("via.gui.BlendType").enum_to_field)
 
@@ -287,6 +330,7 @@ function this.init()
     this.combo.config_backup:swap(config.selector.sorted_backup)
     this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
     this.combo.map_filter:swap(this.map_filter)
+    this.swap_hud(config.current.mod.hud)
     this.translate_combo()
 end
 

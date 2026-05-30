@@ -5,6 +5,7 @@ local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
+local util_table = require("HudController.util.misc.table")
 
 local this = {}
 
@@ -48,14 +49,16 @@ function this.update()
 
     combat_condition:update()
 
-    local config_mod = config.current.mod
     local state_config =
         weapon_config[combat_condition:is_village() and "camp" or (combat_condition:is_combat() and "combat_in" or "combat_out")] --[[@as WeaponBindConfigData]]
-    local hud_config = config_mod.hud[state_config.combo]
 
-    if state_config.hud_key == hud_config.key then
-        return hud_config
+    if state_config.hud_key == -1 then
+        return
     end
+
+    return util_table.value(config.current.mod.hud, function(_, value)
+        return value.key == state_config.hud_key
+    end)
 end
 
 function this.reset()
