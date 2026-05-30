@@ -1,3 +1,4 @@
+local bind_weapon = require("HudController.hud.bind_weapon.init")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local config_menu = require("HudController.gui.init")
@@ -23,7 +24,8 @@ local init = util.misc.init_chain:new(
     hud.manager.init,
     hook.init,
     data.mod.init,
-    user.init
+    user.init,
+    bind_weapon.init
 )
 ---@class MethodUtil
 local m = util.ref.methods

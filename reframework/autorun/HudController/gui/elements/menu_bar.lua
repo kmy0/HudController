@@ -1,4 +1,5 @@
 local bind_manager = require("HudController.hud.bind.init")
+local bind_weapon = require("HudController.hud.bind_weapon.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
@@ -546,16 +547,23 @@ local function draw_weapon_bind_menu()
         end
     ) --[[@as table<integer, WeaponBindConfig>]]
 
-    if imgui.begin_table("weapon_state", 5) then
+    local column_count = 5 + #bind_weapon.custom_conditions.sorted
+    if imgui.begin_table("weapon_state", column_count) then
         for _, header in ipairs({
             gui_util.tr("menu.bind.weapon.header_enabled"),
             gui_util.tr("menu.bind.weapon.header_combat_in"),
             gui_util.tr("menu.bind.weapon.header_combat_out"),
             gui_util.tr("menu.bind.weapon.header_camp"),
-            gui_util.tr("menu.bind.weapon.header_weapon_name"),
         }) do
             imgui.table_setup_column(header)
         end
+
+        for _, fname in ipairs(bind_weapon.custom_conditions.sorted) do
+            local condition = bind_weapon.custom_conditions.map[fname]
+            imgui.table_setup_column(condition.name)
+        end
+
+        imgui.table_setup_column(gui_util.tr("menu.bind.weapon.header_weapon_name"))
 
         imgui.table_headers_row()
 
@@ -576,8 +584,13 @@ local function draw_weapon_bind_menu()
             local function draw_combo(sub_key)
                 imgui.push_item_width(100)
 
-                config_key =
-                    string.format("mod.bind.weapon.%s.%s.%s.combo", key, weapon.name, sub_key)
+                config_key = string.format("mod.bind.weapon.%s.%s.%s", key, weapon.name, sub_key)
+                if not config:get(config_key) then
+                    config:set(config_key, { hud_key = -1, combo = 1 })
+                end
+
+                config_key = string.format("%s.combo", config_key)
+
                 changed = set:combo(
                     string.format("##%s_%s_%s", weapon.name, sub_key, key),
                     config_key,
@@ -604,7 +617,14 @@ local function draw_weapon_bind_menu()
             imgui.table_set_column_index(3)
             draw_combo("camp")
 
-            imgui.table_set_column_index(4)
+            local j = 4
+            for _, fname in ipairs(bind_weapon.custom_conditions.sorted) do
+                imgui.table_set_column_index(j)
+                draw_combo(fname)
+                j = j + 1
+            end
+
+            imgui.table_set_column_index(j)
             imgui.text(
                 weapon.weapon_id < 0
                         and config.lang:tr("menu.bind.weapon.name_" .. weapon.name:lower())

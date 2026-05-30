@@ -356,7 +356,7 @@ function this.update()
         return
     end
 
-    local hud_config = bind_weapon.update()
+    local hud_config = bind_weapon.update(this.current_hud)
     if not hud_config then
         return
     end

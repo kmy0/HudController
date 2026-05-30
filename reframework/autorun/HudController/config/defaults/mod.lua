@@ -25,6 +25,7 @@
 ---@field combat_in WeaponBindConfigData
 ---@field combat_out WeaponBindConfigData
 ---@field camp WeaponBindConfigData
+---@field custom table<string, WeaponBindConfigData>
 
 ---@class (exact) WeaponStateBindConfig
 ---@field out_of_combat_delay integer
