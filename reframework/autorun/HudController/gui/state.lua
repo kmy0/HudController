@@ -38,7 +38,7 @@
 
 local ace_player = require("HudController.util.ace.player")
 local bind_manager = require("HudController.hud.bind.init")
-local combo = require("HudController.gui.combo")
+local combo = require("HudController.util.imgui.combo")
 local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
@@ -57,91 +57,107 @@ local map_filter_translated = false
 ---@class GuiState
 local this = {
     combo = {
-        hud_elem = combo:new(
-            nil,
-            function(a, b)
+        hud_elem = combo:new(nil, {
+            sort_fn = function(a, b)
                 local enum = e.get("app.GUIHudDef.TYPE")
                 return enum[a.key] < enum[b.key]
             end,
-            nil,
-            function(key)
+
+            translate_fn = function(key)
                 local val = ace_map.hudid_name_to_local_name[key]
                 if val == ace_map.hud_tr_flag then
                     return config.lang:tr("hud_element.name." .. key)
                 end
                 return val
-            end
-        ),
-        hud = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end, function(value)
-            return value.name
-        end),
-        item_decide = combo:new(nil, nil, function(value)
-            return value.value
-        end),
-        control_point = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
-        blend = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
-        alpha_channel = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
-        option_bind = combo:new(
-            mod.map.options_hud,
-            function(a, b)
+            end,
+        }),
+        hud = combo:new(nil, {
+            sort_fn = function(a, b)
                 return a.key < b.key
             end,
-            nil,
-            function(key)
+            map_fn = function(value)
+                return value.name
+            end,
+        }),
+        item_decide = combo:new(nil, {
+            map_fn = function(value)
+                return value.value
+            end,
+        }),
+        control_point = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
+        blend = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
+        alpha_channel = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
+        option_bind = combo:new(mod.map.options_hud, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+            translate_fn = function(key)
                 return config.lang:tr("hud." .. mod.map.options_hud[key])
-            end
-        ),
-        option_mod_bind = combo:new(
-            mod.map.options_mod,
-            function(a, b)
+            end,
+        }),
+        option_mod_bind = combo:new(mod.map.options_mod, {
+            sort_fn = function(a, b)
                 return a.key < b.key
             end,
-            nil,
-            function(key)
+            translate_fn = function(key)
                 return config.lang:tr("menu.config." .. mod.map.options_mod[key])
-            end
-        ),
-        segment = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
-        page_alignment = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
-        enemy_msg_type = combo:new(nil, function(a, b)
-            return a.value < b.value
-        end),
+            end,
+        }),
+        segment = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
+        page_alignment = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
+        enemy_msg_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
         config = combo:new(),
         config_backup = combo:new(),
         bind_action_type = combo:new(
             util_table.filter(bind_manager.action_type, function(_, value)
                 return value ~= bind_manager.action_type.NONE
             end),
-            function(a, b)
-                return a.key < b.key
-            end,
-            nil,
-            function(key)
-                return config.lang:tr("menu.bind.key.action_type." .. key)
-            end
+            {
+                sort_fn = function(a, b)
+                    return a.key < b.key
+                end,
+                translate_fn = function(key)
+                    return config.lang:tr("menu.bind.key.action_type." .. key)
+                end,
+            }
         ),
-        log_id = combo:new(nil, function(a, b)
-            return tonumber(a.key) < tonumber(b.key)
-        end, function(value)
-            local id = e.get("app.ChatDef.LOG_ID")[value]
-            return string.format(
-                "%s - %s",
-                id,
-                util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
-            )
-        end),
+        log_id = combo:new(nil, {
+            sort_fn = function(a, b)
+                return tonumber(a.key) < tonumber(b.key)
+            end,
+            map_fn = function(value)
+                local id = e.get("app.ChatDef.LOG_ID")[value]
+                return string.format(
+                    "%s - %s",
+                    id,
+                    util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
+                )
+            end,
+        }),
         map_filter = combo:new(),
     },
     grid_ratio = {
@@ -195,20 +211,20 @@ this.colors = {
     info = 0xff27f3f5,
 }
 
-this.combo.item_decide.sort = function(a, b)
+this.combo.item_decide.sort_fn = function(a, b)
     return this.item_decide[a.key].sort < this.item_decide[b.key].sort
 end
-this.combo.item_decide._translate = function(key)
+this.combo.item_decide._translate_fn = function(key)
     if key == "option_disable" then
         return config.lang:tr("hud.option_disable")
     end
     return this.item_decide[key].value
 end
 
-this.combo.map_filter.sort = function(a, b)
+this.combo.map_filter.sort_fn = function(a, b)
     return this.map_filter[a.key] < this.map_filter[b.key]
 end
-this.combo.map_filter._translate = function(key)
+this.combo.map_filter._translate_fn = function(key)
     if key == "option_disable" then
         return config.lang:tr("hud.option_disable")
     end
