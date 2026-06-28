@@ -161,9 +161,11 @@ local this = {
             end,
         }),
         map_filter = combo:new(),
-        hud_weapon_bind = combo:new(nil, function(a, b)
-            return a.key < b.key
-        end),
+        hud_weapon_bind = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+        }),
     },
     grid_ratio = {
         "1",
