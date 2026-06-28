@@ -72,7 +72,11 @@ function this:new(
     valid_guiid,
     cache_index
 )
-    local o = hud_base.new(self, args, parent, default_overwrite, gui_ignore, nil, children_sort)
+    local o = hud_base.new(self, args, parent, {
+        default_overwrite = default_overwrite,
+        gui_ignore = gui_ignore,
+        children_sort = children_sort,
+    })
     setmetatable(o, self)
     ---@cast o HudChild
 

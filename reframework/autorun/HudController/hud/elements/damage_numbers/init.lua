@@ -37,16 +37,20 @@ setmetatable(this, { __index = hud_base })
 ---@param args DamageNumbersConfig
 ---@return DamageNumbers
 function this:new(args)
-    local o = hud_base.new(self, args, nil, nil, true, true, function(a_key, b_key)
-        if a_key.name_key == "ALL" then
-            return true
-        end
+    local o = hud_base.new(self, args, nil, {
+        gui_ignore = true,
+        gui_header_children = true,
+        children_sort = function(a_key, b_key)
+            if a_key.name_key == "ALL" then
+                return true
+            end
 
-        if b_key.name_key == "ALL" then
-            return false
-        end
-        return a_key.name_key < b_key.name_key
-    end)
+            if b_key.name_key == "ALL" then
+                return false
+            end
+            return a_key.name_key < b_key.name_key
+        end,
+    })
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbers
