@@ -100,6 +100,12 @@
 ---@field play_state string?
 ---@field segment app.GUIDefApp.DRAW_SEGMENT?
 
+---@class (exact) HudBaseOptionalArgs
+---@field default_overwrite HudBaseDefaultOverwrite?
+---@field gui_ignore boolean? by_default, false - if true, do not draw in imgui window
+---@field gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
+---@field children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
+
 ---@alias HudBaseProperty "scale" | "offset" | "rot" | "opacity" | "hide" | "play_state" | "color_scale" | "segment"
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
@@ -133,12 +139,11 @@ this.__index = this
 
 ---@param args HudBaseConfig | HudChildConfig
 ---@param parent HudBase | HudChild?
----@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@param gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
+---@param optional_args HudBaseOptionalArgs?
 ---@return HudBase
-function this:new(args, parent, default_overwrite, gui_ignore, gui_header_children, children_sort)
+function this:new(args, parent, optional_args)
+    optional_args = optional_args or {}
+
     local o = {
         hud_id = args.hud_id,
         name_key = args.name_key,
@@ -160,10 +165,10 @@ function this:new(args, parent, default_overwrite, gui_ignore, gui_header_childr
             segment = true,
         },
         initialized = false,
-        default_overwrite = default_overwrite,
-        gui_ignore = gui_ignore,
-        gui_header_children = gui_header_children,
-        children_sort = children_sort,
+        default_overwrite = optional_args.default_overwrite,
+        gui_ignore = optional_args.gui_ignore,
+        gui_header_children = optional_args.gui_header_children,
+        children_sort = optional_args.children_sort,
         hide_timer = frame_timer:new(15),
         disable_fade = args.disable_fade,
         disable_fade_opacity = args.disable_fade_opacity,
