@@ -68,15 +68,9 @@ function this:new(args, parent, ctrl_getter, optional_args)
     ---@cast o HudChild
 
     if not optional_args.no_cache and not config.debug.current.debug.disable_cache then
-        local max_frame = 60
-        local jitter = 120
         o._ctrl_getter = frame_cache.memoize(
             o._ctrl_getter,
-            max_frame,
-            nil,
-            nil,
-            jitter,
-            optional_args.cache_index
+            { max_frame = 60, jitter = 120, cache_index = optional_args.cache_index }
         )
     end
 

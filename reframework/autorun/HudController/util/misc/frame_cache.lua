@@ -3,6 +3,10 @@
 ---@field max_frame integer
 ---@field jitter integer
 
+---@class (exact) FrameCacheMemoizeOptionalArgs : CacheMemoizeOptionalArgs
+---@field max_frame integer?
+---@field jitter integer?
+
 local cache = require("HudController.util.misc.cache")
 local frame_counter = require("HudController.util.misc.frame_counter")
 local hash = require("HudController.util.misc.hash")
@@ -54,14 +58,11 @@ end
 
 ---@generic T: fun(...): any
 ---@param func T
----@param max_frame integer?
----@param do_hash boolean?
----@param deep_hash_table boolean?
----@param jitter integer?
----@param key_index integer?
+---@param optional_args FrameCacheMemoizeOptionalArgs?
 ---@return T
-function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter, key_index)
-    local frame_cache = this:new(max_frame, jitter)
+function this.memoize(func, optional_args)
+    optional_args = optional_args or {}
+    local frame_cache = this:new(optional_args.max_frame, optional_args.jitter)
 
     local wrapped = {
         clear = function()
@@ -72,14 +73,17 @@ function this.memoize(func, max_frame, do_hash, deep_hash_table, jitter, key_ind
         __call = function(_, ...)
             ---@type any
             local key
-            if do_hash then
+            if optional_args.do_hash then
                 key =
                     ---@diagnostic disable-next-line: param-type-mismatch
-                    hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
+                    hash.hash_args(
+                        optional_args.deep_hash_table,
+                        not optional_args.key_index and ... or select(optional_args.key_index, ...)
+                    )
             else
                 if select("#", ...) > 0 then
                     ---@diagnostic disable-next-line: no-unknown
-                    key = select(key_index or 1, ...)
+                    key = select(optional_args.key_index or 1, ...)
                 else
                     key = 1
                 end

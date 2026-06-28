@@ -176,7 +176,7 @@ function this:new(args, parent, optional_args)
     setmetatable(o, self)
     ---@cast o HudBase
 
-    o._get_component = cache.memoize(o._get_component, nil, nil, nil, 2)
+    o._get_component = cache.memoize(o._get_component, nil, { key_index = 2 })
     o.root = o:get_root()
 
     o:set_hide(args.hide)
