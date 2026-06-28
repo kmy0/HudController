@@ -2,6 +2,11 @@
 ---@field protected _map table<any, any>
 ---@field protected _clearable boolean
 
+---@class (exact) CacheMemoizeOptionalArgs
+---@field do_hash boolean?
+---@field deep_hash_table boolean?
+---@field key_index integer?
+
 local hash = require("HudController.util.misc.hash")
 
 ---@class Cache
@@ -52,12 +57,11 @@ end
 ---@generic T: fun(...): any
 ---@param func T
 ---@param predicate (fun(cached_value: any, key: any?): boolean)?
----@param do_hash boolean?
----@param deep_hash_table boolean?
----@param key_index integer?
+---@param optional_args CacheMemoizeOptionalArgs?
 ---@return T
-function this.memoize(func, predicate, do_hash, deep_hash_table, key_index)
+function this.memoize(func, predicate, optional_args)
     local cache = this:new()
+    optional_args = optional_args or {}
 
     local wrapped = {
         clear = function()
@@ -68,14 +72,17 @@ function this.memoize(func, predicate, do_hash, deep_hash_table, key_index)
         __call = function(_, ...)
             ---@type any
             local key
-            if do_hash then
+            if optional_args.do_hash then
                 key =
                     ---@diagnostic disable-next-line: param-type-mismatch
-                    hash.hash_args(deep_hash_table, not key_index and ... or select(key_index, ...))
+                    hash.hash_args(
+                        optional_args.deep_hash_table,
+                        not optional_args.key_index and ... or select(optional_args.key_index, ...)
+                    )
             else
                 if select("#", ...) > 0 then
                     ---@diagnostic disable-next-line: no-unknown
-                    key = select(key_index or 1, ...)
+                    key = select(optional_args.key_index or 1, ...)
                 else
                     key = 1
                 end

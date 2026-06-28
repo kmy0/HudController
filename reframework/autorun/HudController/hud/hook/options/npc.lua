@@ -133,6 +133,6 @@ function this.hide_pet_pre(_)
     end
 end
 
-get_pets = frame_cache.memoize(get_pets, 120)
+get_pets = frame_cache.memoize(get_pets, { max_frame = 120 })
 
 return this
