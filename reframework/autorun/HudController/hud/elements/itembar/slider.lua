@@ -271,25 +271,27 @@ function this:new(args, parent)
             play_object.iter_args(ctrl, control_arguments.slider_state),
             play_object.iter_args(ctrl, control_arguments.slider_animation)
         )
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.hide then
-            if ctrl:get_PlayState() ~= "DEFAULT" then
-                if o.parent:get_GUI020006():get_IsAllSliderMode() then
-                    ctrl:set_PlayState("HIDDEN")
-                else
-                    ctrl:set_PlayState("DEFAULT")
+            if s.hide then
+                if ctrl:get_PlayState() ~= "DEFAULT" then
+                    if o.parent:get_GUI020006():get_IsAllSliderMode() then
+                        ctrl:set_PlayState("HIDDEN")
+                    else
+                        ctrl:set_PlayState("DEFAULT")
+                    end
                 end
+
+                parent:keep_mantle_in_place()
+                parent:keep_akuma_in_place()
+                return false
             end
 
-            parent:keep_mantle_in_place()
-            parent:keep_akuma_in_place()
-            return false
-        end
-
-        return true
-    end)
+            return true
+        end,
+    })
 
     o:_init_slider_appear_open(args)
 
@@ -311,18 +313,19 @@ function this:_init_slider_appear_open(args)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.slider_state)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state then
-                ctrl:set_PlayState("SELECT")
-            end
+                if s.play_state then
+                    ctrl:set_PlayState("SELECT")
+                end
 
-            self.parent:keep_akuma_in_place()
-            return true
-        end,
-        nil,
-        true
+                self.parent:keep_akuma_in_place()
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
     -- slide animation on input
     self.children.slider_animation = hud_child:new(
@@ -331,24 +334,25 @@ function this:_init_slider_appear_open(args)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.slider_animation)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state then
-                local state = ctrl:get_PlayState()
-                if util_table.contains({ "FOCUS", "UNFOCUS", "DEFAULT" }, state) then
-                    ctrl:set_PlayState("SELECT")
-                elseif state == "FOCUS_PLUS_INPUT" then
-                    ctrl:set_PlayState("PLUS_INPUT")
-                elseif state == "FOCUS_MINUS_INPUT" then
-                    ctrl:set_PlayState("MINUS_INPUT")
+                if s.play_state then
+                    local state = ctrl:get_PlayState()
+                    if util_table.contains({ "FOCUS", "UNFOCUS", "DEFAULT" }, state) then
+                        ctrl:set_PlayState("SELECT")
+                    elseif state == "FOCUS_PLUS_INPUT" then
+                        ctrl:set_PlayState("PLUS_INPUT")
+                    elseif state == "FOCUS_MINUS_INPUT" then
+                        ctrl:set_PlayState("MINUS_INPUT")
+                    end
                 end
-            end
 
-            return true
-        end,
-        nil,
-        true
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
     -- stops input animations for mantle
     self.children.mantle_state = hud_child:new(
@@ -358,24 +362,28 @@ function this:_init_slider_appear_open(args)
             ctrl = play_object.control.get_parent(ctrl, "PNL_Scale") --[[@as via.gui.Control]]
             return play_object.iter_args(ctrl, control_arguments.mantle_state)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state then
-                if
-                    util_table.contains(
-                        { "FOCUS", "UNFOCUS", "FOCUS_PLUS_INPUT", "FOCUS_MINUS_INPUT", "DEFAULT" },
-                        ctrl:get_PlayState()
-                    )
-                then
-                    ctrl:set_PlayState("SELECT")
+                if s.play_state then
+                    if
+                        util_table.contains({
+                            "FOCUS",
+                            "UNFOCUS",
+                            "FOCUS_PLUS_INPUT",
+                            "FOCUS_MINUS_INPUT",
+                            "DEFAULT",
+                        }, ctrl:get_PlayState())
+                    then
+                        ctrl:set_PlayState("SELECT")
+                    end
                 end
-            end
 
-            return true
-        end,
-        nil,
-        true
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
     -- hides cursor select thing when appear open is enabled
     self.children.cursor_state = hud_child:new(
@@ -384,19 +392,20 @@ function this:_init_slider_appear_open(args)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.cursor_state)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state and not self.parent:get_GUI020006():get_getIsItemSliderMode() then
-                ctrl:set_ForceInvisible(true)
-            else
-                ctrl:set_ForceInvisible(false)
-            end
+                if s.play_state and not self.parent:get_GUI020006():get_getIsItemSliderMode() then
+                    ctrl:set_ForceInvisible(true)
+                else
+                    ctrl:set_ForceInvisible(false)
+                end
 
-            return true
-        end,
-        nil,
-        true
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
 end
 

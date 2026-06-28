@@ -75,18 +75,9 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return Rod
 function this:new(args, parent)
-    local o = hud_child.new(
-        self,
-        args,
-        parent,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        e.get("app.GUIID.ID").UI020027
-    )
+    local o =
+        hud_child.new(self, args, parent, nil, { valid_guiid = e.get("app.GUIID.ID").UI020027 }
+)
     setmetatable(o, self)
     ---@cast o Rod
 

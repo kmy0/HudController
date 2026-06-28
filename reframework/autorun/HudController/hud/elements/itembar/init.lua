@@ -86,19 +86,25 @@ function this:new(args)
     o.children.mantle = mantle:new(args.children.mantle, o)
     o.children.slider_part = hud_child:new(args.children.slider, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.slider)
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.hide then
-            if o:get_GUI020006():get_IsAllSliderMode() or ctrl:get_PlayState() == "FADE_OUT" then
-                ctrl:set_ForceInvisible(true)
-                return false
-            else
-                ctrl:set_ForceInvisible(false)
+            if s.hide then
+                if
+                    o:get_GUI020006():get_IsAllSliderMode()
+                    or ctrl:get_PlayState() == "FADE_OUT"
+                then
+                    ctrl:set_ForceInvisible(true)
+                    return false
+                else
+                    ctrl:set_ForceInvisible(false)
+                end
             end
-        end
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
 
     o.hide_write = true
     if args.start_expanded then

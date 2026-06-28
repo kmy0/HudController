@@ -178,7 +178,7 @@ function this:new(args, parent)
             s:adjust_offset(damage_info)
             return pnl_parent
         end
-    end, nil, nil, nil, nil, true)
+    end, { no_cache = true })
     setmetatable(o, self)
     numbers_offset.wrap(o, args)
     ---@cast o DamageNumbersDamageState
@@ -189,43 +189,31 @@ function this:new(args, parent)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.horizontal_line)
         end,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        2
+        { cache_index = 2 }
     )
     o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
-    end, nil, nil, nil, nil, nil, nil, 2)
+    end, { cache_index = 2 })
     o.children.wound = ctrl_child:new(args.children.wound, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.wound)
-    end, nil, nil, nil, nil, nil, nil, 2)
+    end, { cache_index = 2 })
     o.children.circle = hud_child:new(args.children.circle, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.circle)
-    end, nil, nil, nil, nil, nil, nil, 2)
+    end, { cache_index = 2 })
     o.children.affinity = ctrl_child:new(args.children.affinity, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.affinity)
-    end, nil, nil, nil, nil, nil, nil, 2)
+    end, { cache_index = 2 })
     o.children.negative_affinity = ctrl_child:new(
         args.children.negative_affinity,
         o,
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.negative_affinity)
         end,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        2
+        { cache_index = 2 }
     )
     o.children.shield = hud_child:new(args.children.shield, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.shield)
-    end, nil, nil, nil, nil, nil, nil, 2)
+    end, { cache_index = 2 })
 
     ---@diagnostic disable-next-line: no-unknown
     for _, child in pairs(o.children) do

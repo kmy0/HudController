@@ -127,7 +127,7 @@ function this:new(args)
             o.children.timer:reset_specific(nil, nil, pnl)
         end
         return pnl
-    end, nil, nil, nil, nil, true)
+    end, { no_cache = true })
     o.children.best_timer = best_timer:new(args.children.best_timer, o)
     o.children.faint = faint:new(args.children.faint, o)
     return o

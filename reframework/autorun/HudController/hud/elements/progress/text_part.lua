@@ -59,7 +59,7 @@ function this:new(args, parent)
 
     o.children.text = text:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
-    end, nil, { hide = false })
+    end, { default_overwrite = { hide = false } })
 
     return o
 end

@@ -342,7 +342,7 @@ function this:new(args, parent)
     end)
     o.children.pallet_state = hud_child:new(args.children.pallet_state, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.pallet_state)
-    end, nil, nil, true)
+    end, { gui_ignore = true })
 
     if args.expanded then
         o:set_expanded(args.expanded)

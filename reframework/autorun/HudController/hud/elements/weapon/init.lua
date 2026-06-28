@@ -61,7 +61,7 @@ function this:new(args)
     o.children.rod = rod:new(args.children.rod, o)
     o.children.no_focus = hud_child:new(args.children.no_focus, o, function(_, _, _, ctrl)
         return ctrl
-    end, nil, nil, true, nil, true)
+    end, { gui_ignore = true, no_cache = true })
 
     o:set_no_focus(args.no_focus)
     return o

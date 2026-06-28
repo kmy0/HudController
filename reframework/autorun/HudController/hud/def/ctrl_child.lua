@@ -90,39 +90,10 @@ setmetatable(this, { __index = hud_child })
 ---@param args CtrlChildConfig
 ---@param parent HudBase
 ---@param ctrl_getter (fun(self: CtrlChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): ControlChild | ControlChild[]?)?
----@param ctrl_writer (fun(self: CtrlChild, ctrl: ControlChild): boolean)? when set, ctrl_writer is used instead of hud_base._write
----@param default_overwrite CtrlChildDefaultOverwite?
----@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
----@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
----@param cache_index integer? by_default, 1
+---@param optional_args HudChildOptionalArgs?
 ---@return CtrlChild
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = hud_child.new(
-        self,
-        args,
-        parent,
-        ctrl_getter,
-        ctrl_writer,
-        default_overwrite,
-        gui_ignore,
-        children_sort,
-        no_cache,
-        valid_guiid,
-        cache_index
-    )
+function this:new(args, parent, ctrl_getter, optional_args)
+    local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o CtrlChild
 

@@ -49,48 +49,19 @@ local control_arguments = {
 ---@param args ProgressTimerConfig
 ---@param parent Progress
 ---@param ctrl_getter fun(self: ProgressPartBase, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
----@param ctrl_writer (fun(self: ProgressPartBase, ctrl: via.gui.Control): boolean)?
----@param default_overwrite ProgressPartBaseDefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)?
----@param no_cache boolean?
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
----@param cache_index integer?
+---@param optional_args HudChildOptionalArgs?
 ---@return ProgressTimer
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = part_base.new(
-        self,
-        args,
-        parent,
-        ctrl_getter,
-        ctrl_writer,
-        default_overwrite,
-        gui_ignore,
-        children_sort,
-        no_cache,
-        valid_guiid,
-        cache_index
-    )
+function this:new(args, parent, ctrl_getter, optional_args)
+    local o = part_base.new(self, args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o ProgressTimer
 
     o.children.text = part_base:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
-    end, nil, { hide = false })
+    end, { default_overwrite = { hide = false } })
     o.children.rank = part_base:new(args.children.rank, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.rank)
-    end, nil, { hide = false })
+    end, { default_overwrite = { hide = false } })
 
     return o
 end

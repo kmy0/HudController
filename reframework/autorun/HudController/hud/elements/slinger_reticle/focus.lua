@@ -29,14 +29,14 @@ function this:new(args, parent)
             parent:reset_slinger()
             return parent:get_GUI020002_pnl()
         end
-    end, nil, nil, nil, nil, true)
+    end, { no_cache = true })
     setmetatable(o, self)
     ---@cast o SlingerReticleFocus
 
     ---@diagnostic disable-next-line: missing-fields
     o.children.slinger = slinger:new({}, o, function(s, _, _, _)
         return s:get_slinger_pnl()
-    end, nil, nil, true, nil, true)
+    end, { gui_ignore = true, no_cache = true })
     return o
 end
 

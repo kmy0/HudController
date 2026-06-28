@@ -32,6 +32,12 @@
 ---@class (exact) HudChildChangedProperties : HudBaseChangedProperties
 ---@class (exact) HudChildProperties : {[HudChildProperty]: boolean}, HudBaseProperties
 
+---@class (exact) HudChildOptionalArgs : HudBaseOptionalArgs
+---@field no_cache boolean? by_default, false - if true cache via.gui.Control objects
+---@field valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
+---@field cache_index integer? by_default, 1
+---@field ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)? when set, ctrl_writer is used instead of hud_base._write
+
 ---@alias HudChildProperty HudBaseProperty
 ---@alias HudChildWriteKey HudBaseWriteKey
 
@@ -52,54 +58,44 @@ setmetatable(this, { __index = hud_base })
 ---@param args HudChildConfig
 ---@param parent HudBase | HudChild
 ---@param ctrl_getter (fun(self: HudChild, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)?
----@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Control): boolean)? when set, ctrl_writer is used instead of hud_base._write
----@param default_overwrite HudBaseDefaultOverwrite?
----@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
----@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
----@param cache_index integer? by_default, 1
+---@param optional_args HudChildOptionalArgs?
 ---@return HudChild
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = hud_base.new(self, args, parent, {
-        default_overwrite = default_overwrite,
-        gui_ignore = gui_ignore,
-        children_sort = children_sort,
-    })
+function this:new(args, parent, ctrl_getter, optional_args)
+    optional_args = optional_args or {}
+
+    local o = hud_base.new(self, args, parent, optional_args)
     setmetatable(o, self)
     ---@cast o HudChild
 
-    if not no_cache and not config.debug.current.debug.disable_cache then
+    if not optional_args.no_cache and not config.debug.current.debug.disable_cache then
         local max_frame = 60
         local jitter = 120
-        o._ctrl_getter =
-            frame_cache.memoize(o._ctrl_getter, max_frame, nil, nil, jitter, cache_index)
+        o._ctrl_getter = frame_cache.memoize(
+            o._ctrl_getter,
+            max_frame,
+            nil,
+            nil,
+            jitter,
+            optional_args.cache_index
+        )
     end
 
     o.ctrl_getter = ctrl_getter or function(_, _, _, ctrl)
         return ctrl
     end
-    o.ctrl_writer = ctrl_writer
+    o.ctrl_writer = optional_args.ctrl_writer
     o._getter_cache = {}
 
-    if valid_guiid then
+    if optional_args.valid_guiid then
+        local valid_guiid = optional_args.valid_guiid
         o.valid_guiid = {}
 
         if type(valid_guiid) == "number" then
             o.valid_guiid[valid_guiid] = true
         else
-            for _, guiid in pairs(valid_guiid) do
+            for _, guiid in
+                pairs(valid_guiid --[==[@as app.GUIID.ID[]]==])
+            do
                 o.valid_guiid[guiid] = true
             end
         end

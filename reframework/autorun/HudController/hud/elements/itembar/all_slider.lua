@@ -285,9 +285,7 @@ function this:new(args, parent)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.right_stick_key)
         end,
-        nil,
-        nil,
-        true
+        { gui_ignore = true }
     )
 
     o:_init_appear_open(args)
@@ -328,31 +326,35 @@ function this:_init_appear_open(args)
         function(_, _, _, ctrl)
             return ctrl
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
-                ctrl:set_PlayState("HIDDEN")
-            end
+                if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
+                    ctrl:set_PlayState("HIDDEN")
+                end
 
-            return true
-        end,
-        nil,
-        true
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
     -- makes icons visible when expanded itembar is hidden
     self.children.icon_state = hud_child:new(args.children.icon_state, self, function(_, _, _, ctrl)
         local icons = get_icons(ctrl)
         return play_object.iter_args(icons, control_arguments.icon_state)
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.play_state and not self:is_visible() then
-            ctrl:set_PlayState("HIDDEN")
-        end
+            if s.play_state and not self:is_visible() then
+                ctrl:set_PlayState("HIDDEN")
+            end
 
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
     -- hides cursor select when expanded itembar is hidden
     self.children.cursor_state = hud_child:new(
         args.children.cursor_state,
@@ -361,57 +363,67 @@ function this:_init_appear_open(args)
             local icons = get_icons(ctrl)
             return play_object.iter_args(icons, control_arguments.cursor_state)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if
-                s.play_state
-                and not self.parent:get_GUI020006():get_IsAllSliderMode()
-                and not self.parent:get_GUI020006():get_getIsItemSliderMode()
-            then
-                ctrl:set_ForceInvisible(true)
-                s.hide = true
-                return false
-            else
-                ctrl:set_ForceInvisible(false)
-                s.hide = false
-                return true
-            end
-        end,
-        nil,
-        true
+                if
+                    s.play_state
+                    and not self.parent:get_GUI020006():get_IsAllSliderMode()
+                    and not self.parent:get_GUI020006():get_getIsItemSliderMode()
+                then
+                    ctrl:set_ForceInvisible(true)
+                    s.hide = true
+                    return false
+                else
+                    ctrl:set_ForceInvisible(false)
+                    s.hide = false
+                    return true
+                end
+            end,
+            gui_ignore = true,
+        }
     )
     -- forces item number to appear
     self.children.text_num = hud_child:new(args.children.text_num, self, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text_num)
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.play_state then
-            ctrl:set_Visible(true)
-        end
-        return true
-    end, nil, true)
+            if s.play_state then
+                ctrl:set_Visible(true)
+            end
+            return true
+        end,
+        gui_ignore = true,
+    })
     -- prevents text flicker when opening expanded itembar
     self.children.text_pnl = hud_child:new(args.children.text_pnl, self, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text_pnl)
-    end, function(_, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(_, ctrl)
+            play_object_defaults:check(ctrl)
 
-        ctrl:set_PlayState("HIDDEN")
-        return true
-    end, nil, true)
+            ctrl:set_PlayState("HIDDEN")
+            return true
+        end,
+        gui_ignore = true,
+    })
     -- hides ref equip icon thing, for whatever reason its visible and when icons get recreated it flickers
     self.children.ref_icon = hud_child:new(args.children.ref_icon, self, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.ref_icon)
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.play_state then
-            ctrl:set_Visible(false)
-        end
-        return true
-    end, nil, true)
+            if s.play_state then
+                ctrl:set_Visible(false)
+            end
+            return true
+        end,
+        gui_ignore = true,
+    })
     -- makes expanded itembar fully visible
     self.children.color_scale = hud_child:new(
         args.children.color_scale,
@@ -419,9 +431,7 @@ function this:_init_appear_open(args)
         function(_, _, _, ctrl)
             return play_object.iter_args(ctrl, control_arguments.color_scale)
         end,
-        nil,
-        nil,
-        true
+        { gui_ignore = true }
     )
     -- fades all icons except selected one when expanded itembar is hidden
     self.children.icon_color_scale = hud_child:new(
@@ -430,55 +440,59 @@ function this:_init_appear_open(args)
         function(_, _, _, ctrl)
             return get_icons(ctrl)
         end,
-        function(s, ctrl)
-            play_object_defaults:check(ctrl)
+        {
+            ctrl_writer = function(s, ctrl)
+                play_object_defaults:check(ctrl)
 
-            if s.play_state then
-                local all_slider = self:get_part()
-                local current_item = all_slider:getCurrentItem()
+                if s.play_state then
+                    local all_slider = self:get_part()
+                    local current_item = all_slider:getCurrentItem()
 
-                if current_item then
-                    local current_sel = current_item:get__BaseItem()
-                    local color = ctrl:get_ColorScale()
+                    if current_item then
+                        local current_sel = current_item:get__BaseItem()
+                        local color = ctrl:get_ColorScale()
 
-                    if
-                        ctrl ~= current_sel
-                        and not self.parent:get_GUI020006():get_IsAllSliderMode()
-                    then
-                        color.x = 0.75
-                        color.y = 0.75
-                        color.z = 0.75
-                    else
-                        color.x = 1.0
-                        color.y = 1.0
-                        color.z = 1.0
+                        if
+                            ctrl ~= current_sel
+                            and not self.parent:get_GUI020006():get_IsAllSliderMode()
+                        then
+                            color.x = 0.75
+                            color.y = 0.75
+                            color.z = 0.75
+                        else
+                            color.x = 1.0
+                            color.y = 1.0
+                            color.z = 1.0
+                        end
+
+                        s.color_scale = color
+                        ctrl:set_ColorScale(color)
                     end
-
-                    s.color_scale = color
-                    ctrl:set_ColorScale(color)
                 end
-            end
 
-            return true
-        end,
-        nil,
-        true
+                return true
+            end,
+            gui_ignore = true,
+        }
     )
     -- hide keys
     self.children.keys_state = hud_child:new(args.children.keys_state, self, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keys)
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
-            ctrl:set_Visible(false)
-            return false
-        elseif not self.children.keys.hide then
-            ctrl:set_Visible(true)
-        end
+            if s.play_state and not self.parent:get_GUI020006():get_IsAllSliderMode() then
+                ctrl:set_Visible(false)
+                return false
+            elseif not self.children.keys.hide then
+                ctrl:set_Visible(true)
+            end
 
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
 end
 
 ---@param appear_open boolean

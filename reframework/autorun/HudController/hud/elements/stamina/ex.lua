@@ -193,13 +193,16 @@ function this:new(args, parent)
             play_object.iter_args(ctrl, control_arguments.bar1),
             play_object.iter_args(ctrl, control_arguments.bar2)
         )
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
-        if s.play_state then
-            ctrl:set_PlayState("DEFAULT")
-        end
-        return true
-    end, nil, true)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
+            if s.play_state then
+                ctrl:set_PlayState("DEFAULT")
+            end
+            return true
+        end,
+        gui_ignore = true,
+    })
 
     o:set_hide_pulse(args.hide_pulse)
     return o

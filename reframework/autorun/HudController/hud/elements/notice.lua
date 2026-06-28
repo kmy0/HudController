@@ -125,11 +125,7 @@ function this:new(args)
                 ---@diagnostic disable-next-line: invisible
                 return o:_notice_ctrl_getter(s, hudbase, cls_short)
             end,
-            nil,
-            nil,
-            nil,
-            nil,
-            true
+            { no_cache = true }
         )
 
         --FIXME: this feels a bit out of place...

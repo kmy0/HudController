@@ -53,39 +53,10 @@ local control_arguments = {
 ---@param args ProgressQuestTimerConfig
 ---@param parent Progress
 ---@param ctrl_getter fun(self: ProgressQuestTimer, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
----@param ctrl_writer (fun(self: ProgressQuestTimer, ctrl: via.gui.Control): boolean)?
----@param default_overwrite ProgressPartBaseDefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)?
----@param no_cache boolean?
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
----@param cache_index integer?
+---@param optional_args HudChildOptionalArgs?
 ---@return ProgressQuestTimer
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = timer.new(
-        self,
-        args,
-        parent,
-        ctrl_getter,
-        ctrl_writer,
-        default_overwrite,
-        gui_ignore,
-        children_sort,
-        no_cache,
-        valid_guiid,
-        cache_index
-    )
+function this:new(args, parent, ctrl_getter, optional_args)
+    local o = timer.new(self, args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o ProgressQuestTimer
 
@@ -94,7 +65,7 @@ function this:new(
         if panel then
             return play_object.iter_args(panel, control_arguments.background)
         end
-    end, nil, { hide = false })
+    end, { default_overwrite = { hide = false } })
 
     return o
 end

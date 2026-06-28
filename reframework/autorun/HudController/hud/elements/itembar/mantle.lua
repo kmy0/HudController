@@ -82,25 +82,31 @@ function this:new(args, parent)
 
     o.children.mantle_state = hud_child:new(args.children.mantle_state, o, function(_, _, _, ctrl)
         return play_object.control.get_parent(ctrl, "PNL_mantleSet")
-    end, function(s, ctrl)
-        if s.play_state then
-            ctrl:set_PlayState("DEFAULT")
-        end
+    end, {
+        ctrl_writer = function(s, ctrl)
+            if s.play_state then
+                ctrl:set_PlayState("DEFAULT")
+            end
 
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
     o.children.visible_state = hud_child:new(args.children.visible_state, o, function(_, _, _, ctrl)
         return play_object.control.get_parent(ctrl, "PNL_mantleSetMove")
-    end, function(s, ctrl)
-        if s.play_state then
-            ctrl:set_Visible(true)
-        end
+    end, {
+        ctrl_writer = function(s, ctrl)
+            if s.play_state then
+                ctrl:set_Visible(true)
+            end
 
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
     o.children.timer_state = hud_child:new(args.children.timer_state, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.timer)
-    end, nil, nil, true)
+    end, { gui_ignore = true })
 
     if args.always_visible then
         o:set_always_visible(args.always_visible)

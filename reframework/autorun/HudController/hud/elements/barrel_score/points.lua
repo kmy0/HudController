@@ -70,39 +70,10 @@ local control_arguments = {
 ---@param args BarrelScorePointsConfig
 ---@param parent BarrelScore
 ---@param ctrl_getter fun(self: BarrelScorePoints, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?)
----@param ctrl_writer (fun(self: BarrelScorePoints, ctrl: via.gui.Control): boolean)?
----@param default_overwrite HudChildDefaultOverwrite?
----@param gui_ignore boolean?
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)?
----@param no_cache boolean?
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])?
----@param cache_index integer? by_default, 1
+---@param optional_args HudChildOptionalArgs?
 ---@return BarrelScorePoints
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = hud_child.new(
-        self,
-        args,
-        parent,
-        ctrl_getter,
-        ctrl_writer,
-        default_overwrite,
-        gui_ignore,
-        children_sort,
-        no_cache,
-        valid_guiid,
-        cache_index
-    )
+function this:new(args, parent, ctrl_getter, optional_args)
+    local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
 
     ---@cast o BarrelScorePoints

@@ -166,7 +166,7 @@ function this:new(args)
         if root then
             return play_object.iter_args(root, control_arguments.background)
         end
-    end, nil, nil, nil, nil, true)
+    end, { no_cache = true })
     o.children.out_frame_icon = hud_child:new(
         args.children.out_frame_icon,
         o,
@@ -174,12 +174,7 @@ function this:new(args)
             local icons = play_object.iter_args(ctrl, control_arguments.out_frame_icon)
             return play_object.iter_args(icons, control_arguments.out_frame_icon_rot)
         end,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        176
+        { valid_guiid = 176 }
     )
     o.children.classic_minimap = hud_child:new(
         args.children.classic_minimap,
@@ -187,35 +182,34 @@ function this:new(args)
         function(_, _, _, ctrl)
             return ctrl
         end,
-        nil,
-        nil,
-        true,
-        nil,
-        nil,
-        176
+        { gui_ignore = true, valid_guiid = 176 }
     )
     o.children.front = hud_child:new(args.children.front, o, function(_, hudbase, _, _)
         local gui = util_ace.misc.get_gui_component(hudbase)
         return play_object.iter_args(gui:get_View(), control_arguments.front)
-    end, nil, nil, true, nil, nil, 176)
+    end, { gui_ignore = true, valid_guiid = 176 })
     o.children.mask = hud_child:new(args.children.mask, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.mask)
-    end, nil, nil, true, nil, nil, 177)
+    end, { gui_ignore = true, valid_guiid = 177 })
     o.children.pl_icon_pulse = hud_child:new(args.children.pl_icon_pulse, o, function(_, _, _, _)
         local icon_ctrl = o:get_pl_icon_controller()
         if icon_ctrl then
             local mp_icon = icon_ctrl._MasterPlayerIcon
             return play_object.control.get(mp_icon._PlIconPanel, "PNL_PLeffects")
         end
-    end, function(s, ctrl)
-        play_object_defaults:check(ctrl)
+    end, {
+        ctrl_writer = function(s, ctrl)
+            play_object_defaults:check(ctrl)
 
-        if s.play_state then
-            ctrl:set_PlayState(s.play_state)
-        end
+            if s.play_state then
+                ctrl:set_PlayState(s.play_state)
+            end
 
-        return true
-    end, nil, true, nil, nil, 177)
+            return true
+        end,
+        gui_ignore = true,
+        valid_guiid = 177,
+    })
 
     o._mask_scale = Vector3f.new(10, 10, 1)
     o._mask_offset = Vector3f.new(-1500, 1500, 1)

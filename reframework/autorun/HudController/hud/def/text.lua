@@ -62,39 +62,10 @@ setmetatable(this, { __index = ctrl_child })
 ---@param args TextConfig
 ---@param parent HudBase
 ---@param ctrl_getter fun(self: Text, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Text | via.gui.Text[]?
----@param ctrl_writer (fun(self: HudChild, ctrl: via.gui.Text): boolean)? when set, ctrl_writer is used instead of hud_base._write
----@param default_overwrite TextDefaultOverwrite?
----@param gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@param children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
----@param no_cache boolean? by_default, false - if true cache via.gui.Control objects
----@param valid_guiid (app.GUIID.ID | app.GUIID.ID[])? when set, ctrl_getter ignores all guiids except these
----@param cache_index integer? by_default, 1
+---@param optional_args HudChildOptionalArgs?
 ---@return Text
-function this:new(
-    args,
-    parent,
-    ctrl_getter,
-    ctrl_writer,
-    default_overwrite,
-    gui_ignore,
-    children_sort,
-    no_cache,
-    valid_guiid,
-    cache_index
-)
-    local o = ctrl_child.new(
-        self,
-        args,
-        parent,
-        ctrl_getter,
-        ctrl_writer,
-        default_overwrite,
-        gui_ignore,
-        children_sort,
-        no_cache,
-        valid_guiid,
-        cache_index
-    )
+function this:new(args, parent, ctrl_getter, optional_args)
+    local o = ctrl_child.new(self, args, parent, ctrl_getter, optional_args)
     o.properties = util_table.merge_t(o.properties, {
         hide_glow = true,
         glow_color = true,
