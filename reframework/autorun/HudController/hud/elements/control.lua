@@ -125,11 +125,7 @@ function this:new(args)
             o:_store_pat00_default(ctrl)
             return play_object.iter_args(ctrl, control_arguments.control_guide1)
         end,
-        nil,
-        nil,
-        nil,
-        nil,
-        true
+        { no_cache = true }
     )
     o.children.control_guide2 = hud_child:new(
         args.children.control_guide2,
@@ -139,11 +135,7 @@ function this:new(args)
             o:_store_pat00_default(ctrl)
             return play_object.iter_args(ctrl, control_arguments.control_guide2)
         end,
-        nil,
-        nil,
-        nil,
-        nil,
-        true
+        { no_cache = true }
     )
     o.children.skill_name = hud_child:new(args.children.skill_name, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.skill_name)

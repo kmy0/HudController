@@ -100,18 +100,9 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return ChargeAxe
 function this:new(args, parent)
-    local o = hud_child.new(
-        self,
-        args,
-        parent,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-        e.get("app.GUIID.ID").UI020034
-    )
+    local o =
+        hud_child.new(self, args, parent, nil, { valid_guiid = e.get("app.GUIID.ID").UI020034 }
+)
     setmetatable(o, self)
     ---@cast o ChargeAxe
 

@@ -26,32 +26,25 @@ setmetatable(this, { __index = hud_child })
 ---@param parent DamageNumbers
 ---@return DamageNumbersCriticalState
 function this:new(args, parent)
-    local o = hud_child.new(
-        self,
-        args,
-        parent,
-        function(s, pnl_wrap, _, pnl_parent)
-            ---@cast pnl_wrap via.gui.Panel
-            ---@cast s DamageNumbersCriticalState
+    local o = hud_child.new(self, args, parent, function(s, pnl_wrap, _, pnl_parent)
+        ---@cast pnl_wrap via.gui.Panel
+        ---@cast s DamageNumbersCriticalState
 
-            local damage_info = s.root.panels[pnl_wrap]
-            if not damage_info then -- reset
-                return pnl_parent
-            end
+        local damage_info = s.root.panels[pnl_wrap]
+        if not damage_info then -- reset
+            return pnl_parent
+        end
 
-            if
-                args.name_key == "ALL"
-                or e.get("app.GUI020020.CRITICAL_STATE")[damage_info.critical_state]
-                    == args.name_key
-            then
-                s:adjust_offset(damage_info)
-                return pnl_parent
-            end
-        end,
-        nil,
-        nil,
-        nil,
-        function(a_key, b_key)
+        if
+            args.name_key == "ALL"
+            or e.get("app.GUI020020.CRITICAL_STATE")[damage_info.critical_state]
+                == args.name_key
+        then
+            s:adjust_offset(damage_info)
+            return pnl_parent
+        end
+    end, {
+        children_sort = function(a_key, b_key)
             if a_key.name_key == "ALL" then
                 return true
             end
@@ -61,8 +54,8 @@ function this:new(args, parent)
             end
             return a_key.name_key < b_key.name_key
         end,
-        true
-    )
+        no_cache = true,
+    })
 
     setmetatable(o, self)
     numbers_offset.wrap(o, args)

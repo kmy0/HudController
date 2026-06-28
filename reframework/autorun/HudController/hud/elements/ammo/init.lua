@@ -253,26 +253,29 @@ function this:new(args)
     end)
     o.children.no_hide_parts = hud_child:new(args.children.no_hide_parts, o, function(_, _, _, ctrl)
         return ctrl
-    end, function(_, ctrl)
-        -- if opacity is not forced there is a flicker sometimes
-        for _, child in pairs({
-            o.children.energy,
-            o.children.reload,
-            o.children.sp_ammo1,
-            o.children.sp_ammo2,
-            o.children.sp_ammo_frame,
-        }) do
-            if not child.hide and not child.opacity then
-                ---@diagnostic disable-next-line: param-type-mismatch, invisible
-                for _, c in pairs(child:ctrl_getter(nil, nil, ctrl)) do
-                    ---@diagnostic disable-next-line: invisible
-                    o:_set_opacity(c, 1.0)
+    end, {
+        ctrl_writer = function(_, ctrl)
+            -- if opacity is not forced there is a flicker sometimes
+            for _, child in pairs({
+                o.children.energy,
+                o.children.reload,
+                o.children.sp_ammo1,
+                o.children.sp_ammo2,
+                o.children.sp_ammo_frame,
+            }) do
+                if not child.hide and not child.opacity then
+                    ---@diagnostic disable-next-line: param-type-mismatch, invisible
+                    for _, c in pairs(child:ctrl_getter(nil, nil, ctrl)) do
+                        ---@diagnostic disable-next-line: invisible
+                        o:_set_opacity(c, 1.0)
+                    end
                 end
             end
-        end
 
-        return true
-    end, nil, true)
+            return true
+        end,
+        gui_ignore = true,
+    })
     o.children.bow_icon = hud_child:new(args.children.bow_icon, o, function(_, _, _, ctrl)
         local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
         local ret = {}

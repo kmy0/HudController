@@ -23,7 +23,7 @@ function this:new(args, parent)
             parent.children.timer:reset_specific(nil, nil, pnl)
         end
         return pnl
-    end, nil, nil, nil, nil, true)
+    end, { no_cache = true })
     setmetatable(o, self)
     ---@cast o ProgressQuestTimerBest
 
