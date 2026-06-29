@@ -83,7 +83,7 @@ function this.hide_handler_post(_)
             )
             ace_porter.set_continue_flag(
                 handler_porter,
-                e.get("app.PorterDef.CONTINUE_FLAG").DISABLALPHA_ZERO,
+                e.get("app.PorterDef.CONTINUE_FLAG").ALPHA_ZERO,
                 true
             )
             return
