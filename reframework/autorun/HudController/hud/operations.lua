@@ -31,7 +31,8 @@ end
 
 function this.reload()
     local config_mod = config.current.mod
-    state.swap_hud(config_mod.hud)
+    state.combo.hud:swap(config_mod.hud)
+    config_mod.combo.key_bind.hud = 1
 end
 
 ---@param ordered_names string[]
@@ -47,8 +48,15 @@ function this.sort(ordered_names)
     config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
         return o.name == current_hud
     end) or 1
-    state.swap_hud(config_mod.hud)
+
+    state.combo.hud:swap(config_mod.hud)
     config_mod.combo.key_bind.hud = 1
+
+    util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
+        value.combo_hud = util_table.index(config_mod.hud, function(o)
+            return o.key == value.hud_key
+        end) or 1
+    end)
 end
 
 ---@param hud_config HudProfileConfig
@@ -67,7 +75,7 @@ function this.remove(hud_config)
     end)
 
     config_mod.combo.hud = math.max(config_mod.combo.hud - 1, 1)
-    state.swap_hud(config_mod.hud)
+    state.combo.hud:swap(config_mod.hud)
 
     if util_table.empty(config_mod.hud) then
         hud_manager.clear()
@@ -81,6 +89,19 @@ function this.remove(hud_config)
 
     config_mod.combo.key_bind.hud = 1
     config_mod.bind.key.hud = bind_manager.hud:get_base_binds()
+
+    config_mod.bind.condition.hud = util_table.filter_array(
+        config_mod.bind.condition.hud,
+        function(_, value)
+            return value.hud_key ~= hud_config.key
+        end
+    )
+
+    util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
+        value.combo_hud = util_table.index(config_mod.hud, function(o)
+            return o.key == value.hud_key
+        end) or 1
+    end)
 end
 
 ---@param name string
@@ -110,8 +131,9 @@ function this.rename(hud_config, new_name)
         return
     end
 
+    local config_mod = config.current.mod
     hud_config.name = this.get_name(new_name)
-    state.swap_hud(config.current.mod.hud)
+    state.combo.hud:swap(config_mod.hud)
 end
 
 ---@param name_key string

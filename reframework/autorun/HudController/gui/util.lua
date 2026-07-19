@@ -83,7 +83,7 @@ function Separator:draw()
 end
 
 ---@param key string
----@param ... string
+---@param ... string | integer
 ---@return string
 function this.tr(key, ...)
     local suffix = { ... }

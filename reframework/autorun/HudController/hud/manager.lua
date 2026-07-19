@@ -14,8 +14,8 @@
 ---@field finish fun()
 
 local ace_misc = require("HudController.util.ace.misc")
+local bind_condition = require("HudController.hud.bind_condition.init")
 local bind_manager = require("HudController.hud.bind.init")
-local bind_weapon = require("HudController.hud.bind_weapon.init")
 local cache = require("HudController.util.misc.cache")
 local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
@@ -43,7 +43,7 @@ local this = {
 ---@class FadeCallbacks
 local fade_callbacks = {}
 local timers = {
-    disable_weapon_binds = timer:new(0),
+    disable_condition_binds = timer:new(0),
 }
 
 ---@param key string
@@ -106,25 +106,25 @@ end
 local function update_key_binds(config_mod)
     bind_manager.monitor:monitor()
 
-    if bind_manager.monitor:is_triggered("hud") and config_mod.disable_weapon_binds_timed then
-        if config_mod.disable_weapon_binds_held then
+    if bind_manager.monitor:is_triggered("hud") and config_mod.disable_condition_binds_timed then
+        if config_mod.disable_condition_binds_held then
             bind_manager.monitor:register_on_release_callback(
                 bind_manager.monitor:get_held_key_names("hud"),
                 function()
-                    timers.disable_weapon_binds:restart()
+                    timers.disable_condition_binds:restart()
                 end
             )
         else
-            timers.disable_weapon_binds:restart()
+            timers.disable_condition_binds:restart()
         end
     end
 
-    local is_held = config_mod.enable_weapon_binds
-        and config_mod.disable_weapon_binds_held
+    local is_held = config_mod.enable_condition_binds
+        and config_mod.disable_condition_binds_held
         and bind_manager.monitor:is_held("hud")
 
-    if not config_mod.disable_weapon_binds_timed and not is_held then
-        timers.disable_weapon_binds:abort()
+    if not config_mod.disable_condition_binds_timed and not is_held then
+        timers.disable_condition_binds:abort()
     end
 
     return is_held
@@ -348,15 +348,23 @@ function this.update()
         return
     end
 
-    timers.disable_weapon_binds:update_args(config_mod.disable_weapon_binds_time)
+    timers.disable_condition_binds:update_args(config_mod.disable_condition_binds_time)
 
     local is_held = config_mod.enable_key_binds and update_key_binds(config_mod)
 
-    if not config_mod.enable_weapon_binds or timers.disable_weapon_binds:active() or is_held then
+    if
+        not config_mod.enable_condition_binds
+        or timers.disable_condition_binds:active()
+        or is_held
+    then
+        if config_mod.bind.condition.highlight_pass and config.gui.current.gui.main.is_opened then
+            bind_condition.update_conditions_only()
+        end
+
         return
     end
 
-    local hud_config = bind_weapon.update(this.current_hud)
+    local hud_config = bind_condition.update(this.current_hud)
     if not hud_config then
         return
     end
@@ -392,7 +400,7 @@ function this.clear()
 
     this.by_hudid = {}
     this.overridden_options = {}
-    bind_weapon.reset()
+    bind_condition.reset()
 
     this.current_hud = nil
     this.requested_hud = nil

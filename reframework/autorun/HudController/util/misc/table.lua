@@ -598,6 +598,21 @@ function this.filter(t, predicate)
     return ret
 end
 
+---@generic T
+---@param t T[]
+---@param predicate fun(i: integer, value: T): boolean
+---@return T[]
+function this.filter_array(t, predicate)
+    local ret = {}
+    for k, v in pairs(t) do
+        if predicate(k, v) then
+            table.insert(ret, v)
+        end
+    end
+
+    return ret
+end
+
 ---@param key string
 ---@return string | integer
 function this.parse_key(key)
@@ -724,6 +739,52 @@ function this.consume_map(iterator)
         ret[k] = v
     end
     return ret
+end
+
+---@generic K, V
+---@param t {[K]: V}
+---@return {key: K, value: V}[]
+function this.map_to_array(t)
+    local ret = {}
+    for k, v in pairs(t) do
+        table.insert(ret, { key = k, value = v })
+    end
+    return ret
+end
+
+---@generic T
+---@param t1 T
+---@param t2 T
+---@return boolean
+function this.equal(t1, t2)
+    if t1 == t2 then
+        return true
+    end
+
+    if type(t1) ~= "table" or type(t2) ~= "table" then
+        return false
+    end
+
+    for k, v1 in pairs(t1) do
+        local v2 = t2[k]
+        if type(v1) == "table" and type(v2) == "table" then
+            if not this.equal(v1, v2) then
+                return false
+            end
+        else
+            if v1 ~= v2 then
+                return false
+            end
+        end
+    end
+
+    for k in pairs(t2) do
+        if t1[k] == nil then
+            return false
+        end
+    end
+
+    return true
 end
 
 return this

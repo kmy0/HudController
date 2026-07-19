@@ -9,15 +9,15 @@ this.__index = this
 setmetatable(this, { __index = custom_condition })
 
 function this:new()
-    local o = custom_condition.new(self, "Health Changed")
+    local o = custom_condition.new(self, "Stamina Changed")
     setmetatable(o, self)
 
     local options = o:get_additional_options_table()
     -- when condition is created for the first time, option table wont be available in the config
     o.timer = timer:new(options and options.duration or 3)
-    o.health = value_checker:new()
+    o.stamina = value_checker:new()
     o.frame = value_checker:new(frame_counter.frame, function(old_value, new_value)
-        -- this makes sure that condtion wont trigger if last health check was over 30 frames ago
+        -- this makes sure that condtion wont trigger if last stamina check was over 30 frames ago
         return new_value - old_value <= 30
     end)
 
@@ -30,17 +30,15 @@ function this:update()
         return false
     end
 
-    local health = char:get_HunterHealth()
-    local health_manager = health:get_HealthMgr()
-
-    if not health_manager then
+    local stamina = char:get_HunterStamina()
+    if not stamina then
         return false
     end
 
-    local current_health = health_manager:get_Health()
-    local health_changed = self.health:is_changed(current_health)
+    local current_stamina = stamina:get_Stamina()
+    local stamina_changed = self.stamina:is_changed(current_stamina)
     local frame_ok = self.frame:is_changed(frame_counter.frame)
-    if health_changed and frame_ok then
+    if stamina_changed and frame_ok then
         self.timer:restart()
     end
 
@@ -67,7 +65,7 @@ end
 
 function this:reset()
     self.timer:abort()
-    self.health:reset()
+    self.stamina:reset()
     self.frame:reset()
 end
 

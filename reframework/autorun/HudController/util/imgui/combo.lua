@@ -3,7 +3,7 @@
 ---@field map ComboMap[]
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@field map_fn (fun(value: any): string)?
----@field _translate_fn (fun(key: any): string)?
+---@field _translate_fn (fun(key: any, value: any): string)?
 ---@field _is_disabled_fn (fun(self: Combo): boolean)?
 ---@field disabled ComboMap[]
 
@@ -12,7 +12,7 @@
 ---@class (exact) ComboOptionalArgs
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@field map_fn (fun(value: any): string)?
----@field translate_fn (fun(key: any): string)?
+---@field translate_fn (fun(key: any, value: any): string)?
 ---@field is_disabled_fn (fun(self: Combo): boolean)?
 ---@field disabled_keys any[]?
 
@@ -84,11 +84,11 @@ function this:translate(current_index)
     local current_key = current_item.key
 
     for _, v in pairs(self.map) do
-        v.value = self._translate_fn(v.key)
+        v.value = self._translate_fn(v.key, v.value)
     end
 
     for _, v in pairs(self.disabled) do
-        v.value = self._translate_fn(v.key)
+        v.value = self._translate_fn(v.key, v.value)
     end
 
     if self.sort_fn then
