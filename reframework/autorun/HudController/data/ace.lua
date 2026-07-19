@@ -17,11 +17,6 @@
 ---@field guiid_ignore table<string, boolean>
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
 ---@field auto_id_to_text table<app.Communication.AUTO_ID, string>
----@field weapon_binds {
---- additional_weapon: string[],
---- game_mode: string[],
---- pl_state: string[],
---- }
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
 
 ---@class (exact) AceOptionItem
@@ -63,11 +58,6 @@ local this = {
             "CHAT_LOG",
             "QUEST_END_TIMER",
             "BUTTON_PRESS",
-        },
-        weapon_binds = {
-            additional_weapon = { "RANGED", "MELEE", "GLOBAL" },
-            game_mode = { "singleplayer", "multiplayer" },
-            pl_state = { "combat_in", "combat_out", "camp" },
         },
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",

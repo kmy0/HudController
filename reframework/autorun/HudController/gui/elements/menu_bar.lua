@@ -1,7 +1,8 @@
+local bind_condition = require("HudController.hud.bind_condition.init")
 local bind_manager = require("HudController.hud.bind.init")
-local bind_weapon = require("HudController.hud.bind_weapon.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local drag_util = require("HudController.gui.drag")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_debug = require("HudController.gui.debug")
 local gui_selector = require("HudController.gui.elements.selector")
@@ -14,13 +15,11 @@ local util_bind = require("HudController.util.game.bind.init")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
-local ace_map = data.ace.map
 local mod = data.mod
 local set = state.set
+local drag = drag_util:new()
 
 local this = {}
----@type fun()?
-local weapon_binds_copy_fn
 
 ---@param label string
 ---@param draw_func fun()
@@ -103,20 +102,20 @@ local function draw_mod_menu()
     end
 
     set:menu_item(gui_util.tr("menu.config.enable_notification"), "mod.enable_notification")
-    set:menu_item(gui_util.tr("menu.config.enable_weapon_binds"), "mod.enable_weapon_binds")
+    set:menu_item(gui_util.tr("menu.config.enable_condition_binds"), "mod.enable_condition_binds")
     set:menu_item(gui_util.tr("menu.config.enable_key_binds"), "mod.enable_key_binds")
 
     imgui.separator()
 
     set:menu_item(
-        gui_util.tr("menu.config.disable_weapon_binds_timed"),
-        "mod.disable_weapon_binds_timed"
+        gui_util.tr("menu.config.disable_condition_binds_timed"),
+        "mod.disable_condition_binds_timed"
     )
-    util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_timed_tooltip"))
+    util_imgui.tooltip(config.lang:tr("menu.config.disable_condition_binds_timed_tooltip"))
 
-    imgui.begin_disabled(not config_mod.disable_weapon_binds_timed)
+    imgui.begin_disabled(not config_mod.disable_condition_binds_timed)
     imgui.indent(2)
-    local item_config_key = "mod.disable_weapon_binds_time"
+    local item_config_key = "mod.disable_condition_binds_time"
     local item_value = config:get(item_config_key)
     set:slider_int(
         "##" .. item_config_key,
@@ -130,10 +129,10 @@ local function draw_mod_menu()
     imgui.unindent(2)
 
     set:menu_item(
-        gui_util.tr("menu.config.disable_weapon_binds_held"),
-        "mod.disable_weapon_binds_held"
+        gui_util.tr("menu.config.disable_condition_binds_held"),
+        "mod.disable_condition_binds_held"
     )
-    util_imgui.tooltip(config.lang:tr("menu.config.disable_weapon_binds_held_tooltip"))
+    util_imgui.tooltip(config.lang:tr("menu.config.disable_condition_binds_held_tooltip"))
 
     imgui.pop_style_var(1)
 end
@@ -454,7 +453,7 @@ local function draw_key_bind_menu()
     imgui.spacing()
 end
 
-local function draw_weapon_bind_menu()
+local function draw_condition_bind_menu()
     imgui.spacing()
     imgui.indent(2)
 
@@ -462,182 +461,304 @@ local function draw_weapon_bind_menu()
 
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
-    set:checkbox(gui_util.tr("menu.bind.weapon.quest_in_combat"), "mod.bind.weapon.quest_in_combat")
-    set:checkbox(
-        gui_util.tr("menu.bind.weapon.ride_ignore_combat"),
-        "mod.bind.weapon.ride_ignore_combat"
-    )
-    util_imgui.tooltip(config.lang:tr("menu.bind.weapon.ride_ignore_combat_tooltip"), true)
-    set:slider_int(
-        gui_util.tr("menu.bind.weapon.out_of_combat_delay"),
-        "mod.bind.weapon.out_of_combat_delay",
-        0,
-        600,
-        config_mod.bind.weapon.out_of_combat_delay == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(
-                config_mod.bind.weapon.out_of_combat_delay,
-                nil,
-                true
-            )
-    )
-    set:slider_int(
-        gui_util.tr("menu.bind.weapon.in_combat_delay"),
-        "mod.bind.weapon.in_combat_delay",
-        0,
-        600,
-        config_mod.bind.weapon.in_combat_delay == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(config_mod.bind.weapon.in_combat_delay, nil, true)
-    )
-
-    imgui.separator()
-
-    set:checkbox(
-        gui_util.tr("menu.bind.weapon.singleplayer_only"),
-        "mod.bind.weapon.singleplayer_only"
-    )
-    util_imgui.tooltip(config.lang:tr("menu.bind.weapon.tooltip_singleplayer_only"), true)
-    set:slider_int(
-        gui_util.tr("menu.bind.weapon.game_mode"),
-        "mod.bind.slider.weapon_bind",
-        1,
-        2,
-        config_mod.bind.slider.weapon_bind == 1 and config.lang:tr("menu.bind.weapon.singleplayer")
-            or config.lang:tr("menu.bind.weapon.multiplayer")
-    )
-
-    if imgui.button(gui_util.tr("menu.bind.weapon.button_copy_singleplayer")) then
-        util_imgui.open_popup("weapon_bind_copy", 62, 30)
-        weapon_binds_copy_fn = function()
-            config_mod.bind.weapon.multiplayer =
-                util_table.deep_copy(config_mod.bind.weapon.singleplayer)
-        end
-    end
-    imgui.same_line()
-    if imgui.button(gui_util.tr("menu.bind.weapon.button_copy_multiplayer")) then
-        util_imgui.open_popup("weapon_bind_copy", 62, 30)
-        weapon_binds_copy_fn = function()
-            config_mod.bind.weapon.singleplayer =
-                util_table.deep_copy(config_mod.bind.weapon.multiplayer)
-        end
-    end
-
-    if
-        util_imgui.popup_yesno(
-            "weapon_bind_copy",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
+    if imgui.button(gui_util.tr("menu.bind.condition.button_add_new_condition")) then
+        table.insert(
+            config_mod.bind.condition.hud,
+            bind_condition.new_condition_set(config_mod.hud[1])
         )
-    then
-        ---@cast weapon_binds_copy_fn fun()
-        weapon_binds_copy_fn()
-        weapon_binds_copy_fn = nil
         config:save()
     end
 
-    local key = config_mod.bind.slider.weapon_bind == 1 and "singleplayer" or "multiplayer"
-    local sorted = util_table.sort(
-        util_table.values(config_mod.bind.weapon[key]) --[=[@as WeaponBindConfig[]]=],
-        function(a, b)
-            local a_id = util_table.index(ace_map.weapon_binds.additional_weapon, a.name)
-            local b_id = util_table.index(ace_map.weapon_binds.additional_weapon, b.name)
-            a_id = a_id and -a_id or a.weapon_id
-            b_id = b_id and -b_id or b.weapon_id
-            return a_id < b_id
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_add_new_condition"), true)
+
+    if not util_table.empty(config_mod.bind.condition.hud) then
+        imgui.separator()
+    end
+
+    drag:clear()
+    imgui.indent(1)
+
+    ---@type integer[]
+    local set_remove = {}
+    ---@type ConditionSetConfig?
+    local duplicate
+    for i, cond_set in ipairs(config_mod.bind.condition.hud) do
+        local config_key = "mod.bind.condition.hud.int:" .. i
+        cond_set.conditions = cond_set.conditions or {}
+
+        imgui.begin_rect()
+        imgui.indent(5)
+        util_imgui.spacer(0, 5)
+        drag:draw_drag_button(tostring(i), cond_set)
+        imgui.same_line()
+
+        if imgui.arrow_button("cond_set_collapse" .. i, cond_set.collapsed and 1 or 3) then
+            cond_set.collapsed = not cond_set.collapsed
         end
-    ) --[[@as table<integer, WeaponBindConfig>]]
 
-    local column_count = 5 + #bind_weapon.custom_conditions.sorted
-    if imgui.begin_table("weapon_state", column_count) then
-        for _, header in ipairs({
-            gui_util.tr("menu.bind.weapon.header_enabled"),
-            gui_util.tr("menu.bind.weapon.header_combat_in"),
-            gui_util.tr("menu.bind.weapon.header_combat_out"),
-            gui_util.tr("menu.bind.weapon.header_camp"),
-        }) do
-            imgui.table_setup_column(header)
-        end
-
-        for _, fname in ipairs(bind_weapon.custom_conditions.sorted) do
-            local condition = bind_weapon.custom_conditions.map[fname]
-            imgui.table_setup_column(condition.name)
-        end
-
-        imgui.table_setup_column(gui_util.tr("menu.bind.weapon.header_weapon_name"))
-
-        imgui.table_headers_row()
-
-        for i = 1, #sorted do
-            imgui.table_next_row()
-            imgui.table_set_column_index(0)
-
-            local weapon = sorted[i]
-
-            imgui.begin_disabled(
-                weapon.name ~= "GLOBAL"
-                    and config:get(string.format("mod.bind.weapon.%s.%s.enabled", key, "GLOBAL"))
-            )
-
-            local config_key = string.format("mod.bind.weapon.%s.%s.enabled", key, weapon.name)
-            local changed = set:checkbox(string.format("##%s", weapon.name), config_key)
-
-            local function draw_combo(sub_key)
-                imgui.push_item_width(100)
-
-                config_key = string.format("mod.bind.weapon.%s.%s.%s", key, weapon.name, sub_key)
-                if not config:get(config_key) then
-                    config:set(config_key, { hud_key = -1, combo = 1 })
+        if cond_set.collapsed then
+            local text = {}
+            for j, cond in ipairs(cond_set.conditions) do
+                local cond_class = bind_condition.conditions[cond.class]
+                if not cond_class then
+                    goto continue
                 end
 
-                config_key = string.format("%s.combo", config_key)
+                local str = cond_class:get_display_name()
 
-                changed = set:combo(
-                    string.format("##%s_%s_%s", weapon.name, sub_key, key),
-                    config_key,
-                    state.combo.hud_weapon_bind.values
-                ) or changed
+                if cond_class.options then
+                    local index = config:get(
+                        string.format("%s.conditions.int:%s.%s", config_key, j, "combo")
+                    ) or 1
 
-                if changed then
-                    config:set(
-                        string.format("mod.bind.weapon.%s.%s.%s.hud_key", key, weapon.name, sub_key),
-                        state.combo.hud_weapon_bind:get_key(config:get(config_key))
+                    str = string.format(
+                        "%s - %s",
+                        str,
+                        state.bind_condition_options[cond.class]:get_value(index)
                     )
                 end
 
-                imgui.pop_item_width()
+                table.insert(text, str)
+                ::continue::
             end
 
-            imgui.table_set_column_index(1)
-            imgui.begin_disabled(not config:get(config_key))
-            draw_combo("combat_in")
-
-            imgui.table_set_column_index(2)
-            draw_combo("combat_out")
-
-            imgui.table_set_column_index(3)
-            draw_combo("camp")
-
-            local j = 4
-            for _, fname in ipairs(bind_weapon.custom_conditions.sorted) do
-                imgui.table_set_column_index(j)
-                draw_combo(fname)
-                j = j + 1
+            local tooltip = config.lang:tr("misc.text_none")
+            if not util_table.empty(text) then
+                tooltip = table.concat(text, "\n")
             end
 
-            imgui.table_set_column_index(j)
-            imgui.text(
-                weapon.weapon_id < 0
-                        and config.lang:tr("menu.bind.weapon.name_" .. weapon.name:lower())
-                    or ace_map.weaponid_name_to_local_name[weapon.name]
-            )
-            imgui.end_disabled()
-            imgui.end_disabled()
+            util_imgui.tooltip(tooltip)
         end
 
-        imgui.end_table()
+        imgui.same_line()
+
+        if imgui.button(gui_util.tr("menu.bind.condition.button_remove", "hud_condition", i)) then
+            table.insert(set_remove, i)
+        end
+
+        imgui.same_line()
+
+        if
+            imgui.button(gui_util.tr("menu.bind.condition.button_duplicate", "hud_condition", i))
+        then
+            duplicate = cond_set
+        end
+
+        imgui.same_line()
+        imgui.push_item_width(200)
+
+        if
+            set:combo(
+                gui_util.tr("menu.bind.condition.combo_profile", i),
+                string.format("%s.%s", config_key, "combo_hud"),
+                state.combo.hud.values
+            )
+        then
+            cond_set.hud_key =
+                config_mod.hud[config:get(string.format("%s.%s", config_key, "combo_hud"))].key
+            config:save()
+        end
+
+        imgui.pop_item_width()
+        imgui.same_line()
+        imgui.invisible_button("i_button1" .. i, { 0, 0 })
+
+        if not cond_set.collapsed then
+            imgui.separator()
+            imgui.push_item_width(200)
+
+            set:combo(
+                "##conditions." .. i,
+                string.format("%s.%s", config_key, "combo_condition"),
+                state.combo.condition.values
+            )
+
+            imgui.pop_item_width()
+            imgui.same_line()
+
+            local combo = state.combo.condition
+            imgui.begin_disabled(combo:size() == #cond_set.conditions)
+
+            if imgui.button(gui_util.tr("menu.bind.condition.button_add", "condition", i)) then
+                local combo_key = string.format("%s.%s", config_key, "combo_condition")
+                local index = config:get(combo_key) --[[@as integer]]
+                local cond_key = combo:get_key(index) --[[@as string]]
+
+                if
+                    not util_table.any(cond_set.conditions, function(_, value)
+                        return cond_key == value.class
+                    end)
+                then
+                    table.insert(
+                        cond_set.conditions,
+                        bind_condition.conditions[cond_key]:new_config()
+                    )
+                    config:save()
+                end
+
+                index = index + 1
+                if index > combo:size() then
+                    index = 1
+                end
+
+                config:set(combo_key, index)
+            end
+
+            imgui.end_disabled()
+
+            if not util_table.empty(cond_set.conditions) then
+                imgui.separator()
+            end
+
+            ---@type integer[]
+            local cond_remove = {}
+            if
+                not util_table.empty(cond_set.conditions)
+                and imgui.begin_table("conditions_" .. i, 3, 1 << 9)
+            then
+                for j, cond in ipairs(cond_set.conditions) do
+                    local cond_class = bind_condition.conditions[cond.class]
+                    if not cond_class then
+                        goto continue
+                    end
+
+                    imgui.table_next_row()
+                    imgui.table_set_column_index(0)
+                    imgui.begin_rect()
+
+                    if
+                        imgui.button(
+                            gui_util.tr("menu.bind.condition.button_remove", "hud_condition", i, j)
+                        )
+                    then
+                        table.insert(cond_remove, j)
+                    end
+
+                    imgui.table_set_column_index(1)
+                    imgui.text(cond_class:get_display_name())
+                    imgui.table_set_column_index(2)
+
+                    if cond_class.options then
+                        imgui.push_item_width(200)
+                        set:combo(
+                            string.format("##%s.%s.%s", "cond_opt", i, j),
+                            string.format("%s.conditions.int:%s.%s", config_key, j, "combo"),
+                            state.bind_condition_options[cond.class].values
+                        )
+                        imgui.pop_item_width()
+                    else
+                        imgui.invisible_button("i_button3" .. i .. j, { 200, 0 })
+                    end
+
+                    if
+                        config_mod.bind.condition.highlight_pass
+                        and bind_condition.passing_sets[i]
+                        and bind_condition.passing_sets[i].conditions
+                        and bind_condition.passing_sets[i].conditions[j]
+                    then
+                        imgui.push_style_color(5, 0xff3eb231)
+                        imgui.end_rect(1, 0)
+                        imgui.pop_style_color(1)
+                    else
+                        imgui.push_style_color(5, 0)
+                        imgui.end_rect(1, 0)
+                        imgui.pop_style_color(1)
+                    end
+
+                    ::continue::
+                end
+
+                imgui.end_table()
+            else
+                imgui.text(config.lang:tr("menu.bind.condition.text_no_condition"))
+            end
+
+            if not util_table.empty(cond_remove) then
+                cond_set.conditions = util_table.filter_array(cond_set.conditions, function(key, _)
+                    return not util_table.contains(cond_remove, key)
+                end)
+                config:save()
+            end
+        end
+
+        imgui.invisible_button("i_button2" .. i, { 0, 1 })
+        imgui.unindent(5)
+
+        if
+            config_mod.bind.condition.highlight_pass
+            and bind_condition.passing_sets[i]
+            and bind_condition.passing_sets[i].pass
+        then
+            imgui.push_style_color(5, 0xff3eb231)
+            imgui.end_rect(0, 0)
+            imgui.pop_style_color(1)
+        else
+            imgui.push_style_color(5, 0xff6a6a6a)
+            imgui.end_rect(0, 0)
+            imgui.pop_style_color(1)
+        end
+
+        imgui.indent(5)
+        drag:check_drag_pos(cond_set, -5, -5)
+        imgui.unindent(5)
+        util_imgui.spacer(0, 5)
+    end
+
+    imgui.unindent(1)
+
+    if drag:is_released() then
+        config:save()
+    elseif drag:is_drag() then
+        util_table.sort(config_mod.bind.condition.hud, function(a, b)
+            return drag.item_pos[a] < drag.item_pos[b]
+        end)
+    end
+
+    if not util_table.empty(set_remove) then
+        config_mod.bind.condition.hud = util_table.filter_array(
+            config_mod.bind.condition.hud,
+            function(key, _)
+                return not util_table.contains(set_remove, key)
+            end
+        )
+        config:save()
+    end
+
+    if duplicate then
+        table.insert(config_mod.bind.condition.hud, util_table.deep_copy(duplicate))
     end
 
     imgui.end_disabled()
+
+    imgui.unindent(2)
+    imgui.spacing()
+end
+
+local function draw_condition_option_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
+    util_imgui.separator_text(config.lang:tr("menu.bind.condition_option.category_general"))
+    set:checkbox(
+        gui_util.tr("menu.bind.condition_option.box_switchback"),
+        "mod.bind.condition.switchback"
+    )
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition_option.tooltip_switchback"), true)
+    set:checkbox(
+        gui_util.tr("menu.bind.condition_option.box_highlight_pass"),
+        "mod.bind.condition.highlight_pass"
+    )
+
+    local conditions = util_table.filter(bind_condition.conditions, function(_, value)
+        return value:has_additional_options()
+    end)
+    local sorted = util_table.sort(util_table.keys(conditions))
+
+    for _, key in ipairs(sorted) do
+        local cond = conditions[key]
+        util_imgui.separator_text(cond:get_display_name())
+        cond:draw_additional_options()
+    end
 
     imgui.unindent(2)
     imgui.spacing()
@@ -652,7 +773,8 @@ local function draw_bind_menu()
         bind_manager.monitor:unpause()
     end
 
-    draw_menu(gui_util.tr("menu.bind.weapon.name"), draw_weapon_bind_menu)
+    draw_menu(gui_util.tr("menu.bind.condition.name"), draw_condition_bind_menu)
+    draw_menu(gui_util.tr("menu.bind.condition_option.name"), draw_condition_option_menu)
 
     imgui.unindent(2)
     imgui.spacing()

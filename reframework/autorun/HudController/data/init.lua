@@ -4,7 +4,6 @@ local this = {
 }
 
 local ace_misc = require("HudController.util.ace.misc")
-local config = require("HudController.config.init")
 local deprecated = require("HudController.data.deprecated")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
@@ -144,44 +143,11 @@ local function get_log_id_text()
     end
 end
 
----@param config_table MainSettings
-function this.get_weapon_bind_map(config_table)
+local function get_weapon_map()
     local lang = game_lang.get_language()
-    ---@type WeaponBindConfig
-    local base = {
-        weapon_id = -1,
-        enabled = false,
-        name = "",
-        combat_in = { hud_key = -1, combo = 1 },
-        combat_out = { hud_key = -1, combo = 1 },
-        camp = { hud_key = -1, combo = 1 },
-        custom = {},
-    }
-
-    local function copy_base(name, wp_base)
-        local bind_weapon = config_table.mod.bind.weapon
-        for _, mode in pairs(ace_map.weapon_binds.game_mode) do
-            ---@diagnostic disable-next-line: no-unknown
-            bind_weapon[mode][name] =
-                util_table.merge_t(util_table.deep_copy(wp_base), bind_weapon[mode][name] or {})
-        end
-    end
-
     for name, id in e.iter("app.WeaponDef.TYPE") do
         ace_map.weaponid_name_to_local_name[name] =
             game_lang.get_message_local(m.getWeaponName(id), lang, true)
-        local weapon_base = util_table.deep_copy(base)
-        weapon_base.weapon_id = id
-        weapon_base.name = name
-
-        copy_base(name, weapon_base)
-    end
-
-    for i, name in pairs(ace_map.weapon_binds.additional_weapon) do
-        local weapon_base = util_table.deep_copy(base)
-        weapon_base.name = name
-        weapon_base.weapon_id = -i
-        copy_base(name, weapon_base)
     end
 end
 
@@ -252,7 +218,7 @@ function this.init()
 
     get_hud_map()
     set_additional_hud()
-    this.get_weapon_bind_map(config.current)
+    get_weapon_map()
     get_option_map()
     get_log_id_text()
 

@@ -9,15 +9,15 @@ this.__index = this
 setmetatable(this, { __index = custom_condition })
 
 function this:new()
-    local o = custom_condition.new(self, "Health Changed")
+    local o = custom_condition.new(self, "Ammo Changed")
     setmetatable(o, self)
 
     local options = o:get_additional_options_table()
     -- when condition is created for the first time, option table wont be available in the config
     o.timer = timer:new(options and options.duration or 3)
-    o.health = value_checker:new()
+    o.ammo = value_checker:new(-1)
     o.frame = value_checker:new(frame_counter.frame, function(old_value, new_value)
-        -- this makes sure that condtion wont trigger if last health check was over 30 frames ago
+        -- this makes sure that condtion wont trigger if last check was over 30 frames ago
         return new_value - old_value <= 30
     end)
 
@@ -30,17 +30,19 @@ function this:update()
         return false
     end
 
-    local health = char:get_HunterHealth()
-    local health_manager = health:get_HealthMgr()
-
-    if not health_manager then
+    local handling = char:get_WeaponHandling()
+    if not handling then
         return false
     end
 
-    local current_health = health_manager:get_Health()
-    local health_changed = self.health:is_changed(current_health)
+    local ammo = handling:getCurrentAmmo()
+    if not ammo then
+        return false
+    end
+
+    local ammo_changed = self.ammo:is_changed(ammo:get_LoadedAmmo())
     local frame_ok = self.frame:is_changed(frame_counter.frame)
-    if health_changed and frame_ok then
+    if ammo_changed and frame_ok then
         self.timer:restart()
     end
 
@@ -57,7 +59,7 @@ function this:draw_additional_options()
     local options = self:get_additional_options_table()
     local changed
 
-    changed, options.duration = imgui.slider_int("Duration", options.duration, 1, 10)
+    changed, options.duration = imgui.slider_int("Duration##Ammo Changed", options.duration, 1, 10)
 
     if changed then
         self.timer:update_args(options.duration)
@@ -67,7 +69,7 @@ end
 
 function this:reset()
     self.timer:abort()
-    self.health:reset()
+    self.ammo:reset()
     self.frame:reset()
 end
 
