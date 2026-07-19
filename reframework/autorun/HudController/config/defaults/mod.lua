@@ -36,18 +36,38 @@
 ---@field singleplayer table<string, WeaponBindConfig>
 ---@field multiplayer table<string, WeaponBindConfig>
 
+---@class (exact) ConditionConfigBase
+---@field class string
+---@field combo integer
+
+---@class (exact) ConditionBindOptionsBase
+
+---@class (exact) ConditionSetConfig
+---@field hud_key integer
+---@field conditions ConditionConfigBase[]
+---@field combo_hud integer
+---@field combo_condition integer
+---@field collapsed boolean
+
+---@class (exact) ConditionBindStateConfig
+---@field condition_options table<string, ConditionBindOptionsBase>
+---@field hud ConditionSetConfig[]
+---@field switchback boolean
+---@field highlight_pass boolean
+
 ---@class (exact) ModSettings
 ---@field enabled boolean
 ---@field enable_fade boolean
 ---@field enable_notification boolean
 ---@field enable_key_binds boolean
----@field enable_weapon_binds boolean
----@field disable_weapon_binds_timed boolean
----@field disable_weapon_binds_held boolean
----@field disable_weapon_binds_time number
+---@field enable_condition_binds boolean
+---@field disable_condition_binds_timed boolean
+---@field disable_condition_binds_held boolean
+---@field disable_condition_binds_time number
 ---@field user_scripts table<string, boolean>
 ---@field hud HudProfileConfig[]
 ---@field bind {
+--- condition: ConditionBindStateConfig,
 --- weapon: WeaponStateBindConfig,
 --- key: {
 ---     hud: BindBase[],
@@ -87,10 +107,10 @@ return {
         enable_fade = true,
         enable_notification = true,
         enable_key_binds = true,
-        enable_weapon_binds = false,
-        disable_weapon_binds_held = false,
-        disable_weapon_binds_timed = false,
-        disable_weapon_binds_time = 30,
+        enable_condition_binds = false,
+        disable_condition_binds_held = false,
+        disable_condition_binds_timed = false,
+        disable_condition_binds_time = 30,
         user_scripts = {},
         grid = {
             draw = false,
@@ -107,6 +127,12 @@ return {
                 option_mod = {},
                 buffer = 2,
             },
+            condition = {
+                condition_options = {},
+                hud = {},
+                switchback = false,
+                highlight_pass = false,
+            },
             weapon = {
                 quest_in_combat = false,
                 out_of_combat_delay = 0,
@@ -117,7 +143,6 @@ return {
                 multiplayer = {},
             },
             slider = {
-                weapon_bind = 1,
                 key_bind = 1,
             },
         },

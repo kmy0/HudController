@@ -39,12 +39,20 @@ function this:draw_drag_button(unique_key, value, y_size)
 end
 
 ---@param value any
-function this:check_drag_pos(value)
+---@param offset_x integer?
+---@param offset_y integer?
+function this:check_drag_pos(value, offset_x, offset_y)
     local end_pos = imgui.get_cursor_screen_pos().y
     local cursor_pos = imgui.get_mouse().y
+    offset_x = offset_x or 0
+    offset_y = offset_y or 0
 
     if self._drag == value then
-        util_imgui.highlight(state.colors.info, 0, -(end_pos - self._start_pos))
+        util_imgui.highlight(
+            state.colors.info,
+            0 + offset_x,
+            -(end_pos - self._start_pos) + offset_y
+        )
     end
 
     if self._last_cursor_pos > cursor_pos then

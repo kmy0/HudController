@@ -1,5 +1,5 @@
 local ace_player = require("HudController.util.ace.player")
-local custom_condition = require("HudController.hud.bind_weapon.conditions.custom")
+local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
 local frame_counter = require("HudController.util.misc.frame_counter")
 local timer = require("HudController.util.misc.timer")
 
@@ -8,9 +8,12 @@ this.__index = this
 setmetatable(this, { __index = custom_condition })
 
 function this:new()
-    local o = custom_condition.new(self, "Health Changed", true)
+    local o = custom_condition.new(self, "Health Changed")
     setmetatable(o, self)
-    o.timer = timer:new(3)
+
+    local options = o:get_additional_options_table()
+    -- when condition is created for the first time, option table wont be available in the config
+    o.timer = timer:new(options and options.duration or 3)
     o.health_last_frame = -1
     o.last_frame = frame_counter.frame
 
@@ -43,6 +46,24 @@ function this:update()
     self.health_last_frame = current_health
     self.last_frame = frame_counter.frame
     return self.timer:active()
+end
+
+function this:new_additional_options()
+    return {
+        duration = 3,
+    }
+end
+
+function this:draw_additional_options()
+    local options = self:get_additional_options_table()
+    local changed
+
+    changed, options.duration = imgui.slider_int("Duration", options.duration, 1, 10)
+
+    if changed then
+        self.timer:update_args(options.duration)
+        self:save_config()
+    end
 end
 
 function this:reset()

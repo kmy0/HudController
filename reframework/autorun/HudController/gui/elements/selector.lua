@@ -1,3 +1,4 @@
+local bind_condition = require("HudController.hud.bind_condition.init")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
@@ -20,11 +21,11 @@ local function reinit()
     local config_mod = config.current.mod
 
     config.lang:change()
-    data.get_weapon_bind_map(config.current)
     state.translate_combo()
     hud.manager.reinit()
     hud.operations.reload()
     user.reinit()
+    bind_condition.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then

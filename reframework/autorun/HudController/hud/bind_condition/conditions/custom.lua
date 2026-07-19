@@ -1,5 +1,4 @@
 ---@class CustomCondition : ConditionBase
----@field switch_back boolean
 
 local condition_base = require("HudController.hud.def.condition_base")
 
@@ -10,22 +9,27 @@ this.__index = this
 setmetatable(this, { __index = condition_base })
 
 ---@param name string?
----@param switch_back boolean? by default, false - if true profile is changed back after condition is no longer triggered
+---@param options string[]? combobox selectables
 ---@return CustomCondition
-function this:new(name, switch_back)
-    local o = condition_base.new(self, name or "CUSTOM_CONDITION")
+function this:new(name, options)
+    if type(options) ~= "table" then
+        options = nil
+    end
+
+    local o =
+        condition_base.new(self, name or "CUSTOM_CONDITION", name or "CUSTOM_CONDITION", options)
     setmetatable(o, self)
     ---@cast o CustomCondition
-    o.switch_back = switch_back or false
+
     return o
 end
 
 ---@param name string
 ---@param update_fn fun(self: CustomCondition): boolean if the function returns true, condition is triggered
----@param switch_back boolean? by default, false - if true profile is changed back after condition is no longer triggered
+---@param options string[]? combobox selectables
 ---@return CustomCondition
-function this.new_condition(name, update_fn, switch_back)
-    local o = this:new(name, switch_back)
+function this.new_condition(name, update_fn, options)
+    local o = this:new(name, options)
     o.update = update_fn
 
     return o

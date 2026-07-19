@@ -58,4 +58,22 @@ function this:tr(key)
     return ret
 end
 
+---@param key string
+---@return boolean
+function this:exists(key)
+    local ret = util_table.get_by_key(self.current, key)
+    return type(ret) == "string"
+end
+
+---@return integer
+function this:get_font_size()
+    local size = self.default_font_size
+    local font = self.current._font
+    if font and font.size then
+        size = font.size
+    end
+
+    return size
+end
+
 return this
