@@ -9,13 +9,22 @@
 ---@class (exact) ModMap
 ---@field options_hud table<string, string>
 ---@field options_mod table<string, string>
+---@field slider_grid_ratio string[]
+---@field slider_expanded_itembar_control string[]
+---@field slider_sharpness_state string[]
+---@field combo_item_decide table<string, {value: string, sort: integer}>
+---@field combo_map_filter_init table<string, integer>
+---@field combo_map_filter table<string, integer>
 
 ---@class (exact) ModEnum
 ---@field hud_type HudType.*
 ---@field hud_sub_type HudSubType.*
+---@field colors GuiColors.*
 
+local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
 local s = require("HudController.util.ref.singletons")
+local util_table = require("HudController.util.misc.table")
 
 ---@class ModData
 local this = {
@@ -60,6 +69,46 @@ local this = {
             disable_condition_binds_held = "disable_condition_binds_held",
             enable_condition_binds = "enable_condition_binds",
         },
+        slider_grid_ratio = {
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+        },
+        slider_expanded_itembar_control = {
+            "expanded_itembar_disable_dpad",
+            "expanded_itembar_disable_face",
+        },
+        slider_sharpness_state = {
+            "small",
+            "big",
+        },
+        combo_item_decide = {
+            ["option_disable"] = { value = "option_disable", sort = -1 },
+            ["LIST_TRIGGER_L_UP"] = { value = "L_UP", sort = 0 },
+            ["LIST_TRIGGER_L_DOWN"] = { value = "L_DOWN", sort = 1 },
+            ["LIST_TRIGGER_L_LEFT"] = { value = "L_LEFT", sort = 2 },
+            ["LIST_TRIGGER_L_RIGHT"] = { value = "L_RIGHT", sort = 3 },
+            ["LIST_TRIGGER_L1"] = { value = "L1", sort = 4 },
+            ["LIST_TRIGGER_L2"] = { value = "L2", sort = 5 },
+            ["OPEN_MYSET"] = { value = "L3", sort = 6 },
+            ["OPEN_DEPARTURE_WINDOW_TRIGGER"] = { value = "C_LEFT", sort = 7 },
+            ["MAP3D_CLOSE"] = { value = "C_CENTER", sort = 8 },
+            ["CLOSE_ALL_MENU"] = { value = "C_RIGHT", sort = 9 },
+            ["MAP3D_LOCK_TARGET"] = { value = "R3", sort = 10 },
+            ["LIST_TRIGGER_R2"] = { value = "R2", sort = 11 },
+            ["LIST_TRIGGER_R1"] = { value = "R1", sort = 12 },
+            ["LIST_TRIGGER_RRIGHT"] = { value = "R_RIGHT", sort = 13 },
+            ["LIST_TRIGGER_RLEFT"] = { value = "R_LEFT", sort = 14 },
+            ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
+            ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
+        },
+        combo_map_filter_init = util_table.merge_t(
+            util_table.deep_copy(ace.map.map_icon_filter_name_guid_to_index),
+            { option_disable = -1 }
+        ),
+        combo_map_filter = {},
     },
     initialized = false,
     is_reset = false,
@@ -111,6 +160,12 @@ this.enum.hud_sub_type = { ---@class HudSubType.*
     CTRL_CHILD = 6,
     PROGRESS_TEXT = 7,
     PROGRESS_PART = 8,
+}
+---@enum GuiColors
+this.enum.colors = { ---@class GuiColors.*
+    bad = 0xff1947ff,
+    good = 0xff47ff59,
+    info = 0xff27f3f5,
 }
 
 ---@return boolean

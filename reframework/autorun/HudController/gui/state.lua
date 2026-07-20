@@ -2,16 +2,8 @@
 ---@field combo GuiCombo
 ---@field bind_condition_options table<string, Combo>
 ---@field input_action string?
----@field grid_ratio string[]
----@field sharpness_state string[]
----@field item_decide table<string, {value: string, sort: integer}>
----@field expanded_itembar_control string[]
 ---@field listener NewBindListener?
 ---@field set ImguiConfigSet
----@field map_filter table<string, integer>
----@field state {
---- l1_pressed: boolean,
---- }
 
 ---@class (exact) GuiCombo
 ---@field hud_elem Combo
@@ -38,7 +30,6 @@
 ---@field listener BindListener
 ---@field collision string?
 
-local ace_player = require("HudController.util.ace.player")
 local bind_manager = require("HudController.hud.bind.init")
 local combo = require("HudController.util.imgui.combo")
 local config = require("HudController.config.init")
@@ -53,8 +44,6 @@ local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local mod = data.mod
-
-local map_filter_translated = false
 
 ---@class GuiState
 local this = {
@@ -84,6 +73,15 @@ local this = {
         item_decide = combo:new(nil, {
             map_fn = function(value)
                 return value.value
+            end,
+            sort_fn = function(a, b)
+                return mod.map.combo_item_decide[a.key].sort < mod.map.combo_item_decide[b.key].sort
+            end,
+            translate_fn = function(key)
+                if key == "option_disable" then
+                    return config.lang:tr("hud.option_disable")
+                end
+                return mod.map.combo_item_decide[key].value
             end,
         }),
         control_point = combo:new(nil, {
@@ -160,7 +158,20 @@ local this = {
                 )
             end,
         }),
-        map_filter = combo:new(),
+        map_filter = combo:new(nil, {
+            sort_fn = function(a, b)
+                if util_table.empty(mod.map.combo_map_filter) then
+                    return a.key < b.key
+                end
+                return mod.map.combo_map_filter[a.key] < mod.map.combo_map_filter[b.key]
+            end,
+            translate_fn = function(key)
+                if key == "option_disable" then
+                    return config.lang:tr("hud.option_disable")
+                end
+                return key
+            end,
+        }),
         condition = combo:new(nil, {
             translate_fn = function(key)
                 local bind_condition = require("HudController.hud.bind_condition.init")
@@ -172,77 +183,8 @@ local this = {
         }),
     },
     bind_condition_options = {},
-    --TODO: move to data.mod.map
-    grid_ratio = {
-        "1",
-        "2",
-        "4",
-        "8",
-        "16",
-    },
-    expanded_itembar_control = {
-        "expanded_itembar_disable_dpad",
-        "expanded_itembar_disable_face",
-    },
-    sharpnes_state = {
-        "small",
-        "big",
-    },
-    item_decide = {
-        ["option_disable"] = { value = "option_disable", sort = -1 },
-        ["LIST_TRIGGER_L_UP"] = { value = "L_UP", sort = 0 },
-        ["LIST_TRIGGER_L_DOWN"] = { value = "L_DOWN", sort = 1 },
-        ["LIST_TRIGGER_L_LEFT"] = { value = "L_LEFT", sort = 2 },
-        ["LIST_TRIGGER_L_RIGHT"] = { value = "L_RIGHT", sort = 3 },
-        ["LIST_TRIGGER_L1"] = { value = "L1", sort = 4 },
-        ["LIST_TRIGGER_L2"] = { value = "L2", sort = 5 },
-        ["OPEN_MYSET"] = { value = "L3", sort = 6 },
-        ["OPEN_DEPARTURE_WINDOW_TRIGGER"] = { value = "C_LEFT", sort = 7 },
-        ["MAP3D_CLOSE"] = { value = "C_CENTER", sort = 8 },
-        ["CLOSE_ALL_MENU"] = { value = "C_RIGHT", sort = 9 },
-        ["MAP3D_LOCK_TARGET"] = { value = "R3", sort = 10 },
-        ["LIST_TRIGGER_R2"] = { value = "R2", sort = 11 },
-        ["LIST_TRIGGER_R1"] = { value = "R1", sort = 12 },
-        ["LIST_TRIGGER_RRIGHT"] = { value = "R_RIGHT", sort = 13 },
-        ["LIST_TRIGGER_RLEFT"] = { value = "R_LEFT", sort = 14 },
-        ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
-        ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
-    },
-    map_filter = util_table.merge_t(
-        util_table.deep_copy(ace_map.map_icon_filter_name_guid_to_index),
-        { option_disable = -1 }
-    ),
-    state = {
-        l1_pressed = false,
-    },
     set = config_set:new(config),
 }
----@enum GuiColors
-this.colors = {
-    bad = 0xff1947ff,
-    good = 0xff47ff59,
-    info = 0xff27f3f5,
-}
-
-this.combo.item_decide.sort_fn = function(a, b)
-    return this.item_decide[a.key].sort < this.item_decide[b.key].sort
-end
-this.combo.item_decide._translate_fn = function(key)
-    if key == "option_disable" then
-        return config.lang:tr("hud.option_disable")
-    end
-    return this.item_decide[key].value
-end
-
-this.combo.map_filter.sort_fn = function(a, b)
-    return this.map_filter[a.key] < this.map_filter[b.key]
-end
-this.combo.map_filter._translate_fn = function(key)
-    if key == "option_disable" then
-        return config.lang:tr("hud.option_disable")
-    end
-    return key
-end
 
 function this.translate_combo()
     for _, c in
@@ -294,20 +236,15 @@ function this.get_input()
     return changed, this.input_action
 end
 
-function this.update_state()
-    this.state.l1_pressed =
-        ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
-end
-
-function this.translate_map_icon_filter_options()
-    if map_filter_translated then
+function this.init_combo_map_icon_filter()
+    if not util_table.empty(mod.map.combo_map_filter) then
         return
     end
 
     local lang = game_lang.get_language()
     ---@type table<string, integer>
     local res = {}
-    for k, v in pairs(this.map_filter) do
+    for k, v in pairs(mod.map.combo_map_filter_init) do
         if v == -1 then
             res[k] = v
             goto continue
@@ -324,10 +261,9 @@ function this.translate_map_icon_filter_options()
         ::continue::
     end
 
-    this.map_filter = res
-    this.combo.map_filter:swap(this.map_filter)
+    mod.map.combo_map_filter = res
+    this.combo.map_filter:swap(mod.map.combo_map_filter)
     this.combo.map_filter:translate()
-    map_filter_translated = true
 end
 
 function this.init()
@@ -336,7 +272,7 @@ function this.init()
     this.combo.blend:swap(e.get("via.gui.BlendType").enum_to_field)
 
     this.combo.alpha_channel:swap(e.get("via.gui.AlphaChannelType").enum_to_field)
-    this.combo.item_decide:swap(this.item_decide)
+    this.combo.item_decide:swap(mod.map.combo_item_decide)
     this.combo.segment:swap(
         util_table.filter(e.get("app.GUIDefApp.DRAW_SEGMENT").enum_to_field, function(_, value)
             return not value:match("RADAR.-")
@@ -347,7 +283,7 @@ function this.init()
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
     this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
-    this.combo.map_filter:swap(this.map_filter)
+    this.combo.map_filter:swap(mod.map.combo_map_filter_init)
     this.combo.hud:swap(config.current.mod.hud)
     this.translate_combo()
 end
