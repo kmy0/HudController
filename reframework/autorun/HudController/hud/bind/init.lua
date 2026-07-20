@@ -51,10 +51,6 @@ local function action_hud(bind)
     config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
         return o.key == bind.bound_value
     end) --[[@as integer]]
-
-    if not config.debug.current.debug.disable_config_save_on_bind then
-        config:save()
-    end
 end
 
 ---@param bind ModBind
@@ -146,10 +142,6 @@ local function action_option_mod(bind, toggle_hold_value)
                 config_mod[bind.bound_value]
             )
         )
-    end
-
-    if not config.debug.current.debug.disable_config_save_on_bind then
-        config:save()
     end
 end
 

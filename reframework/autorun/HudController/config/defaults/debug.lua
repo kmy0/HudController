@@ -5,7 +5,6 @@
 --- is_debug: boolean,
 --- disable_cache: boolean,
 --- filter_known_errors: boolean,
---- disable_config_save_on_bind: boolean,
 --- }
 
 ---@class DebugConfig : ConfigBase
@@ -20,6 +19,5 @@ return {
         is_debug = false,
         disable_cache = false,
         filter_known_errors = false,
-        disable_config_save_on_bind = false,
     },
 }
