@@ -89,6 +89,10 @@ function this.memoize(func, optional_args)
                 end
             end
 
+            if optional_args.key_as_string then
+                key = tostring(key)
+            end
+
             local cached = frame_cache:get(key)
 
             if cached ~= nil then

@@ -6,6 +6,7 @@
 ---@field do_hash boolean?
 ---@field deep_hash_table boolean?
 ---@field key_index integer?
+---@field key_as_string boolean?
 
 local hash = require("HudController.util.misc.hash")
 
@@ -86,6 +87,10 @@ function this.memoize(func, predicate, optional_args)
                 else
                     key = 1
                 end
+            end
+
+            if optional_args.key_as_string then
+                key = tostring(key)
             end
 
             local cached = cache:get(key)
