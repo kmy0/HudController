@@ -57,15 +57,15 @@ re.on_draw_ui(function()
         local errors = logger:format_errors()
         if errors then
             imgui.same_line()
-            imgui.text_colored("Error!", config_menu.state.colors.bad)
+            imgui.text_colored("Error!", data.mod.enum.colors.bad)
             util.imgui.tooltip_exclamation(errors)
         elseif not init.ok then
             imgui.same_line()
-            imgui.text_colored("Initializing...", config_menu.state.colors.info)
+            imgui.text_colored("Initializing...", data.mod.enum.colors.info)
         end
     else
         imgui.same_line()
-        imgui.text_colored("Init failed!", config_menu.state.colors.bad)
+        imgui.text_colored("Init failed!", data.mod.enum.colors.bad)
     end
 end)
 

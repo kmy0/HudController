@@ -225,10 +225,11 @@ local function draw_itembar(elem, elem_config, config_key)
             gui_util.tr("hud_element.entry.slider_expanded_itembar_control"),
             item_config_key,
             -1,
-            #state.expanded_itembar_control - 1,
+            #mod.map.slider_expanded_itembar_control - 1,
             (config_value == -1 and config.lang:tr("hud.option_disable"))
                 or config.lang:tr(
-                    "hud_element.entry." .. state.expanded_itembar_control[config_value + 1]
+                    "hud_element.entry."
+                        .. mod.map.slider_expanded_itembar_control[config_value + 1]
                 )
         )
     then
@@ -665,9 +666,11 @@ local function draw_sharpness(elem, elem_config, config_key)
             gui_util.tr("hud_element.entry.state"),
             item_config_key,
             -1,
-            #state.sharpnes_state - 1,
+            #mod.map.slider_sharpness_state - 1,
             (config_value == -1 and config.lang:tr("hud.option_disable"))
-                or config.lang:tr("hud_element.entry." .. state.sharpnes_state[config_value + 1])
+                or config.lang:tr(
+                    "hud_element.entry." .. mod.map.slider_sharpness_state[config_value + 1]
+                )
         )
     then
         elem:set_state(elem_config.state)
@@ -724,7 +727,7 @@ local function draw_minimap(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_map"))
 
     -- the map gui object has to actually exist to get names of options
-    state.translate_map_icon_filter_options()
+    state.init_combo_map_icon_filter()
 
     local item_config_key = config_key .. ".default_filter"
     local changed_value = generic.draw_combo(
@@ -735,7 +738,7 @@ local function draw_minimap(elem, elem_config, config_key)
     )
 
     if changed_value then
-        local value = state.map_filter[changed_value.key]
+        local value = mod.map.combo_map_filter[changed_value.key]
         elem:set_default_filter(value)
         config:set(item_config_key, value)
     end

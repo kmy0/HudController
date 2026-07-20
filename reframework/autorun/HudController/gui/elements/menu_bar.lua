@@ -63,10 +63,10 @@ local function draw_user_scripts_menu()
         local pop_color = false
 
         if user.failed[name] ~= nil then
-            imgui.push_style_color(0, state.colors.bad)
+            imgui.push_style_color(0, mod.enum.colors.bad)
             pop_color = true
         elseif config_mod.user_scripts[name] ~= (user.loaded[name] ~= nil) then
-            imgui.push_style_color(0, state.colors.info)
+            imgui.push_style_color(0, mod.enum.colors.info)
             pop_color = true
         end
 
@@ -382,7 +382,7 @@ local function draw_key_bind_menu()
         imgui.separator()
 
         if state.listener and state.listener.collision then
-            imgui.text_colored(state.listener.collision, state.colors.bad)
+            imgui.text_colored(state.listener.collision, mod.enum.colors.bad)
             imgui.separator()
         end
 
@@ -791,8 +791,8 @@ local function draw_grid_menu()
         gui_util.tr("menu.grid.combo_ratio"),
         "mod.grid.combo_grid_ratio",
         1,
-        #state.grid_ratio,
-        state.grid_ratio[config:get("mod.grid.combo_grid_ratio")]
+        #mod.map.slider_grid_ratio,
+        mod.map.slider_grid_ratio[config:get("mod.grid.combo_grid_ratio")]
     )
     set:color_edit(gui_util.tr("menu.grid.color_center"), "mod.grid.color_center")
 
@@ -831,7 +831,7 @@ function this.draw()
         gui_util.tr("menu.user_scripts.name"),
         draw_user_scripts_menu,
         nil,
-        user.is_need_attention() and state.colors.info or nil
+        user.is_need_attention() and mod.enum.colors.info or nil
     )
     util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
     draw_menu(gui_util.tr("menu.tools.name"), draw_tools_menu)

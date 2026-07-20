@@ -1,3 +1,4 @@
+local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local gui_util = require("HudController.gui.util")
@@ -153,7 +154,7 @@ end
 function this.draw(elem, elem_config, config_key)
     this.separator:refresh(elem_config)
 
-    imgui.begin_disabled(state.state.l1_pressed)
+    imgui.begin_disabled(ace_misc.is_item_slider_open())
     if elem_config.hide ~= nil then
         if
             set:checkbox(

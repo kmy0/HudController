@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local state = require("HudController.gui.state")
+local mod = require("HudController.data.mod")
 local util_ace = require("HudController.util.ace.init")
 local util_game = require("HudController.util.game.init")
 
@@ -11,7 +11,8 @@ function this.draw()
     local screen_size = util_game.get_screen_size()
     local center_x = screen_size.x / 2
     local center_y = screen_size.y / 2
-    local grid_size = config.grid_size / tonumber(state.grid_ratio[config_grid.combo_grid_ratio])
+    local grid_size = config.grid_size
+        / tonumber(mod.map.slider_grid_ratio[config_grid.combo_grid_ratio])
     local grid_x = math.ceil(screen_size.x / grid_size)
     local grid_y = math.ceil(screen_size.y / grid_size)
 
