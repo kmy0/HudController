@@ -28,7 +28,6 @@ local this = {
 function this.draw()
     local gui_main = config.gui.current.gui.main
     local config_mod = config.current.mod
-    state.update_state()
 
     imgui.set_next_window_pos(Vector2f.new(gui_main.pos_x, gui_main.pos_y), this.window.condition)
     imgui.set_next_window_size(
@@ -82,7 +81,7 @@ function this.draw()
 
     if not mod.is_ok() then
         imgui.indent(3)
-        imgui.text_colored(config.lang:tr("misc.text_no_hud"), state.colors.bad)
+        imgui.text_colored(config.lang:tr("misc.text_no_hud"), mod.enum.colors.bad)
         imgui.unindent(3)
 
         if config.lang.font then

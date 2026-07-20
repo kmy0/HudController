@@ -1,4 +1,6 @@
+local ace_player = require("HudController.util.ace.player")
 local cache = require("HudController.util.misc.cache")
+local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local s = require("HudController.util.ref.singletons")
 local util_ref = require("HudController.util.ref.init")
@@ -60,11 +62,17 @@ function this.is_title_request()
     return request and util_ref.is_a(request:get_NextGameState(), "app.TitleState") or false
 end
 
+---@return boolean
+function this.is_item_slider_open()
+    return ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
+end
+
 get_map_component = cache.memoize(get_map_component)
 this.get_hud_manager = cache.memoize(this.get_hud_manager)
 this.get_pad = cache.memoize(this.get_pad)
 this.get_kb = cache.memoize(this.get_kb)
 this.get_gui_component = cache.memoize(this.get_gui_component)
 this.is_map_open = frame_cache.memoize(this.is_map_open)
+this.is_item_slider_open = frame_cache.memoize(this.is_item_slider_open)
 
 return this
