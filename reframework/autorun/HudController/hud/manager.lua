@@ -371,10 +371,6 @@ function this.update()
     end) --[[@as integer]]
 
     this.request_hud(hud_config)
-
-    if not config.debug.current.debug.disable_config_save_on_bind then
-        config.save_global()
-    end
 end
 
 function this.clear()
