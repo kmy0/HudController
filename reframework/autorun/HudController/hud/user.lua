@@ -2,6 +2,18 @@ local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.util")
 local logger = require("HudController.util.misc.logger").g
 
+local original_require = _G.require
+--FIXME: there should be a better way
+_G.require = function(name)
+    ---@diagnostic disable-next-line: no-unknown
+    local ok, result = pcall(original_require, name)
+    if ok then
+        return result
+    end
+
+    return original_require("reframework.autorun." .. name)
+end
+
 local this = {
     ---@type table<string, table>
     loaded = {},
@@ -49,16 +61,6 @@ end
 
 ---@return boolean
 function this.init()
-    for k, v in
-        pairs(package.loaded --[[@as table<string ,table>]])
-    do
-        k = string.match(k, "^(HudController.*)%.init$")
-        if k then
-            ---@diagnostic disable-next-line: no-unknown
-            package.loaded[k] = v
-        end
-    end
-
     local config_user = config.current.mod.user_scripts
     local files = fs.glob(util_misc.join_paths_b(config.name, "user_scripts", ".*lua"))
 
