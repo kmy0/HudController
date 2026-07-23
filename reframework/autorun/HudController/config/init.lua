@@ -21,7 +21,7 @@
 
 local config_base = require("HudController.util.misc.config_base")
 local lang = require("HudController.config.lang")
-local migration = require("HudController.config.migration")
+local migration = require("HudController.config.migration.init")
 local selector_config = require("HudController.config.selector")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -67,7 +67,7 @@ this.lang = lang:new(
 
 function this:load()
     local loaded_config = json.load_file(self.path) --[[@as MainSettings?]]
-    ---@type string?
+    ---@type string
     local current_version
     if loaded_config then
         current_version = loaded_config.version
@@ -79,6 +79,7 @@ function this:load()
         self.selector:load()
     end
 
+    current_version = current_version or "0.0.0"
     if migration.need_migrate(current_version, self.commit) then
         self:backup()
         migration.migrate(current_version, self.commit, self.current)
