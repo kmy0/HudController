@@ -113,8 +113,10 @@ re.on_config_save(function()
     end
 end)
 re.on_script_reset(function()
-    data.mod.is_reset = true
-    hud.clear()
-    call_queue.clear()
-    hud_base.restore_all_force_invis()
+    if data.mod.initialized then
+        data.mod.is_reset = true
+        hud.clear()
+        call_queue.clear()
+        hud_base.restore_all_force_invis()
+    end
 end)
