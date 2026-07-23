@@ -29,7 +29,8 @@ function this:load()
 end
 
 ---@param lang_file LangFile?
-function this:change(lang_file)
+---@param font_size integer?
+function this:change(lang_file, font_size)
     if not lang_file then
         local config_lang = self.ref.current.mod.lang
         lang_file = self.files[config_lang.file]
@@ -39,7 +40,7 @@ function this:change(lang_file)
         end
     end
 
-    lang_base.change(self, lang_file)
+    lang_base.change(self, lang_file, font_size or self.ref.current.mod.lang.font_size)
 end
 
 ---@param key string
@@ -56,24 +57,6 @@ function this:tr(key)
     end
 
     return ret
-end
-
----@param key string
----@return boolean
-function this:exists(key)
-    local ret = util_table.get_by_key(self.current, key)
-    return type(ret) == "string"
-end
-
----@return integer
-function this:get_font_size()
-    local size = self.default_font_size
-    local font = self.current._font
-    if font and font.size then
-        size = font.size
-    end
-
-    return size
 end
 
 return this
