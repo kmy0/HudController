@@ -101,6 +101,10 @@ return {
             name = "Language",
             fallback = "Fallback",
             fallback_tooltip = "Display message in english if key is missing",
+            font_size = {
+                name = "Font Size",
+                button_apply = "Apply",
+            },
         },
         grid = {
             name = "Grid",

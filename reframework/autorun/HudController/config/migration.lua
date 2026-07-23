@@ -369,6 +369,20 @@ local function to_0_3_0_conditions(config)
     config.mod.bind.weapon = nil
 end
 
+---@param config MainSettings
+local function to_0_3_0_font_size(config)
+    local lang_file_name = util_misc.join_paths("HudController", "lang", config.mod.lang.file)
+    local lang = json.load_file(lang_file_name)
+    if not lang then
+        return
+    end
+
+    local font_size = lang._font and lang._font.size
+    if font_size then
+        config.mod.lang.font_size = font_size
+    end
+end
+
 this.migrations = {
     ["0.0.5"] = function(config)
         to_0_0_5_weapon_binds_camp(config)
@@ -383,6 +397,7 @@ this.migrations = {
     ["0.3.0"] = function(config)
         to_0_3_0_config_keys(config)
         to_0_3_0_conditions(config)
+        to_0_3_0_font_size(config)
     end,
 }
 

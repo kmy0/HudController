@@ -5,6 +5,7 @@
 ---@class (exact) ModLanguage
 ---@field file string
 ---@field fallback boolean
+---@field font_size integer
 
 ---@class (exact) GridConfig
 ---@field draw boolean
@@ -79,6 +80,7 @@ return {
         lang = {
             file = "en-us",
             fallback = true,
+            font_size = 16,
         },
         enabled = true,
         enable_fade = true,
