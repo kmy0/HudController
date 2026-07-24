@@ -5,7 +5,7 @@
 ---@field requested_hud HudProfileConfig?
 ---@field notify boolean
 ---@field overridden_options table<string, boolean>
----@field overridden_options_func table<string, fun(key: string, value: boolean)>
+---@field override_fns table<string, fun(key: string, value: boolean)>
 ---@field is_cleared boolean
 
 ---@class (exact) FadeCallbacks
@@ -25,9 +25,10 @@ local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade.init")
 local hud_base = require("HudController.hud.def.hud_base")
 local timer = require("HudController.util.misc.timer")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 ---@module "HudController.hud.hook.init"
-local h
+local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 local ace_map = data.ace.map
 local mod = data.mod
@@ -37,7 +38,7 @@ local this = {
     by_hudid = {},
     by_guiid = {},
     overridden_options = {},
-    overridden_options_func = {},
+    override_fns = {},
     is_cleared = true,
 }
 ---@class FadeCallbacks
@@ -63,7 +64,7 @@ end
 local function add_element(element)
     this.by_hudid[element.hud_id] = factory.new_elem(element)
 
-    this._hook().hook_hud(element.hud_id, element.name_key)
+    hook.hook_hud(element.hud_id, element.name_key)
 
     for _, gui_id in pairs(ace_map.hudid_to_guiid[element.hud_id]) do
         this.by_guiid[gui_id] = this.by_hudid[element.hud_id]
@@ -130,22 +131,12 @@ local function update_key_binds(config_mod)
     return is_held
 end
 
---FIXME: bleh
----@protected
-function this._hook()
-    if not h then
-        h = require("HudController.hud.hook.init")
-    end
-
-    return h
-end
-
 function fade_callbacks.switch_profile()
     defaults.play_object:with_dump(function()
         defaults.option:with_dump(function()
             this.overridden_options = {}
-            this._hook().hook_options(this.requested_hud)
-            this.apply_options(this.requested_hud.options)
+            hook.hook_options(this.requested_hud)
+            this.apply_option_many(this.requested_hud.options)
             this.update_elements(this.requested_hud.elements)
             this.current_hud = this.requested_hud
         end)
@@ -156,8 +147,8 @@ function fade_callbacks.switch_profile_partial()
     defaults.play_object:with_dump(function()
         defaults.option:with_dump(function()
             this.overridden_options = {}
-            this._hook().hook_options(this.requested_hud)
-            this.apply_options(this.requested_hud.options)
+            hook.hook_options(this.requested_hud)
+            this.apply_option_many(this.requested_hud.options)
             this._update_elements_partial(this.requested_hud.elements)
             this.current_hud = this.requested_hud
         end)
@@ -251,7 +242,7 @@ function this.apply_option(option_name, option_value)
 end
 
 ---@param options table<string, integer>
-function this.apply_options(options)
+function this.apply_option_many(options)
     for option, value in pairs(options) do
         this.apply_option(option, value)
     end
@@ -425,8 +416,8 @@ function this.reinit()
     end
 end
 
-this.overridden_options_func["hide_scar"] = override_scar_option
-this.overridden_options_func["show_scar"] = override_scar_option
-this.overridden_options_func["disable_scar"] = override_scar_option
+this.override_fns["hide_scar"] = override_scar_option
+this.override_fns["show_scar"] = override_scar_option
+this.override_fns["disable_scar"] = override_scar_option
 
 return this

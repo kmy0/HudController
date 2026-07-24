@@ -1,5 +1,8 @@
 local e = require("HudController.util.game.enum")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+---@module "HudController.hud.hook.init"
+local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 local this = {
     manager = require("HudController.hud.manager"),
@@ -98,13 +101,12 @@ function this.overwrite_hud_option(key, new_value)
         end
     end
 
-    local func = this.manager.overridden_options_func[key]
+    local func = this.manager.override_fns[key]
     if func then
         func(key, this.manager.overridden_options[key])
     end
 
-    ---@diagnostic disable-next-line: invisible
-    this.manager._hook().hook_option(key)
+    hook.hook_option(key)
     return this.manager.overridden_options[key]
 end
 
