@@ -246,7 +246,7 @@ function this.add_all_element_profile()
 end
 
 function this.perf_test()
-    local current_hud = hud.manager.by_hudid
+    local current_hud = hud.elements.by_hudid
     local output_file = util_misc.join_paths(config.name, "perf_log.txt")
     local output_file_sorted = util_misc.join_paths(config.name, "perf_log_sorted.txt")
     local trim_percent = 10
@@ -357,7 +357,7 @@ function this.perf_test()
 end
 
 function this.write_all_elements()
-    local current_hud = hud.manager.by_hudid
+    local current_hud = hud.elements.by_hudid
 
     local function write_offset(hudbase)
         hudbase:set_offset({ x = 999, y = 999 })

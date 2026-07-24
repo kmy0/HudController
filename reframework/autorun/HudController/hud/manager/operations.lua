@@ -3,6 +3,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
+local hud_elements = require("HudController.hud.manager.elements")
 local hud_manager = require("HudController.hud.manager")
 local state = require("HudController.gui.state")
 local util_table = require("HudController.util.misc.table")
@@ -154,7 +155,7 @@ function this.add_element(name_key)
     hud_elem.key = key
 
     _hud.elements[name_key] = hud_elem
-    hud_manager.update_elements(_hud.elements)
+    hud_elements.update_elements(_hud.elements)
 end
 
 ---@param hud_config HudProfileConfig

@@ -9,8 +9,9 @@
 
 ---@class (exact) ModBind : Bind, ModBindBase
 
+local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.init"
-local hud
+local hud = util_misc.lazy_require("HudController.hud.init")
 local ace_misc = require("HudController.util.ace.misc")
 local bind_monitor = require("HudController.hud.bind.monitor")
 local config = require("HudController.config.init")
@@ -40,10 +41,6 @@ this.action_type = {
 
 ---@param bind ModBind
 local function action_hud(bind)
-    if not hud then
-        hud = require("HudController.hud.init")
-    end
-
     local config_mod = config.current.mod
     local hud_config = hud.operations.get_hud_by_key(bind.bound_value --[[@as integer]])
 
@@ -56,10 +53,6 @@ end
 ---@param bind ModBind
 ---@param toggle_hold_value boolean? internal, dont use
 local function action_option_hud(bind, toggle_hold_value)
-    if not hud then
-        hud = require("HudController.hud.init")
-    end
-
     ---@type boolean?
     local new_value
     if bind.action_type == this.action_type.ENABLE then

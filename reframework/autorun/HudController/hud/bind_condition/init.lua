@@ -25,6 +25,15 @@ local this = {
     passing_sets = {},
 }
 
+local function add_conditions_to_config()
+    for k, v in pairs(this.conditions) do
+        config.current.mod.bind.condition.condition_options[k] = util_table.merge(
+            v:new_additional_options(),
+            config.current.mod.bind.condition.condition_options[k] or {}
+        )
+    end
+end
+
 ---@return integer?
 local function eval_conditions()
     local bind_conditions = config.current.mod.bind.condition
@@ -135,12 +144,7 @@ function this.new_condition_set(hud)
 end
 
 function this.reinit()
-    for k, v in pairs(this.conditions) do
-        config.current.mod.bind.condition.condition_options[k] = util_table.merge(
-            v:new_additional_options(),
-            config.current.mod.bind.condition.condition_options[k] or {}
-        )
-    end
+    add_conditions_to_config()
 end
 
 ---@return boolean
@@ -177,7 +181,7 @@ function this.init()
     end
 
     gui_state.init_condition_combo(util_table.values(this.conditions))
-    this.reinit()
+    add_conditions_to_config()
 
     return true
 end

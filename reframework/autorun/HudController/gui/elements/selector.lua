@@ -1,11 +1,9 @@
-local bind_condition = require("HudController.hud.bind_condition.init")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
-local user = require("HudController.hud.user")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -16,24 +14,6 @@ local this = {
     is_opened = false,
     window_size = 48,
 }
-
-local function reinit()
-    local config_mod = config.current.mod
-
-    config.lang:change()
-    state.translate_combo()
-    hud.manager.reinit()
-    hud.operations.reload()
-    user.reinit()
-    bind_condition.reinit()
-
-    local new_hud = config_mod.hud[config_mod.combo.hud]
-    if new_hud then
-        hud.request_hud(new_hud, true)
-    else
-        hud.manager.clear()
-    end
-end
 
 function this.close()
     this.is_opened = false
@@ -53,7 +33,7 @@ function this.draw()
     imgui.push_item_width(200)
     if set:combo(gui_util.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
         config.selector:swap()
-        reinit()
+        hud.reinit()
     end
     imgui.pop_item_width()
 
@@ -90,7 +70,7 @@ function this.draw()
     then
         if config.selector:delete_current_file() then
             state.combo.config:swap(config.selector.sorted)
-            reinit()
+            hud.reinit()
         end
     else
         -- popup position breakes if there is a tooltip before it

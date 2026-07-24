@@ -123,11 +123,12 @@ local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
----@module"HudController.hud.init"
-local hud
+---@module "HudController.hud.init"
+local hud = util_misc.lazy_require("HudController.hud.init")
 
 local ace_map = data.ace.map
 local mod = data.mod
@@ -926,10 +927,6 @@ end
 
 ---@return HudBaseConfig
 function this:get_current_config()
-    if not hud then
-        hud = require("HudController.hud.init")
-    end
-
     local current_hud = hud.get_current() --[[@as HudProfileConfig]]
     local keys = { self.name_key }
     local parent = self.parent

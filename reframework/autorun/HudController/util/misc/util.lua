@@ -211,4 +211,13 @@ function this.integer_to_hex(num)
     return string.format("0x%x", num)
 end
 
+---@param module_name string
+function this.lazy_require(module_name)
+    return setmetatable({}, {
+        __index = function(_, key)
+            return require(module_name)[key]
+        end,
+    })
+end
+
 return this

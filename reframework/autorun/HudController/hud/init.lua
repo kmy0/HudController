@@ -1,24 +1,31 @@
+local bind_condition = require("HudController.hud.bind_condition.init")
+local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
+local state = require("HudController.gui.state")
+local user = require("HudController.hud.user")
 local util_table = require("HudController.util.misc.table")
 
 local this = {
     manager = require("HudController.hud.manager"),
-    operations = require("HudController.hud.operations"),
+    operations = require("HudController.hud.manager.operations"),
+    options = require("HudController.hud.manager.options"),
+    elements = require("HudController.hud.manager.elements"),
+    profile_switcher = require("HudController.hud.manager.profile_switcher"),
 }
 
 ---@param elements table<string, HudBaseConfig>
 function this.update_elements(elements)
-    this.manager.update_elements(elements)
+    this.elements.update_elements(elements)
 end
 
 function this.reset_elements()
-    this.manager.reset_elements()
+    this.elements.reset_elements()
 end
 
 ---@param option_name string
 ---@param option_value integer
 function this.apply_option(option_name, option_value)
-    this.manager.apply_option(option_name, option_value)
+    this.options.apply_option(option_name, option_value)
 end
 
 ---@param element string | app.GUIHudDef.TYPE
@@ -32,32 +39,32 @@ function this.get_element(element)
         return
     end
 
-    return this.manager.by_hudid[element]
+    return this.elements.by_hudid[element]
 end
 
 ---@param gui_id app.GUIID.ID
 ---@return HudBase?
 function this.get_element_by_guiid(gui_id)
-    return this.manager.by_guiid[gui_id]
+    return this.elements.by_guiid[gui_id]
 end
 
 ---@param strict boolean?
 ---@return HudProfileConfig?
 function this.get_current(strict)
     if
-        not this.manager.current_hud
+        not this.profile_switcher.current_hud
         or (
             strict
             and (
-                not this.manager.current_hud.elements
-                or util_table.empty(this.manager.current_hud.elements)
+                not this.profile_switcher.current_hud.elements
+                or util_table.empty(this.profile_switcher.current_hud.elements)
             )
         )
     then
         return
     end
 
-    return this.manager.current_hud
+    return this.profile_switcher.current_hud
 end
 
 ---@return boolean?
@@ -79,49 +86,23 @@ end
 ---@param new_value boolean? nil for toggle
 ---@return boolean? -- changed value
 function this.overwrite_hud_option(key, new_value)
-    local current_hud = this.get_current()
-    if not current_hud then
-        return
-    end
-
-    if new_value == nil then
-        if this.manager.overridden_options[key] ~= nil then
-            this.manager.overridden_options[key] = not this.manager.overridden_options[key]
-        else
-            this.manager.overridden_options[key] = not current_hud[key]
-        end
-    else
-        if this.manager.overridden_options[key] ~= new_value then
-            this.manager.overridden_options[key] = new_value
-        else
-            return
-        end
-    end
-
-    local func = this.manager.overridden_options_func[key]
-    if func then
-        func(key, this.manager.overridden_options[key])
-    end
-
-    ---@diagnostic disable-next-line: invisible
-    this.manager._hook().hook_option(key)
-    return this.manager.overridden_options[key]
+    return this.options.overwrite_hud_option(key, new_value)
 end
 
 ---@param key string
 ---@return boolean?
 function this.get_overridden(key)
-    return this.manager.overridden_options[key]
+    return this.options.overridden_options[key]
 end
 
 function this.clear_overridden(key)
-    this.manager.overridden_options[key] = nil
+    this.options.overridden_options[key] = nil
 end
 
 ---@param new_hud HudProfileConfig
 ---@param force boolean?
 function this.request_hud(new_hud, force)
-    this.manager.request_hud(new_hud, force)
+    this.profile_switcher.request_hud(new_hud, force)
 end
 
 function this.clear()
@@ -130,6 +111,24 @@ end
 
 function this.update()
     this.manager.update()
+end
+
+function this.reinit()
+    local config_mod = config.current.mod
+
+    config.lang:change()
+    state.translate_combo()
+    this.manager.reinit()
+    this.operations.reload()
+    user.reinit()
+    bind_condition.reinit()
+
+    local new_hud = config_mod.hud[config_mod.combo.hud]
+    if new_hud then
+        this.request_hud(new_hud, true)
+    else
+        this.clear()
+    end
 end
 
 return this

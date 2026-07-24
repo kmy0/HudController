@@ -1,9 +1,10 @@
 local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
----@module "HudController.hud.play_object.init"
-local play_object
 local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
+local util_misc = require("HudController.util.misc.init")
+---@module "HudController.hud.play_object.init"
+local play_object = util_misc.lazy_require("HudController.hud.play_object.init")
 
 local this = {}
 
@@ -18,10 +19,6 @@ end
 ---@param gui_base ace.GUIBase
 ---@return via.gui.Control
 function this.get_root_window(gui_base)
-    if not play_object then
-        play_object = require("HudController.hud.play_object.init")
-    end
-
     local gui = ace_misc.get_gui_component(gui_base)
     return play_object.control.get(gui:get_View(), "RootWindow") --[[@as via.gui.Control]]
 end

@@ -1,7 +1,8 @@
 ---@class ModBindMonitor : BindMonitor
 
+local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.init"
-local hud
+local hud = util_misc.lazy_require("HudController.hud.init")
 local bind_monitor = require("HudController.util.game.bind.monitor")
 local fade_manager = require("HudController.hud.fade.init")
 
@@ -21,10 +22,6 @@ function this:new(...)
 end
 
 function this:execute_actions()
-    if not hud then
-        hud = require("HudController.hud.init")
-    end
-
     local current_hud = hud.get_current()
     local hud_callback = {}
 
@@ -37,8 +34,8 @@ function this:execute_actions()
             or (
                 bind.bound_value == current_hud.key
                 and fade_manager.is_active()
-                and hud.manager.requested_hud
-                and bind.bound_value ~= hud.manager.requested_hud.key
+                and hud.profile_switcher.requested_hud
+                and bind.bound_value ~= hud.profile_switcher.requested_hud.key
             )
         then
             table.insert(hud_callback, bind)
