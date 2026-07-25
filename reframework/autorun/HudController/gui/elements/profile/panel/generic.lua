@@ -276,39 +276,42 @@ function this.draw(elem, elem_config, config_key)
         this.separator:draw()
     end
 
-    imgui.separator()
+    if elem.hud_id then
+        imgui.separator()
 
-    local current_hud = hud.get_current()
-    ---@cast current_hud HudProfileConfig
+        local current_hud = hud.get_current()
+        ---@cast current_hud HudProfileConfig
 
-    imgui.begin_disabled(
-        not config.current.mod.enable_fade or current_hud.fade_in == 0 and current_hud.fade_out == 0
-    )
-    if
-        set:checkbox(
-            gui_util.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
-            config_key .. ".disable_fade"
+        imgui.begin_disabled(
+            not config.current.mod.enable_fade
+                or current_hud.fade_in == 0 and current_hud.fade_out == 0
         )
-    then
-        elem:set_disable_fade(elem_config.disable_fade)
-    end
-    util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade"), true)
+        if
+            set:checkbox(
+                gui_util.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
+                config_key .. ".disable_fade"
+            )
+        then
+            elem:set_disable_fade(elem_config.disable_fade)
+        end
+        util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade"), true)
 
-    imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
-    if
-        set:checkbox(
-            gui_util.tr(
-                "hud_element.entry.box_disable_fade_opacity",
+        imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
+        if
+            set:checkbox(
+                gui_util.tr(
+                    "hud_element.entry.box_disable_fade_opacity",
+                    config_key .. ".disable_fade_opacity"
+                ),
                 config_key .. ".disable_fade_opacity"
-            ),
-            config_key .. ".disable_fade_opacity"
-        )
-    then
-        elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
+            )
+        then
+            elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
+        end
+        util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade_opacity"), true)
+        imgui.end_disabled()
+        imgui.end_disabled()
     end
-    util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade_opacity"), true)
-    imgui.end_disabled()
-    imgui.end_disabled()
 
     imgui.end_disabled()
 end
