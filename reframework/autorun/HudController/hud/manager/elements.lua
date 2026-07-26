@@ -65,6 +65,10 @@ function this.update_elements_partial(elements)
         if not elements[elem.name_key] or (not elem.hide and elem.opacity ~= 0) then
             call_queue.queue_func(elem.hud_id, function()
                 elem:reset()
+
+                if not elements[elem.name_key] then
+                    elem.opacity = 1
+                end
             end)
         end
     end
