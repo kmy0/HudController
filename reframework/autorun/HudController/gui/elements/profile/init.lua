@@ -17,7 +17,6 @@ local ace_map = data.ace.map
 
 local this = {}
 local drag = drag_util:new()
-local dummy_hud = factory.get_hud_profile_config(-1, "__dummy")
 
 ---@param changed boolean
 ---@param key string
@@ -363,6 +362,7 @@ local function draw_options()
 
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then
         util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
+        local dummy_hud = factory.get_hud_profile_config(-1, "__dummy")
 
         local sorted = util_table.sort(
             util_table.remove(
