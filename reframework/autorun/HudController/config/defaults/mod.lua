@@ -44,6 +44,7 @@
 ---@field disable_condition_binds_held boolean
 ---@field disable_condition_binds_time number
 ---@field user_scripts table<string, boolean>
+---@field user_conditions table<string, boolean>
 ---@field hud HudProfileConfig[]
 ---@field bind {
 --- condition: ConditionBindStateConfig,
@@ -91,6 +92,7 @@ return {
         disable_condition_binds_timed = false,
         disable_condition_binds_time = 30,
         user_scripts = {},
+        user_conditions = {},
         grid = {
             draw = false,
             color_center = 4278190335,

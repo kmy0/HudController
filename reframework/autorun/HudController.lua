@@ -9,7 +9,7 @@ local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local hud_base = require("HudController.hud.def.hud_base")
 local sorter = require("HudController.gui.elements.sorter")
-local user = require("HudController.hud.user")
+local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
 local logger = util.misc.logger.g
 
@@ -20,10 +20,10 @@ local init = util.misc.init_chain:new(
     util.game.bind.init,
     util.ace.scene_fade.init,
     util.ace.porter.init,
+    bind_condition.init,
+    user.init,
     hud.manager.init,
     hook.init,
-    user.init,
-    bind_condition.init,
     config_menu.init,
     data.mod.init
 )

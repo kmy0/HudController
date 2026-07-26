@@ -1,5 +1,6 @@
 local ace_misc = require("HudController.util.ace.misc")
 local cache = require("HudController.util.misc.cache")
+local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
 local util_misc = require("HudController.util.misc.init")
@@ -35,6 +36,18 @@ function this.get_hud_write_args(type)
     local disp_ctrl = cls._DisplayControl
     local gui_id = cls:get_ID()
     return { cls, gui_id, disp_ctrl._TargetControl }
+end
+
+---@param file_name string
+---@return boolean
+function this.is_ok_user_file(file_name)
+    return not string.find(file_name, "example") and not string.match(file_name, "^_")
+end
+
+---@param dir string
+---@return string[]
+function this.get_user_files(dir)
+    return fs.glob(util_misc.join_paths_b(config.name, dir, ".*lua"))
 end
 
 this.get_root_window = cache.memoize(this.get_root_window)

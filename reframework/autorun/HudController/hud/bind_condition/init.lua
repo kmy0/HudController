@@ -4,10 +4,8 @@
 
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
-local util_misc = require("HudController.util.misc.util")
-local util_table = require("HudController.util.misc.table")
-local logger = require("HudController.util.misc.logger").g
 local gui_state = require("HudController.gui.state")
+local util_table = require("HudController.util.misc.table")
 local conditions = {
     combat = require("HudController.hud.bind_condition.conditions.combat"),
     game_mode = require("HudController.hud.bind_condition.conditions.game_mode"),
@@ -24,15 +22,6 @@ local this = {
     ---@type ConditionSetPass[]
     passing_sets = {},
 }
-
-local function add_conditions_to_config()
-    for k, v in pairs(this.conditions) do
-        config.current.mod.bind.condition.condition_options[k] = util_table.merge(
-            v:new_additional_options(),
-            config.current.mod.bind.condition.condition_options[k] or {}
-        )
-    end
-end
 
 ---@return integer?
 local function eval_conditions()
@@ -143,45 +132,26 @@ function this.new_condition_set(hud)
     }
 end
 
+---@param condition ConditionBase
+function this.register_condition(condition)
+    this.conditions[condition.condition_name] = condition
+    config.current.mod.bind.condition.condition_options[condition.condition_name] =
+        util_table.merge(
+            condition:new_additional_options(),
+            config.current.mod.bind.condition.condition_options[condition.condition_name] or {}
+        )
+end
+
 function this.reinit()
-    add_conditions_to_config()
+    this.init()
 end
 
 ---@return boolean
 function this.init()
     for _, cond in pairs(conditions) do
         local cls = cond:new()
-        this.conditions[cls.condition_name] = cls
+        this.register_condition(cls)
     end
-
-    local files = fs.glob(util_misc.join_paths_b(config.name, "user_conditions", ".*lua"))
-    for _, file in pairs(files) do
-        local name = util_misc.get_file_name(file, false)
-
-        if not string.find(name, "example") and not string.match(name, "^_") then
-            util_misc.try(function()
-                local module = require(
-                    string.format("reframework.data.%s.user_conditions.%s", config.name, name)
-                ) --[[@as CustomCondition | fun()]]
-                ---@type CustomCondition
-                local cond
-
-                if type(module) == "function" then
-                    cond = module() --[[@as CustomCondition]]
-                else
-                    cond = module:new() --[[@as CustomCondition]]
-                end
-
-                this.conditions[cond.condition_name] = cond
-                logger:info(string.format("[UserCondition] %s loaded.", name))
-            end, function(err)
-                logger:error(string.format("[UserCondition] %s failed: %s.", name, err))
-            end)
-        end
-    end
-
-    gui_state.init_condition_combo(util_table.values(this.conditions))
-    add_conditions_to_config()
 
     return true
 end

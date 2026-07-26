@@ -220,4 +220,49 @@ function this.lazy_require(module_name)
     })
 end
 
+---@param fn fun()
+function this.with_custom_require(fn)
+    local original_require = _G.require
+
+    ---@param name string
+    ---@diagnostic disable-next-line: duplicate-set-field
+    _G.require = function(name)
+        ---@type string?
+        local err
+        ---@type any?
+        local ret
+
+        this.try(function()
+            ---@diagnostic disable-next-line: no-unknown
+            ret = original_require(name)
+        end, function(error)
+            err = error
+        end)
+
+        if not err then
+            return ret
+        elseif not err:find("module.-not found") then
+            error(err, 0)
+        end
+
+        this.try(function()
+            ---@diagnostic disable-next-line: no-unknown
+            ret = original_require("reframework.autorun." .. name)
+        end)
+
+        if not ret then
+            error(err, 0)
+        end
+
+        ---@diagnostic disable-next-line: no-unknown
+        package.loaded[name] = ret
+
+        return ret
+    end
+
+    fn()
+
+    _G.require = original_require
+end
+
 return this

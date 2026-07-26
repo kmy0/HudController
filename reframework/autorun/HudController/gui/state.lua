@@ -41,6 +41,8 @@ local gui_util = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+---@module "HudController.hud.bind_condition.init"
+local bind_condition = util_misc.lazy_require("HudController.hud.bind_condition.init")
 
 local ace_map = data.ace.map
 local mod = data.mod
@@ -186,23 +188,10 @@ local this = {
     set = config_set:new(config),
 }
 
-function this.translate_combo()
-    for _, c in
-        pairs(this.combo --[==[@as Combo[]]==])
-    do
-        c:translate()
-    end
-
-    for _, c in pairs(this.bind_condition_options) do
-        c:translate()
-    end
-end
-
----@param conditions ConditionBase[]
-function this.init_condition_combo(conditions)
+local function init_condition_combo()
     ---@type table<string, string>
     local names = {}
-    for _, cond in pairs(conditions) do
+    for _, cond in pairs(bind_condition.conditions) do
         names[cond.condition_name] = cond.condition_name
 
         if cond.options then
@@ -225,6 +214,18 @@ function this.init_condition_combo(conditions)
 
     for _, cond_set in pairs(config.current.mod.bind.condition.hud) do
         cond_set.combo_condition = math.min(cond_set.combo_condition, this.combo.condition:size())
+    end
+end
+
+function this.translate_combo()
+    for _, c in
+        pairs(this.combo --[==[@as Combo[]]==])
+    do
+        c:translate()
+    end
+
+    for _, c in pairs(this.bind_condition_options) do
+        c:translate()
     end
 end
 
@@ -285,6 +286,7 @@ function this.init()
     this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
     this.combo.map_filter:swap(mod.map.combo_map_filter_init)
     this.combo.hud:swap(config.current.mod.hud)
+    init_condition_combo()
     this.translate_combo()
 end
 

@@ -174,8 +174,12 @@ return {
                 tooltip_action_type = "Bind Action",
             },
         },
-        user_scripts = {
-            name = "User Scripts",
+        user = {
+            name = "User",
+            scripts = {
+                name = "Scripts",
+            },
+            conditions = { name = "Conditions" },
             text_no_scripts = "Scripts will be listed here...",
         },
         tools = {

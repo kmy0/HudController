@@ -9,7 +9,7 @@ local gui_selector = require("HudController.gui.elements.selector")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
-local user = require("HudController.hud.user")
+local user = require("HudController.hud.user.init")
 local util_ace = require("HudController.util.ace.init")
 local util_bind = require("HudController.util.game.bind.init")
 local util_imgui = require("HudController.util.imgui.init")
@@ -45,48 +45,6 @@ local function draw_menu(label, draw_func, enabled_obj, text_color)
     end
 
     return menu
-end
-
-local function draw_user_scripts_menu()
-    imgui.push_style_var(14, Vector2f.new(0, 2))
-
-    local config_mod = config.current.mod
-
-    local sorted = util_table.sort(util_table.keys(config_mod.user_scripts))
-
-    if util_table.empty(sorted) then
-        imgui.text(config.lang:tr("menu.user_scripts.text_no_scripts"))
-    end
-
-    for i = 1, #sorted do
-        local name = sorted[i]
-        local pop_color = false
-
-        if user.failed[name] ~= nil then
-            imgui.push_style_color(0, mod.enum.colors.bad)
-            pop_color = true
-        elseif config_mod.user_scripts[name] ~= (user.loaded[name] ~= nil) then
-            imgui.push_style_color(0, mod.enum.colors.info)
-            pop_color = true
-        end
-
-        if util_imgui.menu_item(name, config_mod.user_scripts[name]) then
-            config_mod.user_scripts[name] = not config_mod.user_scripts[name]
-            config:save()
-        end
-
-        if pop_color then
-            imgui.pop_style_color(1)
-        end
-
-        if user.failed[name] ~= nil then
-            util_imgui.tooltip(user.failed[name])
-        elseif config_mod.user_scripts[name] ~= (user.loaded[name] ~= nil) then
-            util_imgui.tooltip(config.lang:tr("misc.text_reset_required"))
-        end
-    end
-
-    imgui.pop_style_var(1)
 end
 
 local function draw_mod_menu()
@@ -841,18 +799,80 @@ local function draw_tools_menu()
     end
 end
 
+---@param user_manager UserManager
+local function draw_user_sub_menu(user_manager)
+    imgui.push_style_var(14, Vector2f.new(0, 2))
+
+    local config_user = user_manager:get_config()
+    local sorted = util_table.sort(util_table.keys(config_user))
+
+    if util_table.empty(sorted) then
+        imgui.text(config.lang:tr("menu.user_scripts.text_no_scripts"))
+    end
+
+    for i = 1, #sorted do
+        local name = sorted[i]
+        local pop_color = false
+
+        if user_manager.failed[name] ~= nil then
+            imgui.push_style_color(0, mod.enum.colors.bad)
+            pop_color = true
+        elseif config_user[name] ~= (user_manager.loaded[name] ~= nil) then
+            imgui.push_style_color(0, mod.enum.colors.info)
+            pop_color = true
+        end
+
+        if util_imgui.menu_item(name, config_user[name]) then
+            config_user[name] = not config_user[name]
+            config:save()
+        end
+
+        if pop_color then
+            imgui.pop_style_color(1)
+        end
+
+        if user_manager.failed[name] ~= nil then
+            util_imgui.tooltip(user_manager.failed[name])
+        elseif config_user[name] ~= (user_manager.loaded[name] ~= nil) then
+            util_imgui.tooltip(config.lang:tr("misc.text_reset_required"))
+        end
+    end
+
+    imgui.pop_style_var(1)
+end
+
+local function draw_user_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
+    draw_menu(gui_util.tr("menu.user.scripts.name"), function()
+        draw_user_sub_menu(user.script)
+    end, nil, user.script:is_need_attention() and mod.enum.colors.info or nil)
+    util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
+
+    draw_menu(gui_util.tr("menu.user.conditions.name"), function()
+        draw_user_sub_menu(user.condition)
+    end, nil, user.condition:is_need_attention() and mod.enum.colors.info or nil)
+    util_imgui.tooltip(string.format(".../reframework/data/%s/user_conditions", config.name))
+
+    imgui.unindent(2)
+    imgui.spacing()
+end
+
 function this.draw()
     draw_menu(gui_util.tr("menu.config.name"), draw_mod_menu)
     draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
     draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
     draw_menu(
-        gui_util.tr("menu.user_scripts.name"),
-        draw_user_scripts_menu,
+        gui_util.tr("menu.user.name"),
+        draw_user_menu,
         nil,
-        user.is_need_attention() and mod.enum.colors.info or nil
+        (user.script:is_need_attention() or user.condition:is_need_attention())
+                and mod.enum.colors.info
+            or nil
     )
-    util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
+
     draw_menu(gui_util.tr("menu.tools.name"), draw_tools_menu)
 end
 
