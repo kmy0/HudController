@@ -3,8 +3,9 @@
 ---@field map ComboMap[]
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@field map_fn (fun(value: any): string)?
----@field _translate_fn (fun(key: any, value: any): string)?
+---@field _translate_fn (fun(key: any, value:any): string)?
 ---@field _is_disabled_fn (fun(self: Combo): boolean)?
+---@field _getter_fn (fun(self: Combo): any?)?
 ---@field disabled ComboMap[]
 
 ---@alias ComboMap {key: any, value: string}
@@ -12,8 +13,9 @@
 ---@class (exact) ComboOptionalArgs
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
 ---@field map_fn (fun(value: any): string)?
----@field translate_fn (fun(key: any, value: any): string)?
+---@field translate_fn (fun(key: any, value:any): string)?
 ---@field is_disabled_fn (fun(self: Combo): boolean)?
+---@field getter_fn (fun(self: Combo): any?)?
 ---@field disabled_keys any[]?
 
 local util_table = require("HudController.util.misc.table")
@@ -34,7 +36,10 @@ function this:new(key_to_value, optional_args)
         map_fn = optional_args.map_fn,
         _translate_fn = optional_args.translate_fn,
         _is_disabled_fn = optional_args.is_disabled_fn,
+        _getter_fn = optional_args.getter_fn,
         disabled = {},
+        map = {},
+        values = {},
     }
 
     if key_to_value then
@@ -58,18 +63,54 @@ end
 ---@return integer?
 function this:swap(key_to_value, current_index, disabled_keys)
     self.disabled = {}
+    local ret = 1
 
     if current_index then
-        local current_key = self.map[current_index].key
-        self:_map(key_to_value)
-        return util_table.index(self.map, function(o)
-            return o.key == current_key
-        end) or 1
-    end
-    self:_map(key_to_value)
+        local current_value = self.map[current_index]
+        local current_key = current_value and current_value.key
+        ret = current_key and current_index or 1
 
-    for _, key in pairs(disabled_keys or {}) do
-        self:disable_item(key)
+        self:_map(key_to_value)
+        if self._translate_fn then
+            self:translate()
+        end
+
+        if current_key then
+            ret = util_table.index(self.map, function(o)
+                return o.key == current_key
+            end) or 1
+        end
+
+        self:disable_items(disabled_keys or {})
+    else
+        self:_map(key_to_value)
+        self:disable_items(disabled_keys or {})
+    end
+
+    return ret
+end
+
+---@overload fun(key_to_value: table, current_index: integer): integer
+---@overload fun(key_to_value: table)
+---@param key_to_value table
+---@param current_index integer?
+---@param disabled_keys any[]?
+---@return integer?
+function this:swap_init(key_to_value, current_index, disabled_keys)
+    self.disabled = {}
+
+    self:_map(key_to_value)
+    if self._translate_fn then
+        self:translate()
+    end
+
+    self:disable_items(disabled_keys or {})
+    if current_index then
+        if self.map[current_index] then
+            return current_index
+        else
+            return 1
+        end
     end
 end
 
@@ -120,13 +161,23 @@ end
 ---@param index integer
 ---@return any
 function this:get_key(index)
-    return self.map[index].key
+    local ret = self.map[index]
+    if ret then
+        return ret.key
+    end
 end
 
 ---@param index integer
 ---@return string
 function this:get_value(index)
     return self.map[index].value
+end
+
+---@return any
+function this:get()
+    if self._getter_fn then
+        return self:_getter_fn()
+    end
 end
 
 ---@param key any?
@@ -194,6 +245,20 @@ end
 function this:disable_all_items()
     for _, v in pairs(util_table.values(self.map)) do
         self:disable_item(v.key)
+    end
+end
+
+---@param keys any[]
+function this:disable_items(keys)
+    for _, key in pairs(keys) do
+        self:disable_item(key)
+    end
+end
+
+---@param keys any[]
+function this:enable_items(keys)
+    for _, key in pairs(keys) do
+        self:enable_item(key)
     end
 end
 
