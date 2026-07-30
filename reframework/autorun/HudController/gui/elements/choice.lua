@@ -16,7 +16,7 @@ local reverse_sort = false
 function this.draw_hud()
     local config_mod = config.current.mod
 
-    imgui.push_item_width(200)
+    imgui.push_item_width(gui_util.get_item_size())
 
     if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input_action = nil
@@ -114,7 +114,7 @@ end
 function this.draw_element()
     local config_mod = config.current.mod
 
-    imgui.push_item_width(200)
+    imgui.push_item_width(gui_util.get_item_size())
 
     set:combo(gui_util.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
 

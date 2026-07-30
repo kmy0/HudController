@@ -205,5 +205,10 @@ function this.is_only_thing(elem_config, thing)
     return true
 end
 
+function this.get_item_size()
+    local step = 200 / config.lang.default_font_size
+    return step * config.lang.font_size
+end
+
 this.separator = Separator
 return this

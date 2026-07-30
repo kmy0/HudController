@@ -521,7 +521,7 @@ local function draw_condition_bind_menu()
         end
 
         imgui.same_line()
-        imgui.push_item_width(200)
+        imgui.push_item_width(gui_util.get_item_size())
 
         if
             set:combo(
@@ -541,7 +541,7 @@ local function draw_condition_bind_menu()
 
         if not cond_set.collapsed then
             imgui.separator()
-            imgui.push_item_width(200)
+            imgui.push_item_width(gui_util.get_item_size())
 
             set:combo(
                 "##conditions." .. i,
@@ -615,7 +615,7 @@ local function draw_condition_bind_menu()
                     imgui.table_set_column_index(2)
 
                     if cond_class.options then
-                        imgui.push_item_width(200)
+                        imgui.push_item_width(gui_util.get_item_size())
                         set:combo(
                             string.format("##%s.%s.%s", "cond_opt", i, j),
                             string.format("%s.conditions.int:%s.%s", config_key, j, "combo"),

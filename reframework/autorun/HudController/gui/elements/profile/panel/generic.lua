@@ -55,15 +55,16 @@ end
 function this.draw_step_buttons(config_key, min, max, step)
     ---@type boolean
     local changed
+    local size = config.lang.font_size + 6
 
-    if imgui.button("-##button_minus_" .. config_key, { 20, 20 }) then
+    if imgui.button("-##button_minus_" .. config_key, { size, size }) then
         changed = true
         config:set(config_key, math.max(config:get(config_key) - step, min))
     end
 
     imgui.same_line()
 
-    if imgui.button("+##button_plus_" .. config_key, { 20, 20 }) then
+    if imgui.button("+##button_plus_" .. config_key, { size, size }) then
         changed = true
         config:set(config_key, math.min(config:get(config_key) + step, max))
     end

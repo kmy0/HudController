@@ -30,7 +30,7 @@ function this.draw()
     imgui.begin_child_window("selector_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
-    imgui.push_item_width(200)
+    imgui.push_item_width(gui_util.get_item_size())
     if set:combo(gui_util.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
         config.selector:swap()
         hud.reinit()
@@ -102,7 +102,7 @@ function this.draw()
         end
     end
 
-    imgui.push_item_width(200)
+    imgui.push_item_width(gui_util.get_item_size())
     set:combo(
         gui_util.tr("selector.combo_backup"),
         "combo_file_backup",
