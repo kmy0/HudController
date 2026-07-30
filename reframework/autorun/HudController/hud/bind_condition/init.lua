@@ -94,7 +94,7 @@ function this.update(current_hud)
         new_hud_key = eval_conditions()
     end
 
-    if new_hud_key == current_hud.key then
+    if current_hud and new_hud_key == current_hud.key then
         return
     elseif not new_hud_key and this.previous_hud_key and bind_conditions.switchback then
         new_hud_key = this.previous_hud_key
