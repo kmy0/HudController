@@ -121,15 +121,15 @@ end
 
 ---@param json_key string
 function this:remove_by_json_key(json_key)
-    for _json_key in pairs(self._json_map) do
+    for _json_key in pairs(self._value_by_json_key) do
         if _json_key:match(json_key) then
-            local key = self._json_key_map[_json_key]
-            self._json_map[_json_key] = nil
-            self._json_key_map[_json_key] = nil
+            local key = self._key_by_json_key[_json_key]
+            self._value_by_json_key[_json_key] = nil
+            self._key_by_json_key[_json_key] = nil
 
             if key then
                 self._map[key] = nil
-                self._map_key_json[key] = nil
+                self._json_key_by_key[key] = nil
             end
         end
     end
