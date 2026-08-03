@@ -46,6 +46,8 @@ m.isGunnerWeapon =
 m.requestMapFilter = m.wrap_obj(
     m.get_by_regex("app.cGUIFilteringSortPartsCtrl", "^<requestFilterSortMenu>.-0") --[[@as REMethodDefinition]]
 ) --[[@as fun(self: app.cGUIFilteringSortPartsCtrl, control: via.gui.Control?, sel_item: via.gui.SelectItem?, index: System.UInt32)]]
+m.canOpenStartMenu =
+    m.wrap(m.get("app.cGUISystemModuleSystemInputOpenController.canOpenStartMenu(System.Boolean)")) --[[@as fun(check_open_item_slider_flag: System.Boolean): System.Boolean]]
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then

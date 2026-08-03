@@ -3,7 +3,9 @@ local cache = require("HudController.util.misc.cache")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
+local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
+local util_ref = require("HudController.util.ref.init")
 ---@module "HudController.hud.play_object.init"
 local play_object = util_misc.lazy_require("HudController.hud.play_object.init")
 
@@ -50,7 +52,30 @@ function this.get_user_files(dir)
     return fs.glob(util_misc.join_paths_b(config.name, dir, ".*lua"))
 end
 
+---@return app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut
+function this.get_pc_shortcut_input()
+    ---@type app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut
+    local ret
+    local system_input_ctrl = s.get("app.GUIManager")._SystemInputOpenCtrl
+
+    util_game.do_something(system_input_ctrl._Ctrls, function(_, _, value)
+        if
+            util_ref.is_a(
+                value,
+                "app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut"
+            )
+        then
+            ---@cast value app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut
+            ret = value
+            return false
+        end
+    end)
+
+    return ret
+end
+
 this.get_root_window = cache.memoize(this.get_root_window)
 this.get_hud_write_args = cache.memoize(this.get_hud_write_args)
+this.get_pc_shortcut_input = cache.memoize(this.get_pc_shortcut_input)
 
 return this

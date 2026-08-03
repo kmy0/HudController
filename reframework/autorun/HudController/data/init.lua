@@ -211,6 +211,7 @@ function this.init()
             e.new("app.ChatDef.LOG_ID")
             e.new("app.EnemyDef.AI_TARGET_STATE")
             e.new("app.Communication.AUTO_ID")
+            e.new("app.GUI020600.TYPE")
         end)
     then
         return false

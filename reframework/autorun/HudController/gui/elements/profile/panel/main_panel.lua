@@ -715,6 +715,24 @@ local function draw_shortcut_keyboard(elem, elem_config, config_key)
     then
         elem:set_no_hide_elements(elem_config.no_hide_elements)
     end
+    util_imgui.tooltip(
+        config.lang:tr("hud_element.entry.tooltip_keyboard_shortcut_only_one_row"),
+        true
+    )
+
+    item_config_key = config_key .. ".always_visible"
+    if
+        set:checkbox(
+            gui_util.tr("hud_element.entry.box_always_visible", item_config_key),
+            item_config_key
+        )
+    then
+        elem:set_always_visible(elem_config.always_visible)
+    end
+    util_imgui.tooltip(
+        config.lang:tr("hud_element.entry.tooltip_keyboard_shortcut_only_one_row"),
+        true
+    )
 end
 
 ---@param elem HudBase

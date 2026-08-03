@@ -395,6 +395,7 @@ return {
             box_disable_fade_opacity = "Disable Opacity Fade",
             tooltip_disable_fade = "Make element ignore Fade settings",
             tooltip_disable_fade_opacity = "Make element ignore the 'Fade only opacity-modified elements' setting",
+            tooltip_keyboard_shortcut_only_one_row = "One Row Mode only",
         },
     },
     hud_subelement = {

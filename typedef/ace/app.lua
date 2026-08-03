@@ -41,6 +41,7 @@
 ---@class app.net_packet.cChatMessage : app.net_packet.cChatBase
 ---@class app.net_packet.cChatBase : app.net_packet.cPacketBase
 ---@class app.net_packet.cPacketBase : via.clr.ManagedObject
+---@class app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -53,10 +54,12 @@
 ---@field addActiveItem fun(self: app.GUIManager, item_id: app.ItemDef.ID, bool: System.Boolean)
 ---@field get_AppContinueFlag fun(self: app.GUIManager): ace.cSafeContinueFlag
 ---@field getQuestResult fun(self: app.GUIManager): app.cGUISystemModuleQuestResult
+---@field _SystemInputOpenCtrl app.cGUISystemModuleSystemInputOpenController
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIBack fun(self: app.cGUIMapController): app.GUI060001
 ---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
+---@field _Flow app.cGUIMapFlowCtrl
 
 ---@class app.cGUIHudDisplayManager : via.clr.ManagedObject
 ---@field findDisplayControl fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.cGUIHudDisplayControl?
@@ -588,8 +591,12 @@
 ---@field setEndTrue fun(self: app.cBowlingUpdater.UpdaterBase)
 
 ---@class app.GUI020600 : app.GUIHudBase
+---@field get__CtrlTab_Normal fun(self: app.GUI020600): ace.cGUIInputCtrl_FluentScrollList
 ---@field _IsOpen System.Boolean
 ---@field _Frames System.Array<System.Array<app.GUI020600PartsFrame>>
+---@field _DispTimer ace.TIMER
+---@field SLOT_CLOSE_NORMAL_PALLET ace.GUIDef.BUTTON_SLOT
+---@field _Type app.GUI020600.TYPE
 
 ---@class app.cGUIPartsShortcutFrameBase : ace.cGUIPartsBase
 ---@field get__ShortcutItem fun(self: app.cGUIPartsShortcutFrameBase): app.cGUIShortcutItem
@@ -599,6 +606,7 @@
 
 ---@class app.cGUIMapFlowCtrl : via.clr.ManagedObject
 ---@field get_Flags fun(self: app.cGUIMapFlowCtrl): System.Collections.BitArray
+---@field isOpenRadarMapGUI fun(self: app.cGUIMapFlowCtrl): System.Boolean
 
 ---@class app.user_data.ChatLogData.cData : ace.user_data.ExcelUserData.cData
 ---@field get_Title fun(self: app.user_data.ChatLogData.cData): System.Guid
@@ -660,3 +668,12 @@
 
 ---@class app.net_packet.cSysChatAutoTemplate : app.net_packet.cChatMessage
 ---@field AutoId System.Int16
+
+---@class app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut : app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase
+---@field checkHoldButton fun(self: app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut): System.Boolean
+---@field canOpen fun(self: app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut, some_bool: System.Boolean): System.Boolean
+---@field onOpen fun(self: app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlPCShortcut): System.Boolean
+---@field _OpenType app.GUI020600.TYPE
+
+---@class app.cGUISystemModuleSystemInputOpenController : ace.cGUISystemModuleBase
+---@field _Ctrls System.Array<app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase>

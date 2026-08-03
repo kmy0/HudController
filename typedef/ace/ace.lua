@@ -26,6 +26,7 @@
 ---@class ace.user_data.ExcelUserData.cData : via.clr.ManagedObject
 ---@class ace.cGameMessage : via.clr.ManagedObject
 ---@class ace.GameStateBase : via.clr.ManagedObject
+---@class ace.cGUIInputCtrl_FluentScrollList : ace.cGUIInputCtrl
 
 ---@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
 ---@field _Array System.Array<any>
@@ -119,3 +120,6 @@
 
 ---@class ace.GameFlowManagerBase.cGameStateChangeRequest : via.clr.ManagedObject
 ---@field get_NextGameState fun(self: ace.GameFlowManagerBase.cGameStateChangeRequest): ace.GameStateBase
+
+---@class ace.TIMER : System.ValueType
+---@field _Timer System.Single
