@@ -1,17 +1,12 @@
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
-local s = require("HudController.util.ref.singletons")
+local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
+local util_table = require("HudController.util.misc.table")
 
 local this = {}
-local gui_flags = {
-    "HIDE_CLOCK",
-    "HIDE_TARGET_ICON",
-    "HIDE_SLINGER_HUD",
-    "HIDE_MANTLE_HUD",
-}
 
 local function is_reveal()
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
@@ -27,14 +22,29 @@ function this.reveal_minimap_pre(args)
     end
 end
 
-function this.reveal_elements_post(_)
+function this.reveal_elements_pre(args)
     if is_reveal() then
-        local guiman = s.get("app.GUIManager")
-        local flags = guiman:get_AppContinueFlag()
+        local o = sdk.to_managed_object(args[2]) --[[@as ace.GUIBase]]
+        local guiid = o:get_ID()
+        local clock = e.get("app.GUIID.ID").UI020009
+        local target_icon = e.get("app.GUIID.ID").UI020012
+        local slinger = e.get("app.GUIID.ID").UI020017
 
-        for _, flag in pairs(gui_flags) do
-            flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG")[flag])
+        if util_table.contains({ clock, target_icon, slinger }, guiid) then
+            return sdk.PreHookResult.SKIP_ORIGINAL
         end
+    end
+end
+
+function this.reveal_mantle_post(_)
+    if is_reveal() then
+        local itembar = util_mod.get_gui_cls("app.GUI020006")
+        local root = util_mod.get_root_window(itembar)
+        local mantle =
+            play_object.control.get(root, { "PNL_All", "PNL_Scale", "PNL_Pat00", "PNL_mantleSet" }) --[[@as via.gui.Control]]
+
+        mantle:set_Visible(true)
+        mantle:set_ForceInvisible(false)
     end
 end
 

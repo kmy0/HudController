@@ -417,10 +417,10 @@ end
 function this.hud_hooks.shortcut_keyboard()
     m.hook("app.cGUIMapFlowCtrl.update()", elements.shortcut_keyboard.reveal_minimap_pre)
     m.hook(
-        "app.GUI020600.guiHudVisibleUpdate()",
-        nil,
-        elements.shortcut_keyboard.reveal_elements_post
+        "ace.GUIBase`2<app.GUIID.ID,app.GUIFunc.TYPE>.requestClose(System.Boolean)",
+        elements.shortcut_keyboard.reveal_elements_pre
     )
+    m.hook("app.GUIManager.lateUpdateApp()", nil, elements.shortcut_keyboard.reveal_mantle_post)
     m.hook(
         "app.GUI020600.guiHudVisibleUpdate()",
         nil,
@@ -440,7 +440,6 @@ function this.hud_hooks.shortcut_keyboard()
         "app.GUI020600.callback_OtherNormal(ace.GUIDef.BUTTON_SLOT, via.gui.Control, via.gui.SelectItem, System.UInt32)",
         elements.shortcut_keyboard.prevent_close2_pre
     )
-    m.hook("app.GUI020600.guiHudOpenUpdate()", nil, elements.shortcut_keyboard.reveal_elements_post)
     m.hook(
         "app.GUI020600.requestOpenPCShortcut(app.GUI020600.TYPE, System.Int32, System.Int32, app.GUI020600.MODE, via.gui.Rect)",
         elements.shortcut_keyboard.clear_cache_pre
