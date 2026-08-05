@@ -807,7 +807,7 @@ local function draw_user_sub_menu(user_manager)
     local sorted = util_table.sort(util_table.keys(config_user))
 
     if util_table.empty(sorted) then
-        imgui.text(config.lang:tr("menu.user_scripts.text_no_scripts"))
+        imgui.text(config.lang:tr("menu.user.text_no_scripts"))
     end
 
     for i = 1, #sorted do
