@@ -482,7 +482,9 @@ local function draw_condition_bind_menu()
 
                 local str = cond_class:get_display_name()
 
-                if cond_class.options then
+                if cond_class:has_custom_options() then
+                    str = cond_class:get_selected_option_string()
+                elseif cond_class.options then
                     local index = config:get(
                         string.format("%s.conditions.int:%s.%s", config_key, j, "combo")
                     ) or 1
@@ -614,7 +616,9 @@ local function draw_condition_bind_menu()
                     imgui.text(cond_class:get_display_name())
                     imgui.table_set_column_index(2)
 
-                    if cond_class.options then
+                    if cond_class:has_custom_options() then
+                        cond_class:draw_options()
+                    elseif cond_class.options then
                         imgui.push_item_width(gui_util.get_item_size())
                         set:combo(
                             string.format("##%s.%s.%s", "cond_opt", i, j),

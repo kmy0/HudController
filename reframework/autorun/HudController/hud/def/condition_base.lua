@@ -52,6 +52,14 @@ function this:new_config()
     return { class = self.condition_name, combo = 1 }
 end
 
+-- imgui things drawn at bind > condition to the left of the condition
+function this:draw_options() end
+
+---@return string --currently selected option, used for the tooltip when condtion set is folded
+function this:get_selected_option_string()
+    return ""
+end
+
 -- imgui things drawn at bind > condition options
 function this:draw_additional_options() end
 
@@ -64,6 +72,11 @@ end
 ---@return boolean
 function this:has_additional_options()
     return this.draw_additional_options ~= self.draw_additional_options
+end
+
+---@return boolean
+function this:has_custom_options()
+    return this.draw_options ~= self.draw_options
 end
 
 ---@return ConditionBindOptionsBase
