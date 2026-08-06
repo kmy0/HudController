@@ -6,7 +6,7 @@ local hook_common = require("HudController.hud.hook.common")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 
-m.hook("app.cGUIHudDisplayManager.lateUpdate()", function(retval)
+m.hook("app.GUIManager.lateUpdateApp()", function(retval)
     local slinger = hook_common.get_elem_t("Slinger")
 
     if slinger then
