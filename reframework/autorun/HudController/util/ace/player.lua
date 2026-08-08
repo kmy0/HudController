@@ -119,6 +119,16 @@ function this.is_fast_travel()
     return s.get("app.MissionManager"):isFastTravel()
 end
 
+---@return boolean
+function this.is_in_tent()
+    local master_player = this.get_master_char()
+    if not master_player then
+        return false
+    end
+
+    return master_player:get_IsInTent()
+end
+
 this.get_master_char = cache.memoize(this.get_master_char, function(cached_value)
     ---@cast cached_value app.HunterCharacter
     return cached_value:get_Valid()
