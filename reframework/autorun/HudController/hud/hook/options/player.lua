@@ -32,6 +32,7 @@ function this.hide_weapon_post(_)
             if
                 master_player
                 and not master_player:get_IsWeaponOnAction()
+                and not ace_player:is_in_tent()
                 and not ace_player.check_continue_flag(
                     e.get("app.HunterDef.CONTINUE_FLAG").PORTER_WP_CHANGE
                 )
