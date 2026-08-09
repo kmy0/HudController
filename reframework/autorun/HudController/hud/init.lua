@@ -6,7 +6,7 @@ local user = require("HudController.hud.user.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {
-    manager = require("HudController.hud.manager"),
+    manager = require("HudController.hud.manager.init"),
     operations = require("HudController.hud.manager.operations"),
     options = require("HudController.hud.manager.options"),
     elements = require("HudController.hud.manager.elements"),
