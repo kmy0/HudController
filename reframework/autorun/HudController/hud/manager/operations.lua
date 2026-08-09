@@ -4,7 +4,7 @@ local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local hud_elements = require("HudController.hud.manager.elements")
-local hud_manager = require("HudController.hud.manager")
+local hud_manager = require("HudController.hud.manager.init")
 local state = require("HudController.gui.state")
 local util_table = require("HudController.util.misc.table")
 
