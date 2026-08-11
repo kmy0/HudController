@@ -70,7 +70,7 @@
 
 ---@class (exact) ItembarAllSliderInputDefault
 ---@field input_bit integer
----@field buttons [app.GUIFunc.TYPE, app.GUIFunc.TYPE, app.GUIFunc.TYPE]
+---@field buttons [app.GUIFunc.TYPE, app.GUIFunc.TYPE, app.GUIFunc.TYPE, app.GUIFunc.TYPE, app.GUIFunc.TYPE]
 
 ---@alias ItembarAllSliderProperty HudChildProperty | "control" | "decide_key" | "appear_open" | "disable_right_stick"
 ---@alias ItembarAllSliderWriteKey HudChildWriteKey | ItembarAllSliderProperty | "input"
@@ -647,7 +647,7 @@ function this:_get_input_default()
         buttons = {},
     }
 
-    for i = 0, 2 do
+    for i = 0, 4 do
         table.insert(ret.buttons, i + 1, slots:get_Item(i))
     end
 
@@ -717,22 +717,22 @@ function this:_write(ctrl)
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_RIGHT_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
-                input.buttons[2] = -1
-                input.buttons[3] = -1
             elseif self.control == 1 then
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_KEY
-                input.buttons[2] = -1
-                input.buttons[3] = -1
             else
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_KEY
                     | input_ctrl.INPUT_FLAG_UP_DOWN_RIGHT_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
-                input.buttons[2] = -1
-                input.buttons[3] = -1
+            end
+
+            if self.control > -1 then
+                for i = 2, #input.buttons do
+                    input.buttons[i] = -1
+                end
             end
 
             if self.decide_key ~= "option_disable" then
