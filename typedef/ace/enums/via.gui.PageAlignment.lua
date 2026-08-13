@@ -1,0 +1,30 @@
+---@meta
+
+---@class (exact) Enum.via.gui.PageAlignment : Enum<via.gui.PageAlignment>
+---@field LeftTop via.gui.PageAlignment
+---@field CenterTop via.gui.PageAlignment
+---@field RightTop via.gui.PageAlignment
+---@field LeftCenter via.gui.PageAlignment
+---@field CenterCenter via.gui.PageAlignment
+---@field RightCenter via.gui.PageAlignment
+---@field LeftBottom via.gui.PageAlignment
+---@field CenterBottom via.gui.PageAlignment
+---@field RightBottom via.gui.PageAlignment
+---@field ["LeftTop"] via.gui.PageAlignment
+---@field ["CenterTop"] via.gui.PageAlignment
+---@field ["RightTop"] via.gui.PageAlignment
+---@field ["LeftCenter"] via.gui.PageAlignment
+---@field ["CenterCenter"] via.gui.PageAlignment
+---@field ["RightCenter"] via.gui.PageAlignment
+---@field ["LeftBottom"] via.gui.PageAlignment
+---@field ["CenterBottom"] via.gui.PageAlignment
+---@field ["RightBottom"] via.gui.PageAlignment
+---@field [0] "LeftTop"
+---@field [1] "CenterTop"
+---@field [2] "RightTop"
+---@field [4] "LeftCenter"
+---@field [5] "CenterCenter"
+---@field [6] "RightCenter"
+---@field [8] "LeftBottom"
+---@field [9] "CenterBottom"
+---@field [10] "RightBottom"

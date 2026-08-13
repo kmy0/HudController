@@ -99,7 +99,7 @@ end
 
 ---@return RodReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").ROD_RETICLE, "ROD_RETICLE") --[[@as RodReticleConfig]]
+    local base = hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").ROD_RETICLE, "ROD_RETICLE") --[[@as RodReticleConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.ROD_RETICLE

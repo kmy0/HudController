@@ -85,8 +85,10 @@ end
 
 ---@return SubtitlesChoiceConfig
 function this.get_config()
-    local base =
-        hud_base.get_config(e.get("app.GUIHudDef.TYPE").SUBTITLES_CHOICE, "SUBTITLES_CHOICE") --[[@as SubtitlesChoiceConfig]]
+    local base = hud_base.get_config(
+        e.get_noexact("app.GUIHudDef.TYPE").SUBTITLES_CHOICE,
+        "SUBTITLES_CHOICE"
+    ) --[[@as SubtitlesChoiceConfig]]
 
     base.hud_type = mod.enum.hud_type.SUBTITLES_CHOICE
     base.children.background = {

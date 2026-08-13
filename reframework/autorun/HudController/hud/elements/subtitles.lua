@@ -123,7 +123,7 @@ end
 
 ---@return SubtitlesConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SUBTITLES, "SUBTITLES") --[[@as SubtitlesConfig]]
+    local base = hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").SUBTITLES, "SUBTITLES") --[[@as SubtitlesConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.SUBTITLES

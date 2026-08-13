@@ -1,0 +1,15 @@
+---@meta
+
+---@class (exact) Enum.app.GUIHudDef.DISPLAY : Enum<app.GUIHudDef.DISPLAY>
+---@field SMALL app.GUIHudDef.DISPLAY
+---@field DEFAULT app.GUIHudDef.DISPLAY
+---@field LARGE app.GUIHudDef.DISPLAY
+---@field HIDDEN app.GUIHudDef.DISPLAY
+---@field ["SMALL"] app.GUIHudDef.DISPLAY
+---@field ["DEFAULT"] app.GUIHudDef.DISPLAY
+---@field ["LARGE"] app.GUIHudDef.DISPLAY
+---@field ["HIDDEN"] app.GUIHudDef.DISPLAY
+---@field [0] "SMALL"
+---@field [1] "DEFAULT"
+---@field [2] "LARGE"
+---@field [3] "HIDDEN"

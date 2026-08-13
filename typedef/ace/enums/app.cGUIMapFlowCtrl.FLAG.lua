@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.cGUIMapFlowCtrl.FLAG : Enum<app.cGUIMapFlowCtrl.FLAG>
+---@field OPEN app.cGUIMapFlowCtrl.FLAG
+---@field CLOSE app.cGUIMapFlowCtrl.FLAG
+---@field SHUTDOWN app.cGUIMapFlowCtrl.FLAG
+---@field ["OPEN"] app.cGUIMapFlowCtrl.FLAG
+---@field ["CLOSE"] app.cGUIMapFlowCtrl.FLAG
+---@field ["SHUTDOWN"] app.cGUIMapFlowCtrl.FLAG
+---@field [0] "OPEN"
+---@field [1] "CLOSE"
+---@field [2] "SHUTDOWN"

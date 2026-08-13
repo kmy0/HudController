@@ -1,0 +1,24 @@
+---@meta
+
+---@class (exact) Enum.app.ChatDef.MSG_TYPE : Enum<app.ChatDef.MSG_TYPE>
+---@field TEXT app.ChatDef.MSG_TYPE
+---@field MANUAL app.ChatDef.MSG_TYPE
+---@field FREE app.ChatDef.MSG_TYPE
+---@field AUTO app.ChatDef.MSG_TYPE
+---@field STAMP app.ChatDef.MSG_TYPE
+---@field SYSTEM app.ChatDef.MSG_TYPE
+---@field CHAT_SYSTEM app.ChatDef.MSG_TYPE
+---@field ["TEXT"] app.ChatDef.MSG_TYPE
+---@field ["MANUAL"] app.ChatDef.MSG_TYPE
+---@field ["FREE"] app.ChatDef.MSG_TYPE
+---@field ["AUTO"] app.ChatDef.MSG_TYPE
+---@field ["STAMP"] app.ChatDef.MSG_TYPE
+---@field ["SYSTEM"] app.ChatDef.MSG_TYPE
+---@field ["CHAT_SYSTEM"] app.ChatDef.MSG_TYPE
+---@field [1] "TEXT"
+---@field [2] "MANUAL"
+---@field [3] "FREE"
+---@field [4] "AUTO"
+---@field [5] "STAMP"
+---@field [6] "SYSTEM"
+---@field [7] "CHAT_SYSTEM"

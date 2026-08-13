@@ -1,0 +1,45 @@
+---@meta
+
+---@class (exact) Enum.app.WeaponDef.TYPE : Enum<app.WeaponDef.TYPE>
+---@field LONG_SWORD app.WeaponDef.TYPE
+---@field SHORT_SWORD app.WeaponDef.TYPE
+---@field TWIN_SWORD app.WeaponDef.TYPE
+---@field TACHI app.WeaponDef.TYPE
+---@field HAMMER app.WeaponDef.TYPE
+---@field WHISTLE app.WeaponDef.TYPE
+---@field LANCE app.WeaponDef.TYPE
+---@field GUN_LANCE app.WeaponDef.TYPE
+---@field SLASH_AXE app.WeaponDef.TYPE
+---@field CHARGE_AXE app.WeaponDef.TYPE
+---@field ROD app.WeaponDef.TYPE
+---@field BOW app.WeaponDef.TYPE
+---@field HEAVY_BOWGUN app.WeaponDef.TYPE
+---@field LIGHT_BOWGUN app.WeaponDef.TYPE
+---@field ["LONG_SWORD"] app.WeaponDef.TYPE
+---@field ["SHORT_SWORD"] app.WeaponDef.TYPE
+---@field ["TWIN_SWORD"] app.WeaponDef.TYPE
+---@field ["TACHI"] app.WeaponDef.TYPE
+---@field ["HAMMER"] app.WeaponDef.TYPE
+---@field ["WHISTLE"] app.WeaponDef.TYPE
+---@field ["LANCE"] app.WeaponDef.TYPE
+---@field ["GUN_LANCE"] app.WeaponDef.TYPE
+---@field ["SLASH_AXE"] app.WeaponDef.TYPE
+---@field ["CHARGE_AXE"] app.WeaponDef.TYPE
+---@field ["ROD"] app.WeaponDef.TYPE
+---@field ["BOW"] app.WeaponDef.TYPE
+---@field ["HEAVY_BOWGUN"] app.WeaponDef.TYPE
+---@field ["LIGHT_BOWGUN"] app.WeaponDef.TYPE
+---@field [0] "LONG_SWORD"
+---@field [1] "SHORT_SWORD"
+---@field [2] "TWIN_SWORD"
+---@field [3] "TACHI"
+---@field [4] "HAMMER"
+---@field [5] "WHISTLE"
+---@field [6] "LANCE"
+---@field [7] "GUN_LANCE"
+---@field [8] "SLASH_AXE"
+---@field [9] "CHARGE_AXE"
+---@field [10] "ROD"
+---@field [11] "BOW"
+---@field [12] "HEAVY_BOWGUN"
+---@field [13] "LIGHT_BOWGUN"

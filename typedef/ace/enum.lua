@@ -59,6 +59,7 @@
 ---@class app.EnemyDef.AI_TARGET_STATE : System.Enum
 ---@class app.Communication.AUTO_ID : System.Enum
 ---@class app.GUI020600.TYPE : System.Enum
+---@class app.QuestDef.EM_REWARD_RANK : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

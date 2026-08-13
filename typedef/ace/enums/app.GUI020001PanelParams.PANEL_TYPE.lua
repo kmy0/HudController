@@ -1,0 +1,24 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020001PanelParams.PANEL_TYPE : Enum<app.GUI020001PanelParams.PANEL_TYPE>
+---@field INVISIBLE app.GUI020001PanelParams.PANEL_TYPE
+---@field ACCESS app.GUI020001PanelParams.PANEL_TYPE
+---@field SIMPLE app.GUI020001PanelParams.PANEL_TYPE
+---@field MARKER app.GUI020001PanelParams.PANEL_TYPE
+---@field EDGE app.GUI020001PanelParams.PANEL_TYPE
+---@field NAME app.GUI020001PanelParams.PANEL_TYPE
+---@field PIN app.GUI020001PanelParams.PANEL_TYPE
+---@field ["INVISIBLE"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["ACCESS"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["SIMPLE"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["MARKER"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["EDGE"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["NAME"] app.GUI020001PanelParams.PANEL_TYPE
+---@field ["PIN"] app.GUI020001PanelParams.PANEL_TYPE
+---@field [0] "INVISIBLE"
+---@field [1] "ACCESS"
+---@field [2] "SIMPLE"
+---@field [3] "MARKER"
+---@field [4] "EDGE"
+---@field [5] "NAME"
+---@field [6] "PIN"

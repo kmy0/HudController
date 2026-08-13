@@ -145,7 +145,8 @@ end
 
 ---@return SlingerReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SLINGER_RETICLE, "SLINGER_RETICLE") --[[@as SlingerReticleConfig]]
+    local base =
+        hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").SLINGER_RETICLE, "SLINGER_RETICLE") --[[@as SlingerReticleConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.SLINGER_RETICLE

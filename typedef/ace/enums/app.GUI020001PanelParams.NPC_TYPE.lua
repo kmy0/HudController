@@ -1,0 +1,15 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020001PanelParams.NPC_TYPE : Enum<app.GUI020001PanelParams.NPC_TYPE>
+---@field INACCESSIBLE app.GUI020001PanelParams.NPC_TYPE
+---@field NORMAL app.GUI020001PanelParams.NPC_TYPE
+---@field NAMED app.GUI020001PanelParams.NPC_TYPE
+---@field FACILITY app.GUI020001PanelParams.NPC_TYPE
+---@field ["INACCESSIBLE"] app.GUI020001PanelParams.NPC_TYPE
+---@field ["NORMAL"] app.GUI020001PanelParams.NPC_TYPE
+---@field ["NAMED"] app.GUI020001PanelParams.NPC_TYPE
+---@field ["FACILITY"] app.GUI020001PanelParams.NPC_TYPE
+---@field [0] "INACCESSIBLE"
+---@field [1] "NORMAL"
+---@field [2] "NAMED"
+---@field [3] "FACILITY"

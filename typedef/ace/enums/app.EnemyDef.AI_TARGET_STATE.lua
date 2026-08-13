@@ -1,0 +1,24 @@
+---@meta
+
+---@class (exact) Enum.app.EnemyDef.AI_TARGET_STATE : Enum<app.EnemyDef.AI_TARGET_STATE>
+---@field LIFE app.EnemyDef.AI_TARGET_STATE
+---@field COMBAT app.EnemyDef.AI_TARGET_STATE
+---@field COMBAT_DUMMY app.EnemyDef.AI_TARGET_STATE
+---@field HALF_COMBAT app.EnemyDef.AI_TARGET_STATE
+---@field LOST app.EnemyDef.AI_TARGET_STATE
+---@field EM_LEAD app.EnemyDef.AI_TARGET_STATE
+---@field HOSTILITY app.EnemyDef.AI_TARGET_STATE
+---@field ["LIFE"] app.EnemyDef.AI_TARGET_STATE
+---@field ["COMBAT"] app.EnemyDef.AI_TARGET_STATE
+---@field ["COMBAT_DUMMY"] app.EnemyDef.AI_TARGET_STATE
+---@field ["HALF_COMBAT"] app.EnemyDef.AI_TARGET_STATE
+---@field ["LOST"] app.EnemyDef.AI_TARGET_STATE
+---@field ["EM_LEAD"] app.EnemyDef.AI_TARGET_STATE
+---@field ["HOSTILITY"] app.EnemyDef.AI_TARGET_STATE
+---@field [0] "LIFE"
+---@field [1] "COMBAT"
+---@field [2] "COMBAT_DUMMY"
+---@field [3] "HALF_COMBAT"
+---@field [4] "LOST"
+---@field [5] "EM_LEAD"
+---@field [6] "HOSTILITY"

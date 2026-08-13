@@ -119,7 +119,7 @@ end
 
 ---@return BowReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").BOW_RETICLE, "BOW_RETICLE") --[[@as BowReticleConfig]]
+    local base = hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").BOW_RETICLE, "BOW_RETICLE") --[[@as BowReticleConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.BOW_RETICLE

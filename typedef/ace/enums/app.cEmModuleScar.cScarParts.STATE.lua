@@ -1,0 +1,21 @@
+---@meta
+
+---@class (exact) Enum.app.cEmModuleScar.cScarParts.STATE : Enum<app.cEmModuleScar.cScarParts.STATE>
+---@field NONE app.cEmModuleScar.cScarParts.STATE
+---@field NORMAL app.cEmModuleScar.cScarParts.STATE
+---@field TEAR app.cEmModuleScar.cScarParts.STATE
+---@field RAW app.cEmModuleScar.cScarParts.STATE
+---@field OLD app.cEmModuleScar.cScarParts.STATE
+---@field HEAL app.cEmModuleScar.cScarParts.STATE
+---@field ["NONE"] app.cEmModuleScar.cScarParts.STATE
+---@field ["NORMAL"] app.cEmModuleScar.cScarParts.STATE
+---@field ["TEAR"] app.cEmModuleScar.cScarParts.STATE
+---@field ["RAW"] app.cEmModuleScar.cScarParts.STATE
+---@field ["OLD"] app.cEmModuleScar.cScarParts.STATE
+---@field ["HEAL"] app.cEmModuleScar.cScarParts.STATE
+---@field [-1] "NONE"
+---@field [0] "NORMAL"
+---@field [1] "TEAR"
+---@field [2] "RAW"
+---@field [3] "OLD"
+---@field [4] "HEAL"

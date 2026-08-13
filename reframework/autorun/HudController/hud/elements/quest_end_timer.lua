@@ -45,7 +45,8 @@ end
 
 ---@return QuestEndTimerConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").QUEST_END_TIMER, "QUEST_END_TIMER") --[[@as QuestEndTimerConfig]]
+    local base =
+        hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").QUEST_END_TIMER, "QUEST_END_TIMER") --[[@as QuestEndTimerConfig]]
     base.hud_type = mod.enum.hud_type.QUEST_END_TIMER
     return base
 end

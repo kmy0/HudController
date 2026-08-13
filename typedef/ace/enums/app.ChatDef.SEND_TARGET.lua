@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.app.ChatDef.SEND_TARGET : Enum<app.ChatDef.SEND_TARGET>
+---@field LOBBY app.ChatDef.SEND_TARGET
+---@field QUEST app.ChatDef.SEND_TARGET
+---@field LINK app.ChatDef.SEND_TARGET
+---@field CIRCLE app.ChatDef.SEND_TARGET
+---@field PLAYER app.ChatDef.SEND_TARGET
+---@field ["LOBBY"] app.ChatDef.SEND_TARGET
+---@field ["QUEST"] app.ChatDef.SEND_TARGET
+---@field ["LINK"] app.ChatDef.SEND_TARGET
+---@field ["CIRCLE"] app.ChatDef.SEND_TARGET
+---@field ["PLAYER"] app.ChatDef.SEND_TARGET
+---@field [0] "LOBBY"
+---@field [1] "QUEST"
+---@field [2] "LINK"
+---@field [3] "CIRCLE"
+---@field [4] "PLAYER"

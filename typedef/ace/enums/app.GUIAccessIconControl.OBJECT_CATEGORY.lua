@@ -1,0 +1,36 @@
+---@meta
+
+---@class (exact) Enum.app.GUIAccessIconControl.OBJECT_CATEGORY : Enum<app.GUIAccessIconControl.OBJECT_CATEGORY>
+---@field NONE app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field GIMMICK app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ENEMY app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ENEMY_LOST_PARTS app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field NPC app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field OTOMO app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ACTION app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field STORY app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field STEALTH app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field GIMMICK_ACTION app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field RAILGUN_ACTION app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["NONE"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["GIMMICK"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["ENEMY"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["ENEMY_LOST_PARTS"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["NPC"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["OTOMO"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["ACTION"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["STORY"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["STEALTH"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["GIMMICK_ACTION"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field ["RAILGUN_ACTION"] app.GUIAccessIconControl.OBJECT_CATEGORY
+---@field [0] "NONE"
+---@field [1] "GIMMICK"
+---@field [2] "ENEMY"
+---@field [3] "ENEMY_LOST_PARTS"
+---@field [4] "NPC"
+---@field [5] "OTOMO"
+---@field [6] "ACTION"
+---@field [7] "STORY"
+---@field [8] "STEALTH"
+---@field [9] "GIMMICK_ACTION"
+---@field [10] "RAILGUN_ACTION"

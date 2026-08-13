@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020001PanelParams.GOSSIP_TYPE : Enum<app.GUI020001PanelParams.GOSSIP_TYPE>
+---@field NONE app.GUI020001PanelParams.GOSSIP_TYPE
+---@field NORMAL app.GUI020001PanelParams.GOSSIP_TYPE
+---@field FLAG app.GUI020001PanelParams.GOSSIP_TYPE
+---@field ["NONE"] app.GUI020001PanelParams.GOSSIP_TYPE
+---@field ["NORMAL"] app.GUI020001PanelParams.GOSSIP_TYPE
+---@field ["FLAG"] app.GUI020001PanelParams.GOSSIP_TYPE
+---@field [0] "NONE"
+---@field [1] "NORMAL"
+---@field [2] "FLAG"
