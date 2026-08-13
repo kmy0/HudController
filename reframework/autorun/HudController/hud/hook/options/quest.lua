@@ -67,7 +67,7 @@ function this.stop_hide_gui_post(_)
         then
             local guiman = s.get("app.GUIManager")
             local flags = guiman:get_AppContinueFlag()
-            flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG").HIDE_GUI)
+            flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG").HIDE_HUD)
         end
     end
 end
