@@ -11,6 +11,7 @@
 ---@class via.gui.Element : via.gui.PlayObject
 ---@class via.gui.DrawableElement : via.gui.PlayObject
 ---@class via.gui.MaskableElement : via.gui.DrawableElement
+---@class via.Scene : via.clr.ManagedObject
 
 ---@class via.Size
 ---@field w System.Single
@@ -51,9 +52,6 @@
 ---@field get_Started fun(self: via.Behavior): System.Boolean
 ---@field get_Valid fun(self: via.Behavior): System.Boolean
 
----@class via.Scene : via.clr.ManagedObject
----@field get_FrameCount fun(self: via.Scene): System.UInt32
-
 ---@class via.SceneView : via.gui.TransformObject
 ---@field get_WindowSize fun(self: via.SceneView): via.Size
 
@@ -80,7 +78,6 @@
 ---@class via.gui.GUI : via.Component
 ---@field get_Enabled fun(self: via.gui.GUI): System.Boolean
 ---@field get_View fun(self: via.gui.GUI): via.gui.View
----@field set_Enabled fun(self: via.gui.GUI, val: System.Boolean)
 
 ---@class via.gui.Control : via.gui.TransformObject
 ---@field get_Segment fun(self: via.gui.Control): via.gui.Segment
@@ -131,8 +128,6 @@
 ---@field get_GlobalPosition fun(self: via.gui.Text): via.vec3
 ---@field get_FontSize fun(self: via.gui.Text): via.Size
 ---@field set_FontSize fun(self: via.gui.Text, size: via.Size)
----@field set_AutoRegionFit fun(self: via.gui.Text, region: via.gui.RegionFitType)
----@field set_Message fun(self: via.gui.Text, txt: System.String)
 ---@field get_Color fun(self: via.gui.Text): via.Color
 ---@field set_Color fun(self: via.gui.Text, color: via.Color)
 ---@field get_GlowColor fun(self: via.gui.Text): via.Color
@@ -142,10 +137,6 @@
 ---@field get_PageAlignment fun(self: via.gui.Text): via.gui.PageAlignment
 ---@field set_PageAlignment fun(self: via.gui.Text, val: via.gui.PageAlignment)
 ---@field get_Message fun(self: via.gui.Text): System.String
-
----@class via.gui.HitArea : via.gui.Element
----@field get_Size fun(self: via.gui.HitArea ): via.Size
----@field get_GlobalPosition fun(self: via.gui.HitArea ): via.vec3
 
 ---@class via.gui.Rect : via.gui.MaskableElement
 ---@field set_Rotation fun(self: via.gui.Rect, rot: Vector3f)

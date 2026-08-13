@@ -35,13 +35,19 @@
 ---@class app.FacilityBase : via.clr.ManagedObject
 ---@class app.GUI090901 : app.GUIHudBase
 ---@class app.GUI020600PartsFrame : app.cGUIPartsShortcutFrameBase
----@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 ---@class app.cBowlingUpdater.cUpdater_ResultEnd : app.cBowlingUpdater.UpdaterBase
 ---@class app.cGUIMapPlayerIconController.cMasterPlayerIcon : app.cGUIMapPlayerIconController.cPlayerIconBase
 ---@class app.net_packet.cChatMessage : app.net_packet.cChatBase
 ---@class app.net_packet.cChatBase : app.net_packet.cPacketBase
 ---@class app.net_packet.cPacketBase : via.clr.ManagedObject
 ---@class app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase : via.clr.ManagedObject
+---@class app.GUIGaugeHudBase : app.GUIHudBase
+---@class app.StatusIconManagerBase : via.clr.ManagedObject
+---@class app.MissionGuideGUIParts.BestRecordData : app.MissionGuideGUIParts.SmallMissionPanelBase
+---@class app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo : via.clr.ManagedObject
+---@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
+---@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
+---@class app.GUI060010 : app.GUIHudBase
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -49,7 +55,6 @@
 ---@class app.GUIManager : ace.GUIManagerBase
 ---@field get_HudDisplayManager fun(self: app.GUIManager): app.cGUIHudDisplayManager
 ---@field get_MAP3D fun(self: app.GUIManager): app.cGUIMapController
----@field set_IsAllSliderMode fun(self: app.GUIManager, state: System.Boolean)
 -- bool sets <SelectedIndexRequest>k__BackingField to true
 ---@field addActiveItem fun(self: app.GUIManager, item_id: app.ItemDef.ID, bool: System.Boolean)
 ---@field get_AppContinueFlag fun(self: app.GUIManager): ace.cSafeContinueFlag
@@ -57,14 +62,11 @@
 ---@field _SystemInputOpenCtrl app.cGUISystemModuleSystemInputOpenController
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
----@field get_GUIBack fun(self: app.cGUIMapController): app.GUI060001
 ---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
 ---@field _Flow app.cGUIMapFlowCtrl
 
 ---@class app.cGUIHudDisplayManager : via.clr.ManagedObject
 ---@field findDisplayControl fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.cGUIHudDisplayControl?
----@field getHudSetting fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.user_data.GUIHudData.cSetting
----@field applySetting fun(self: app.cGUIHudDisplayManager, ctrl: app.cGUIHudDisplayControl)
 ---@field setHudDisplay fun(self: app.cGUIHudDisplayManager, hud_id: app.GUIHudDef.TYPE, hud_display: app.GUIHudDef.DISPLAY)
 ---@field getHudDisplay fun(self: app.cGUIHudDisplayManager, hud_id: app.GUIHudDef.TYPE): app.GUIHudDef.DISPLAY
 ---@field _HudData app.user_data.GUIHudData
@@ -79,23 +81,10 @@
 
 ---@class app.cGUIHudDisplayControl : via.clr.ManagedObject
 ---@field get_Owner fun(self: app.cGUIHudDisplayControl): app.GUIHudBase
----@field isHudOpen fun(self: app.cGUIHudDisplayControl): System.Boolean
 ---@field _TargetControl via.gui.Control
 
 ---@class app.GUIHudBase : app.GUIBaseApp
 ---@field _DisplayControl app.cGUIHudDisplayControl
-
----@class app.GUIGaugeHudBase : app.GUIHudBase
----@field _StatusIconManager app.StatusIconManager
-
----@class app.WeaponGUIHudBase : app.GUIHudBase
-
----@class app.StatusIconManagerBase : via.clr.ManagedObject
----@field _PanelStatusIcon via.gui.Panel
----@field _StatusIconInfoList System.Array<app.StatusIconInfo>
-
----@class app.StatusIconInfo : via.clr.ManagedObject
----@field get_StatusIconPanel fun(self: app.StatusIconInfo): via.gui.Panel
 
 ---@class app.GUI020018 : app.GUIHudBase
 ---@field _TimerPanelData app.MissionGuideGUIParts.TimePanelData
@@ -105,22 +94,9 @@
 ---@field _DispSmallMissionTargetList System.Array<app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo>
 ---@field _MissionDuplicatePanelDataList System.Array<app.MissionGuideGUIParts.MissionGuidePartsBase>
 ---@field _FadeInWaitPanelList System.Array<app.MissionGuideGUIParts.MissionGuidePartsBase>
----@field releaseSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo)
----@field createSmallMissionGuide fun(self: app.GUI020018, mission_info: app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo, panel_type: app.GUI020018.GUIDE_PANEL_TYPE): app.MissionGuideGUIParts.SmallMissionPanelBase
-
----@class app.MissionGuideGUIParts.BestRecordData : app.MissionGuideGUIParts.SmallMissionPanelBase
----@field _arenaRankPanel via.gui.Panel
-
----@class app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo : via.clr.ManagedObject
----@field IsEnableCheck System.Boolean
 
 ---@class app.MissionGuideGUIParts.WatchPanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@field isVisibleWatch fun(self: app.MissionGuideGUIParts.WatchPanelData): System.Boolean
-
----@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
----@field _TextTime via.gui.Text
----@field get_SmallMissionInfo fun(self: app.MissionGuideGUIParts.TimePanelData): app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo
----@field getIsArenaQuest fun(self: app.MissionGuideGUIParts.TimePanelData): System.Boolean
 
 ---@class app.MissionGuideGUIParts.MissionGuidePartsBase : app.cGUIPartsBaseApp
 ---@field _DuplicatePanel via.gui.Panel
@@ -130,11 +106,8 @@
 ---@field isFastTravel fun(self: app.MissionManager): System.Boolean
 
 ---@class app.cQuestDirector : via.clr.ManagedObject
----@field get_QuestElapsedTime fun(self: app.cQuestDirector): System.Single
----@field isTargetClearAll fun(self: app.cQuestDirector): System.Boolean
 ---@field QuestReturnSkip fun(self: app.cQuestDirector)
 ---@field isPlayingQuest fun(self: app.cQuestDirector): System.Boolean
----@field isQuestEndShowing fun(self: app.cQuestDirector): System.Boolean
 ---@field get_CurFlow fun(self: app.cQuestDirector): app.cQuestFlowPartsBase
 
 ---@class app.PlayerManager : ace.GAElementBase
@@ -149,25 +122,13 @@
 ---@field get_IsCombat fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsWeaponOn fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsWeaponOnAction fun(self: app.HunterCharacter): System.Boolean
----@field get_HunterExtend fun(self: app.HunterCharacter): app.HunterCharacter.cHunterExtendBase
----@field get_MeshFadeController fun(self: app.HunterCharacter): app.cMeshFadeController
 ---@field get_PorterComm fun(self: app.HunterCharacter): app.mcPorterCommunicator
----@field get_IsInBaseCamp fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsInTent fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsInLifeArea fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
----@field _HunterBTableCommandFlag ace.cSafeContinueFlag
 
 ---@class app.mcPorterCommunicator : ace.minicomponent.cOrderedActionBase
 ---@field get_IsRiderWithinRanged fun(self: app.mcPorterCommunicator): System.Boolean
----@field isQuestClearGestureEnabled fun(self: app.mcPorterCommunicator): System.Boolean
-
----@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
----@field get_IsNpc fun(self: app.HunterCharacter.cHunterExtendBase): System.Boolean
-
----@class app.HunterCharacter.cHunterExtendNpc : app.HunterCharacter.cHunterExtendBase
----@field get_NpcID fun(self: app.HunterCharacter.cHunterExtendNpc): app.NpcDef.ID
----@field _ContextHolder app.cNpcContextHolder
 
 ---@class app.cNpcContextHolder : app.cGameContextHolder
 ---@field get_Npc fun(self: app.cNpcContextHolder): app.cNpcContext
@@ -205,12 +166,8 @@
 ---@field DialogueType app.DialogueType.TYPE
 
 ---@class app.GUI020006 : app.GUIHudBase
----@field get_IsItemSliderMode fun(self: app.GUI020006): System.Boolean
 ---@field get_IsAllSliderMode fun(self: app.GUI020006): System.Boolean
 ---@field startAllSlider fun(self: app.GUI020006)
----@field endAllSlider fun(self: app.GUI020006)
----@field get_StateAllSliderIN fun(self: app.GUI020006): ace.cGUIParamState
----@field set_IsAllSliderMode fun(self: app.GUI020006, state: System.Boolean)
 ---@field get__PartsAllSlider fun(self: app.GUI020006): app.GUI020006PartsAllSlider
 ---@field get__PanelAllSlider fun(self: app.GUI020006): via.gui.Panel
 ---@field get_getIsItemSliderMode fun(self: app.GUI020006): System.Boolean
@@ -227,10 +184,8 @@
 ---@field Num System.Int16
 
 ---@class app.GUI020006PartsAllSlider : app.cGUIPartsBaseApp
----@field startStackState fun(self: app.GUI020006PartsAllSlider)
 ---@field getCurrentItem fun(self: app.GUI020006PartsAllSlider): app.GUI020006PartsAllSliderItem
 ---@field callbackOther fun(self: app.GUI020006PartsAllSlider, button_slot: ace.GUIDef.BUTTON_SLOT, fsg_pnl: via.gui.Control, selected_item: via.gui.SelectItem, list_index: System.UInt32)
----@field callbackSelect fun(self: app.GUI020006PartsAllSlider, fsg_pnl: via.gui.Control, selected_item: via.gui.SelectItem, previous_index: System.UInt32, current_index: System.Int32)
 ---@field get__GridParts fun(self: app.GUI020006PartsAllSlider): System.Array<app.GUI020006PartsAllSliderItem>
 ---@field getGridPartsFromItemId fun(self: app.GUI020006PartsAllSlider, item_id: app.ItemDef.ID): app.GUI020006PartsAllSliderItem
 ---@field setPanelActivePanelInfo fun(self: app.GUI020006PartsAllSlider, grid_item: app.GUI020006PartsAllSliderItem)
@@ -327,7 +282,6 @@
 ---@field set__OpenTimer fun(self: app.GUI020007, time: System.Single)
 ---@field get__SliderStatus fun(self: app.GUI020007): app.GUI020007.BulletSliderStatus
 ---@field set__SliderStatus fun(self: app.GUI020007, status: app.GUI020007.BulletSliderStatus)
----@field get_IsInput fun(self: app.GUI020007): System.Boolean
 ---@field get__PanelBulletSlider fun(self: app.GUI020007): via.gui.Panel
 ---@field setBulletSliderState fun(self: app.GUI020007, play_state: System.String)
 ---@field get_IsRapidMode fun(self: app.GUI020007): System.Boolean
@@ -337,19 +291,13 @@
 ---@field isExecuted fun(self: app.cPorterCommandInfo, command: app.PorterDef.COMMUNICATOR_COMMAND): System.Boolean
 
 ---@class app.GUIMapBeaconManager : ace.GAElement
----@field PaintBallController app.cGUIPaintBallController
 ---@field get_EmBossBeaconContainer fun(self: app.GUIMapBeaconManager): app.cGUIEMBossBeaconContainer
 ---@field get_EmZakoBeaconContainer fun(self: app.GUIMapBeaconManager): app.cGUIEMZakoBeaconContainer
 
----@class app.cGUIPaintBallController : via.clr.ManagedObject
----@field getPaintBallBeaconListAll fun(self: app.cGUIPaintBallController): System.Array<app.cGUIBeaconBase>
-
 ---@class app.cGUIEMBossBeaconContainer : app.cGUIBeaconContainerBase
----@field _BeaconListSafe ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
 ---@field _BeaconList ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
 
 ---@class app.cGUIEMZakoBeaconContainer : app.cGUIBeaconContainerBase
----@field _BeaconListSafe System.Array<app.cGUIBeaconEM>
 ---@field _BeaconList ace.DYNAMIC_ARRAY<app.cGUIBeaconEM>
 
 ---@class app.cEnemyContext : app.cGameContext
@@ -443,9 +391,6 @@
 ---@class app.cEnemyManageInfo : ace.cNonCycleTypeObject
 ---@field get_Browser fun(self: app.cEnemyManageInfo): app.cEnemyBrowser
 ---@field get_Pos fun(self: app.cEnemyManageInfo): Vector3f
-
----@class app.GUI060010 : app.GUIHudBase
----@field get_IsActive fun(self: app.GUI060010): System.Boolean
 
 ---@class app.GUI020020 : app.GUIBaseApp
 ---@field _DamageInfo System.Array<app.GUI020020.DAMAGE_INFO>
@@ -548,7 +493,6 @@
 ---@field get_LogPanelBase fun(self: app.cGUI020100PanelBase): app.cGUIChatLogPanelBase
 ---@field get_BasePanel fun(self: app.cGUI020100PanelBase): via.gui.Control
 ---@field get_IsFix fun(self: app.cGUI020100PanelBase): System.Boolean
----@field get__Timer fun(self: app.cGUI020100PanelBase): System.Single
 
 ---@class app.cGUIChatLogPanelBase : via.clr.ManagedObject
 ---@field get_BasePanel fun(self: app.cGUIChatLogPanelBase): via.gui.Control

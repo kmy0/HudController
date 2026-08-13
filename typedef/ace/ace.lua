@@ -27,6 +27,7 @@
 ---@class ace.cGameMessage : via.clr.ManagedObject
 ---@class ace.GameStateBase : via.clr.ManagedObject
 ---@class ace.cGUIInputCtrl_FluentScrollList : ace.cGUIInputCtrl
+---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
 
 ---@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
 ---@field _Array System.Array<any>
@@ -49,9 +50,6 @@
 ---@field get_ID fun(self: ace.GUIBase): app.GUIID.ID
 ---@field get_GUIController fun(self: ace.GUIBase): via.gui.GUIController
 ---@field _RootWindow via.gui.Control
----@field _PartsList System.Array<ace.cGUIPartsBase>
----@field _InputCtrls System.Array<ace.cGUIInputCtrl>
----@field _GUI via.gui.GUI
 
 ---@class ace.cSafeContinueFlagGroup : via.clr.ManagedObject
 ---@field check fun(self: ace.cSafeContinueFlagGroup, flag: System.UInt32): System.Boolean
@@ -77,9 +75,6 @@
 ---@field off fun(self: ace.BIT_FLAG, flag: System.Int32)
 ---@field _Value System.UInt32
 
----@class ace.cGUIParamState : ace.cGUIParameterBase
----@field getValue fun(self: ace.cGUIParamState): System.String
-
 ---@class ace.cGUIInputCtrl_FluentScrollGrid : ace.cGUIInputCtrl
 ---@field getIndexFromItemCore fun(self: ace.cGUIInputCtrl_FluentScrollGrid, sel: via.gui.SelectItem, out: via.Int2)
 ---@field requestSelectIndexCore fun(self: ace.cGUIInputCtrl_FluentScrollGrid, x: System.Int32, y: System.Int32)
@@ -87,7 +82,6 @@
 ---@class ace.cGUIInputCtrl : ace.cGUIInputCtrlBase
 ---@field get_Callback fun(self: ace.cGUIInputCtrl): ace.cGUIInputCtrl.CallbackParam
 ---@field setEnableCtrl fun(self: ace.cGUIInputCtrl, val: System.Boolean)
----@field INPUT_FLAG_UP_DOWN_CUSTOM System.UInt32
 ---@field INPUT_FLAG_UP_DOWN_KEY System.UInt32
 ---@field INPUT_FLAG_UP_DOWN_RS System.UInt32
 ---@field INPUT_FLAG_LEFT_RIGHT_RS System.UInt32
