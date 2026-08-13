@@ -32,11 +32,12 @@ function this.disable_quest_intro_outro_post(_)
     if hud_config then
         local GUI020201 = util_ref.get_this() --[[@as app.GUI020201]]
         local type = GUI020201._CurType
-        local name = e.get("app.GUI020201.TYPE")[type]
 
         if
-            (name == "START" and hud.get_hud_option("disable_quest_intro"))
-            or hud.get_hud_option("disable_quest_end_outro")
+            (
+                type == e.get("app.GUI020201.TYPE").START
+                and hud.get_hud_option("disable_quest_intro")
+            ) or hud.get_hud_option("disable_quest_end_outro")
         then
             local pnl = GUI020201._StampPanels:get_Item(type) --[[@as via.gui.Panel]]
             pnl:set_PlayState("DISABLE")
@@ -119,7 +120,7 @@ function this.hide_quest_result_setup_post(_)
         flow:set_SkipReward(true)
     elseif skip_seamless then
         local mode = flow:getMode()
-        if e.get("app.cGUIQuestResultInfo.MODE")[mode] == "SEAMLESS" then
+        if mode == e.get("app.cGUIQuestResultInfo.MODE").SEAMLESS then
             flow:set_SkipReward(true)
         end
     end

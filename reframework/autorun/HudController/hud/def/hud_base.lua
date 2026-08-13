@@ -217,8 +217,8 @@ function this:new(args, parent, optional_args)
     if
         o.hud_id
         and not o.hide
-        and e.get("app.GUIHudDef.DISPLAY")[ace_misc.get_hud_manager():getHudDisplay(o.hud_id)]
-            == "HIDDEN"
+        and ace_misc.get_hud_manager():getHudDisplay(o.hud_id)
+            == e.get("app.GUIHudDef.DISPLAY").HIDDEN
     then
         ---@diagnostic disable-next-line: param-type-mismatch
         o:change_visibility(nil, true, "DEFAULT")
