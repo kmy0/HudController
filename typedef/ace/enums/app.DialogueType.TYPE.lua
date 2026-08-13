@@ -1,0 +1,21 @@
+---@meta
+
+---@class (exact) Enum.app.DialogueType.TYPE : Enum<app.DialogueType.TYPE>
+---@field NONE app.DialogueType.TYPE
+---@field DEFAULT app.DialogueType.TYPE
+---@field FORCE_READ app.DialogueType.TYPE
+---@field KEY app.DialogueType.TYPE
+---@field GOSSIP app.DialogueType.TYPE
+---@field NAGARA app.DialogueType.TYPE
+---@field ["NONE"] app.DialogueType.TYPE
+---@field ["DEFAULT"] app.DialogueType.TYPE
+---@field ["FORCE_READ"] app.DialogueType.TYPE
+---@field ["KEY"] app.DialogueType.TYPE
+---@field ["GOSSIP"] app.DialogueType.TYPE
+---@field ["NAGARA"] app.DialogueType.TYPE
+---@field [0] "NONE"
+---@field [1] "DEFAULT"
+---@field [2] "FORCE_READ"
+---@field [3] "KEY"
+---@field [4] "GOSSIP"
+---@field [5] "NAGARA"

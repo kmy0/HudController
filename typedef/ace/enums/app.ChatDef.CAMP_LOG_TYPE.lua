@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.ChatDef.CAMP_LOG_TYPE : Enum<app.ChatDef.CAMP_LOG_TYPE>
+---@field FOUND app.ChatDef.CAMP_LOG_TYPE
+---@field DESTROYED app.ChatDef.CAMP_LOG_TYPE
+---@field FIND_SPACE app.ChatDef.CAMP_LOG_TYPE
+---@field ["FOUND"] app.ChatDef.CAMP_LOG_TYPE
+---@field ["DESTROYED"] app.ChatDef.CAMP_LOG_TYPE
+---@field ["FIND_SPACE"] app.ChatDef.CAMP_LOG_TYPE
+---@field [0] "FOUND"
+---@field [1] "DESTROYED"
+---@field [2] "FIND_SPACE"

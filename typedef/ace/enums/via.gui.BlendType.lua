@@ -1,0 +1,15 @@
+---@meta
+
+---@class (exact) Enum.via.gui.BlendType : Enum<via.gui.BlendType>
+---@field Alpha via.gui.BlendType
+---@field Add via.gui.BlendType
+---@field Disable via.gui.BlendType
+---@field AlphaAdd via.gui.BlendType
+---@field ["Alpha"] via.gui.BlendType
+---@field ["Add"] via.gui.BlendType
+---@field ["Disable"] via.gui.BlendType
+---@field ["AlphaAdd"] via.gui.BlendType
+---@field [0] "Alpha"
+---@field [1] "Add"
+---@field [2] "Disable"
+---@field [3] "AlphaAdd"

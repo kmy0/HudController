@@ -136,8 +136,10 @@ end
 
 ---@return TrainingRoomHudConfig
 function this.get_config()
-    local base =
-        hud_base.get_config(e.get("app.GUIHudDef.TYPE").TRAINING_ROOM_HUD, "TRAINING_ROOM_HUD") --[[@as TrainingRoomHudConfig]]
+    local base = hud_base.get_config(
+        e.get_noexact("app.GUIHudDef.TYPE").TRAINING_ROOM_HUD,
+        "TRAINING_ROOM_HUD"
+    ) --[[@as TrainingRoomHudConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.TRAINING_ROOM_HUD
 

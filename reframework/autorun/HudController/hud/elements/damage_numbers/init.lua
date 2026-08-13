@@ -238,7 +238,8 @@ end
 
 ---@return DamageNumbersConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").DAMAGE_NUMBERS, "DAMAGE_NUMBERS") --[[@as DamageNumbersConfig]]
+    local base =
+        hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").DAMAGE_NUMBERS, "DAMAGE_NUMBERS") --[[@as DamageNumbersConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.DAMAGE_NUMBERS

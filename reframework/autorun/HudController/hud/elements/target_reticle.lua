@@ -45,7 +45,8 @@ end
 
 ---@return TargetReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").TARGET_RETICLE, "TARGET_RETICLE") --[[@as TargetReticleConfig]]
+    local base =
+        hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").TARGET_RETICLE, "TARGET_RETICLE") --[[@as TargetReticleConfig]]
     base.hud_type = mod.enum.hud_type.TARGET_RETICLE
     return base
 end

@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.via.gui.AlphaChannelType : Enum<via.gui.AlphaChannelType>
+---@field None via.gui.AlphaChannelType
+---@field R via.gui.AlphaChannelType
+---@field G via.gui.AlphaChannelType
+---@field B via.gui.AlphaChannelType
+---@field A via.gui.AlphaChannelType
+---@field ["None"] via.gui.AlphaChannelType
+---@field ["R"] via.gui.AlphaChannelType
+---@field ["G"] via.gui.AlphaChannelType
+---@field ["B"] via.gui.AlphaChannelType
+---@field ["A"] via.gui.AlphaChannelType
+---@field [0] "None"
+---@field [8] "R"
+---@field [16] "G"
+---@field [32] "B"
+---@field [64] "A"

@@ -113,6 +113,7 @@ function this:create_default(obj)
         play_state = obj:get_PlayState(),
         color_scale = { x = color.x, y = color.y, z = color.z },
         display = display,
+        ---@diagnostic disable-next-line: no-unknown
         segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[obj:get_Segment()],
     }
 

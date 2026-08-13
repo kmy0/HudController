@@ -1,0 +1,15 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020007.BulletSliderStatus : Enum<app.GUI020007.BulletSliderStatus>
+---@field Default app.GUI020007.BulletSliderStatus
+---@field Active app.GUI020007.BulletSliderStatus
+---@field Disable app.GUI020007.BulletSliderStatus
+---@field Hidden app.GUI020007.BulletSliderStatus
+---@field ["Default"] app.GUI020007.BulletSliderStatus
+---@field ["Active"] app.GUI020007.BulletSliderStatus
+---@field ["Disable"] app.GUI020007.BulletSliderStatus
+---@field ["Hidden"] app.GUI020007.BulletSliderStatus
+---@field [0] "Default"
+---@field [1] "Active"
+---@field [2] "Disable"
+---@field [3] "Hidden"

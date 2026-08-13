@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.app.cGUIMemberPartsDef.MemberType : Enum<app.cGUIMemberPartsDef.MemberType>
+---@field PL app.cGUIMemberPartsDef.MemberType
+---@field OT app.cGUIMemberPartsDef.MemberType
+---@field SEIKRET app.cGUIMemberPartsDef.MemberType
+---@field SUPPORT_PL app.cGUIMemberPartsDef.MemberType
+---@field SUPPORT_OT app.cGUIMemberPartsDef.MemberType
+---@field ["PL"] app.cGUIMemberPartsDef.MemberType
+---@field ["OT"] app.cGUIMemberPartsDef.MemberType
+---@field ["SEIKRET"] app.cGUIMemberPartsDef.MemberType
+---@field ["SUPPORT_PL"] app.cGUIMemberPartsDef.MemberType
+---@field ["SUPPORT_OT"] app.cGUIMemberPartsDef.MemberType
+---@field [0] "PL"
+---@field [1] "OT"
+---@field [2] "SEIKRET"
+---@field [3] "SUPPORT_PL"
+---@field [4] "SUPPORT_OT"

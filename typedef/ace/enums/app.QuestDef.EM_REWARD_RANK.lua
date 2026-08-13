@@ -1,0 +1,33 @@
+---@meta
+
+---@class (exact) Enum.app.QuestDef.EM_REWARD_RANK : Enum<app.QuestDef.EM_REWARD_RANK>
+---@field REWARD_RANK_01 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_02 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_03 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_04 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_05 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_06 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_07 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_08 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_09 app.QuestDef.EM_REWARD_RANK
+---@field REWARD_RANK_10 app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_01"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_02"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_03"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_04"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_05"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_06"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_07"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_08"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_09"] app.QuestDef.EM_REWARD_RANK
+---@field ["REWARD_RANK_10"] app.QuestDef.EM_REWARD_RANK
+---@field [1] "REWARD_RANK_01"
+---@field [2] "REWARD_RANK_02"
+---@field [3] "REWARD_RANK_03"
+---@field [4] "REWARD_RANK_04"
+---@field [5] "REWARD_RANK_05"
+---@field [6] "REWARD_RANK_06"
+---@field [7] "REWARD_RANK_07"
+---@field [8] "REWARD_RANK_08"
+---@field [9] "REWARD_RANK_09"
+---@field [10] "REWARD_RANK_10"

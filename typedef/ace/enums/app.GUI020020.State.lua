@@ -1,0 +1,39 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020020.State : Enum<app.GUI020020.State>
+---@field DEFAULT app.GUI020020.State
+---@field NORMAL app.GUI020020.State
+---@field LARGE app.GUI020020.State
+---@field HIGH app.GUI020020.State
+---@field WEAK_POINT app.GUI020020.State
+---@field NO_DAMAGE app.GUI020020.State
+---@field SHIELD app.GUI020020.State
+---@field EXTRAHIT app.GUI020020.State
+---@field WEAK_POINT_OUTRANGE app.GUI020020.State
+---@field POINT_UP_SMALL app.GUI020020.State
+---@field POINT_UP_MEDIUM app.GUI020020.State
+---@field POINT_UP_LARGE app.GUI020020.State
+---@field ["DEFAULT"] app.GUI020020.State
+---@field ["NORMAL"] app.GUI020020.State
+---@field ["LARGE"] app.GUI020020.State
+---@field ["HIGH"] app.GUI020020.State
+---@field ["WEAK_POINT"] app.GUI020020.State
+---@field ["NO_DAMAGE"] app.GUI020020.State
+---@field ["SHIELD"] app.GUI020020.State
+---@field ["EXTRAHIT"] app.GUI020020.State
+---@field ["WEAK_POINT_OUTRANGE"] app.GUI020020.State
+---@field ["POINT_UP_SMALL"] app.GUI020020.State
+---@field ["POINT_UP_MEDIUM"] app.GUI020020.State
+---@field ["POINT_UP_LARGE"] app.GUI020020.State
+---@field [0] "DEFAULT"
+---@field [1] "NORMAL"
+---@field [2] "LARGE"
+---@field [3] "HIGH"
+---@field [4] "WEAK_POINT"
+---@field [5] "NO_DAMAGE"
+---@field [6] "SHIELD"
+---@field [7] "EXTRAHIT"
+---@field [8] "WEAK_POINT_OUTRANGE"
+---@field [9] "POINT_UP_SMALL"
+---@field [10] "POINT_UP_MEDIUM"
+---@field [11] "POINT_UP_LARGE"

@@ -113,7 +113,7 @@ function this.skip_lobby_message_pre(args)
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
 
-        name = e.get("app.ChatDef.SEND_TARGET")[def:get_SendTarget()]
+        name = e.get_noexact("app.ChatDef.SEND_TARGET")[def:get_SendTarget()]
         if notice.lobby_log[name] then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end

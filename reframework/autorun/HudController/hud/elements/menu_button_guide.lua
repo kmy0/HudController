@@ -118,8 +118,10 @@ end
 
 ---@return MenuButtonGuideConfig
 function this.get_config()
-    local base =
-        hud_base.get_config(e.get("app.GUIHudDef.TYPE").MENU_BUTTON_GUIDE, "MENU_BUTTON_GUIDE") --[[@as MenuButtonGuideConfig]]
+    local base = hud_base.get_config(
+        e.get_noexact("app.GUIHudDef.TYPE").MENU_BUTTON_GUIDE,
+        "MENU_BUTTON_GUIDE"
+    ) --[[@as MenuButtonGuideConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.MENU_BUTTON_GUIDE

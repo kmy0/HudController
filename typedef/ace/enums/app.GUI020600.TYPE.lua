@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020600.TYPE : Enum<app.GUI020600.TYPE>
+---@field NORMAL app.GUI020600.TYPE
+---@field EXPAND app.GUI020600.TYPE
+---@field SHORTCUT app.GUI020600.TYPE
+---@field ["NORMAL"] app.GUI020600.TYPE
+---@field ["EXPAND"] app.GUI020600.TYPE
+---@field ["SHORTCUT"] app.GUI020600.TYPE
+---@field [0] "NORMAL"
+---@field [1] "EXPAND"
+---@field [2] "SHORTCUT"

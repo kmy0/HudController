@@ -76,7 +76,7 @@ end
 ---@return BarrelScoreConfig
 function this.get_config()
     local base = hud_base.get_config(
-        e.get("app.GUIHudDef.TYPE").BARREL_BOWLING_SCORE,
+        e.get_noexact("app.GUIHudDef.TYPE").BARREL_BOWLING_SCORE,
         "BARREL_BOWLING_SCORE"
     ) --[[@as BarrelScoreConfig]]
     local children = base.children

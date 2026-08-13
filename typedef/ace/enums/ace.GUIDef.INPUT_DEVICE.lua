@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.ace.GUIDef.INPUT_DEVICE : Enum<ace.GUIDef.INPUT_DEVICE>
+---@field PAD ace.GUIDef.INPUT_DEVICE
+---@field MOUSE ace.GUIDef.INPUT_DEVICE
+---@field KEYBOARD ace.GUIDef.INPUT_DEVICE
+---@field ["PAD"] ace.GUIDef.INPUT_DEVICE
+---@field ["MOUSE"] ace.GUIDef.INPUT_DEVICE
+---@field ["KEYBOARD"] ace.GUIDef.INPUT_DEVICE
+---@field [0] "PAD"
+---@field [1] "MOUSE"
+---@field [2] "KEYBOARD"

@@ -45,7 +45,7 @@ function this.get_variables(obj)
         local struct = {}
         local string_start = offset_name + (i - 1) * material_map.name.struct_size
         local type_offset = offset_type + (i - 1) * material_map.type.struct_size
-        local type = e.get("via.gui.Material.ParamType")[obj:read_byte(type_offset)]
+        local type = e.get_noexact("via.gui.Material.ParamType")[obj:read_byte(type_offset)]
 
         s._stringLength = obj:read_byte(string_start + material_map.name.length_offset)
         s._firstChar = sdk.to_valuetype(address + string_start, "System.Char") --[[@as System.Char]]

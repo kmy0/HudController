@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.app.GUI020201.TYPE : Enum<app.GUI020201.TYPE>
+---@field START app.GUI020201.TYPE
+---@field CLEAR app.GUI020201.TYPE
+---@field FAILED app.GUI020201.TYPE
+---@field LEAVE app.GUI020201.TYPE
+---@field RETRY app.GUI020201.TYPE
+---@field ["START"] app.GUI020201.TYPE
+---@field ["CLEAR"] app.GUI020201.TYPE
+---@field ["FAILED"] app.GUI020201.TYPE
+---@field ["LEAVE"] app.GUI020201.TYPE
+---@field ["RETRY"] app.GUI020201.TYPE
+---@field [0] "START"
+---@field [1] "CLEAR"
+---@field [2] "FAILED"
+---@field [3] "LEAVE"
+---@field [4] "RETRY"

@@ -181,7 +181,7 @@ end
 
 ---@return ChatLogConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").CHAT_LOG, "CHAT_LOG") --[[@as ChatLogConfig]]
+    local base = hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").CHAT_LOG, "CHAT_LOG") --[[@as ChatLogConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.CHAT_LOG
 

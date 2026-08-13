@@ -1,0 +1,30 @@
+---@meta
+
+---@class (exact) Enum.via.gui.ControlPoint : Enum<via.gui.ControlPoint>
+---@field LeftTop via.gui.ControlPoint
+---@field CenterTop via.gui.ControlPoint
+---@field RightTop via.gui.ControlPoint
+---@field LeftCenter via.gui.ControlPoint
+---@field CenterCenter via.gui.ControlPoint
+---@field RightCenter via.gui.ControlPoint
+---@field LeftBottom via.gui.ControlPoint
+---@field CenterBottom via.gui.ControlPoint
+---@field RightBottom via.gui.ControlPoint
+---@field ["LeftTop"] via.gui.ControlPoint
+---@field ["CenterTop"] via.gui.ControlPoint
+---@field ["RightTop"] via.gui.ControlPoint
+---@field ["LeftCenter"] via.gui.ControlPoint
+---@field ["CenterCenter"] via.gui.ControlPoint
+---@field ["RightCenter"] via.gui.ControlPoint
+---@field ["LeftBottom"] via.gui.ControlPoint
+---@field ["CenterBottom"] via.gui.ControlPoint
+---@field ["RightBottom"] via.gui.ControlPoint
+---@field [0] "LeftTop"
+---@field [1] "CenterTop"
+---@field [2] "RightTop"
+---@field [4] "LeftCenter"
+---@field [5] "CenterCenter"
+---@field [6] "RightCenter"
+---@field [8] "LeftBottom"
+---@field [9] "CenterBottom"
+---@field [10] "RightBottom"

@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.app.ItemUtil.STOCK_TYPE : Enum<app.ItemUtil.STOCK_TYPE>
+---@field POUCH app.ItemUtil.STOCK_TYPE
+---@field BOX app.ItemUtil.STOCK_TYPE
+---@field BOTH app.ItemUtil.STOCK_TYPE
+---@field BOTH_POUCH_BOX app.ItemUtil.STOCK_TYPE
+---@field BOTH_BOX_POUCH app.ItemUtil.STOCK_TYPE
+---@field ["POUCH"] app.ItemUtil.STOCK_TYPE
+---@field ["BOX"] app.ItemUtil.STOCK_TYPE
+---@field ["BOTH"] app.ItemUtil.STOCK_TYPE
+---@field ["BOTH_POUCH_BOX"] app.ItemUtil.STOCK_TYPE
+---@field ["BOTH_BOX_POUCH"] app.ItemUtil.STOCK_TYPE
+---@field [0] "POUCH"
+---@field [1] "BOX"
+---@field [2] "BOTH"
+---@field [3] "BOTH_POUCH_BOX"
+---@field [4] "BOTH_BOX_POUCH"

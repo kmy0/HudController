@@ -105,7 +105,7 @@ end
 
 ---@return GunReticleConfig
 function this.get_config()
-    local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").GUN_RETICLE, "GUN_RETICLE") --[[@as GunReticleConfig]]
+    local base = hud_base.get_config(e.get_noexact("app.GUIHudDef.TYPE").GUN_RETICLE, "GUN_RETICLE") --[[@as GunReticleConfig]]
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.GUN_RETICLE
