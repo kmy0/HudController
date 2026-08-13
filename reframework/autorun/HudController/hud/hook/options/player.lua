@@ -54,8 +54,7 @@ function this.hide_aggro_pre(args)
     local hud_config = common.get_hud()
     if hud_config and hud.get_hud_option("hide_aggro") then
         local state = sdk.to_managed_object(args[3]) --[[@as app.game_message.cEmChangeState]]
-        local msg_type = e.get("app.EnemyDef.AI_TARGET_STATE")[state:get_StateMsg()]
-        if msg_type == "EM_LEAD" then
+        if state:get_StateMsg() == e.get("app.EnemyDef.AI_TARGET_STATE").EM_LEAD then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

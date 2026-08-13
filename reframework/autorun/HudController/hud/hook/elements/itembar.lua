@@ -125,9 +125,8 @@ function this.expanded_itembar_mouse_control_post(_)
         itembar
         and itembar.children.all_slider.enable_mouse_control
         and itembar:get_GUI020006():get_IsAllSliderMode()
-        and e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
-                :get_LastInputDeviceIgnoreMouseMove()]
-            ~= "PAD"
+        and s.get("app.GUIManager"):get_LastInputDeviceIgnoreMouseMove()
+            ~= e.get("ace.GUIDef.INPUT_DEVICE").PAD
     then
         local all_slider = util_ref.get_this() --[[@as app.GUI020006PartsAllSlider]]
         local current_item = all_slider:getCurrentItem()
