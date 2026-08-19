@@ -8,12 +8,13 @@ local gui_debug = require("HudController.gui.debug")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local hud_base = require("HudController.hud.def.hud_base")
+local init_chain = require("HudController.config.init_chain")
 local sorter = require("HudController.gui.elements.sorter")
 local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
 local logger = util.misc.logger.g
 
-local init = util.misc.init_chain:new(
+local init = init_chain:new(
     "MAIN",
     config.init,
     data.init,
@@ -68,6 +69,10 @@ re.on_draw_ui(function()
     else
         imgui.same_line()
         imgui.text_colored("Init failed!", data.mod.enum.colors.bad)
+        local errors = logger:get_last_error()
+        if errors then
+            util.imgui.tooltip_exclamation(errors)
+        end
     end
 end)
 
