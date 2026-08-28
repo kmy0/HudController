@@ -15,6 +15,27 @@
 ---@field color_fade integer
 ---@field fade_alpha number
 
+---@class (exact) CanvasConfig
+---@field draw boolean
+---@field display_name boolean
+---@field display_value boolean
+---@field color_default integer
+---@field color_hover integer
+---@field color_select integer
+---@field color_outline integer
+---@field anchor {
+--- offset_x: number,
+--- offset_y: number,
+--- radius: integer,
+--- }
+---@field hide_elem_not_present boolean
+---@field hide_elem_disabled boolean
+---@field keybinds {
+--- draw: boolean,
+--- pos_x: number,
+--- pos_y: number,
+--- }
+
 ---@class (exact) ConditionConfigBase
 ---@field class string
 ---@field combo integer
@@ -43,6 +64,7 @@
 ---@field disable_condition_binds_timed boolean
 ---@field disable_condition_binds_held boolean
 ---@field disable_condition_binds_time number
+---@field block_input boolean
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
 ---@field hud HudProfileConfig[]
@@ -60,6 +82,7 @@
 ---     },
 --- },
 ---@field grid GridConfig
+---@field canvas CanvasConfig
 ---@field combo {
 --- hud: integer,
 --- hud_elem: integer,
@@ -91,6 +114,7 @@ return {
         disable_condition_binds_held = false,
         disable_condition_binds_timed = false,
         disable_condition_binds_time = 30,
+        block_input = false,
         user_scripts = {},
         user_conditions = {},
         grid = {
@@ -100,6 +124,27 @@ return {
             color_fade = 0,
             fade_alpha = 0,
             combo_grid_ratio = 3,
+        },
+        canvas = {
+            draw = false,
+            display_name = true,
+            display_value = true,
+            color_default = 0xFFFFFFFF,
+            color_hover = 0xffe3dfdd,
+            color_select = 0xffc8b8b0,
+            color_outline = 0xff0000ff,
+            hide_elem_not_present = false,
+            hide_elem_disabled = false,
+            anchor = {
+                offset_x = 0,
+                offset_y = 0,
+                radius = 6,
+            },
+            keybinds = {
+                draw = true,
+                pos_x = 9,
+                pos_y = 364,
+            },
         },
         bind = {
             key = {

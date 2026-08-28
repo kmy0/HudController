@@ -212,6 +212,7 @@ function this.init()
             e.new("app.EnemyDef.AI_TARGET_STATE")
             e.new("app.Communication.AUTO_ID")
             e.new("app.GUI020600.TYPE")
+            e.new("app.PlayerDef.ButtonMask.USER")
         end)
     then
         return false

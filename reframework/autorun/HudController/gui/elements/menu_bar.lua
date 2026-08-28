@@ -13,6 +13,7 @@ local user = require("HudController.hud.user.init")
 local util_ace = require("HudController.util.ace.init")
 local util_bind = require("HudController.util.game.bind.init")
 local util_imgui = require("HudController.util.imgui.init")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -763,6 +764,45 @@ local function draw_bind_menu()
     imgui.spacing()
 end
 
+local function draw_canvas_menu()
+    imgui.spacing()
+    imgui.indent(2)
+
+    set:checkbox(gui_util.tr("canvas.box_draw"), "mod.canvas.draw")
+    set:checkbox(gui_util.tr("canvas.box_display_name"), "mod.canvas.display_name")
+    set:checkbox(gui_util.tr("canvas.box_display_value"), "mod.canvas.display_value")
+    set:checkbox(gui_util.tr("canvas.box_display_keybinds"), "mod.canvas.keybinds.draw")
+    util_imgui.tooltip(config.lang:tr("canvas.tooltip_box_display_keybinds"), true)
+    set:checkbox(gui_util.tr("canvas.box_hide_elem_disabled"), "mod.canvas.hide_elem_disabled")
+    set:checkbox(
+        gui_util.tr("canvas.box_hide_elem_not_present"),
+        "mod.canvas.hide_elem_not_present"
+    )
+    util_imgui.tooltip(config.lang:tr("canvas.tooltip_box_hide_elem_not_present"), true)
+
+    imgui.separator()
+
+    set:color_edit(gui_util.tr("canvas.color_default"), "mod.canvas.color_default")
+    set:color_edit(gui_util.tr("canvas.color_hover"), "mod.canvas.color_hover")
+    set:color_edit(gui_util.tr("canvas.color_select"), "mod.canvas.color_select")
+    set:color_edit(gui_util.tr("canvas.color_outline"), "mod.canvas.color_outline")
+
+    imgui.separator()
+
+    set:slider_int(gui_util.tr("canvas.slider_anchor_radius"), "mod.canvas.anchor.radius", 1, 40)
+    set:drag_float2(
+        gui_util.tr("canvas.slider_anchor_offset"),
+        "mod.canvas.anchor.offset_x",
+        "mod.canvas.anchor.offset_y",
+        0.5,
+        -1920,
+        1920
+    )
+
+    imgui.unindent(2)
+    imgui.spacing()
+end
+
 local function draw_grid_menu()
     imgui.spacing()
     imgui.indent(2)
@@ -789,6 +829,11 @@ local function draw_grid_menu()
 end
 
 local function draw_tools_menu()
+    set:menu_item(gui_util.tr("menu.tools.box_block_input"), "mod.block_input")
+
+    imgui.separator()
+
+    imgui.begin_disabled(util_mod.is_draw_canvas())
     if util_imgui.menu_item(gui_util.tr("selector.name"), nil, nil, true) then
         mod.pause = true
         gui_selector.is_opened = true
@@ -798,12 +843,19 @@ local function draw_tools_menu()
         state.combo.config:swap(config.selector.sorted)
         state.combo.config_backup:swap(config.selector.sorted_backup)
     end
+    imgui.end_disabled()
 
     if util_imgui.menu_item(gui_util.tr("debug.name"), nil, nil, true) then
         local config_debug = config.gui.current.gui.debug
         config_debug.is_opened = not config_debug.is_opened
         config.save_global()
     end
+
+    imgui.separator()
+
+    imgui.indent(2)
+    draw_menu(gui_util.tr("canvas.name"), draw_canvas_menu)
+    imgui.unindent(2)
 end
 
 ---@param user_manager UserManager

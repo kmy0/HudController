@@ -219,6 +219,13 @@ function this.get(enum_type)
 end
 
 ---@generic T
+---@param enum_type Enum.`T`
+---@return T
+function this.get_nocache(enum_type)
+    return Enum:new(enum_type)
+end
+
+---@generic T
 ---@param enum_type `T`
 ---@return Enum<T>
 function this.get_noexact(enum_type)

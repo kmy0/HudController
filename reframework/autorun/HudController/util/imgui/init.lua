@@ -306,4 +306,18 @@ function this.set_win_state(win_state, min_y_size)
     win_state.size_x, win_state.size_y = size.x, size.y
 end
 
+---@param text string
+---@param x number
+---@param y number
+---@param color integer
+---@param outline_color integer
+function this.draw_text_outlined(text, x, y, color, outline_color)
+    outline_color = outline_color or 0xFF000000
+    draw.text(text, x - 1, y, outline_color)
+    draw.text(text, x + 1, y, outline_color)
+    draw.text(text, x, y - 1, outline_color)
+    draw.text(text, x, y + 1, outline_color)
+    draw.text(text, x, y, color)
+end
+
 return this

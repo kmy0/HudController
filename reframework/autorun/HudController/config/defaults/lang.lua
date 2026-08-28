@@ -84,6 +84,45 @@ return {
         button_sort = "Sort",
         button_sort_tooltip = "Sort profiles alphabetically",
     },
+    canvas = {
+        name = "Mouse Edit",
+        box_draw = "Enabled",
+        box_display_name = "Display Element Names",
+        box_display_value = "Display Changed Value",
+        box_display_keybinds = "Display Keybinds",
+        box_hide_elem_disabled = "Hide Anchors of Hidden Elements",
+        box_hide_elem_not_present = "Show Only Added Anchors",
+        slider_anchor_radius = "Anchor Radius",
+        slider_anchor_offset = "Anchor Offset",
+        color_default = "Default",
+        color_hover = "Hover",
+        color_select = "Select",
+        color_outline = "Outline",
+        tooltip_box_hide_elem_not_present = "Show only Anchors of elements added to the profile",
+        tooltip_box_display_keybinds = "Display action keybinds. Click and drag to move.",
+        keybinds = {
+            POS = "LMB + DRAG",
+            HIDE = "RMB",
+            SCALE = "CTRL + SCROLL",
+            OPACITY = "ALT + SCROLL",
+            ROT = "SHIFT + SCROLL",
+            UNDO = "BACKSPACE",
+        },
+        keybind_actions = {
+            POS = "Offset",
+            HIDE = "Hide",
+            SCALE = "Scale",
+            OPACITY = "Opacity",
+            ROT = "Rotation",
+            UNDO = "Reset Element",
+        },
+        actions = {
+            POS = "Position",
+            SCALE = "Scale",
+            OPACITY = "Opacity",
+            ROT = "Rotation",
+        },
+    },
     menu = {
         config = {
             name = "Mod",
@@ -184,6 +223,7 @@ return {
         },
         tools = {
             name = "Tools",
+            box_block_input = "Block Game Input",
         },
     },
     hud = {

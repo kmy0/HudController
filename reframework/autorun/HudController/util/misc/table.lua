@@ -115,6 +115,36 @@ function this.merge(...)
     return result
 end
 
+---@param target table
+---@param ... table
+---@return table
+function this.merge_into(target, ...)
+    local tables_to_merge = { ... }
+    assert(#tables_to_merge > 0, "There should be at least one table to merge from")
+
+    for key, table in ipairs(tables_to_merge) do
+        assert(
+            type(table) == "table",
+            string.format("Expected a table as function parameter %d", key)
+        )
+    end
+
+    for i = 1, #tables_to_merge do
+        local from = tables_to_merge[i]
+        for key, value in pairs(from) do
+            if type(value) == "table" then
+                target[key] = target[key] or {}
+                assert(type(target[key]) == "table", string.format("Expected a table: '%s'", key))
+                target[key] = this.merge(target[key], value)
+            else
+                target[key] = value
+            end
+        end
+    end
+
+    return target
+end
+
 ---@generic T: table
 ---@param ... T
 ---@return T
@@ -761,20 +791,18 @@ function this.equal(t1, t2)
         return true
     end
 
+    if type(t1) == "number" and type(t2) == "number" then
+        return math.abs(t1 - t2) <= 1e-6
+    end
+
     if type(t1) ~= "table" or type(t2) ~= "table" then
         return false
     end
 
     for k, v1 in pairs(t1) do
         local v2 = t2[k]
-        if type(v1) == "table" and type(v2) == "table" then
-            if not this.equal(v1, v2) then
-                return false
-            end
-        else
-            if v1 ~= v2 then
-                return false
-            end
+        if not this.equal(v1, v2) then
+            return false
         end
     end
 
@@ -785,6 +813,20 @@ function this.equal(t1, t2)
     end
 
     return true
+end
+
+---@param t table<string, any>
+---@param ... string
+---@return table<string, any>
+function this.pick(t, ...)
+    local ret = {}
+    local keys = { ... }
+
+    for _, k in pairs(keys) do
+        ret[k] = t[k]
+    end
+
+    return ret
 end
 
 return this

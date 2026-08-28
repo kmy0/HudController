@@ -31,6 +31,8 @@
 ---@field hide_timer FrameTimer
 ---@field disable_fade boolean?
 ---@field disable_fade_opacity boolean?
+---@field _pos_last_frame Vector3f?
+---@field _request_pos boolean?
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -811,6 +813,12 @@ function this:reset_play_states(child_to_play_state)
     end
 end
 
+---@return Vector3f?
+function this:get_global_pos()
+    self._request_pos = true
+    return self._pos_last_frame
+end
+
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
@@ -852,6 +860,12 @@ function this:_write(ctrl)
 
     if self.segment then
         ctrl:set_Segment(self.segment)
+    end
+
+    if self._request_pos then
+        local pos = ctrl:get_GlobalPosition()
+        self._pos_last_frame = m.getGUIscreenPos(pos)
+        self._request_pos = false
     end
 
     return true
