@@ -84,7 +84,7 @@ function this.update()
     end
 
     fade_manager.update()
-    if mod.pause then
+    if mod.pause or config_mod.canvas.draw then
         return
     end
 

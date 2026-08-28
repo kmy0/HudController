@@ -621,3 +621,6 @@
 
 ---@class app.cGUISystemModuleSystemInputOpenController : ace.cGUISystemModuleBase
 ---@field _Ctrls System.Array<app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase>
+
+---@class app.GameInputManager : ace.GAElementBase
+---@field setPlayerButtonMask fun(self: app.GameInputManager, mask: app.PlayerDef.ButtonMask.USER)

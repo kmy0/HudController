@@ -73,6 +73,7 @@ end
 ---@param name string
 ---@param config_key string
 ---@param enabled_obj boolean?
+---@return boolean
 function this:menu_item(name, config_key, enabled_obj)
     return self:generic_config(name, config_key, util_imgui.menu_item, enabled_obj)
 end
@@ -80,8 +81,35 @@ end
 ---@param name string
 ---@param config_key string
 ---@param flags ImGuiInputTextFlags?
+---@return boolean
 function this:input_text(name, config_key, flags)
     return self:generic_config(name, config_key, imgui.input_text, flags)
+end
+
+---@param name string
+---@param config_key_x string
+---@param config_key_y string
+---@param v_speed number
+---@param v_min number
+---@param v_max number
+---@param display_format string?
+---@return boolean
+function this:drag_float2(name, config_key_x, config_key_y, v_speed, v_min, v_max, display_format)
+    local changed, value = imgui.drag_float2(
+        name,
+        Vector2f.new(self.ref:get(config_key_x), self.ref:get(config_key_y)),
+        v_speed,
+        v_min,
+        v_max,
+        display_format
+    )
+
+    if changed then
+        self.ref:set(config_key_x, value.x)
+        self.ref:set(config_key_y, value.y)
+    end
+
+    return changed
 end
 
 return this

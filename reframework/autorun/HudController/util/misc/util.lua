@@ -94,7 +94,7 @@ end
 
 ---@param n number
 ---@param decimals integer
----@return unknown
+---@return number
 function this.round(n, decimals)
     local mult = 10 ^ decimals
     return math.floor(n * mult + 0.5) / mult
@@ -206,6 +206,22 @@ function this.wrap_text(text, width)
     return table.concat(lines, "\n")
 end
 
+---@param n number
+---@param min number
+---@param max number
+---@return number
+function this.wrap_number(n, min, max)
+    if n > max then
+        return min
+    end
+
+    if n < min then
+        return max
+    end
+
+    return n
+end
+
 ---@param num integer
 function this.integer_to_hex(num)
     return string.format("0x%x", num)
@@ -263,6 +279,130 @@ function this.with_custom_require(fn)
     fn()
 
     _G.require = original_require
+end
+
+---@param text string
+---@param pos_x number
+---@param pos_y number
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_text(text, pos_x, pos_y, area_w, area_h)
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local text_size = imgui.calc_text_size(text)
+    local clamped_x = math.max(0, math.min(pos_x, area_w - text_size.x))
+    local clamped_y = math.max(0, math.min(pos_y, area_h - text_size.y))
+    return clamped_x, clamped_y
+end
+
+---@param pos_x number
+---@param pos_y number
+---@param size_w number
+---@param size_h number
+---@param stick number? fraction to keep outside (e.g. 0.5 = half, 0.25 = quarter) by default, 0.5
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_figure(pos_x, pos_y, size_w, size_h, stick, area_w, area_h)
+    stick = stick or 0.5
+
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local margin_w = size_w * stick
+    local margin_h = size_h * stick
+
+    local clamped_x = math.max(-(size_w - margin_w), math.min(pos_x, area_w - margin_w))
+    local clamped_y = math.max(-(size_h - margin_h), math.min(pos_y, area_h - margin_h))
+
+    return clamped_x, clamped_y
+end
+
+---@param pos_x number
+---@param pos_y number
+---@param radius number
+---@param stick number? fraction of diameter still visible (e.g. 0.25 = quarter visible). default 0.5
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_circle(pos_x, pos_y, radius, stick, area_w, area_h)
+    stick = stick or 0.5
+
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local visible = radius * 2 * stick
+
+    return math.max(visible - radius, math.min(pos_x, area_w - visible + radius)),
+        math.max(visible - radius, math.min(pos_y, area_h - visible + radius))
+end
+
+---@param pos {x: number, y: number}
+---@param size {x: number, y: number}
+---@param point {x: number, y: number}
+---@return boolean
+function this.is_inside_rect(pos, size, point)
+    return point.x >= pos.x
+        and point.x <= pos.x + size.x
+        and point.y >= pos.y
+        and point.y <= pos.y + size.y
+end
+
+---@param center {x: number, y: number}
+---@param radius number
+---@param point {x: number, y: number}
+---@return boolean
+function this.is_inside_circle(center, radius, point)
+    local dx = point.x - center.x
+    local dy = point.y - center.y
+    return dx * dx + dy * dy <= radius * radius
+end
+
+---@return fun(pos: {x: number, y: number}, area_size: {x: number, y: number}, mouse_pos: {x: number, y: number}, trigger: boolean, clamp_to_screen: boolean?): boolean, number, number
+function this.dragable()
+    local trigger_last_frame = false
+    ---@type {x: number, y: number}
+    local o_pos
+    ---@type {x: number, y: number}
+    local o_mouse_pos
+    local drag = false
+
+    return function(pos, area_size, mouse_pos, trigger, clamp_to_screen)
+        if trigger and not trigger_last_frame then
+            o_pos = pos
+            o_mouse_pos = mouse_pos
+            drag = this.is_inside_rect(pos, area_size, mouse_pos)
+        elseif not trigger then
+            drag = false
+        end
+
+        trigger_last_frame = trigger
+        if not drag then
+            return false, pos.x, pos.y
+        end
+
+        local dist_x = o_mouse_pos.x - mouse_pos.x
+        local dist_y = o_mouse_pos.y - mouse_pos.y
+        local ret_x = o_pos.x - dist_x
+        local ret_y = o_pos.y - dist_y
+
+        if clamp_to_screen then
+            ret_x, ret_y = this.clamp_figure(ret_x, ret_y, area_size.x, area_size.y)
+        end
+
+        return true, ret_x, ret_y
+    end
 end
 
 return this

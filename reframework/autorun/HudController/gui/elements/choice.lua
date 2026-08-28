@@ -5,6 +5,7 @@ local hud = require("HudController.hud.init")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
+local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -17,6 +18,7 @@ function this.draw_hud()
     local config_mod = config.current.mod
 
     imgui.push_item_width(gui_util.get_item_size())
+    imgui.begin_disabled(config_mod.canvas.draw)
 
     if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input_action = nil
@@ -100,8 +102,9 @@ function this.draw_hud()
     end
 
     imgui.end_disabled()
+    imgui.end_disabled()
 
-    if state.input_action and not mod.pause then
+    if state.input_action and not mod.pause and not util_mod.is_draw_canvas() then
         local changed, _ = state.get_input()
         if changed then
             hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input_action)

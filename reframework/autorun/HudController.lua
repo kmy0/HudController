@@ -1,5 +1,6 @@
 local bind_condition = require("HudController.hud.bind_condition.init")
 local call_queue = require("HudController.hud.call_queue")
+local canvas = require("HudController.hud.canvas.init")
 local config = require("HudController.config.init")
 local config_menu = require("HudController.gui.init")
 local data = require("HudController.data.init")
@@ -12,6 +13,7 @@ local init_chain = require("HudController.config.init_chain")
 local sorter = require("HudController.gui.elements.sorter")
 local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
+local util_mod = require("HudController.util.mod.init")
 local logger = util.misc.logger.g
 
 local init = init_chain:new(
@@ -22,6 +24,7 @@ local init = init_chain:new(
     util.ace.scene_fade.init,
     util.ace.porter.init,
     bind_condition.init,
+    canvas.init,
     user.init,
     hud.manager.init,
     hook.init,
@@ -49,6 +52,8 @@ m.requestMapFilter = m.wrap_obj(
 ) --[[@as fun(self: app.cGUIFilteringSortPartsCtrl, control: via.gui.Control?, sel_item: via.gui.SelectItem?, index: System.UInt32)]]
 m.canOpenStartMenu =
     m.wrap(m.get("app.cGUISystemModuleSystemInputOpenController.canOpenStartMenu(System.Boolean)")) --[[@as fun(check_open_item_slider_flag: System.Boolean): System.Boolean]]
+m.enablePlNoHit =
+    m.wrap(m.get("app.GUIFlowGUI050001View.cGUI050001ViewFlowBase.makePlInvincible()")) --[[@as fun()]]
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then
@@ -111,7 +116,12 @@ re.on_frame(function()
         sorter.draw()
     end
 
+    if util_mod.is_draw_canvas() then
+        canvas.draw()
+    end
+
     config.run_save()
+    hook.hook_options_mod()
 end)
 
 re.on_config_save(function()

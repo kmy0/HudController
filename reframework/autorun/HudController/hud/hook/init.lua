@@ -1,19 +1,24 @@
 ---@class ModHook
 ---@field is_hud_hooked table<string, boolean>
 ---@field is_option_hooked table<string, boolean>
+---@field is_option_mod_hooked table<string, boolean>
 ---@field is_fun_hooked table<fun(), true>
 ---@field hud_hooks table<string, fun(...)>
 ---@field option_hooks table<string, fun()>
+---@field option_mod_hooks table<string, fun()>
 ---@field hud table<string, fun()|fun()[]>
 ---@field option table<string, fun()|fun()[]>
+---@field option_mod table<string, fun()|fun()[]>
 
 local common = require("HudController.hud.hook.common")
+local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.hook.elements.init")
 local m = require("HudController.util.ref.methods")
 local misc = require("HudController.hud.hook.misc")
 local options = require("HudController.hud.hook.options.init")
+local options_mod = require("HudController.hud.hook.options_mod")
 local util_ref = require("HudController.util.ref.init")
 
 local ace_map = data.ace.map
@@ -23,11 +28,14 @@ local mod_map = data.mod.map
 local this = {
     is_hud_hooked = {},
     is_option_hooked = {},
+    is_option_mod_hooked = {},
     is_fun_hooked = {},
     hud_hooks = {},
     option_hooks = {},
+    option_mod_hooks = {},
     hud = {},
     option = {},
+    option_mod = {},
 }
 ---@type table<string, boolean>
 local on_render_hooks = {}
@@ -541,6 +549,18 @@ function this.option_hooks.hide_aggro()
     )
 end
 
+function this.option_mod_hooks.block_input()
+    m.hook("app.GUIManager.lateUpdateApp()", nil, options_mod.block_input_all_post)
+    m.hook(
+        "app.GUI020006PartsSlider.callbackOther(ace.GUIDef.BUTTON_SLOT, via.gui.Control, via.gui.SelectItem, System.UInt32)",
+        options_mod.block_input_itembar_pre
+    )
+end
+
+function this.option_mod_hooks.draw_canvas()
+    m.hook("app.GUIManager.isMouseCursorAvailable()", nil, options_mod.draw_canvas_cursor_post)
+end
+
 ---@param fn fun()|fun()[]
 local function hook_fn(fn)
     if type(fn) ~= "table" then
@@ -606,6 +626,21 @@ function this.hook_options(profile_config)
     end
 end
 
+function this.hook_options_mod()
+    for k, fn in pairs(this.option_mod) do
+        if this.is_option_mod_hooked[k] then
+            goto continue
+        end
+
+        if config:get(k) then
+            hook_fn(fn)
+            this.is_option_mod_hooked[k] = true
+        end
+
+        ::continue::
+    end
+end
+
 ---@return boolean
 function this.init()
     this.hud["TARGET_RETICLE"] = this.hud_hooks.target_reticle
@@ -665,6 +700,8 @@ function this.init()
     this.option["mute_gossip"] = this.option_hooks.mute_gossip
     this.option["hide_aggro"] = this.option_hooks.hide_aggro
 
+    this.option_mod["mod.block_input"] = this.option_mod_hooks.block_input
+    this.option_mod["mod.canvas.draw"] = this.option_mod_hooks.draw_canvas
     return true
 end
 

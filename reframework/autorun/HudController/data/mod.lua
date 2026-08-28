@@ -20,6 +20,7 @@
 ---@field hud_type HudType.*
 ---@field hud_sub_type HudSubType.*
 ---@field colors GuiColors.*
+---@field canvas CanvasActionEnum.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -166,6 +167,15 @@ this.enum.colors = { ---@class GuiColors.*
     bad = 0xff1947ff,
     good = 0xff47ff59,
     info = 0xff27f3f5,
+}
+---@enum CanvasActionEnum
+this.enum.canvas = { ---@class CanvasActionEnum.*
+    POS = 1,
+    OPACITY = 2,
+    SCALE = 3,
+    ROT = 4,
+    HIDE = 5,
+    UNDO = 6,
 }
 
 ---@return boolean
