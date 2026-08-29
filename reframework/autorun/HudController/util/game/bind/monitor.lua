@@ -402,6 +402,10 @@ function this:monitor()
         .get("app.GUIManager")
         :get_LastInputDeviceIgnoreMouseMove()]
 
+    if device == "MOUSE" then
+        device = "KEYBOARD"
+    end
+
     self:_clear_triggers()
     self:_buffer_keys(device)
 
