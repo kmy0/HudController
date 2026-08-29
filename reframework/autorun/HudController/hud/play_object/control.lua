@@ -181,7 +181,13 @@ function this.get_hud_control(hud_id)
             goto continue
         end
 
-        table.insert(ret, disp_ctrl._TargetControl)
+        -- reframework\autorun\HudController\hud\elements\weapon\init.lua line 106
+        local ctrl = disp_ctrl._TargetControl
+        if hud_id == e.get("app.GUIHudDef.TYPE").WEAPON then
+            ctrl = this.get_parent(ctrl, "PNL_All", true) or ctrl
+        end
+
+        table.insert(ret, ctrl)
         ::continue::
     end
 

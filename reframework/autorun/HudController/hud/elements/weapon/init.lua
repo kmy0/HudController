@@ -31,6 +31,7 @@ local e = require("HudController.util.game.enum")
 local gun_lance = require("HudController.hud.elements.weapon.gun_lance")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
+local play_object = require("HudController.hud.play_object.init")
 local rod = require("HudController.hud.elements.weapon.rod")
 local slash_axe = require("HudController.hud.elements.weapon.slash_axe")
 local tachi = require("HudController.hud.elements.weapon.tachi")
@@ -60,7 +61,7 @@ function this:new(args)
     o.children.slash_axe = slash_axe:new(args.children.slash_axe, o)
     o.children.rod = rod:new(args.children.rod, o)
     o.children.no_focus = hud_child:new(args.children.no_focus, o, function(_, _, _, ctrl)
-        return ctrl
+        return play_object.control.get(ctrl, "PNL_Scale")
     end, { gui_ignore = true, no_cache = true })
 
     o:set_no_focus(args.no_focus)
@@ -75,6 +76,41 @@ function this:set_no_focus(no_focus)
     else
         self.children.no_focus:set_play_state()
     end
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return via.gui.Control
+function this:_get_pnl_all(ctrl)
+    if ctrl:get_Name() ~= "PNL_All" then
+        local ret = play_object.control.get_parent(ctrl, "PNL_All", true)
+        if ret then
+            return ret
+        end
+    end
+
+    return ctrl
+end
+
+---@param ctrl via.gui.Control
+---@param key HudBaseWriteKey
+function this:reset_ctrl(ctrl, key)
+    hud_base.reset_ctrl(self, self:_get_pnl_all(ctrl), key)
+    hud_base.reset_ctrl(self, ctrl, key)
+end
+
+---@param hudbase app.GUIHudBase
+---@param gui_id app.GUIID.ID
+---@param ctrl via.gui.Control
+function this:write(hudbase, gui_id, ctrl)
+    --[[
+        Hunting Horn updates through PNL_All, everything else through PNL_Scale, and
+        the offset behaves differently depending on the parent which makes positions
+        all over the place between weapons. Just forcing PNL_All for everything to
+        not deal with that garbage.
+    ]]
+    ctrl = self:_get_pnl_all(ctrl)
+    hud_base.write(self, hudbase, gui_id, ctrl)
 end
 
 ---@return WeaponConfig
