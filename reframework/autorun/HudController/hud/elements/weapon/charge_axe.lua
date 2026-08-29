@@ -96,13 +96,13 @@ local control_arguments = {
     },
 }
 
----@param args ChargeAxeConfig
+---@param args ChargeAxeConfig, nil
 ---@param parent HudBase
 ---@return ChargeAxe
 function this:new(args, parent)
-    local o =
-        hud_child.new(self, args, parent, nil, { valid_guiid = e.get("app.GUIID.ID").UI020034 }
-)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
+        return play_object.control.get(ctrl, "PNL_Scale")
+    end, { valid_guiid = e.get("app.GUIID.ID").UI020034 })
     setmetatable(o, self)
     ---@cast o ChargeAxe
 
