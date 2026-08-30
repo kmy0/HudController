@@ -621,3 +621,6 @@
 
 ---@class app.cGUISystemModuleSystemInputOpenController : ace.cGUISystemModuleBase
 ---@field _Ctrls System.Array<app.cGUISystemModuleSystemInputOpenController.cGUISystemInputOpenCtrlBase>
+
+---@class app.GUI020902 : app.GUIHudBase
+---@field _PanelPosition via.gui.Panel

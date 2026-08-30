@@ -149,6 +149,7 @@ this.enum.hud_type = { ---@class HudType.*
     BARREL_BOWLING_SCORE = 31,
     CHAT_LOG = 32,
     QUEST_END_TIMER = 33,
+    TU3_CANVAS = 34,
 }
 ---@enum HudSubType
 this.enum.hud_sub_type = { ---@class HudSubType.*

@@ -34,6 +34,7 @@ local this = {
     barrel_score = require("HudController.hud.elements.barrel_score.init"),
     chat_log = require("HudController.hud.elements.chat_log.init"),
     quest_end_timer = require("HudController.hud.elements.quest_end_timer"),
+    tu3_canvas = require("HudController.hud.elements.tu3_canvas"),
     --
     [hud_enum.BASE] = require("HudController.hud.def.hud_base"),
     [hud_enum.HEALTH] = require("HudController.hud.elements.health.init"),
@@ -67,6 +68,7 @@ local this = {
     [hud_enum.BARREL_BOWLING_SCORE] = require("HudController.hud.elements.barrel_score.init"),
     [hud_enum.CHAT_LOG] = require("HudController.hud.elements.chat_log.init"),
     [hud_enum.QUEST_END_TIMER] = require("HudController.hud.elements.quest_end_timer"),
+    [hud_enum.TU3_CANVAS] = require("HudController.hud.elements.tu3_canvas"),
     --
     Health = "HEALTH",
     Stamina = "STAMINA",
@@ -99,6 +101,7 @@ local this = {
     BarrelScore = "BARREL_BOWLING_SCORE",
     ChatLog = "CHAT_LOG",
     QuestEndTimer = "QUEST_END_TIMER",
+    TU3_Canvas = "TU3_CANVAS",
     --
     HEALTH = require("HudController.hud.elements.health.init"),
     WEAPON = require("HudController.hud.elements.weapon.init"),
@@ -131,6 +134,7 @@ local this = {
     BARREL_BOWLING_SCORE = require("HudController.hud.elements.barrel_score.init"),
     CHAT_LOG = require("HudController.hud.elements.chat_log.init"),
     QUEST_END_TIMER = require("HudController.hud.elements.quest_end_timer"),
+    TU3_CANVAS = require("HudController.hud.elements.tu3_canvas"),
 }
 
 return this
