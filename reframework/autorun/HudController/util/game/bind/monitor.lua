@@ -150,7 +150,7 @@ function this:get_held_key_names(manager_name)
     ---@type table<string, boolean>
     local ret = {}
     for _, m in pairs(self.managers) do
-        util_table.merge_t(ret, util_table.keys(m.held.by_name))
+        ret = util_table.merge_t(ret, m.held.by_name)
     end
 
     return util_table.keys(ret)
