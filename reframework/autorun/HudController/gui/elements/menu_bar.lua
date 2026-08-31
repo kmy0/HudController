@@ -854,6 +854,7 @@ local function draw_tools_menu()
     imgui.separator()
 
     imgui.indent(2)
+    draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
     draw_menu(gui_util.tr("canvas.name"), draw_canvas_menu)
     imgui.unindent(2)
 end
@@ -921,7 +922,6 @@ end
 function this.draw()
     draw_menu(gui_util.tr("menu.config.name"), draw_mod_menu)
     draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
-    draw_menu(gui_util.tr("menu.grid.name"), draw_grid_menu)
     draw_menu(gui_util.tr("menu.bind.name"), draw_bind_menu)
     draw_menu(
         gui_util.tr("menu.user.name"),
