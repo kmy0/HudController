@@ -5,6 +5,7 @@ local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
+local util_misc = require("HudController.util.misc.init")
 
 local ace_map = data.ace.map
 local set = state.set
@@ -51,22 +52,25 @@ end
 ---@param min number
 ---@param max number
 ---@param step number
+---@param decimals integer
 ---@return boolean
-function this.draw_step_buttons(config_key, min, max, step)
+function this.draw_step_buttons(config_key, min, max, step, decimals)
     ---@type boolean
     local changed
     local size = config.lang.font_size + 6
 
     if imgui.button("-##button_minus_" .. config_key, { size, size }) then
         changed = true
-        config:set(config_key, math.max(config:get(config_key) - step, min))
+        local val = math.max(config:get(config_key) - step, min)
+        config:set(config_key, util_misc.round(val, decimals))
     end
 
     imgui.same_line()
 
     if imgui.button("+##button_plus_" .. config_key, { size, size }) then
         changed = true
-        config:set(config_key, math.min(config:get(config_key) + step, max))
+        local val = math.min(config:get(config_key) + step, max)
+        config:set(config_key, util_misc.round(val, decimals))
     end
 
     return changed
@@ -104,7 +108,13 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
 
         imgui.same_line()
 
-        changed = this.draw_step_buttons(slider.config_key, min, max, step) or changed
+        changed = this.draw_step_buttons(
+            slider.config_key,
+            min,
+            max,
+            step,
+            tonumber(format:match("%.(%d+)f")) --[[@as number]]
+        ) or changed
     end
 
     imgui.end_disabled()
