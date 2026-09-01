@@ -88,7 +88,7 @@ function this.update()
         return
     end
 
-    this.disable_condition_binds:update_args(config_mod.disable_condition_binds_time)
+    this.disable_condition_binds:update_args({ timeout = config_mod.disable_condition_binds_time })
 
     local is_held = config_mod.enable_key_binds and update_key_binds(config_mod)
 

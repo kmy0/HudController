@@ -9,6 +9,21 @@
 ---@field protected _auto_instances Timer[]
 ---@field protected _updated_frame integer
 ---@field protected _auto_update boolean
+---@field protected _type TimerType
+
+---@alias TimerType "os_clock" | "time_delta" | "frame"
+
+---@class TimerOptionalArgs
+---@field callback fun()?
+---@field auto_start boolean?
+---@field auto_restart boolean?
+---@field auto_update boolean?
+---@field type TimerType? by default, os_clock
+
+---@class TimerUpdateOptionalArgs : TimerOptionalArgs
+---@field timeout integer?
+---@field auto_update nil
+---@field type nil
 
 local frame_counter = require("HudController.util.misc.frame_counter")
 
@@ -18,28 +33,27 @@ this.__index = this
 this._auto_instances = setmetatable({}, { __mode = "v" })
 
 ---@param timeout integer
----@param callback fun()?
----@param auto_start boolean? by default, false
----@param auto_restart boolean? by default, false
----@param auto_update boolean? by default, false
-function this:new(timeout, callback, auto_start, auto_restart, auto_update)
+---@param optional_args TimerOptionalArgs?
+function this:new(timeout, optional_args)
+    optional_args = optional_args or {}
     local o = {
-        auto_restart = auto_restart and true or false,
+        auto_restart = optional_args.auto_restart and true or false,
         timeout = timeout,
-        callback = callback,
+        callback = optional_args.callback,
         _finished = false,
         _started = false,
         _update_frame = 0,
-        _auto_update = auto_update,
+        _auto_update = optional_args.auto_update,
+        _type = optional_args.type or "os_clock",
     }
     setmetatable(o, self)
     ---@cast o Timer
 
-    if auto_start then
+    if optional_args.auto_start then
         o:start()
     end
 
-    if auto_update then
+    if optional_args.auto_update then
         table.insert(this._auto_instances, o)
     end
 
@@ -67,30 +81,43 @@ end
 
 ---@protected
 ---@return number
+function this:_get_time()
+    if self._type == "os_clock" then
+        return os.clock()
+    elseif self._type == "frame" then
+        return frame_counter.frame
+    elseif self._type == "time_delta" then
+        local time_counter = require("HudController.util.misc.time_counter")
+        return time_counter.time
+    end
+
+    return os.clock()
+end
+
+---@protected
+---@return number
 function this:_update()
-    self._now = os.clock()
+    self._now = self:_get_time()
     return self._now
 end
 
----@param timeout integer?
----@param callback fun()?
----@param auto_restart boolean?
-function this:update_args(timeout, callback, auto_restart)
-    self.timeout = timeout or self.timeout
-    self.callback = callback or self.callback
+---@param optional_args TimerUpdateOptionalArgs?
+function this:update_args(optional_args)
+    optional_args = optional_args or {}
+    self.timeout = optional_args.timeout or self.timeout
+    self.callback = optional_args.callback or self.callback
 
-    if auto_restart ~= nil then
-        self.auto_restart = auto_restart
+    if optional_args.auto_restart ~= nil then
+        self.auto_restart = optional_args.auto_restart
     end
 end
 
----@param timeout integer?
----@param callback fun()?
----@param auto_restart boolean?
-function this:start(timeout, callback, auto_restart)
-    self:update_args(timeout, callback, auto_restart)
+---@param optional_args TimerUpdateOptionalArgs?
+function this:start(optional_args)
+    optional_args = optional_args or {}
+    self:update_args(optional_args)
     if not self._started then
-        local now = os.clock()
+        local now = self:_get_time()
         self._now = now
         self._started_at = now
         self._started = true
@@ -115,13 +142,11 @@ function this:remaining()
     return math.max(0, self.timeout - self:elapsed())
 end
 
----@param timeout integer?
----@param callback fun()?
----@param auto_restart boolean?
-function this:restart(timeout, callback, auto_restart)
+---@param optional_args TimerUpdateOptionalArgs?
+function this:restart(optional_args)
     self._finished = false
     self._started = false
-    self:start(timeout, callback, auto_restart)
+    self:start(optional_args)
 end
 
 ---@return boolean

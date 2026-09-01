@@ -14,7 +14,7 @@ local util_table = require("HudController.util.misc.table")
 
 local this = {}
 local handler = {
-    hide_timer = timer:new(0, nil),
+    hide_timer = timer:new(0),
     hidden = false,
 }
 
@@ -47,7 +47,7 @@ function this.hide_handler_post(_)
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
         local handler_id = e.to_enum("app.NpcDef.ID", handler_id_fixed)
 
-        handler.hide_timer:update_args(hud_config.hide_handler_timeout)
+        handler.hide_timer:update_args({ timeout = hud_config.hide_handler_timeout })
 
         if
             not handler.hide_timer:started()

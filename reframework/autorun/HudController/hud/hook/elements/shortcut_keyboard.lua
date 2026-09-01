@@ -75,7 +75,7 @@ function this.always_visible_open_post(_)
     then
         shortcut_keyboard:close()
         system_input_ctrl._OpenType = e.get("app.GUI020600.TYPE").EXPAND
-        shortcut_keyboard.always_visible_delay_timer:restart(2)
+        shortcut_keyboard.always_visible_delay_timer:restart({ timeout = 2 })
         return
     end
 

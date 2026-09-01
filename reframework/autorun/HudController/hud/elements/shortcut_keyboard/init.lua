@@ -3,7 +3,7 @@
 ---@field no_hide_elements boolean
 ---@field always_visible boolean
 ---@field GUI020600 app.GUI020600
----@field open_timer FrameTimer
+---@field open_timer Timer
 ---@field always_visible_delay_timer Timer
 ---@field children {
 --- background_blur: CtrlChild,
@@ -53,7 +53,6 @@ local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local frame_timer = require("HudController.util.misc.frame_timer")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local item = require("HudController.hud.elements.shortcut_keyboard.item")
@@ -140,7 +139,7 @@ function this:new(args)
         no_hide_elements = true,
         always_visible = true,
     })
-    o.open_timer = frame_timer:new(15)
+    o.open_timer = timer:new(15, { type = "frame" })
     o.always_visible_delay_timer = timer:new(0.5)
 
     o.children.background_blur = ctrl_child:new(
@@ -201,7 +200,7 @@ function this:is_always_visible()
         local map_ctrl = s.get("app.GUIManager"):get_MAP3D()
         local flow = map_ctrl._Flow
         if not flow:isOpenRadarMapGUI() then
-            self.always_visible_delay_timer:restart(1)
+            self.always_visible_delay_timer:restart({ timeout = 1 })
             return false
         end
     end
