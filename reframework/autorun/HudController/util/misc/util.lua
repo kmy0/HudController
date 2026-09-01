@@ -405,4 +405,16 @@ function this.dragable()
     end
 end
 
+---@param n integer
+---@return string
+function this.to_base36(n)
+    local chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    local result = ""
+    repeat
+        result = chars:sub((n % 36) + 1, (n % 36) + 1) .. result
+        n = math.floor(n / 36)
+    until n == 0
+    return result
+end
+
 return this

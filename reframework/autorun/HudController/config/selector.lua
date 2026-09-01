@@ -265,6 +265,13 @@ end
 ---@param display_name string
 ---@return string
 function this:get_file_name(display_name)
+    return display_name .. ".config.json"
+end
+
+---@protected
+---@param display_name string
+---@return string
+function this:_get_file_name_old(display_name)
     return display_name .. "_config.json"
 end
 
@@ -278,7 +285,10 @@ function this:get_name(display_name)
     local ret = display_name
     local i = 1
 
-    while util_misc.file_exists(util_misc.join_paths(self.ref.name, self:get_file_name(ret))) do
+    while
+        util_misc.file_exists(util_misc.join_paths(self.ref.name, self:get_file_name(ret)))
+        or util_misc.file_exists(util_misc.join_paths(self.ref.name, self:_get_file_name_old(ret)))
+    do
         ret = display_name .. i
         i = i + 1
     end

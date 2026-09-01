@@ -93,10 +93,13 @@ function this:get_backup_path()
         self.name,
         "backups",
         string.format(
-            "%s_backup_v%s_%s",
-            os.time(),
+            "%s.v%s.%s.backup.config.json",
+            util_misc.split_string(
+                util_misc.split_string(util_misc.get_file_name(self.path, false), "_")[1],
+                "."
+            )[1],
             self.current.version,
-            util_misc.get_file_name(self.path)
+            util_misc.to_base36(os.time())
         )
     )
 end
