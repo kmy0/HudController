@@ -3,8 +3,10 @@
 --- show_disabled: boolean,
 --- is_filter :boolean,
 --- is_debug: boolean,
---- disable_cache: boolean,
 --- filter_known_errors: boolean,
+--- combo_elem_cache: integer,
+--- slider_frame: integer,
+--- slider_jitter: integer,
 --- }
 
 ---@class DebugConfig : ConfigBase
@@ -17,7 +19,9 @@ return {
         show_disabled = false,
         is_filter = false,
         is_debug = false,
-        disable_cache = false,
         filter_known_errors = false,
+        combo_elem_cache = 2,
+        slider_frame = 60,
+        slider_jitter = 120,
     },
 }

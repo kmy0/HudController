@@ -21,6 +21,7 @@
 ---@field hud_sub_type HudSubType.*
 ---@field colors GuiColors.*
 ---@field canvas CanvasActionEnum.*
+---@field elem_cache ElemCache.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -176,6 +177,12 @@ this.enum.canvas = { ---@class CanvasActionEnum.*
     ROT = 4,
     HIDE = 5,
     UNDO = 6,
+}
+---@enum ElemCache
+this.enum.elem_cache = { ---@class ElemCache.*
+    DISABLED = 1,
+    FRAME = 2,
+    ONCE = 3,
 }
 
 ---@return boolean

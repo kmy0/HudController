@@ -9,6 +9,8 @@ local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
 local gui_util = require("HudController.gui.util")
 local hud_debug = require("HudController.hud.debug.init")
+local mod = require("HudController.data.mod")
+local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -312,10 +314,30 @@ function this.draw()
             string.format("(%s?)", config.lang:tr("misc.text_help"))
         )
 
+        local drag_width = config.lang.font_size * (50 / 16)
+        local combo_width = util_imgui.get_something_with_any_width(drag_width * 2)
+
+        imgui.set_next_item_width(combo_width)
+        set:combo("##combo_elem_cache", "debug.combo_elem_cache", state.combo.elem_cache.values)
+
+        imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
+        imgui.set_next_item_width(drag_width)
+        imgui.same_line()
+
+        set:drag_int("##slider_frame", "debug.slider_frame", 0.25, 1, 1024)
+        util_imgui.tooltip(config.lang:tr("debug.slider_frame"))
+
+        imgui.set_next_item_width(drag_width)
+        imgui.same_line()
+
+        set:drag_int("##slider_jitter", "debug.slider_jitter", 0.25, 1, 1024)
+        util_imgui.tooltip(config.lang:tr("debug.slider_jitter"))
+        imgui.end_disabled()
+
+        util_imgui.set_label(config.lang:tr("debug.combo_elem_cache"))
+
         set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-        set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
-        util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
         set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
         imgui.same_line()
         set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
