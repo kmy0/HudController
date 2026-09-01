@@ -77,6 +77,7 @@ local this = {
             "4",
             "8",
             "16",
+            "32",
         },
         slider_expanded_itembar_control = {
             "expanded_itembar_disable_dpad",

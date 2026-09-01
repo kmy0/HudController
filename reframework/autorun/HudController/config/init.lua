@@ -15,7 +15,6 @@
 ---@field option_default_path string
 ---@field default_config_path string
 ---
----@field grid_size integer
 ---@field porter_timeout number
 ---@field handler_timeout number
 
@@ -41,7 +40,6 @@ this.default_config_path = config_path
 this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
 this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
 
-this.grid_size = 160
 this.porter_timeout = 3
 this.handler_timeout = 5
 
