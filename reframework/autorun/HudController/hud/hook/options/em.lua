@@ -25,6 +25,21 @@ local function clear_map_navi_lines()
     return false
 end
 
+---@param game_object via.GameObject?
+---@return boolean?
+local function is_hide_enemy_access_paint(game_object)
+    if not game_object then
+        return
+    end
+
+    local char = ace_em.get_char_base(game_object)
+    if not char then
+        return
+    end
+
+    return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
+end
+
 --#region hide_monster_icon
 function this.hide_monster_icon_out_post(_)
     local hud_config = common.get_hud()
@@ -92,6 +107,58 @@ function this.skip_monster_select_pre(args)
 
         if not ace_em.is_paintballed_ctx(ctx) then
             return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
+function this.hide_em_iteractables_post(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
+
+        util_game.do_something(access_control:get_AccessIconInfos(), function(_, _, value)
+            local cat = value:get_ObjectCategory()
+            local cat_name = e.get("app.GUIAccessIconControl.OBJECT_CATEGORY")[cat]
+
+            if
+                cat_name == "ENEMY"
+                and hud.get_hud_option("hide_monster_icon")
+                and is_hide_enemy_access_paint(value:get_GameObject())
+            then
+                value:clear()
+            end
+        end)
+    end
+end
+
+function this.disable_scoutflies_em_tracking_pre(args)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
+        if target_access.Category == e.get("app.TARGET_ACCESS_KEY.CATEGORY").ENEMY then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
+function this.hide_map_em_navi_points_post(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option("hide_monster_icon") then
+        local insman = s.get("app.GuideInsectManager")
+        local ctrl = insman:getMasterEntityNavigationController()
+
+        if not ctrl then
+            return
+        end
+
+        local ctx = ctrl:get_Context()
+        local target_info = ctx.TargetInfo
+        local nav_info = target_info:get_CurrentNavigationTargetInfoGuideInsect()
+        if nav_info then
+            local target_access = nav_info:getTargetAccessKey()
+            if target_access.Category == e.get("app.TARGET_ACCESS_KEY.CATEGORY").ENEMY then
+                return false
+            end
         end
     end
 end

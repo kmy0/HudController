@@ -7,24 +7,8 @@ local util_ref = require("HudController.util.ref.init")
 
 local this = {}
 
----@param game_object via.GameObject?
----@return boolean?
-local function is_hide_enemy_access_paint(game_object)
-    if not game_object then
-        return
-    end
-
-    local char = ace_em.get_char_base(game_object)
-    if not char then
-        return
-    end
-
-    return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
-end
-
 function this.hide_iteractables_post(_)
     local name_access = common.get_elem_t("NameAccess")
-    local hud_config = common.get_hud()
     if name_access and (not name_access.hide or hud.get_hud_option("hide_monster_icon")) then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
@@ -83,14 +67,6 @@ function this.hide_iteractables_post(_)
                     end
                 elseif
                     cat_name == "ENEMY"
-                    and not name_access.object_category[cat_name]
-                    and hud.get_hud_option("hide_monster_icon")
-                    and is_hide_enemy_access_paint(value:get_GameObject())
-                then
-                    value:clear()
-                    return
-                elseif
-                    cat_name == "ENEMY"
                     and any_enemy
                     and not name_access.object_category[cat_name]
                 then
@@ -117,15 +93,6 @@ function this.hide_iteractables_post(_)
                 if name_access.object_category[cat_name] then
                     value:clear()
                 end
-            end
-        end)
-    elseif hud_config and hud.get_hud_option("hide_monster_icon") then
-        local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
-        util_game.do_something(access_control:get_AccessIconInfos(), function(_, _, value)
-            local cat = value:get_ObjectCategory()
-            local cat_name = e.get("app.GUIAccessIconControl.OBJECT_CATEGORY")[cat]
-            if cat_name == "ENEMY" and is_hide_enemy_access_paint(value:get_GameObject()) then
-                value:clear()
             end
         end)
     end

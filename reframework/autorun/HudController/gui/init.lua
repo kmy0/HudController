@@ -10,6 +10,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
+local hook = require("HudController.hud.hook.init")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -124,6 +125,8 @@ function this.draw()
 
     imgui.spacing()
     imgui.end_window()
+
+    hook.hook_hud_options()
 end
 
 ---@return boolean
