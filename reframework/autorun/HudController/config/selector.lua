@@ -135,6 +135,7 @@ function this:swap()
     self:save_no_timer()
 end
 
+---@return ConfigFile
 function this:new_file()
     local file = self.files[self.sorted[self.current.combo_file]]
     local new_file = {
@@ -150,6 +151,7 @@ function this:new_file()
     end) --[[@as integer]]
     self:save_no_timer()
     json.dump_file(new_file.path, self.ref.default)
+    return new_file --[[@as ConfigFile]]
 end
 
 ---@param new_name string
@@ -294,6 +296,30 @@ function this:get_name(display_name)
     end
 
     return ret
+end
+
+function this:export()
+    imgui.set_clipboard(json.dump_string(self.ref.current))
+end
+
+function this:import()
+    local file = self.files[self.sorted[self.current.combo_file]]
+    local config_data = json.load_string(imgui.get_clipboard()) --[[@as MainSettings]]
+    json.dump_file(file.path, config_data)
+end
+
+---@return boolean
+function this:try_import()
+    local config_data = json.load_string(imgui.get_clipboard())
+    if not config_data then
+        return false
+    end
+
+    if not config_data.mod then
+        return false
+    end
+
+    return true
 end
 
 return this
