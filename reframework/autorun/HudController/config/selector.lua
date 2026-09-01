@@ -11,7 +11,6 @@
 ---@field sorted_backup string[]
 ---@field default_name string
 ---@field new_name string
----@field combo_file_backup integer
 
 ---@class (exact) ConfigFile
 ---@field display_name string
@@ -47,7 +46,6 @@ function this:new(default_settings, path, ref)
     o.sorted_backup = {}
     o.data_path = o.ref.name
     o.path_backup = util_misc.join_paths_b(o.data_path, "backups")
-    o.combo_file_backup = 1
     return o
 end
 
@@ -64,7 +62,7 @@ function this:get_files(path, no_subfolders)
         local file = files[i]
         if (no_subfolders and not file:find("[/\\].+[/\\]")) or not no_subfolders then
             local name = util_misc.get_file_name(file, false)
-            name = name:match("(.+)_config")
+            name = name:match("(.+)[_.]config")
             if name == "" or name == this.default_name then
                 goto continue
             end
@@ -109,7 +107,7 @@ function this:load()
 end
 
 function this:reload()
-    self.combo_file_backup = 1
+    self.current.combo_file_backup = 1
     self.files_backup = self:get_files(self.path_backup)
     self.sorted_backup = self:sort_files(self.files_backup)
 
@@ -205,7 +203,7 @@ end
 
 ---@return boolean
 function this:restore_backup()
-    local name = self.sorted_backup[self.combo_file_backup]
+    local name = self.sorted_backup[self.current.combo_file_backup]
     if not name then
         return false
     end
@@ -219,9 +217,9 @@ function this:restore_backup()
     local ret = hudcontroller_util.rename(file.path, util_misc.join_paths(self.ref.name, file_name))
 
     if ret then
-        local combo_index = self.combo_file_backup
+        local combo_index = self.current.combo_file_backup
         self:reload()
-        self.combo_file_backup = math.max(combo_index - 1, 1)
+        self.current.combo_file_backup = math.max(combo_index - 1, 1)
     end
 
     return ret
@@ -229,11 +227,11 @@ end
 
 ---@return boolean
 function this:delete_current_backup()
-    local file = self.files_backup[self.sorted_backup[self.combo_file_backup]]
+    local file = self.files_backup[self.sorted_backup[self.current.combo_file_backup]]
     if not util_misc.file_exists(file.path) or hudcontroller_util.remove(file.path) then
         self.files_backup[file.display_name] = nil
         self.sorted_backup = self:sort_files(self.files_backup)
-        self.combo_file_backup = math.max(self.combo_file_backup - 1, 1)
+        self.current.combo_file_backup = math.max(self.current.combo_file_backup - 1, 1)
         self:save_no_timer()
         return true
     end
