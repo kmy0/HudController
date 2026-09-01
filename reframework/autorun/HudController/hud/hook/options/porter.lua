@@ -1,14 +1,13 @@
 local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
-local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local timer = require("HudController.util.misc.timer")
 
 local this = {}
 local porter = {
-    hide_timer = timer:new(config.porter_timeout, nil, true),
-    call_timer = timer:new(config.porter_timeout),
+    hide_timer = timer:new(0, nil, true),
+    call_timer = timer:new(0),
     hidden = false,
 }
 
@@ -35,6 +34,9 @@ function this.hide_porter_post(_)
     if not hud_config then
         return
     end
+
+    porter.hide_timer:update_args(hud_config.hide_porter_timeout)
+    porter.call_timer:update_args(hud_config.hide_porter_timeout)
 
     if
         hud_config

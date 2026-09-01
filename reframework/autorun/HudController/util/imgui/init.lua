@@ -1,3 +1,4 @@
+local config = require("HudController.config.init")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local uuid = require("HudController.util.misc.uuid")
@@ -359,6 +360,11 @@ function this.set_label(label, offset)
     pos.x = pos.x - 3 + offset
     imgui.set_cursor_pos(pos)
     imgui.text(util_misc.split_string(label, "##")[1])
+end
+
+---@return number
+function this.get_drag_with()
+    return config.lang.font_size * (50 / 16)
 end
 
 return this

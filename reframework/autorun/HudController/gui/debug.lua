@@ -314,7 +314,7 @@ function this.draw()
             string.format("(%s?)", config.lang:tr("misc.text_help"))
         )
 
-        local drag_width = config.lang.font_size * (50 / 16)
+        local drag_width = util_imgui.get_drag_with()
         local combo_width = util_imgui.get_something_with_any_width(drag_width * 2)
 
         imgui.set_next_item_width(combo_width)
