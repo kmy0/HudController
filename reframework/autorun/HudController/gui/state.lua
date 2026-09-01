@@ -23,6 +23,7 @@
 ---@field log_id Combo
 ---@field map_filter Combo
 ---@field condition Combo
+---@field elem_cache Combo
 
 ---@class (exact) NewBindListener
 ---@field opt HudProfileConfig | string
@@ -181,6 +182,14 @@ local this = {
             end,
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+        }),
+        elem_cache = combo:new(mod.enum.elem_cache, {
+            translate_fn = function(key)
+                return config.lang:tr("debug.combo_elem_cache_values." .. key)
+            end,
+            sort_fn = function(a, b)
+                return mod.enum.elem_cache[a.key] < mod.enum.elem_cache[b.key]
             end,
         }),
     },

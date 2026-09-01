@@ -320,4 +320,45 @@ function this.draw_text_outlined(text, x, y, color, outline_color)
     draw.text(text, x, y, color)
 end
 
+---@param button_label string
+---@param ... number
+---@return number
+function this.get_something_with_button_width(button_label, ...)
+    local other_widths = { ... }
+    local FRAME_PADDING_X = 4.0
+    local ITEM_SPACING_X = 8.0
+
+    local total_width = imgui.calc_item_width()
+    local button_width = imgui.calc_text_size(util_misc.split_string(button_label, "##")[1]).x
+        + FRAME_PADDING_X * 2
+
+    local ret = total_width - button_width - ITEM_SPACING_X
+
+    for _, w in pairs(other_widths) do
+        ret = ret - w - ITEM_SPACING_X
+    end
+    return ret <= 0 and 0 or ret
+end
+
+---@param width number
+---@return number
+function this.get_something_with_any_width(width)
+    local FRAME_PADDING_X = 4.0
+    local total_width = imgui.calc_item_width()
+    local button_width = width + FRAME_PADDING_X * 2
+    local ret = total_width - button_width
+    return ret <= 0 and 0 or ret
+end
+
+---@param label string
+---@param offset number?
+function this.set_label(label, offset)
+    offset = offset or 0
+    imgui.same_line()
+    local pos = imgui.get_cursor_pos()
+    pos.x = pos.x - 3 + offset
+    imgui.set_cursor_pos(pos)
+    imgui.text(util_misc.split_string(label, "##")[1])
+end
+
 return this
