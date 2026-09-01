@@ -28,7 +28,7 @@
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
 ---@field restore_all_force_invis fun()
----@field hide_timer FrameTimer
+---@field hide_timer Timer
 ---@field disable_fade boolean?
 ---@field disable_fade_opacity boolean?
 ---@field _pos_last_frame Vector3f?
@@ -120,10 +120,10 @@ local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
 local e = require("HudController.util.game.enum")
 local fade_manager = require("HudController.hud.fade.init")
-local frame_timer = require("HudController.util.misc.frame_timer")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
+local timer = require("HudController.util.misc.timer")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
@@ -172,7 +172,7 @@ function this:new(args, parent, optional_args)
         gui_ignore = optional_args.gui_ignore,
         gui_header_children = optional_args.gui_header_children,
         children_sort = optional_args.children_sort,
-        hide_timer = frame_timer:new(15),
+        hide_timer = timer:new(15, { type = "frame" }),
         disable_fade = args.disable_fade,
         disable_fade_opacity = args.disable_fade_opacity,
     }

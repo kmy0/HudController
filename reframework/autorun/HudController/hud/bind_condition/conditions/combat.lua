@@ -72,8 +72,8 @@ function this:update(option_key)
 
     local is_combat = ace_player.is_combat()
 
-    self._timers.out_of_combat:update_args(options.out_of_combat_delay)
-    self._timers.in_combat:update_args(options.in_combat_delay)
+    self._timers.out_of_combat:update_args({ timeout = options.out_of_combat_delay })
+    self._timers.in_combat:update_args({ timeout = options.in_combat_delay })
 
     if is_combat then
         if self._state_frame == state.OUT_OF_COMBAT and self.state == state.OUT_OF_COMBAT then

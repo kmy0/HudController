@@ -6,7 +6,7 @@ local timer = require("HudController.util.misc.timer")
 
 local this = {}
 local porter = {
-    hide_timer = timer:new(0, nil, true),
+    hide_timer = timer:new(0, { auto_start = true }),
     call_timer = timer:new(0),
     hidden = false,
 }
@@ -35,8 +35,8 @@ function this.hide_porter_post(_)
         return
     end
 
-    porter.hide_timer:update_args(hud_config.hide_porter_timeout)
-    porter.call_timer:update_args(hud_config.hide_porter_timeout)
+    porter.hide_timer:update_args({ timeout = hud_config.hide_porter_timeout })
+    porter.call_timer:update_args({ timeout = hud_config.hide_porter_timeout })
 
     if
         hud_config
