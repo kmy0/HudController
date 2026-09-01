@@ -303,6 +303,8 @@ return {
         tooltip_hide_pet = "Hide Palico outside of quests",
         box_mute_gossip = "Mute Gossip Dialogue",
         box_hide_aggro = "Hide Aggro Line",
+        drag_hide_porter = "Delay",
+        drag_hide_handler = "Delay",
     },
     hud_element = {
         combo = "Hud Element",

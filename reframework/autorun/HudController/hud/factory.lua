@@ -36,6 +36,8 @@
 ---@field hide_pet boolean
 ---@field mute_gossip boolean
 ---@field hide_aggro boolean
+---@field hide_porter_timeout integer
+---@field hide_handler_timeout integer
 
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
@@ -92,6 +94,8 @@ function this.get_hud_profile_config(key, name)
         hide_pet = false,
         mute_gossip = false,
         hide_aggro = false,
+        hide_handler_timeout = 5,
+        hide_porter_timeout = 3,
     }
 end
 

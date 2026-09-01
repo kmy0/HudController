@@ -175,6 +175,16 @@ local function draw_options()
         ),
         "hide_handler"
     )
+    imgui.same_line()
+    imgui.set_next_item_width(util_imgui.get_drag_with())
+    set:drag_int(
+        gui_util.tr("hud.drag_hide_handler"),
+        string.format("mod.hud.int:%s.hide_handler_timeout", config_mod.combo.hud),
+        0.1,
+        0,
+        30
+    )
+
     check_overriden(
         set:checkbox(
             gui_util.tr("hud.box_hide_pet"),
@@ -304,6 +314,16 @@ local function draw_options()
         ),
         "hide_porter"
     )
+    imgui.same_line()
+    imgui.set_next_item_width(util_imgui.get_drag_with())
+    set:drag_int(
+        gui_util.tr("hud.drag_hide_porter"),
+        string.format("mod.hud.int:%s.hide_porter_timeout", config_mod.combo.hud),
+        0.1,
+        0,
+        30
+    )
+
     check_overriden(
         set:checkbox(
             gui_util.tr("hud.box_disable_porter_tracking"),

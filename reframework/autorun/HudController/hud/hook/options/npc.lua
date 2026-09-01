@@ -2,7 +2,6 @@ local ace_npc = require("HudController.util.ace.npc")
 local ace_player = require("HudController.util.ace.player")
 local ace_porter = require("HudController.util.ace.porter")
 local common = require("HudController.hud.hook.common")
-local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud = require("HudController.hud.init")
@@ -15,7 +14,7 @@ local util_table = require("HudController.util.misc.table")
 
 local this = {}
 local handler = {
-    hide_timer = timer:new(config.handler_timeout, nil),
+    hide_timer = timer:new(0, nil),
     hidden = false,
 }
 
@@ -47,6 +46,8 @@ function this.hide_handler_post(_)
     if hud_config and hud.get_hud_option("hide_handler") then
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
         local handler_id = e.to_enum("app.NpcDef.ID", handler_id_fixed)
+
+        handler.hide_timer:update_args(hud_config.hide_handler_timeout)
 
         if
             not handler.hide_timer:started()
