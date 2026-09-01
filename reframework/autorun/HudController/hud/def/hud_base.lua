@@ -615,12 +615,13 @@ end
 
 ---@return boolean
 function this:any()
-    return util_table.any(self.properties, function(key, _)
-        if self[key] then
-            return true
-        end
-        return false
-    end)
+    return self._request_pos
+        or util_table.any(self.properties, function(key, _)
+            if self[key] then
+                return true
+            end
+            return false
+        end)
 end
 
 ---@return boolean
@@ -827,7 +828,7 @@ function this:_write(ctrl)
 
     if self.hide and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:change_visibility(ctrl, not self.hide)
-        if not self.hide_write then
+        if not self.hide_write and not self._request_pos then
             return false
         end
     end

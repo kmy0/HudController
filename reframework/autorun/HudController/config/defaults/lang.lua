@@ -31,6 +31,7 @@ return {
         text_help = "Help",
         text_id = "ID",
         text_none = "None",
+        text_screen_pos = "Screen Position",
     },
     debug = {
         name = "Debug",
