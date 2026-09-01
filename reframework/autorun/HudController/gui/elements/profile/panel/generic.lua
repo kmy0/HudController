@@ -3,6 +3,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
+local mod = require("HudController.data.mod")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
@@ -82,8 +83,9 @@ end
 ---@param max number
 ---@param step number
 ---@param format string
+---@param additional_text string?
 ---@return boolean
-function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
+function this.draw_slider_settings(checkbox, sliders, min, max, step, format, additional_text)
     local changed = false
 
     if checkbox then
@@ -91,8 +93,17 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
             string.format("%s##%s", checkbox.label, checkbox.config_key),
             checkbox.config_key
         )
+        if additional_text and config:get(checkbox.config_key) then
+            imgui.same_line()
+            imgui.text_colored(additional_text, mod.enum.colors.info)
+        end
+
         imgui.begin_disabled(not config:get(checkbox.config_key))
     else
+        if additional_text then
+            imgui.text_colored(additional_text, mod.enum.colors.info)
+        end
+
         imgui.begin_disabled(false)
     end
 
@@ -205,20 +216,35 @@ function this.draw(elem, elem_config, config_key)
     end
 
     if elem_config.enabled_offset ~= nil then
+        local global_pos = elem:get_global_pos()
+
         if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_offset",
-                label = gui_util.tr("hud_element.entry.box_enable_offset"),
-            }, {
+            this.draw_slider_settings(
                 {
-                    config_key = config_key .. ".offset.x",
-                    label = gui_util.tr("hud_element.entry.slider_x"),
+                    config_key = config_key .. ".enabled_offset",
+                    label = gui_util.tr("hud_element.entry.box_enable_offset"),
                 },
                 {
-                    config_key = config_key .. ".offset.y",
-                    label = gui_util.tr("hud_element.entry.slider_y"),
+                    {
+                        config_key = config_key .. ".offset.x",
+                        label = gui_util.tr("hud_element.entry.slider_x"),
+                    },
+                    {
+                        config_key = config_key .. ".offset.y",
+                        label = gui_util.tr("hud_element.entry.slider_y"),
+                    },
                 },
-            }, -4000, 4000, 1, "%.0f")
+                -4000,
+                4000,
+                1,
+                "%.0f",
+                string.format(
+                    "%s: x=%d, y=%d",
+                    config.lang:tr("misc.text_screen_pos"),
+                    global_pos and math.ceil(global_pos.x) or 0,
+                    global_pos and math.ceil(global_pos.y) or 0
+                )
+            )
         then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
         end
