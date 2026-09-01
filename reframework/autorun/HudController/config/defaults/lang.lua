@@ -84,6 +84,10 @@ return {
         button_remove_backup = "Remove",
         tooltip_remove_backup = "Move backup file to recycle bin",
         tooltip_restore = "Make backup file selectable in the Combo File combo box",
+        button_export = "Export",
+        button_import = "Import",
+        tooltip_button_import = "Import config string from clipboard",
+        tooltip_button_export = "Export config string to clipboard",
     },
     sorter = {
         name = "Profile Sorter",

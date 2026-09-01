@@ -58,6 +58,25 @@ function this.draw()
         util_imgui.open_popup("config_remove", 62, 30)
     end
 
+    imgui.same_line()
+    if imgui.button(gui_util.tr("selector.button_export")) then
+        config.selector:export()
+    end
+    util_imgui.tooltip(config.lang:tr("selector.tooltip_button_export"))
+
+    imgui.same_line()
+    if imgui.button(gui_util.tr("selector.button_import")) and config.selector:try_import() then
+        state.input_action = nil
+        local new_file = config.selector:new_file()
+        state.combo.config:swap(config.selector.sorted)
+        config.selector.current.combo_file =
+            util_table.index(state.combo.config.values, new_file.display_name) --[[@as integer]]
+        config.selector:import()
+        config.selector:swap()
+        hud.reinit()
+    end
+    util_imgui.tooltip(config.lang:tr("selector.tooltip_button_import"))
+
     imgui.end_disabled()
 
     if
