@@ -2,8 +2,10 @@
 ---@field is_hud_hooked table<string, boolean>
 ---@field is_option_hooked table<string, boolean>
 ---@field is_option_mod_hooked table<string, boolean>
+---@field is_hud_option_hooked table<string, boolean>
 ---@field is_fun_hooked table<fun(), true>
 ---@field hud_hooks table<string, fun(...)>
+---@field hud_option_hooks table<string, table<string, {condition: (fun(config_path: string): boolean), fn: fun()}>>
 ---@field option_hooks table<string, fun()>
 ---@field option_mod_hooks table<string, fun()>
 ---@field hud table<string, fun()|fun()[]>
@@ -15,11 +17,13 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.hook.elements.init")
+local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
 local misc = require("HudController.hud.hook.misc")
 local options = require("HudController.hud.hook.options.init")
 local options_mod = require("HudController.hud.hook.options_mod")
 local util_ref = require("HudController.util.ref.init")
+local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local mod_map = data.mod.map
@@ -30,7 +34,9 @@ local this = {
     is_option_hooked = {},
     is_option_mod_hooked = {},
     is_fun_hooked = {},
+    is_hud_option_hooked = {},
     hud_hooks = {},
+    hud_option_hooks = {},
     option_hooks = {},
     option_mod_hooks = {},
     hud = {},
@@ -55,6 +61,21 @@ m.hook("app.GUIManager.lateUpdateApp()", nil, function(_)
         elements.update.update_post(gui_type)
     end
 end)
+
+---@param fn fun()
+---@param condition (fun(config_path: string): boolean)?
+---@return {condition: (fun(config_path: string): boolean), fn: fun()}
+local function make_hud_options_hook(fn, condition)
+    condition = condition
+        or function(config_path)
+            local profile = hud.get_current() --[[@as HudProfileConfig]]
+            return util_table.get_by_key(profile, string.format("elements.%s", config_path))
+        end
+    return {
+        condition = condition,
+        fn = fn,
+    }
+end
 
 function this.hud_hooks.target_reticle()
     m.hook(
@@ -104,11 +125,33 @@ function this.hud_hooks.name_access()
         util_ref.capture_this,
         elements.update.update_name_access_icons_post
     )
-    m.hook(
-        "app.GUIAccessIconControl.lateUpdate()",
-        util_ref.capture_this,
-        elements.name_access.hide_iteractables_post
-    )
+
+    this.hud_option_hooks["NAME_ACCESSIBLE"] = {
+        ["NAME_ACCESSIBLE._hide_interactables"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUIAccessIconControl.lateUpdate()",
+                util_ref.capture_this,
+                elements.name_access.hide_iteractables_post
+            )
+        end, function(_)
+            local name_access = common.get_elem_t("NameAccess")
+            if not name_access then
+                return false
+            end
+
+            if name_access.hide then
+                return false
+            end
+
+            return util_table.any({
+                name_access.npc_draw_distance > 0,
+                name_access:any_panel(),
+                name_access:any_npc(),
+                name_access:any_gossip(),
+                name_access:any_enemy(),
+            })
+        end),
+    }
 end
 
 function this.hud_hooks.barrel_bowling_score()
@@ -134,113 +177,241 @@ function this.hud_hooks.chat_log()
 end
 
 function this.hud_hooks.radial()
-    m.hook("app.GUI020008.checkOpen()", util_ref.capture_this, elements.radial.hide_radial_post)
-    m.hook(
-        "app.GUI020008PartsPallet.callbackSelectICL(via.gui.Control, via.gui.SelectItem, System.UInt32, System.Int32, System.UInt32, System.Int32)",
-        elements.radial.hide_radial_pallet_pre
-    )
+    this.hud_option_hooks["SHORTCUT_GAMEPAD"] = {
+        ["SHORTCUT_GAMEPAD.hide"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020008.checkOpen()",
+                util_ref.capture_this,
+                elements.radial.hide_radial_post
+            )
+        end),
+        ["SHORTCUT_GAMEPAD.children.pallet.hide"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020008PartsPallet.callbackSelectICL(via.gui.Control, via.gui.SelectItem, System.UInt32, System.Int32, System.UInt32, System.Int32)",
+                elements.radial.hide_radial_pallet_pre
+            )
+        end),
+    }
 end
 
 function this.hud_hooks.itembar()
-    m.hook("app.GUI020006.controlSliderOpen()", elements.itembar.open_expanded_itembar_pre)
-    m.hook(
-        m.get_by_regex("app.GUI020007", "^<guiHudUpdate>.-1$") --[[@as REMethodDefinition]],
-        elements.itembar.keep_ammo_open_pre
-    )
-    m.hook(
-        m.get_by_regex("app.GUI020017", "^<setupOpenCloseEvent>.-1$") --[[@as REMethodDefinition]],
-        util_ref.capture_this,
-        elements.itembar.keep_slinger_open1_post
-    )
-    m.hook(
-        m.get_by_regex("app.GUI020017", "^<setupOpenCloseEvent>.-0$") --[[@as REMethodDefinition]],
-        util_ref.capture_this,
-        elements.itembar.keep_slinger_open0_post
-    )
-    m.hook(
-        "app.GUIManager.updatePlCommandMask()",
-        nil,
-        elements.itembar.unblock_camera_control_post
-    )
-    m.hook(
-        "app.GUI020006PartsAllSlider.onLateUpdate()",
-        util_ref.capture_this,
-        elements.itembar.expanded_itembar_mouse_control_post
-    )
-    m.hook(
-        "app.GUIManager.isMouseCursorAvailable()",
-        nil,
-        elements.itembar.force_cursor_visible_post
-    )
-    m.hook("app.GUI000006.guiLateUpdate()", elements.itembar.force_mouse_pos_pre)
-    m.hook("app.GUI000006.updateMouseVisible()", elements.itembar.skip_mouse_update_pre)
-    m.hook(
-        "app.GUI020006.callbackPouchChange(app.ItemDef.ID)",
-        nil,
-        elements.itembar.refresh_all_slider_post
-    )
-    m.hook(
-        "app.ItemUtil.useItem(app.ItemDef.ID, System.Int16, System.Boolean)",
-        elements.itembar.move_next_item_pre
-    )
-    m.hook(
-        "app.GUI020006PartsAllSlider.updateDispItems(System.Int32, via.gui.SelectItem, System.Int32)",
-        elements.itembar.clear_cache_pre
-    )
-    m.hook("app.GUI020008.checkOpen()", util_ref.capture_this, elements.itembar.hide_radial_post)
+    this.hud_option_hooks["SLIDER_ITEM"] = {
+        ["SLIDER_ITEM.start_expanded"] = make_hud_options_hook(function()
+            m.hook("app.GUI020006.controlSliderOpen()", elements.itembar.open_expanded_itembar_pre)
+            m.hook(
+                "app.GUI020008.checkOpen()",
+                util_ref.capture_this,
+                elements.itembar.hide_radial_post
+            )
+        end),
+        ["SLIDER_ITEM.children.all_slider.ammo_visible"] = make_hud_options_hook(function()
+            m.hook(
+                m.get_by_regex("app.GUI020007", "^<guiHudUpdate>.-1$") --[[@as REMethodDefinition]],
+                elements.itembar.keep_ammo_open_pre
+            )
+        end),
+        ["SLIDER_ITEM.children.all_slider.slinger_visible"] = make_hud_options_hook(function()
+            m.hook(
+                m.get_by_regex("app.GUI020017", "^<setupOpenCloseEvent>.-1$") --[[@as REMethodDefinition]],
+                util_ref.capture_this,
+                elements.itembar.keep_slinger_open1_post
+            )
+            m.hook(
+                m.get_by_regex("app.GUI020017", "^<setupOpenCloseEvent>.-0$") --[[@as REMethodDefinition]],
+                util_ref.capture_this,
+                elements.itembar.keep_slinger_open0_post
+            )
+        end),
+        ["SLIDER_ITEM.children.all_slider.disable_right_stick"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUIManager.updatePlCommandMask()",
+                nil,
+                elements.itembar.unblock_camera_control_post
+            )
+        end),
+        ["SLIDER_ITEM.children.all_slider.enable_mouse_control"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020006PartsAllSlider.onLateUpdate()",
+                util_ref.capture_this,
+                elements.itembar.expanded_itembar_mouse_control_post
+            )
+            m.hook(
+                "app.GUIManager.isMouseCursorAvailable()",
+                nil,
+                elements.itembar.force_cursor_visible_post
+            )
+            m.hook("app.GUI000006.updateMouseVisible()", elements.itembar.skip_mouse_update_pre)
+            m.hook("app.GUI000006.guiLateUpdate()", elements.itembar.force_mouse_pos_pre)
+        end),
+        ["SLIDER_ITEM.children.all_slider.appear_open"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020006.callbackPouchChange(app.ItemDef.ID)",
+                nil,
+                elements.itembar.refresh_all_slider_post
+            )
+        end),
+        ["SLIDER_ITEM.children.slider.move_next "] = make_hud_options_hook(function()
+            m.hook(
+                "app.ItemUtil.useItem(app.ItemDef.ID, System.Int16, System.Boolean)",
+                elements.itembar.move_next_item_pre
+            )
+        end),
+        ["SLIDER_ITEM._all_slider_clear_cache"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020006PartsAllSlider.updateDispItems(System.Int32, via.gui.SelectItem, System.Int32)",
+                elements.itembar.clear_cache_pre
+            )
+        end, function(_)
+            local itembar = common.get_elem_t("Itembar")
+            if not itembar then
+                return false
+            end
+
+            return itembar.children.all_slider:any()
+        end),
+    }
 end
 
 function this.hud_hooks.ammo()
-    m.hook("app.GUI020007.controlSliderStatus()", elements.ammo.no_hide_ammo_slider_parts_pre)
-    m.hook(
-        "app.GUI020007.setReloadState(System.String)",
-        elements.ammo.no_hide_ammo_slider_reload_pre
-    )
+    this.hud_option_hooks["SLIDER_BULLET"] = {
+        ["SLIDER_BULLET.no_hide_parts"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020007.controlSliderStatus()",
+                elements.ammo.no_hide_ammo_slider_parts_pre
+            )
+            m.hook(
+                "app.GUI020007.setReloadState(System.String)",
+                elements.ammo.no_hide_ammo_slider_reload_pre
+            )
+        end),
+    }
 end
 
 function this.hud_hooks.name_other()
-    m.hook(
-        "app.GUI020016PartsBase.checkIsVisible()",
-        util_ref.capture_this,
-        elements.name_other.hide_nameplate_post
-    )
     m.hook("app.GUI020016.guiHudUpdate()", elements.name_other.name_other_update_player_pos_pre)
+
+    this.hud_option_hooks["NAME_OTHER"] = {
+        ["NAME_OTHER._hide_nameplete"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020016PartsBase.checkIsVisible()",
+                util_ref.capture_this,
+                elements.name_other.hide_nameplate_post
+            )
+        end, function(_)
+            local name_other = common.get_elem_t("NameOther")
+            if not name_other or name_other.hide then
+                return false
+            end
+
+            return name_other.pl_draw_distance > 0
+                or name_other.pet_draw_distance > 0
+                or util_table.any(name_other.nameplate_type)
+        end),
+    }
 end
 
 function this.hud_hooks.control()
-    m.hook(
-        "app.GUI020014.changeViewTypeState(System.Boolean)",
-        elements.control.set_control_global_pos_pre,
-        elements.control.set_control_global_pos_post
-    )
+    this.hud_option_hooks["CONTROL"] = {
+        ["CONTROL._hide_nameplete"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020014.changeViewTypeState(System.Boolean)",
+                elements.control.set_control_global_pos_pre,
+                elements.control.set_control_global_pos_post
+            )
+        end, function(_)
+            local control = common.get_elem_t("Control")
+            if
+                not control
+                or control.hide
+                or control.children.control_guide1.hide
+                or not control.children.control_guide1.offset
+            then
+                return false
+            end
+
+            return true
+        end),
+    }
 end
 
 function this.hud_hooks.progress()
-    m.hook(
-        "app.MissionManager.unLoadMissionData(app.MissionIDList.ID)",
-        elements.progress.reset_progress_mission_pre
-    )
-    m.hook(
-        "app.MissionManager.unLoadAllMissionData()",
-        elements.progress.reset_progress_default_pre
-    )
-    m.hook("app.GUI020018.updateMission()", elements.progress.clear_cache_pre)
+    this.hud_option_hooks["PROGRESS"] = {
+        ["PROGRESS._cache_reset"] = make_hud_options_hook(function()
+            m.hook(
+                "app.MissionManager.unLoadMissionData(app.MissionIDList.ID)",
+                elements.progress.reset_progress_mission_pre
+            )
+            m.hook(
+                "app.MissionManager.unLoadAllMissionData()",
+                elements.progress.reset_progress_default_pre
+            )
+            m.hook("app.GUI020018.updateMission()", elements.progress.clear_cache_pre)
+        end, function(_)
+            local progress = common.get_elem_t("Progress")
+            if not progress then
+                return false
+            end
+
+            ---@diagnostic disable-next-line: no-unknown
+            for _, child in pairs(progress.children) do
+                if child:any() then
+                    return true
+                end
+            end
+
+            return false
+        end),
+    }
 end
 
 function this.hud_hooks.notice()
-    m.hook("app.GUI020100.dispPanel(app.cGUI020100PanelBase)", elements.notice.cache_message_pre)
-    m.hook(
-        "app.ChatManager.pushBackLobbyLog(app.ChatDef.ChatBase)",
-        elements.notice.skip_lobby_message_pre
-    )
-    m.hook(
-        "app.ChatManager.pushBackSystemLog(app.ChatDef.SystemMessage, System.Boolean)",
-        elements.notice.skip_system_message_pre
-    )
-    m.hook(
-        "app.ChatManager.onReceiveSystem(app.net_packet.cChatBase, System.Boolean, System.Boolean, app.net_session_manager.SESSION_TYPE, System.Int32, System.Boolean, System.Boolean)",
-        elements.notice.skip_auto_message_pre
-    )
+    this.hud_option_hooks["NOTICE"] = {
+        ["NOTICE.cache_msg"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020100.dispPanel(app.cGUI020100PanelBase)",
+                elements.notice.cache_message_pre
+            )
+        end),
+        ["NOTICE._skip_system"] = make_hud_options_hook(function()
+            m.hook(
+                "app.ChatManager.pushBackSystemLog(app.ChatDef.SystemMessage, System.Boolean)",
+                elements.notice.skip_system_message_pre
+            )
+        end, function(_)
+            local notice = common.get_elem_t("Notice")
+            if not notice then
+                return false
+            end
+
+            return notice.hide or util_table.any(notice.system_log)
+        end),
+        ["NOTICE._skip_lobby"] = make_hud_options_hook(function()
+            m.hook(
+                "app.ChatManager.pushBackLobbyLog(app.ChatDef.ChatBase)",
+                elements.notice.skip_lobby_message_pre
+            )
+        end, function(_)
+            local notice = common.get_elem_t("Notice")
+            if not notice then
+                return false
+            end
+
+            return notice.hide or util_table.any(notice.chat_log)
+        end),
+        ["NOTICE._skip_auto"] = make_hud_options_hook(function()
+            m.hook(
+                "app.ChatManager.onReceiveSystem(app.net_packet.cChatBase, System.Boolean, System.Boolean, app.net_session_manager.SESSION_TYPE, System.Int32, System.Boolean, System.Boolean)",
+                elements.notice.skip_auto_message_pre
+            )
+        end, function(_)
+            local notice = common.get_elem_t("Notice")
+            if not notice then
+                return false
+            end
+
+            return notice.hide or util_table.any(notice.auto_id)
+        end),
+    }
 end
 
 function this.hud_hooks.shortcut_keyboard()
@@ -277,20 +448,26 @@ function this.hud_hooks.shortcut_keyboard()
 end
 
 function this.hud_hooks.minimap()
-    m.hook(
-        "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
-        util_ref.capture_this,
-        elements.minimap.classic_minimap_param_update_post
-    )
-    m.hook(
-        "app.cGUIMapIconModelSize.updateIconSizeParam()",
-        util_ref.capture_this,
-        elements.minimap.classic_minimap_icon_scale_post
-    )
-    m.hook(
-        "app.cGUI060000Radar.getRadarSizeType(app.cPlayerManageInfo)",
-        elements.minimap.classic_minimap_no_resize_pre
-    )
+    this.hud_option_hooks["MINIMAP"] = {
+        ["MINIMAP.enabled_classic_minimap"] = make_hud_options_hook(function()
+            m.hook(
+                "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
+                util_ref.capture_this,
+                elements.minimap.classic_minimap_param_update_post
+            )
+            m.hook(
+                "app.cGUI060000Radar.getRadarSizeType(app.cPlayerManageInfo)",
+                elements.minimap.classic_minimap_no_resize_pre
+            )
+        end),
+        ["MINIMAP.classic_minimap.scale_icon"] = make_hud_options_hook(function()
+            m.hook(
+                "app.cGUIMapIconModelSize.updateIconSizeParam()",
+                util_ref.capture_this,
+                elements.minimap.classic_minimap_icon_scale_post
+            )
+        end),
+    }
 end
 
 function this.hud_hooks.quest_end_timer()
@@ -299,6 +476,18 @@ function this.hud_hooks.quest_end_timer()
         util_ref.capture_this,
         elements.update.update_quest_end_timer_post
     )
+end
+
+function this.hud_hooks.button_press()
+    common.mute_gui_element(function(args)
+        local guiid = util_ref.to_short(args[3])
+        if e.get("app.GUIID.ID")[guiid] == ace_map.additional_hud_to_guiid_name["BUTTON_PRESS"] then
+            local hud_elem, _ = common.get_elem_consume_t(nil, guiid)
+            return hud_elem and hud_elem.hide and true or false
+        end
+
+        return false
+    end)
 end
 
 function this.option_hooks.disable_scoutflies()
@@ -314,7 +503,7 @@ function this.option_hooks.disable_scoutflies()
     m.hook(
         "app.mcGuideInsectNavigationController"
             .. ".startNavigation(app.TARGET_ACCESS_KEY, via.vec3, System.Boolean, System.Boolean, System.Boolean, System.Boolean)",
-        options.scoutflies.disable_scoutflies_target_tracking_pre
+        options.scoutflies.disable_scoutflies_pre
     )
     m.hook("app.GuideInsectCharacter.update()", options.scoutflies.disable_scoutflies_pre)
     m.hook(
@@ -324,7 +513,7 @@ function this.option_hooks.disable_scoutflies()
     m.hook(
         "app.cGUIMapNaviPointController.IsGuideInsectNavigating()",
         nil,
-        options.scoutflies.hide_map_navi_points_post
+        options.scoutflies.disable_scoutflies_post
     )
 end
 
@@ -386,6 +575,21 @@ function this.option_hooks.hide_monster_icon()
         "app.cEmGridPartition.getArrayLimitedRadius_Func(via.vec3, System.Single, System.Func`2<app.cEnemyManageInfo,System.Boolean>, System.Int32, System.Boolean)",
         options.em.get_near_monsters_pre,
         options.em.get_near_monsters_post
+    )
+    m.hook(
+        "app.GUIAccessIconControl.lateUpdate()",
+        util_ref.capture_this,
+        options.em.hide_em_iteractables_post
+    )
+    m.hook(
+        "app.mcGuideInsectNavigationController"
+            .. ".startNavigation(app.TARGET_ACCESS_KEY, via.vec3, System.Boolean, System.Boolean, System.Boolean, System.Boolean)",
+        options.em.disable_scoutflies_em_tracking_pre
+    )
+    m.hook(
+        "app.cGUIMapNaviPointController.IsGuideInsectNavigating()",
+        nil,
+        options.em.hide_map_em_navi_points_post
     )
 end
 
@@ -454,6 +658,17 @@ function this.option_hooks.skip_quest_end_timer()
         options.quest.skip_quest_end_timer_open_pre
     )
     m.hook("app.GUI020202.guiVisibleUpdate()", options.quest.hide_quest_end_input_pre)
+    common.mute_gui_element(function(args)
+        local guiid = util_ref.to_short(args[3])
+        if
+            hud.get_hud_option("skip_quest_end_timer")
+            and guiid == e.get("app.GUIID.ID").UI020202
+        then
+            return true
+        end
+
+        return false
+    end)
 end
 
 function this.option_hooks.skip_quest_result()
@@ -519,12 +734,14 @@ function this.option_hooks.hide_subtitles()
 end
 
 function this.option_hooks.mute_gui()
-    m.hook(
-        "app.SoundGUITriggerManagerBase`3"
-            .. "<app.SoundGUITriggerManager,app.GUIID.ID,app.GUIID.ID_Fixed>"
-            .. ".request(System.Int32, System.Int32, System.Int32, System.UInt32, System.Boolean)",
-        options.misc.disable_gui_sound_pre
-    )
+    common.mute_gui_element(function(_)
+        local hud_config = common.get_hud()
+        if not hud_config then
+            return false
+        end
+
+        return hud.get_hud_option("mute_gui") or false
+    end)
 end
 
 function this.option_hooks.disable_area_intro()
@@ -599,6 +816,7 @@ function this.hook_hud(hud_id, hud_name)
             hook_fn(fn)
         end
 
+        this.hook_hud_options(hud_name)
         this.is_hud_hooked[key] = true
         ::continue::
     end
@@ -641,6 +859,48 @@ function this.hook_options_mod()
     end
 end
 
+---@param hud_name string?
+function this.hook_hud_options(hud_name)
+    local function f(hooks)
+        for config_path, hook in pairs(hooks) do
+            if this.is_hud_option_hooked[config_path] then
+                goto continue
+            end
+
+            if hook.condition(config_path) then
+                hook_fn(hook.fn)
+                this.is_hud_option_hooked[config_path] = true
+            end
+
+            ::continue::
+        end
+    end
+
+    if not hud_name then
+        for elem_name, hooks in pairs(this.hud_option_hooks) do
+            local elem = hud.get_element(elem_name)
+            if not elem then
+                goto continue
+            end
+
+            f(hooks)
+            ::continue::
+        end
+    else
+        local hooks = this.hud_option_hooks[hud_name]
+        if not hooks then
+            return
+        end
+
+        local elem = hud.get_element(hud_name)
+        if not elem then
+            return
+        end
+
+        f(hooks)
+    end
+end
+
 ---@return boolean
 function this.init()
     this.hud["TARGET_RETICLE"] = this.hud_hooks.target_reticle
@@ -662,18 +922,14 @@ function this.init()
     this.hud["SHORTCUT_KEYBOARD"] = this.hud_hooks.shortcut_keyboard
     this.hud["MINIMAP"] = this.hud_hooks.minimap
     this.hud["QUEST_END_TIMER"] = this.hud_hooks.quest_end_timer
-    this.hud["BUTTON_PRESS"] = this.option_hooks.mute_gui
+    this.hud["BUTTON_PRESS"] = this.hud_hooks.button_press
     --
     this.option["disable_scoutflies"] = this.option_hooks.disable_scoutflies
     this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
     this.option["hide_porter"] =
         { this.option_hooks.hide_porter, this.option_hooks.disable_porter_call }
     this.option["disable_porter_tracking"] = this.option_hooks.disable_porter_tracking
-    this.option["hide_monster_icon"] = {
-        this.option_hooks.hide_monster_icon,
-        this.hud_hooks.name_access,
-        this.option_hooks.disable_scoutflies,
-    }
+    this.option["hide_monster_icon"] = this.option_hooks.hide_monster_icon
     this.option["hide_lock_target"] = this.option_hooks.hide_monster_icon
     this.option["hide_small_monsters"] = this.option_hooks.hide_small_monsters
     this.option["monster_ignore_camp"] = this.option_hooks.monster_ignore_camp
@@ -685,8 +941,7 @@ function this.init()
     this.option["disable_quest_end_outro"] =
         { this.option_hooks.disable_quest_intro, this.option_hooks.disable_quest_end_outro }
     this.option["disable_quest_end_camera"] = this.option_hooks.disable_quest_end_camera
-    this.option["skip_quest_end_timer"] =
-        { this.option_hooks.skip_quest_end_timer, this.option_hooks.mute_gui }
+    this.option["skip_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
     this.option["hide_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
     this.option["skip_quest_result"] = this.option_hooks.skip_quest_result
     this.option["disable_scar"] = this.option_hooks.scar
@@ -699,7 +954,7 @@ function this.init()
     this.option["disable_area_intro"] = this.option_hooks.disable_area_intro
     this.option["mute_gossip"] = this.option_hooks.mute_gossip
     this.option["hide_aggro"] = this.option_hooks.hide_aggro
-
+    --
     this.option_mod["mod.block_input"] = this.option_mod_hooks.block_input
     this.option_mod["mod.canvas.draw"] = this.option_mod_hooks.draw_canvas
     return true
