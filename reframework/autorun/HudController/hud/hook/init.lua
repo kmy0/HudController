@@ -415,35 +415,61 @@ function this.hud_hooks.notice()
 end
 
 function this.hud_hooks.shortcut_keyboard()
-    m.hook("app.cGUIMapFlowCtrl.update()", elements.shortcut_keyboard.reveal_minimap_pre)
-    m.hook(
-        "ace.GUIBase`2<app.GUIID.ID,app.GUIFunc.TYPE>.requestClose(System.Boolean)",
-        elements.shortcut_keyboard.reveal_elements_pre
-    )
-    m.hook("app.GUIManager.lateUpdateApp()", nil, elements.shortcut_keyboard.reveal_mantle_post)
-    m.hook(
-        "app.GUI020600.guiHudVisibleUpdate()",
-        nil,
-        elements.shortcut_keyboard.always_visible_post
-    )
-    m.hook(
-        "app.GUIManager.lateUpdateApp()",
-        nil,
-        elements.shortcut_keyboard.always_visible_open_post
-    )
-    m.hook(
-        "ace.cGUIInputCtrl_FluentScrollList`2<app.GUIID.ID,app.GUIFunc.TYPE>.getSelectedIndex()",
-        util_ref.thread_store,
-        elements.shortcut_keyboard.prevent_close_post
-    )
-    m.hook(
-        "app.GUI020600.callback_OtherNormal(ace.GUIDef.BUTTON_SLOT, via.gui.Control, via.gui.SelectItem, System.UInt32)",
-        elements.shortcut_keyboard.prevent_close2_pre
-    )
-    m.hook(
-        "app.GUI020600.requestOpenPCShortcut(app.GUI020600.TYPE, System.Int32, System.Int32, app.GUI020600.MODE, via.gui.Rect)",
-        elements.shortcut_keyboard.clear_cache_pre
-    )
+    this.hud_option_hooks["SHORTCUT_KEYBOARD"] = {
+        ["SHORTCUT_KEYBOARD.no_hide_elements"] = make_hud_options_hook(function()
+            m.hook("app.cGUIMapFlowCtrl.update()", elements.shortcut_keyboard.reveal_minimap_pre)
+            m.hook(
+                "ace.GUIBase`2<app.GUIID.ID,app.GUIFunc.TYPE>.requestClose(System.Boolean)",
+                elements.shortcut_keyboard.reveal_elements_pre
+            )
+            m.hook(
+                "app.GUIManager.lateUpdateApp()",
+                nil,
+                elements.shortcut_keyboard.reveal_mantle_post
+            )
+        end),
+        ["SHORTCUT_KEYBOARD.always_visible"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020600.guiHudVisibleUpdate()",
+                nil,
+                elements.shortcut_keyboard.always_visible_post
+            )
+            m.hook(
+                "app.GUIManager.lateUpdateApp()",
+                nil,
+                elements.shortcut_keyboard.always_visible_open_post
+            )
+            m.hook(
+                "ace.cGUIInputCtrl_FluentScrollList`2<app.GUIID.ID,app.GUIFunc.TYPE>.getSelectedIndex()",
+                util_ref.thread_store,
+                elements.shortcut_keyboard.prevent_close_post
+            )
+            m.hook(
+                "app.GUI020600.callback_OtherNormal(ace.GUIDef.BUTTON_SLOT, via.gui.Control, via.gui.SelectItem, System.UInt32)",
+                elements.shortcut_keyboard.prevent_close2_pre
+            )
+        end),
+        ["SHORTCUT_KEYBOARD._clear_cache"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020600.requestOpenPCShortcut(app.GUI020600.TYPE, System.Int32, System.Int32, app.GUI020600.MODE, via.gui.Rect)",
+                elements.shortcut_keyboard.clear_cache_pre
+            )
+        end, function(_)
+            local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+            if not shortcut_keyboard then
+                return false
+            end
+
+            ---@diagnostic disable-next-line: no-unknown
+            for _, child in pairs(shortcut_keyboard.children) do
+                if child:any() then
+                    return true
+                end
+            end
+
+            return false
+        end),
+    }
 end
 
 function this.hud_hooks.minimap()
