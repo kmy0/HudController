@@ -531,9 +531,14 @@ function this:change_visibility(ctrl, visible, hud_display)
             local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
 
             if root_window then
+                local guiid = util_mod.get_gui_id(ctrl)
+
                 root_window:set_ForceInvisible(true)
                 self.hide_timer:restart()
-                call_queue.queue_func(self.hud_id, self:_make_restore_visibility_fn(root_window))
+                call_queue.queue_func_guiid(
+                    guiid,
+                    self:_make_restore_visibility_fn(guiid, root_window)
+                )
 
                 if self.name_key == "MINIMAP" then
                     local GUI060010 = util_mod.get_gui_cls("app.GUI060010")
@@ -541,9 +546,9 @@ function this:change_visibility(ctrl, visible, hud_display)
 
                     if GUI060010_root then
                         GUI060010_root:set_ForceInvisible(true)
-                        call_queue.queue_func(
-                            self.hud_id,
-                            self:_make_restore_visibility_fn(root_window, GUI060010_root)
+                        call_queue.queue_func_guiid(
+                            guiid,
+                            self:_make_restore_visibility_fn(guiid, root_window, GUI060010_root)
                         )
                     end
                 end
@@ -885,9 +890,10 @@ function this:_set_opacity(ctrl, val)
 end
 
 ---@protected
+---@param guiid app.GUIID.ID
 ---@param root_window via.gui.Control
 ---@param ctrl via.gui.Control?
-function this:_make_restore_visibility_fn(root_window, ctrl)
+function this:_make_restore_visibility_fn(guiid, root_window, ctrl)
     local function ret()
         if
             root_window:get_PlayFrame() == root_window:get_StateFinishFrame()
@@ -895,7 +901,7 @@ function this:_make_restore_visibility_fn(root_window, ctrl)
         then
             (ctrl and ctrl or root_window):set_ForceInvisible(false)
         else
-            call_queue.queue_func_next(self.hud_id, ret)
+            call_queue.queue_func_next_guiid(guiid, ret)
         end
     end
 

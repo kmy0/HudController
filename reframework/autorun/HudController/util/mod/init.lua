@@ -63,6 +63,15 @@ function this.is_enabled(hudid)
     return false
 end
 
+---@param ctrl via.gui.Control
+---@return app.GUIID.ID
+function this.get_gui_id(ctrl)
+    local component = ctrl:get_Component()
+    local game_object = component:get_GameObject()
+    local name = game_object:get_Name()
+    return e.get("app.GUIID.ID")[string.sub(name, 2)]
+end
+
 --- roundabout way o getting RootWindow, reframework 1208 cant read parent fields properly
 ---@param gui_base ace.GUIBase
 ---@return via.gui.Control
