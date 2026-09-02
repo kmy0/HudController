@@ -619,13 +619,7 @@ end
 
 ---@return boolean
 function this:any()
-    return self._request_pos
-        or util_table.any(self.properties, function(key, _)
-            if self[key] then
-                return true
-            end
-            return false
-        end)
+    return self._request_pos or next(self.write_properies) ~= nil
 end
 
 ---@return boolean
