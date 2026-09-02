@@ -232,9 +232,7 @@ function this.is_active_element(hud_id)
         return false
     end
 
-    return util_table.any(this.faders[hud_id], function(_, f)
-        return not f:is_done_no_next()
-    end)
+    return true
 end
 
 function this.update()
