@@ -271,7 +271,7 @@ function this:new(args, parent)
 
     o.children.keys = hud_child:new(args.children.keys, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keys)
-    end)
+    end, { no_cache = true })
     o.children.text = ctrl_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
