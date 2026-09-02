@@ -1,6 +1,7 @@
 ---@class (exact) ImguiConfigSet
 ---@field ref ConfigBase
 
+local notebook = require("HudController.util.imgui.notebook")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class ImguiConfigSet
@@ -128,6 +129,15 @@ function this:drag_int(name, config_key, v_speed, v_min, v_max, display_format)
         v_max,
         display_format
     )
+end
+
+---@param id string
+---@param config_key string
+---@param tabs NotebookTab[]
+---@param actions NotebookActionButton[]?
+---@return boolean
+function this:notebook(id, config_key, tabs, actions)
+    return self:generic_config(id, config_key, notebook.draw, tabs, actions)
 end
 
 return this

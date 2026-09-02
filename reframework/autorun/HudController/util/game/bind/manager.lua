@@ -126,6 +126,16 @@ function this:is_valid(bind)
     return not util_table.empty(bind.keys)
 end
 
+---@param a Bind
+---@param b Bind
+function this:compare_bound_value(a, b)
+    if type(a.bound_value) == "table" and type(b.bound_value) == "table" then
+        return util_table.equal(a.bound_value, b.bound_value)
+    end
+
+    return a.bound_value == b.bound_value
+end
+
 ---@protected
 ---@return Bind[]
 function this:_sort_binds()

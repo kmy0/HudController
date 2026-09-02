@@ -49,7 +49,7 @@ function this.fns.conditions(config)
     local GAME_MODE_SINGLEPLAYER, GAME_MODE_MULTIPLAYER = 1, 2
 
     local function get_cond_set(hud_key)
-        ---@diagnostic disable-next-line: missing-fields
+        ---@diagnostic disable-next-line: missing-fields, param-type-mismatch
         local ret = bind_condition.new_condition_set({ key = hud_key })
         ret.combo_hud = util_table.index(config.mod.hud, function(o)
             return o.key == hud_key

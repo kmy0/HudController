@@ -3,6 +3,7 @@ local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local m = require("HudController.util.ref.methods")
+local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -86,7 +87,7 @@ local function draw_weapon(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_weapon_no_focus", item_config_key),
             item_config_key
-        )
+        ) and operations.is_current_profile(elem_config)
     then
         elem:set_no_focus(elem_config.no_focus)
     end
@@ -97,6 +98,7 @@ end
 ---@param config_key string
 local function draw_itembar(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_itembar_behavior"))
+    local is_current_profile = operations.is_current_profile(elem_config)
 
     ---@cast elem Itembar
     ---@cast elem_config ItembarConfig
@@ -106,7 +108,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_appear_open", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.slider:set_appear_open(elem_config.children.slider.appear_open)
     end
@@ -116,7 +118,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_move_next", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.slider:set_move_next(elem_config.children.slider.move_next)
     end
@@ -127,7 +129,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_start_expanded", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_start_expanded(elem_config.start_expanded)
     end
@@ -139,7 +141,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_always_visible", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.mantle:set_always_visible(elem_config.children.mantle.always_visible)
     end
@@ -149,7 +151,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_timer_visible", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.mantle:set_timer_visible(elem_config.children.mantle.timer_visible)
     end
@@ -167,7 +169,7 @@ local function draw_itembar(elem, elem_config, config_key)
                 "expanded_appear_open"
             ),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_appear_open(elem_config.children.all_slider.appear_open)
     end
@@ -177,7 +179,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_itembar_ammo_visible", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_ammo_visible(elem_config.children.all_slider.ammo_visible)
     end
@@ -187,7 +189,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_itembar_slinger_visible", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_slinger_visible(
             elem_config.children.all_slider.slinger_visible
@@ -199,7 +201,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_itembar_disable_right_stick", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_disable_right_stick(
             elem_config.children.all_slider.disable_right_stick
@@ -211,7 +213,7 @@ local function draw_itembar(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_itembar_enable_mouse_control", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_enable_mouse_control(
             elem_config.children.all_slider.enable_mouse_control
@@ -231,7 +233,7 @@ local function draw_itembar(elem, elem_config, config_key)
                     "hud_element.entry."
                         .. mod.map.slider_expanded_itembar_control[config_value + 1]
                 )
-        )
+        ) and is_current_profile
     then
         elem.children.all_slider:set_control(elem_config.children.all_slider.control)
     end
@@ -245,7 +247,10 @@ local function draw_itembar(elem, elem_config, config_key)
     )
 
     if changed_value then
-        elem.children.all_slider:set_decide_key(changed_value.key)
+        if is_current_profile then
+            elem.children.all_slider:set_decide_key(changed_value.key)
+        end
+
         config:set(item_config_key, changed_value.key)
     end
 end
@@ -259,6 +264,7 @@ local function draw_notice(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
 
+    local is_current_profile = operations.is_current_profile(elem_config)
     local item_config_key = config_key .. ".tools_enemy_message_type"
     local changed_value = generic.draw_combo(
         nil,
@@ -282,7 +288,7 @@ local function draw_notice(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_cache_messages", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_cache_msg(elem_config.cache_msg)
     end
@@ -350,7 +356,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.system_log,
         string.format("%s.%s", config_key, "system_log"),
-        elem.set_system_log
+        is_current_profile and elem.set_system_log or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_id"))
@@ -369,8 +375,10 @@ local function draw_notice(elem, elem_config, config_key)
         local key = tostring(state.combo.log_id:get_key(config:get(item_config_key .. "_combo")))
         if not elem.log_id[key] then
             local i = util_table.size(elem.log_id)
-            elem:set_log_id(key, i)
             config:set(item_config_key, elem.log_id)
+            if is_current_profile then
+                elem:set_log_id(key, i)
+            end
         end
     end
 
@@ -413,7 +421,10 @@ local function draw_notice(elem, elem_config, config_key)
                         util_gui.tr("hud_element.entry.button_remove", "log_id_remove", id)
                     )
                 then
-                    elem:set_log_id(rows[i], nil)
+                    if is_current_profile then
+                        elem:set_log_id(rows[i], nil)
+                    end
+
                     config:set(item_config_key, elem.log_id)
                 end
             end
@@ -428,7 +439,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.enemy_log,
         string.format("%s.%s", config_key, "enemy_log"),
-        elem.set_enemy_log
+        is_current_profile and elem.set_enemy_log or function() end
     )
     imgui.end_disabled()
 
@@ -438,7 +449,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.camp_log,
         string.format("%s.%s", config_key, "camp_log"),
-        elem.set_camp_log
+        is_current_profile and elem.set_camp_log or function() end
     )
     imgui.end_disabled()
 
@@ -447,7 +458,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.chat_log,
         string.format("%s.%s", config_key, "chat_log"),
-        elem.set_chat_log
+        is_current_profile and elem.set_chat_log or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby_target"))
@@ -455,7 +466,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.lobby_log,
         string.format("%s.%s", config_key, "lobby_log"),
-        elem.set_lobby_log
+        is_current_profile and elem.set_lobby_log or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_auto_id"))
@@ -463,7 +474,7 @@ local function draw_notice(elem, elem_config, config_key)
         elem,
         elem_config.auto_id,
         string.format("%s.%s", config_key, "auto_id"),
-        elem.set_auto_id,
+        is_current_profile and elem.set_auto_id or function() end,
         function(key)
             local ret = ace_map.auto_id_to_text[e.get("app.Communication.AUTO_ID")[key]]
             if not ret then
@@ -485,6 +496,7 @@ local function draw_name_access(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_behavior"))
     local item_config_key = config_key .. ".npc_draw_distance"
     local config_value = config:get(item_config_key)
+    local is_current_profile = operations.is_current_profile(elem_config)
     if
         set:slider_float(
             util_gui.tr("hud_element.entry.slider_draw_distance"),
@@ -492,7 +504,7 @@ local function draw_name_access(elem, elem_config, config_key)
             0,
             50,
             (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
-        )
+        ) and is_current_profile
     then
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
     end
@@ -502,7 +514,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem,
         elem_config.object_category,
         string.format("%s.%s", config_key, "object_category"),
-        elem.set_object_category
+        is_current_profile and elem.set_object_category or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_type"))
@@ -510,7 +522,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem,
         elem_config.npc_type,
         string.format("%s.%s", config_key, "npc_type"),
-        elem.set_npc_type
+        is_current_profile and elem.set_npc_type or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_enemy_type"))
@@ -518,7 +530,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem,
         elem_config.enemy_type,
         string.format("%s.%s", config_key, "enemy_type"),
-        elem.set_enemy_type
+        is_current_profile and elem.set_enemy_type or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_panel_type"))
@@ -526,7 +538,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem,
         elem_config.panel_type,
         string.format("%s.%s", config_key, "panel_type"),
-        elem.set_panel_type
+        is_current_profile and elem.set_panel_type or function() end
     )
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_gossip_type"))
@@ -534,7 +546,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem,
         elem_config.gossip_type,
         string.format("%s.%s", config_key, "gossip_type"),
-        elem.set_gossip_type
+        is_current_profile and elem.set_gossip_type or function() end
     )
 end
 
@@ -548,6 +560,7 @@ local function draw_name_other(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pl_behavior"))
     local item_config_key = config_key .. ".pl_draw_distance"
     local config_value = config:get(item_config_key)
+    local is_current_profile = operations.is_current_profile(elem_config)
     if
         set:slider_float(
             util_gui.tr("hud_element.entry.slider_draw_distance", item_config_key),
@@ -555,7 +568,7 @@ local function draw_name_other(elem, elem_config, config_key)
             0,
             50,
             (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
-        )
+        ) and is_current_profile
     then
         elem:set_pl_draw_distance(elem_config.pl_draw_distance)
     end
@@ -570,7 +583,7 @@ local function draw_name_other(elem, elem_config, config_key)
             0,
             50,
             (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
-        )
+        ) and is_current_profile
     then
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
     end
@@ -580,7 +593,7 @@ local function draw_name_other(elem, elem_config, config_key)
         elem,
         elem_config.nameplate_type,
         string.format("%s.%s", config_key, "nameplate_type"),
-        elem.set_nameplate_type
+        is_current_profile and elem.set_nameplate_type or function() end
     )
 end
 
@@ -595,6 +608,7 @@ local function draw_ammo(elem, elem_config, config_key)
     local item_config_key = config_key .. ".no_hide_parts"
     if
         set:checkbox(util_gui.tr("hud_element.entry.box_no_hide", item_config_key), item_config_key)
+        and operations.is_current_profile(elem_config)
     then
         elem:set_no_hide_parts(elem_config.no_hide_parts)
     end
@@ -609,11 +623,12 @@ local function draw_radial(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_radial_behavior"))
     local item_config_key = config_key .. ".expanded"
+    local is_current_profile = operations.is_current_profile(elem_config)
     if
         set:checkbox(
             util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_expanded(elem_config.expanded)
     end
@@ -624,7 +639,7 @@ local function draw_radial(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem.children.pallet:set_expanded(elem_config.children.pallet.expanded)
     end
@@ -643,7 +658,7 @@ local function draw_slinger_reticle(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_hide_slinger_empty", item_config_key),
             item_config_key
-        )
+        ) and operations.is_current_profile(elem_config)
     then
         elem.children.slinger:set_hide_slinger_empty(
             elem_config.children.slinger.hide_slinger_empty
@@ -671,7 +686,7 @@ local function draw_sharpness(elem, elem_config, config_key)
                 or config.lang:tr(
                     "hud_element.entry." .. mod.map.slider_sharpness_state[config_value + 1]
                 )
-        )
+        ) and operations.is_current_profile(elem_config)
     then
         elem:set_state(elem_config.state)
     end
@@ -690,7 +705,7 @@ local function draw_clock(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_hide_map_visible", item_config_key),
             item_config_key
-        )
+        ) and operations.is_current_profile(elem_config)
     then
         elem:set_hide_map_visible(elem_config.hide_map_visible)
     end
@@ -707,11 +722,12 @@ local function draw_shortcut_keyboard(elem, elem_config, config_key)
         config.lang:tr("hud_element.entry.category_shortcut_keyboard_behavior")
     )
     local item_config_key = config_key .. ".no_hide_elements"
+    local is_current_profile = operations.is_current_profile(elem_config)
     if
         set:checkbox(
             util_gui.tr("hud_element.entry.box_no_hide_elements", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_no_hide_elements(elem_config.no_hide_elements)
     end
@@ -725,7 +741,7 @@ local function draw_shortcut_keyboard(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_always_visible", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_always_visible(elem_config.always_visible)
     end
@@ -747,6 +763,7 @@ local function draw_minimap(elem, elem_config, config_key)
     -- the map gui object has to actually exist to get names of options
     state.init_combo_map_icon_filter()
 
+    local is_current_profile = operations.is_current_profile(elem_config)
     local item_config_key = config_key .. ".default_filter"
     local changed_value = generic.draw_combo(
         nil,
@@ -757,14 +774,17 @@ local function draw_minimap(elem, elem_config, config_key)
 
     if changed_value then
         local value = mod.map.combo_map_filter[changed_value.key]
-        elem:set_default_filter(value)
         config:set(item_config_key, value)
+        if is_current_profile then
+            elem:set_default_filter(value)
+        end
     end
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_classic_minimap"))
     item_config_key = config_key .. ".enabled_classic_minimap"
     if
         set:checkbox(util_gui.tr("hud_element.entry.box_enable", item_config_key), item_config_key)
+        and is_current_profile
     then
         elem:set_enable_classic_minimap(elem_config.enabled_classic_minimap)
     end
@@ -781,7 +801,7 @@ local function draw_minimap(elem, elem_config, config_key)
                 config_key = config_key .. ".children.classic_minimap.fov_map",
                 label = "",
             },
-        }, 0, 180.0, 0.01, "%.2f")
+        }, 0, 180.0, 0.01, "%.2f") and is_current_profile
     then
         elem:set_classic_minimap_fov(
             elem_config.children.classic_minimap.enabled_fov
@@ -801,7 +821,7 @@ local function draw_minimap(elem, elem_config, config_key)
                 config_key = config_key .. ".children.classic_minimap.scale_icon",
                 label = "",
             },
-        }, 0, 25, 0.01, "%.2f")
+        }, 0, 25, 0.01, "%.2f") and is_current_profile
     then
         elem:set_classic_minimap_icon_scale(
             elem_config.children.classic_minimap.enabled_icon_scale
@@ -819,7 +839,7 @@ local function draw_minimap(elem, elem_config, config_key)
                 config_key = config_key .. ".children.classic_minimap.rot_map",
                 label = "",
             },
-        }, 0, 360, 0.01, "%.1f")
+        }, 0, 360, 0.01, "%.1f") and is_current_profile
     then
         elem:set_classic_minimap_rot(
             elem_config.children.classic_minimap.enabled_rot_map
@@ -837,7 +857,7 @@ local function draw_minimap(elem, elem_config, config_key)
                 config_key = config_key .. ".children.classic_minimap.angle_map",
                 label = "",
             },
-        }, 0, 90, 0.01, "%.1f")
+        }, 0, 90, 0.01, "%.1f") and is_current_profile
     then
         elem:set_classic_minimap_angle(
             elem_config.children.classic_minimap.enabled_angle_map
@@ -851,7 +871,7 @@ local function draw_minimap(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_hide_pl_icon_pulse", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         if not elem_config.children.pl_icon_pulse.enabled_play_state then
             elem_config.children.pl_icon_pulse.play_state = nil
@@ -878,7 +898,7 @@ local function draw_stamina(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_hide_pulse", item_config_key),
             item_config_key
-        )
+        ) and operations.is_current_profile(elem_config)
     then
         elem.children.ex:set_hide_pulse(elem_config.children.ex.hide_pulse)
     end

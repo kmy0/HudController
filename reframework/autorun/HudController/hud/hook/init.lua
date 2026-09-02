@@ -68,7 +68,7 @@ end)
 local function make_hud_options_hook(fn, condition)
     condition = condition
         or function(config_path)
-            local profile = hud.get_current() --[[@as HudProfileConfig]]
+            local profile = hud.get_current() --[[@as ModProfileConfig]]
             return util_table.get_by_key(profile, string.format("elements.%s", config_path))
         end
     return {
@@ -860,7 +860,7 @@ function this.hook_option(option_key)
     this.is_option_hooked[option_key] = true
 end
 
----@param profile_config  HudProfileConfig
+---@param profile_config  ModProfileConfig
 function this.hook_options(profile_config)
     for k, _ in pairs(mod_map.options_hud) do
         if profile_config[k] then

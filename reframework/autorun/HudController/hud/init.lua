@@ -49,22 +49,22 @@ function this.get_element_by_guiid(gui_id)
 end
 
 ---@param strict boolean?
----@return HudProfileConfig?
+---@return ModProfileConfig?
 function this.get_current(strict)
     if
         not this.profile_switcher.current_hud
         or (
             strict
             and (
-                not this.profile_switcher.current_hud.elements
-                or util_table.empty(this.profile_switcher.current_hud.elements)
+                not this.profile_switcher.current_hud.hud.elements
+                or util_table.empty(this.profile_switcher.current_hud.hud.elements)
             )
         )
     then
         return
     end
 
-    return this.profile_switcher.current_hud
+    return this.profile_switcher.current_hud.hud
 end
 
 ---@return boolean?
@@ -99,10 +99,32 @@ function this.clear_overridden(key)
     this.options.overridden_options[key] = nil
 end
 
----@param new_hud HudProfileConfig
+---@param new_hud ModProfileConfig
 ---@param force boolean?
-function this.request_hud(new_hud, force)
-    this.profile_switcher.request_hud(new_hud, force)
+function this.request_hud_with_default(new_hud, force)
+    this.profile_switcher.request_hud_with_default(new_hud, force)
+end
+
+---@param new_hud ModProfileConfig
+---@param profile_bits integer[]
+---@param force boolean?
+function this.request_hud_with_profiles(new_hud, profile_bits, force)
+    this.profile_switcher.request_hud_with_profiles(new_hud, profile_bits, force)
+end
+
+---@param new_hud ModProfileConfig
+---@param profile_bits integer[]
+function this.force_request_hud_with_profiles(new_hud, profile_bits)
+    this.profile_switcher.request_hud_with_profiles(
+        new_hud,
+        profile_bits,
+        this.manager.force_update
+    )
+    this.manager.force_update = false
+end
+
+function this.request_update()
+    this.manager.request_update()
 end
 
 function this.clear()
@@ -125,7 +147,7 @@ function this.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then
-        this.request_hud(new_hud, true)
+        this.request_hud_with_default(new_hud, true)
     else
         this.clear()
     end

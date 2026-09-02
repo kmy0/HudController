@@ -12,6 +12,7 @@ local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -60,13 +61,13 @@ function this.draw()
 
         gui_elements.sorter.close()
         gui_elements.selector.close()
-        state.input_action = nil
+        state.input = nil
         config.save_global()
         imgui.end_window()
         return
     end
 
-    imgui.begin_disabled(gui_elements.selector.is_opened or gui_elements.sorter.is_opened)
+    imgui.begin_disabled(util_gui.is_gui_disabled())
 
     if imgui.begin_menu_bar() then
         gui_elements.menu_bar.draw()

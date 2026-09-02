@@ -1,6 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
+local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
 local util_game = require("HudController.util.game.init")
 local util_gui = require("HudController.gui.util")
@@ -60,6 +61,7 @@ local function draw_control_child(elem, elem_config, config_key)
         imgui.separator()
     end
 
+    local is_current_profile = operations.is_current_profile(elem_config)
     if elem_config.enabled_size_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_x",
@@ -71,7 +73,7 @@ local function draw_control_child(elem, elem_config, config_key)
             },
         }, -4000, 4000, 0.1, "%.1f")
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_size_x(elem_config.enabled_size_x and elem_config.size_x or nil)
         end
 
@@ -89,7 +91,7 @@ local function draw_control_child(elem, elem_config, config_key)
             },
         }, -4000, 4000, 0.1, "%.1f")
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_size_y(elem_config.enabled_size_y and elem_config.size_y or nil)
         end
 
@@ -107,7 +109,7 @@ local function draw_control_child(elem, elem_config, config_key)
         item_config_key = config_key .. ".color"
         changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
         end
 
@@ -122,6 +124,7 @@ end
 local function draw_material(elem, elem_config, config_key)
     draw_control_child(elem, elem_config, config_key)
 
+    local is_current_profile = operations.is_current_profile(elem_config)
     for i = 0, 4 do
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then
@@ -145,7 +148,7 @@ local function draw_material(elem, elem_config, config_key)
                 },
             }, 0, 5, 0.01, "%.2f")
 
-            if changed then
+            if changed and is_current_profile then
                 ---@cast elem Material
                 elem:set_var(
                     elem_config["enabled_" .. var_key] and elem_config[var_key].value or nil,
@@ -172,7 +175,7 @@ local function draw_scale9(elem, elem_config, config_key)
     separator_scale9:refresh(elem_config)
     ---@type string
     local item_config_key
-
+    local is_current_profile = operations.is_current_profile(elem_config)
     if elem_config.enabled_control_point ~= nil then
         item_config_key = config_key .. ".blend"
         local changed_value = generic.draw_combo(
@@ -190,7 +193,12 @@ local function draw_scale9(elem, elem_config, config_key)
         )
 
         if changed_value then
-            elem:set_control_point(elem_config.enabled_control_point and changed_value.value or nil)
+            if is_current_profile then
+                elem:set_control_point(
+                    elem_config.enabled_control_point and changed_value.value or nil
+                )
+            end
+
             config:set(item_config_key, changed_value.value)
         end
 
@@ -214,7 +222,9 @@ local function draw_scale9(elem, elem_config, config_key)
         )
 
         if changed_value then
-            elem:set_blend(elem_config.enabled_blend and changed_value.value or nil)
+            if is_current_profile then
+                elem:set_blend(elem_config.enabled_blend and changed_value.value or nil)
+            end
             config:set(item_config_key, changed_value.value)
         end
 
@@ -238,7 +248,11 @@ local function draw_scale9(elem, elem_config, config_key)
         )
 
         if changed_value then
-            elem:set_alpha_channel(elem_config.enabled_alpha_channel and changed_value.value or nil)
+            if is_current_profile then
+                elem:set_alpha_channel(
+                    elem_config.enabled_alpha_channel and changed_value.value or nil
+                )
+            end
             config:set(item_config_key, changed_value.value)
         end
 
@@ -260,7 +274,7 @@ local function draw_scale9(elem, elem_config, config_key)
             item_config_key
         ) or changed
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_ignore_alpha(
                 elem_config.enabled_ignore_alpha and elem_config.ignore_alpha or nil
             )
@@ -283,6 +297,7 @@ local function draw_text(elem, elem_config, config_key)
     ---@type string
     local item_config_key
     local changed = false
+    local is_current_profile = operations.is_current_profile(elem_config)
 
     if separator_control_child:had_separators() then
         imgui.separator()
@@ -301,7 +316,7 @@ local function draw_text(elem, elem_config, config_key)
             },
         }, 0, 1000, 0.1, "%.1f") or changed
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_font_size(elem_config.enabled_font_size and elem_config.font_size or nil)
         end
 
@@ -323,7 +338,9 @@ local function draw_text(elem, elem_config, config_key)
         )
 
         if changed_value then
-            elem:set_page_alignment(changed_value.value)
+            if is_current_profile then
+                elem:set_page_alignment(changed_value.value)
+            end
             config:set(item_config_key, changed_value.value)
         end
 
@@ -335,7 +352,7 @@ local function draw_text(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_hide_glow", config_key .. ".hide_glow"),
                 config_key .. ".hide_glow"
-            )
+            ) and is_current_profile
         then
             elem:set_hide_glow(elem_config.hide_glow)
         end
@@ -357,7 +374,7 @@ local function draw_text(elem, elem_config, config_key)
         item_config_key = config_key .. ".glow_color"
         changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
         end
 
@@ -379,13 +396,14 @@ local function draw_damage_numbers(elem, elem_config, config_key)
 
     local item_config_key = config_key .. ".enabled_box"
     local changed = false
+    local is_current_profile = operations.is_current_profile(elem_config)
 
     item_config_key = config_key .. ".enabled_box"
     if
         set:checkbox(
             util_gui.tr("hud_element.entry.box_enable_box", item_config_key),
             item_config_key
-        )
+        ) and is_current_profile
     then
         elem:set_box(elem_config.enabled_box and {
             x = elem_config.box.x,
@@ -408,7 +426,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
         config:set(item_config_key, not config:get(item_config_key))
     end
 
-    if elem_config.enabled_box and config:get(item_config_key) then
+    if elem_config.enabled_box and config:get(item_config_key) and is_current_profile then
         local ss = util_game.get_screen_size()
         ss.x = ss.x / 1920
         ss.y = ss.y / 1080
@@ -447,7 +465,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
         },
     }, -1920, 1920, 1, "%.0f") or changed
 
-    if changed then
+    if changed and is_current_profile then
         elem:set_box({
             x = elem_config.box.x,
             y = elem_config.box.y,
@@ -472,6 +490,7 @@ local function draw_progress_part(elem, elem_config, config_key)
 
     separator_progress_part:refresh(elem_config)
     local changed = false
+    local is_current_profile = operations.is_current_profile(elem_config)
 
     imgui.begin_disabled(elem_config.enabled_offset == true)
 
@@ -486,7 +505,7 @@ local function draw_progress_part(elem, elem_config, config_key)
             },
         }, -4000, 4000, 1, "%.0f")
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
         end
 
@@ -506,7 +525,7 @@ local function draw_progress_part(elem, elem_config, config_key)
             },
         }, -4000, 4000, 1, "%.0f")
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_clock_offset_x(
                 elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil
             )
@@ -529,7 +548,7 @@ local function draw_progress_part(elem, elem_config, config_key)
             },
         }, -4000, 4000, 1, "%.0f")
 
-        if changed then
+        if changed and is_current_profile then
             elem:set_num_offset_x(
                 elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil
             )
@@ -567,7 +586,7 @@ local function draw_progress_text(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_align_left"),
                 config_key .. ".align_left"
-            )
+            ) and operations.is_current_profile(elem_config)
         then
             elem:set_align_left(elem_config.align_left)
         end

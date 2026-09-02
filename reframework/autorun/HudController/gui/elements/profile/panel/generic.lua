@@ -3,6 +3,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
+local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -175,6 +176,7 @@ end
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
     this.separator:refresh(elem_config)
+    local is_current_profile = operations.is_current_profile(elem_config)
 
     imgui.begin_disabled(ace_misc.is_item_slider_open())
     if elem_config.hide ~= nil then
@@ -182,7 +184,7 @@ function this.draw(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_hide", config_key .. ".hide"),
                 config_key .. ".hide"
-            )
+            ) and is_current_profile
         then
             elem:set_hide(elem_config.hide)
         end
@@ -207,7 +209,7 @@ function this.draw(elem, elem_config, config_key)
                     config_key = config_key .. ".scale.y",
                     label = util_gui.tr("hud_element.entry.slider_y"),
                 },
-            }, -10.0, 10.0, 0.01, "%.2f")
+            }, -10.0, 10.0, 0.01, "%.2f") and is_current_profile
         then
             elem:set_scale(elem_config.enabled_scale and elem_config.scale or nil)
         end
@@ -238,13 +240,15 @@ function this.draw(elem, elem_config, config_key)
                 4000,
                 1,
                 "%.0f",
-                string.format(
-                    "%s: x=%d, y=%d",
-                    config.lang:tr("misc.text_screen_pos"),
-                    global_pos and math.ceil(global_pos.x) or 0,
-                    global_pos and math.ceil(global_pos.y) or 0
-                )
-            )
+                elem_config.enabled
+                        and string.format(
+                            "%s: x=%d, y=%d",
+                            config.lang:tr("misc.text_screen_pos"),
+                            global_pos and math.ceil(global_pos.x) or 0,
+                            global_pos and math.ceil(global_pos.y) or 0
+                        )
+                    or nil
+            ) and is_current_profile
         then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
         end
@@ -262,7 +266,7 @@ function this.draw(elem, elem_config, config_key)
                     config_key = config_key .. ".rot",
                     label = "",
                 },
-            }, 0, 360, 0.1, "%.1f")
+            }, 0, 360, 0.1, "%.1f") and is_current_profile
         then
             elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
         end
@@ -280,7 +284,7 @@ function this.draw(elem, elem_config, config_key)
                     config_key = config_key .. ".opacity",
                     label = "",
                 },
-            }, 0, 1, 0.01, "%.2f")
+            }, 0, 1, 0.01, "%.2f") and is_current_profile
         then
             elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
         end
@@ -307,7 +311,9 @@ function this.draw(elem, elem_config, config_key)
 
         if changed_value then
             config:set(item_config_key, changed_value.value)
-            elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
+            if is_current_profile then
+                elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
+            end
         end
 
         this.separator:draw()
@@ -317,7 +323,7 @@ function this.draw(elem, elem_config, config_key)
         imgui.separator()
 
         local current_hud = hud.get_current()
-        ---@cast current_hud HudProfileConfig
+        ---@cast current_hud ModProfileConfig
 
         imgui.begin_disabled(
             not config.current.mod.enable_fade
@@ -327,7 +333,7 @@ function this.draw(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
                 config_key .. ".disable_fade"
-            )
+            ) and is_current_profile
         then
             elem:set_disable_fade(elem_config.disable_fade)
         end
@@ -341,7 +347,7 @@ function this.draw(elem, elem_config, config_key)
                     config_key .. ".disable_fade_opacity"
                 ),
                 config_key .. ".disable_fade_opacity"
-            )
+            ) and is_current_profile
         then
             elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
         end

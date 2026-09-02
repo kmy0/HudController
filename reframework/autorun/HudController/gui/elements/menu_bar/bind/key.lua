@@ -1,12 +1,13 @@
 local bind_manager = require("HudController.hud.bind.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
 local util_bind = require("HudController.util.game.bind.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
+local util_menubar_bind = require("HudController.gui.elements.menu_bar.bind.util")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -40,25 +41,15 @@ local function draw_buffer(config_mod)
     util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_buffer"))
 end
 
----@param config_mod ModSettings
-local function draw_bind_type(config_mod)
-    local bind_type = config_mod.bind.slider.key_bind
+local function draw_bind_type()
+    ---@type NotebookTab[]
+    local tabs = {
+        { label = config.lang:tr("menu.bind.key.hud"), key = 1 },
+        { label = config.lang:tr("menu.bind.key.option"), key = 2 },
+        { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
+    }
 
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local display_value = (bind_type == 1 and config.lang:tr("menu.bind.key.hud"))
-        or (bind_type == 2 and config.lang:tr("menu.bind.key.option"))
-        or (bind_type == 3 and config.lang:tr("menu.bind.key.option_mod"))
-        or ""
-
-    if
-        set:slider_int(
-            util_gui.tr("menu.bind.key.slider_bind_type"),
-            "mod.bind.slider.key_bind",
-            1,
-            3,
-            display_value
-        )
-    then
+    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
@@ -72,7 +63,31 @@ local function draw_bind_target(config_mod)
     local width = imgui.calc_item_width() / 2 - 4
 
     if bind_type == 1 then
-        set:combo("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud.values)
+        imgui.push_item_width(width)
+
+        if set:combo("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud.values) then
+            config_mod.combo.key_bind.elem_profile = 0
+            config:save()
+        end
+
+        local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
+        ---@type HudBaseConfigProfileForShow[]
+        local values
+        if hud_profile then
+            values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
+        else
+            values = {}
+        end
+
+        imgui.same_line()
+        util_menubar_bind.profile_multi_combo(
+            "##elem_profile_hud_bind",
+            "mod.combo.key_bind.elem_profile",
+            values,
+            util_table.empty(values) or state.listener ~= nil,
+            width
+        )
+        imgui.pop_item_width()
 
         return bind_manager.hud, "mod.bind.key.hud"
     end
@@ -120,12 +135,14 @@ end
 
 ---@param manager ModBindManager
 ---@param config_mod ModSettings
----@return string | ModProfileConfig
+---@return string | HudBindOpt
 ---@return string
 local function get_selected_option(manager, config_mod)
     if manager.name == bind_manager.manager_names.HUD then
-        local opt = config_mod.hud[config_mod.combo.key_bind.hud]
-        return opt, opt.name
+        local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
+        local opt = { hud = hud_profile.key, profile = config_mod.combo.key_bind.elem_profile }
+
+        return opt, util_menubar_bind.get_hud_bind_name(opt)
     elseif manager.name == bind_manager.manager_names.OPTION_HUD then
         return state.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
             state.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
@@ -158,7 +175,7 @@ end
 ---@param config_mod ModSettings
 local function set_bind_target(manager, bind, config_mod)
     if manager.name == bind_manager.manager_names.HUD then
-        bind.bound_value = state.listener.opt.key
+        bind.bound_value = state.listener.opt
         bind.action_type = bind_manager.action_type.NONE
         return
     end
@@ -170,20 +187,15 @@ end
 
 ---@param manager ModBindManager
 ---@param bind ModBind
----@param config_mod ModSettings
 ---@return string
-local function get_bind_target_name(manager, bind, config_mod)
+local function get_bind_target_name(manager, bind)
     if manager.name == bind_manager.manager_names.HUD then
-        local profile = util_table.value(config_mod.hud, function(_, value)
-            return bind.bound_value == value.key
-        end) --[[@as ModProfileConfig]]
-
-        return profile.name
+        return util_menubar_bind.get_hud_bind_name(bind.bound_value)
     elseif manager.name == bind_manager.manager_names.OPTION_HUD then
-        return config.lang:tr("hud." .. mod.map.options_hud[bind.bound_value])
+        return util_menubar_bind.get_option_hud_bind_name(bind.bound_value)
     end
 
-    return config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value])
+    return util_menubar_bind.get_option_mod_bind_name(bind.bound_value)
 end
 
 ---@param manager ModBindManager
@@ -203,7 +215,7 @@ local function update_collision(manager, bind, config_mod)
         return
     end
 
-    local collision_name = get_bind_target_name(manager, collision, config_mod)
+    local collision_name = get_bind_target_name(manager, collision)
 
     state.listener.collision =
         string.format("%s %s", config.lang:tr("menu.bind.tooltip_bound"), collision_name)
@@ -289,13 +301,12 @@ end
 ---@return string
 local function get_registered_bind_target_name(manager, bind)
     if manager.name == bind_manager.manager_names.HUD then
-        ---@diagnostic disable-next-line: param-type-mismatch
-        return hud.operations.get_hud_by_key(bind.bound_value).name
+        return util_menubar_bind.get_hud_bind_name(bind.bound_value)
     elseif manager.name == bind_manager.manager_names.OPTION_HUD then
-        return config.lang:tr("hud." .. mod.map.options_hud[bind.bound_value])
+        return util_menubar_bind.get_option_hud_bind_name(bind.bound_value)
     end
 
-    return config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value])
+    return util_menubar_bind.get_option_mod_bind_name(bind.bound_value)
 end
 
 ---@param bind ModBind
@@ -315,15 +326,23 @@ local function draw_registered_bind(manager, bind, remove)
     local opt_name = get_registered_bind_target_name(manager, bind)
 
     imgui.table_next_row()
-
     imgui.table_set_column_index(0)
 
-    if imgui.button(util_gui.tr("menu.bind.key.button_remove", bind.name, bind.bound_value)) then
+    if
+        imgui.button(
+            util_gui.tr("menu.bind.key.button_remove", bind.name, tostring(bind.bound_value))
+        )
+    then
         table.insert(remove, bind)
     end
 
+    local truncated = util_misc.trunc_string2(opt_name, config.lang.font_size * (215 / 16))
     imgui.table_set_column_index(1)
-    imgui.text(opt_name)
+    imgui.text(truncated)
+
+    if opt_name ~= truncated then
+        util_imgui.tooltip(opt_name)
+    end
 
     imgui.table_set_column_index(2)
     imgui.text(bind.name_display)
@@ -371,10 +390,7 @@ local function draw_key_bind_menu()
     local config_mod = config.current.mod
 
     draw_buffer(config_mod)
-
-    imgui.separator()
-
-    draw_bind_type(config_mod)
+    draw_bind_type()
 
     imgui.begin_disabled(
         state.listener ~= nil

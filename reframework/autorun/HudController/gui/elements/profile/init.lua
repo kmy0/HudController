@@ -8,6 +8,7 @@ local hud = require("HudController.hud.init")
 local operations = require("HudController.hud.manager.operations")
 local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state")
+local timer = require("HudController.util.misc.timer")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -17,6 +18,8 @@ local ace_map = data.ace.map
 
 local this = {}
 local drag = drag_util:new()
+local drag_profile = drag_util:new()
+local reverse_sort = false
 
 ---@param changed boolean
 ---@param key string
@@ -345,19 +348,6 @@ local function draw_options()
         string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud)
     )
 
-    imgui.same_line()
-    imgui.begin_disabled(
-        not config:get(string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud))
-    )
-
-    set:checkbox(
-        util_gui.tr("hud.box_fade_opacity_both"),
-        string.format("mod.hud.int:%s.fade_opacity_both", config_mod.combo.hud)
-    )
-
-    imgui.end_disabled()
-    util_imgui.tooltip(config.lang:tr("hud.tooltip_fade_opacity_both"), true)
-
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config_mod.combo.hud)
     local item_value = config:get(item_config_key)
     set:slider_float(
@@ -501,6 +491,7 @@ local function draw_profiles()
         end)
 
         reverse_sort = not reverse_sort
+        hud.request_update()
     end
     util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
 
@@ -562,6 +553,7 @@ local function draw_profiles()
 
     if to_remove then
         table.remove(profiles, to_remove)
+        config:save()
     end
 
     if not drag_profile:is_released() and drag_profile:is_drag() then
@@ -575,6 +567,7 @@ local function draw_profiles()
         end)
 
         config:save()
+        timer.request_one_timer("on_elem_profile_sort", 2, hud.request_update, "frame")
     end
 end
 
@@ -592,7 +585,7 @@ function this.draw()
             imgui.end_child_window()
         else
             imgui.separator()
-            imgui.begin_child_window("hud_elements_child_window1", { -1, -1 }, false)
+            imgui.begin_child_window("hud_elements_child_window_main", { -1, -1 }, false)
             draw_elements()
             imgui.end_child_window()
         end
