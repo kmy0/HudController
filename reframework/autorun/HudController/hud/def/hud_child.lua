@@ -234,7 +234,11 @@ function this:write_child(hudbase, gui_id, ctrl)
     local any = self:any()
     local child_ctrls = {}
     for _, c in pairs(self:_ctrl_getter(hudbase, gui_id, ctrl)) do
-        if not any or (any and self:_write(c)) then
+        -- a node can be in write_nodes purely because a descendant has something to write, not itself.
+        -- in that case any() is false and we skip _write entirely but still pass the ctrl down so children can write to it.
+        -- if any() is true, _write is called and returns false when propagation should stop (e.g. hidden node without hide_write),
+        -- filtering that ctrl out so children won't write to it either.
+        if not any or self:_write(c) then
             table.insert(child_ctrls, c)
         end
     end
