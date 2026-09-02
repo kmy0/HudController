@@ -6,6 +6,7 @@
 --- gauge: HudChild,
 --- background: HudChild,
 --- frame: HudChild,
+--- reload: HudChild,
 ---}
 
 ---@class (exact) GunLanceConfig : HudChildConfig
@@ -15,6 +16,7 @@
 --- ammo: HudChildConfig,
 --- pile: HudChildConfig,
 --- gauge: HudChildConfig,
+--- reload: HudChildConfig,
 --- }
 
 ---@class (exact) GunLanceControlArguments
@@ -82,6 +84,15 @@ local control_arguments = {
             },
         },
     },
+    reload = {
+        {
+            play_object.control.get,
+            {
+                "PNL_Pat00",
+                "PNL_reload",
+            },
+        },
+    },
 }
 
 ---@param args GunLanceConfig
@@ -109,6 +120,9 @@ function this:new(args, parent)
     o.children.gauge = hud_child:new(args.children.gauge, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.gauge)
     end)
+    o.children.reload = hud_child:new(args.children.reload, o, function(_, _, _, ctrl)
+        return play_object.iter_args(ctrl, control_arguments.reload)
+    end)
     return o
 end
 
@@ -124,6 +138,7 @@ function this.get_config()
     children.ammo = hud_child.get_config("ammo")
     children.pile = hud_child.get_config("pile")
     children.gauge = hud_child.get_config("gauge")
+    children.reload = hud_child.get_config("reload")
     children.frame = {
         name_key = "frame",
         hide = false,
