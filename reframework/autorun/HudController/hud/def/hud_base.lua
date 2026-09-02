@@ -33,6 +33,7 @@
 ---@field disable_fade_opacity boolean?
 ---@field _pos_last_frame Vector3f?
 ---@field _request_pos boolean?
+---@field _write_children_cache HudChild[]
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -175,6 +176,7 @@ function this:new(args, parent, optional_args)
         hide_timer = timer:new(15, { type = "frame" }),
         disable_fade = args.disable_fade,
         disable_fade_opacity = args.disable_fade_opacity,
+        _write_children_cache = {},
     }
     setmetatable(o, self)
     ---@cast o HudBase
@@ -435,6 +437,7 @@ function this:_mark_write()
         return
     end
 
+    self.parent._write_children_cache = nil
     if self.parent.write_nodes[self] then
         self.parent.write_nodes[self] = self.parent.write_nodes[self] + 1
     else
@@ -450,6 +453,7 @@ function this:_mark_idle()
         return
     end
 
+    self.parent._write_children_cache = nil
     if self.parent.write_nodes[self] then
         self.parent.write_nodes[self] = self.parent.write_nodes[self] - 1
     end
@@ -643,11 +647,16 @@ end
 
 ---@return HudChild[]
 function this:get_write_children()
-    local keys = util_table.keys(self.write_nodes)
-    if self.children_sort then
-        return util_table.sort(keys, self.children_sort)
+    if self._write_children_cache then
+        return self._write_children_cache
     end
-    return keys
+
+    self._write_children_cache = util_table.keys(self.write_nodes)
+    if self.children_sort then
+        table.sort(self._write_children_cache, self.children_sort)
+    end
+
+    return self._write_children_cache
 end
 
 ---@param key HudBaseWriteKey
