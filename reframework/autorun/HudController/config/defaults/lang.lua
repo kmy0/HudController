@@ -193,6 +193,8 @@ return {
                 ride_ignore_combat = "Riding = Out of Combat",
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
                 tooltip_add_new_condition = "Conditions sets are evaluated from top to bottom",
+                menubar_element_profiles = "Element Profiles",
+                combo_elem_profile = "Element Profile",
             },
             condition_option = {
                 name = "Condition Options",

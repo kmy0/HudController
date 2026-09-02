@@ -43,11 +43,12 @@
 ---@class (exact) ConditionBindOptionsBase
 
 ---@class (exact) ConditionSetConfig
----@field hud_key integer
+---@field key integer
 ---@field conditions ConditionConfigBase[]
----@field combo_hud integer
+---@field combo_profile integer
 ---@field combo_condition integer
 ---@field collapsed boolean
+---@field children ConditionSetConfig[]
 
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
@@ -67,7 +68,7 @@
 ---@field block_input boolean
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
----@field hud HudProfileConfig[]
+---@field hud ModProfileConfig[]
 ---@field bind {
 --- condition: ConditionBindStateConfig,
 --- key: {
@@ -91,6 +92,7 @@
 ---     option_hud: integer,
 ---     option_mod: integer,
 ---     action_type: integer,
+---     elem_profile: integer,
 ---     },
 --- }
 ---@field lang ModLanguage
@@ -172,6 +174,7 @@ return {
                 option_hud = 1,
                 option_mod = 1,
                 action_type = 1,
+                elem_profile = 0,
             },
         },
     },

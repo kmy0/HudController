@@ -60,6 +60,23 @@
 ---@field children table<string, HudChildConfig>?
 ---@field disable_fade boolean?
 ---@field disable_fade_opacity boolean?
+---@field profile {[HudProfileKey]: HudBaseConfigProfile}
+---@field current_profile ElemProfileIndex
+---@field current_profile_gui ElemProfileIndex
+---@field default_profile ElemProfileIndex
+---@field enabled boolean
+
+---@class (exact) HudBaseConfigProfile : HudBaseConfig
+---@field profile nil
+---@field current_profile nil
+---@field current_profile_gui nil
+---@field default_profile nil
+---@field key integer
+
+---@class (exact) HudBaseConfigProfileForShow
+---@field key integer
+---@field name string
+---@field protected boolean
 
 ---@class (exact) HudBaseDefault
 ---@field scale {x:number, y:number}
@@ -109,6 +126,7 @@
 ---@field gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 
+---@alias HudProfileKey string
 ---@alias HudBaseProperty "scale" | "offset" | "rot" | "opacity" | "hide" | "play_state" | "color_scale" | "segment"
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
@@ -948,17 +966,35 @@ function this:do_something_to_children(something)
     end
 end
 
----@return HudBaseConfig
+---@return HudBaseConfigProfile
 function this:get_current_config()
-    local current_hud = hud.get_current() --[[@as HudProfileConfig]]
+    local current_hud = hud.get_current() --[[@as ModProfileConfig]]
     local keys = { self.name_key }
-    local parent = self.parent
 
+    local current_element = current_hud.elements[self.name_key]
+    if current_element.current_profile ~= mod.enum.elem_profile.DEFAULT then
+        keys =
+            util_table.array_merge(keys, { "profile", tostring(current_element.current_profile) })
+    end
+
+    local parent = self.parent
     while parent do
         util_table.insert_front(keys, parent.name_key, "children")
         parent = parent.parent --[[@as HudBase]]
     end
     return util_table.get_by_key(current_hud.elements, table.concat(keys, "."))
+end
+
+---@return HudBaseConfig
+function this:get_root_config()
+    local current_hud = hud.get_current() --[[@as ModProfileConfig]]
+    return current_hud.elements[self.name_key]
+end
+
+---@return HudProfileKey
+function this:get_profile_key()
+    local current_config = self:get_root_config()
+    return tostring(current_config.current_profile)
 end
 
 function this.restore_all_force_invis()
@@ -1004,6 +1040,11 @@ function this.get_config(hud_id, name_key)
         key = -1,
         hud_type = mod.enum.hud_type.BASE,
         hud_sub_type = mod.enum.hud_sub_type.BASE,
+        profile = {},
+        current_profile = 0,
+        current_profile_gui = 0,
+        enabled = true,
+        default_profile = 0,
     }
 end
 

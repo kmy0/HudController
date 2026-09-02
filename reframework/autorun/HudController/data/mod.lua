@@ -22,6 +22,7 @@
 ---@field colors GuiColors.*
 ---@field canvas CanvasActionEnum.*
 ---@field elem_cache ElemCache.*
+---@field elem_profile ElemProfileIndex.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -184,6 +185,10 @@ this.enum.elem_cache = { ---@class ElemCache.*
     DISABLED = 1,
     FRAME = 2,
     ONCE = 3,
+}
+---@enum ElemProfileIndex
+this.enum.elem_profile = { ---@class ElemProfileIndex.*
+    DEFAULT = 0,
 }
 
 ---@return boolean

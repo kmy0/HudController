@@ -52,7 +52,7 @@ function this.get_elem_consume_t(element_type, guiid)
     return ret, guiid
 end
 
----@return HudProfileConfig?
+---@return ModProfileConfig?
 function this.get_hud()
     if not this.is_ok() then
         return

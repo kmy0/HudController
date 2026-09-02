@@ -46,7 +46,7 @@ end
 ---@param bind ModBind
 function this:unregister(bind)
     self.binds = util_table.remove(self.binds --[==[@as ModBind[]]==], function(_, i, _)
-        return self.binds[i].bound_value ~= bind.bound_value or self.binds[i].name ~= bind.name
+        return not self:compare_bound_value(self.binds[i], bind) or self.binds[i].name ~= bind.name
     end)
     self.sorted = self:_sort_binds()
     self:_execute_on_data_changed_callback()
@@ -56,7 +56,8 @@ end
 ---@return boolean, ModBind?
 function this:is_collision(bind)
     for _, b in pairs(self.binds) do
-        if b.name == bind.name and b.bound_value == bind.bound_value then
+        ---@diagnostic disable-next-line: param-type-mismatch
+        if b.name == bind.name and self:compare_bound_value(b, bind) then
             return true, b
         end
     end

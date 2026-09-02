@@ -9,6 +9,7 @@ local factory = require("HudController.hud.factory")
 local hook = require("HudController.util.misc.init").lazy_require("HudController.hud.hook.init")
 
 local ace_map = data.ace.map
+local mod_enum = data.mod.enum
 
 ---@class HudElements
 local this = {
@@ -17,7 +18,32 @@ local this = {
 }
 
 ---@param element HudBaseConfig
+function this.get_element_profile(element)
+    if element.current_profile == mod_enum.elem_profile.DEFAULT then
+        return element
+    end
+
+    return element.profile[tostring(element.current_profile)]
+end
+
+---@param element HudBaseConfig
+function this.update_element_profile(element)
+    local hudbase = this.by_hudid[element.hud_id]
+    call_queue.queue_func(hudbase.hud_id, function()
+        hudbase:reset()
+    end)
+
+    hook.hook_hud(element.hud_id, element.name_key)
+
+    this.by_hudid[element.hud_id] = factory.new_elem(element)
+    for _, gui_id in pairs(ace_map.hudid_to_guiid[element.hud_id]) do
+        this.by_guiid[gui_id] = this.by_hudid[element.hud_id]
+    end
+end
+
+---@param element HudBaseConfig
 function this.add_element(element)
+    element = this.get_element_profile(element)
     this.by_hudid[element.hud_id] = factory.new_elem(element)
 
     hook.hook_hud(element.hud_id, element.name_key)

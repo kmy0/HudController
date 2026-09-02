@@ -238,12 +238,14 @@ function this.draw(elem, elem_config, config_key)
                 4000,
                 1,
                 "%.0f",
-                string.format(
-                    "%s: x=%d, y=%d",
-                    config.lang:tr("misc.text_screen_pos"),
-                    global_pos and math.ceil(global_pos.x) or 0,
-                    global_pos and math.ceil(global_pos.y) or 0
-                )
+                elem_config.enabled
+                        and string.format(
+                            "%s: x=%d, y=%d",
+                            config.lang:tr("misc.text_screen_pos"),
+                            global_pos and math.ceil(global_pos.x) or 0,
+                            global_pos and math.ceil(global_pos.y) or 0
+                        )
+                    or nil
             )
         then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
@@ -317,7 +319,7 @@ function this.draw(elem, elem_config, config_key)
         imgui.separator()
 
         local current_hud = hud.get_current()
-        ---@cast current_hud HudProfileConfig
+        ---@cast current_hud ModProfileConfig
 
         imgui.begin_disabled(
             not config.current.mod.enable_fade

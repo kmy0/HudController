@@ -1,5 +1,5 @@
 ---@class CanvasActions
----@field elem_default table<app.GUIHudDef.TYPE, ElemState>
+---@field elem_default table<HudProfileKey, table<app.GUIHudDef.TYPE, ElemState>>
 
 ---@class (exact) ElemState
 ---@field enabled_scale boolean
@@ -95,7 +95,6 @@ end
 
 ---@param action CanvasActionNumber
 local function undo(action)
-    local save_elem = this.elem_default[action.hudid]
     local elem = hud.get_element(action.hudid)
 
     if not elem then
@@ -106,6 +105,10 @@ local function undo(action)
     ---@cast elem HudBase
 
     local elem_config = elem:get_current_config()
+    local elem_profile_key = elem:get_profile_key()
+
+    local save_elem =
+        util_table.get_nested_value(this.elem_default, { elem_profile_key, action.hudid })
 
     util_table.merge_into(elem_config, save_elem)
     elem:set_rot(elem_config.enabled_rot and save_elem.rot or nil)
@@ -128,9 +131,17 @@ function this.clear()
 end
 
 ---@param elem HudBase
+---@return boolean
+function this.exist_elem_state(elem)
+    local elem_profile_key = elem:get_profile_key()
+    return util_table.get_nested_value(this.elem_default, { elem_profile_key, elem.hud_id }) ~= nil
+end
+
+---@param elem HudBase
 function this.store_elem_state(elem)
     local elem_config = elem:get_current_config()
-    this.elem_default[elem.hud_id] = {
+    local elem_profile_key = elem:get_profile_key()
+    util_table.set_nested_value(this.elem_default, { elem_profile_key, elem.hud_id }, {
         enabled_offset = elem_config.enabled_offset,
         enabled_rot = elem_config.enabled_rot,
         enabled_scale = elem_config.enabled_scale,
@@ -140,7 +151,7 @@ function this.store_elem_state(elem)
         offset = util_table.deep_copy(elem_config.offset),
         rot = elem_config.rot,
         opacity = elem_config.opacity,
-    }
+    })
 end
 
 ---@param action CanvasAction

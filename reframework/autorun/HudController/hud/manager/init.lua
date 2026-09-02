@@ -79,7 +79,7 @@ function this.update()
     if not profile_switcher.current_hud and not profile_switcher.requested_hud then
         local hud_config = config_mod.hud[config_mod.combo.hud]
         if hud_config then
-            profile_switcher.request_hud(hud_config)
+            profile_switcher.request_hud_with_default(hud_config)
         end
     end
 

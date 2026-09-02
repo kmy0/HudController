@@ -113,6 +113,28 @@ function this.trunc_string(str, max_len)
     return str
 end
 
+---@param text string
+---@param max_width number
+---@return string
+function this.trunc_string2(text, max_width)
+    if imgui.calc_text_size(text).x <= max_width then
+        return text
+    end
+
+    local suffix = "..."
+    local suffix_width = imgui.calc_text_size(suffix).x
+
+    while #text > 0 do
+        text = text:sub(1, -2)
+
+        if imgui.calc_text_size(text).x + suffix_width <= max_width then
+            return text .. suffix
+        end
+    end
+
+    return suffix
+end
+
 ---@param path string
 ---@param ext boolean? by default, true
 ---@return string
@@ -415,6 +437,42 @@ function this.to_base36(n)
         n = math.floor(n / 36)
     until n == 0
     return result
+end
+
+---@param col integer
+---@param factor number 0.0 - 1.0
+---@return integer
+function this.mul_alpha(col, factor)
+    local a = math.floor(((col >> 24) & 0xFF) * factor)
+    return (col & 0x00FFFFFF) | (a << 24)
+end
+
+---@param t integer[]
+---@return integer
+function this.pack_bits(t)
+    local bits = 0
+    for _, val in ipairs(t) do
+        bits = bits | (1 << (val - 1))
+    end
+    return bits
+end
+
+---@param bits integer
+---@return integer[]
+function this.unpack_bits(bits)
+    local indexes = {}
+    local i = 1
+
+    while bits ~= 0 do
+        if (bits & 1) ~= 0 then
+            table.insert(indexes, i)
+        end
+
+        bits = bits >> 1
+        i = i + 1
+    end
+
+    return indexes
 end
 
 return this

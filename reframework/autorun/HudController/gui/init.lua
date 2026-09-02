@@ -60,7 +60,7 @@ function this.draw()
 
         gui_elements.sorter.close()
         gui_elements.selector.close()
-        state.input_action = nil
+        state.input = nil
         config.save_global()
         imgui.end_window()
         return

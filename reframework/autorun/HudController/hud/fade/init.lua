@@ -42,7 +42,7 @@ local function reset_opacity(ctrl)
     ctrl:set_ColorScale(color)
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@param hud_id app.GUIHudDef.TYPE
 ---@return integer
 local function get_hud_opacity(hud_config, hud_id)
@@ -61,7 +61,7 @@ local function get_hud_opacity(hud_config, hud_id)
     return 1
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@param hud_id app.GUIHudDef.TYPE
 ---@param ctrl via.gui.Control
 ---@return integer
@@ -77,7 +77,7 @@ local function get_hud_from_opacity_partial(hud_config, hud_id, ctrl)
     return get_opacity(ctrl)
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@param type FadeType
 ---@param callback fun()?
 ---@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
@@ -116,7 +116,7 @@ local function fade(hud_config, type, callback, fader_disable, fader_callbacks)
     end
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@param callback fun()?
 ---@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
 ---@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
@@ -124,7 +124,7 @@ function this.fade_in(hud_config, callback, fader_disable, fader_callbacks)
     fade(hud_config, this.type.fade_in, callback, fader_disable, fader_callbacks)
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@param callback fun()?
 ---@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
 ---@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
@@ -132,8 +132,8 @@ function this.fade_out(hud_config, callback, fader_disable, fader_callbacks)
     fade(hud_config, this.type.fade_out, callback, fader_disable, fader_callbacks)
 end
 
----@param from_hud_config HudProfileConfig
----@param to_hud_config HudProfileConfig
+---@param from_hud_config ModProfileConfig
+---@param to_hud_config ModProfileConfig
 ---@param callback fun()?
 ---@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
 ---@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?

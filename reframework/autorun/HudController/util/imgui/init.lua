@@ -208,8 +208,9 @@ end
 ---@param selected_obj boolean?
 ---@param enabled_obj boolean?
 ---@param close_on_click boolean?
+---@param offset_y number?
 ---@return boolean, boolean?
-function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
+function this.menu_item(label, selected_obj, enabled_obj, close_on_click, offset_y)
     local pos_screen = imgui.get_cursor_screen_pos()
     local pos = imgui.get_cursor_pos()
     local win_size = imgui.get_window_size()
@@ -229,8 +230,24 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     end
 
     local text_size = imgui.calc_text_size(label)
-    local changed =
-        this.dummy_button2("##" .. id, { win_size.x - padding * 2, text_size.y + padding * 2 })
+    pos.x = pos.x - 1
+    imgui.set_cursor_pos(pos)
+    local button_size = { win_size.x - padding * 2, text_size.y + padding * 2 }
+    local changed = this.dummy_button2("##" .. id, button_size)
+
+    if imgui.is_item_hovered() then
+        -- no idea why the position just changes sometimes? wtf is this
+        offset_y = offset_y or 0
+        -- there is 2px padding from somewhere, which is visible when highlight from hover is active
+        -- i gave up on trying to find where its coming from
+        local dl = imgui.get_window_draw_list()
+        local screen_pos = imgui.get_cursor_screen_pos()
+        local end_pos = {
+            screen_pos.x + button_size[1] - 1,
+            screen_pos.y - button_size[2] - 2 + offset_y,
+        }
+        dl:add_line(end_pos, { end_pos[1], end_pos[2] + button_size[2] }, 0xff4f4e4d, 3)
+    end
 
     pos.y = pos.y + padding
     pos.x = pos.x + padding
@@ -359,7 +376,10 @@ function this.set_label(label, offset)
     local pos = imgui.get_cursor_pos()
     pos.x = pos.x - 3 + offset
     imgui.set_cursor_pos(pos)
-    imgui.text(util_misc.split_string(label, "##")[1])
+    label = util_misc.split_string(label, "##")[1]
+    if label ~= "" then
+        imgui.text(label)
+    end
 end
 
 ---@return number
@@ -402,6 +422,211 @@ function this.header(text, width, disabled)
     local text_y = pos.y + (height - text_size.y) * 0.5
 
     draw_list:add_text({ pos.x + padding_x, text_y }, text_color, text)
+end
+
+---@param label string
+---@param default_preview string
+---@param options string[]
+---@param selected boolean[]
+---@param disabled boolean?
+---@param width integer?
+---@return boolean, boolean[]
+function this.multi_combo(label, default_preview, options, selected, disabled, width)
+    width = width or imgui.calc_item_width()
+
+    if disabled == nil then
+        disabled = false
+    end
+
+    local popup_id = "##" .. label .. "_popup"
+    ---@type string[]
+    local chosen = {}
+    for i, name in ipairs(options) do
+        if selected[i] then
+            chosen[#chosen + 1] = name
+        end
+    end
+
+    local frame_height = config.lang.font_size + 6.0
+    local arrow_region_width = frame_height
+    local text_padding = 4.0
+    local max_preview_width = width - arrow_region_width - text_padding * 2
+    ---@type string
+    local full_preview
+
+    if #chosen == 0 then
+        full_preview = default_preview
+    else
+        full_preview = table.concat(chosen, ", ")
+    end
+
+    ---@type string
+    local preview = full_preview
+    local text_oversize = false
+    if imgui.calc_text_size(preview).x > max_preview_width then
+        text_oversize = true
+
+        if #chosen > 0 then
+            local found = false
+            for visible_count = #chosen - 1, 1, -1 do
+                local hidden_count = #chosen - visible_count
+                ---@type string[]
+                local visible = {}
+
+                for i = 1, visible_count do
+                    visible[#visible + 1] = chosen[i]
+                end
+
+                local candidate = table.concat(visible, ", ") .. " +" .. hidden_count
+
+                if imgui.calc_text_size(candidate).x <= max_preview_width then
+                    preview = candidate
+                    found = true
+                    break
+                end
+            end
+
+            if not found then
+                local hidden_count = #chosen - 1
+                local count_suffix = hidden_count > 0 and (" +" .. hidden_count) or ""
+
+                local ellipsis = "..."
+                local first = chosen[1]
+
+                while
+                    #first > 0
+                    and imgui.calc_text_size(first .. ellipsis .. count_suffix).x
+                        > max_preview_width
+                do
+                    first = first:sub(1, -2) --[[@as string]]
+                end
+
+                preview = first .. ellipsis .. count_suffix
+                if imgui.calc_text_size(preview).x > max_preview_width then
+                    preview = ellipsis .. count_suffix
+
+                    while #preview > 0 and imgui.calc_text_size(preview).x > max_preview_width do
+                        preview = preview:sub(1, -2) --[[@as string]]
+                    end
+                end
+            end
+        else
+            local suffix = "..."
+
+            preview = full_preview
+
+            while #preview > 0 and imgui.calc_text_size(preview .. suffix).x > max_preview_width do
+                preview = preview:sub(1, -2) --[[@as string]]
+            end
+
+            preview = preview .. suffix
+        end
+    end
+
+    local pos = imgui.get_cursor_screen_pos()
+    local draw_list = imgui.get_window_draw_list()
+
+    imgui.begin_disabled(disabled)
+
+    local clicked = false
+    if imgui.invisible_button("##" .. label .. "_btn", { width, frame_height }) then
+        clicked = true
+    end
+
+    imgui.end_disabled()
+
+    local hovered = imgui.is_item_hovered()
+    if text_oversize then
+        this.tooltip(full_preview)
+    end
+
+    local bg_col = 0
+    local text_col = 0xFFFFFFFF
+
+    if hovered then
+        bg_col = 0xff4f4e4d
+    else
+        bg_col = 0xff403636
+    end
+
+    bg_col = disabled and util_misc.mul_alpha(bg_col, 0.6) or bg_col
+    text_col = disabled and util_misc.mul_alpha(text_col, 0.6) or text_col
+    draw_list:add_rect_filled(
+        { pos.x, pos.y },
+        { pos.x + width, pos.y + frame_height },
+        bg_col,
+        0,
+        0
+    )
+
+    local text_y = pos.y + (frame_height - config.lang.font_size) * 0.5
+    draw_list:add_text({ pos.x + text_padding, text_y }, text_col, preview)
+
+    local r = config.lang.font_size * 0.40
+    local cx = pos.x + width - arrow_region_width * 0.5
+    local cy = pos.y + frame_height * 0.5
+
+    if imgui.is_popup_open(popup_id) then
+        draw_list:add_rect_filled({
+            pos.x + width - arrow_region_width,
+            pos.y,
+        }, {
+            pos.x + width,
+            pos.y + frame_height,
+        }, 0xff4f4e4d, 0, 0)
+    end
+
+    draw_list:add_triangle_filled(
+        { cx, cy + 0.750 * r },
+        { cx - 0.866 * r, cy - 0.750 * r },
+        { cx + 0.866 * r, cy - 0.750 * r },
+        text_col
+    )
+
+    if label then
+        this.set_label(label, -1)
+    end
+
+    if clicked then
+        imgui.open_popup(popup_id)
+    end
+
+    local checkmark_width = config.lang.font_size
+    local inner_spacing = 4.0
+    local item_padding = 8.0
+    local min_popup_width = width
+
+    for _, name in ipairs(options) do
+        local text_w = imgui.calc_text_size(name).x
+        local needed = checkmark_width + inner_spacing + text_w + item_padding
+
+        if needed > min_popup_width then
+            min_popup_width = needed
+        end
+    end
+
+    local popup_pos = {
+        pos.x,
+        pos.y + frame_height,
+    }
+
+    imgui.set_next_window_pos(popup_pos, 1)
+    imgui.set_next_window_size({ min_popup_width, 0 }, 1)
+
+    local changed = false
+    local popup_flags = 4 | 64 -- NoMove | AlwaysAutoResize
+    if imgui.begin_popup(popup_id, popup_flags) then
+        for i, name in ipairs(options) do
+            if this.menu_item(name .. "##" .. i, selected[i], nil, nil, -2) then
+                selected[i] = not selected[i]
+                changed = true
+            end
+        end
+
+        imgui.end_popup()
+    end
+
+    return changed, selected
 end
 
 return this

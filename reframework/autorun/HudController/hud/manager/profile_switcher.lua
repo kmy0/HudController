@@ -1,6 +1,6 @@
 ---@class ProfileSwitcher
----@field current_hud HudProfileConfig?
----@field requested_hud HudProfileConfig?
+---@field current_hud ModProfileConfig?
+---@field requested_hud ModProfileConfig?
 ---@field notify boolean
 
 local ace_misc = require("HudController.util.ace.misc")
@@ -19,7 +19,7 @@ local this = {
     notify = true,
 }
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@return table<app.GUIHudDef.TYPE, FadeDisableType>
 local function make_disable_fade_args(hud_config)
     ---@type table<app.GUIHudDef.TYPE, FadeDisableType>
@@ -34,7 +34,7 @@ local function make_disable_fade_args(hud_config)
     return ret
 end
 
----@param hud_config HudProfileConfig
+---@param hud_config ModProfileConfig
 ---@return table<app.GUIHudDef.TYPE, fun(fader: Fader)>
 local function make_disable_fade_opacity_args(hud_config)
     ---@type table<app.GUIHudDef.TYPE, fun(fader: Fader)>
@@ -92,7 +92,18 @@ local function finish()
     fade_manager.clear()
 end
 
----@param new_hud HudProfileConfig
+---@param new_hud ModProfileConfig
+---@param force boolean?
+function this.request_hud_with_default(new_hud, force)
+    for _, elem in pairs(new_hud.elements) do
+        elem.current_profile = elem.default_profile
+        elem.current_profile_gui = elem.default_profile
+    end
+
+    this.request_hud(new_hud, force)
+end
+
+---@param new_hud ModProfileConfig
 ---@param force boolean?
 function this.request_hud(new_hud, force)
     if
@@ -123,7 +134,7 @@ function this.request_hud(new_hud, force)
             and (not new_hud.fade_opacity_both or this.current_hud.fade_opacity)
         then
             local current_hud = this.current_hud
-            ---@cast current_hud HudProfileConfig
+            ---@cast current_hud ModProfileConfig
 
             switch_profile_partial()
             fade_manager.fade_partial(current_hud, new_hud, function()

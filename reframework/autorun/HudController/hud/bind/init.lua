@@ -42,11 +42,16 @@ this.action_type = {
 ---@param bind ModBind
 local function action_hud(bind)
     local config_mod = config.current.mod
-    local hud_config = hud.operations.get_hud_by_key(bind.bound_value --[[@as integer]])
+    local hud_config = hud.operations.get_hud_by_key(bind.bound_value.hud --[[@as integer]])
 
-    hud.request_hud(hud_config)
+    if bind.bound_value.profile == 0 then
+        hud.request_hud_with_default(hud_config)
+    else
+        hud.request_hud_with_default(hud_config) --TODO:
+    end
+
     config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
-        return o.key == bind.bound_value
+        return o.key == bind.bound_value.hud
     end) --[[@as integer]]
 end
 

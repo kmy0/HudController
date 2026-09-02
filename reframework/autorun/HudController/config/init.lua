@@ -14,6 +14,8 @@
 ---@field hud_default_path string
 ---@field option_default_path string
 ---@field default_config_path string
+---
+---@field max_profile integer
 
 local config_base = require("HudController.util.misc.config_base")
 local lang = require("HudController.config.lang")
@@ -36,6 +38,8 @@ this.name = mod_name
 this.default_config_path = config_path
 this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
 this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
+
+this.max_profile = 19
 
 this.gui = config_base:new(
     require("HudController.config.defaults.gui"),

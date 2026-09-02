@@ -25,8 +25,12 @@
 ---@field condition Combo
 ---@field elem_cache Combo
 
+---@class (exact) HudBindOpt
+---@field hud integer
+---@field profile integer
+
 ---@class (exact) NewBindListener
----@field opt HudProfileConfig | string
+---@field opt HudBindOpt | string
 ---@field opt_name string
 ---@field listener BindListener
 ---@field collision string?

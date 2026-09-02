@@ -26,6 +26,11 @@
 ---@field hud_type nil
 ---@field hud_sub_type nil
 ---@field gui_thing string? if thing is the only option within child tree node wont be drawn
+---@field profile nil
+---@field current_profile nil
+---@field current_profile_gui nil
+---@field enabled nil
+---@field default_profile nil
 
 ---@class (exact) HudChildDefault : HudBaseDefault
 ---@class (excat) HudChildDefaultOverwrite : HudBaseDefaultOverwrite

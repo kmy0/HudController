@@ -216,9 +216,10 @@ function this.merge2_t(protected, ignore_empty, ...)
 end
 
 ---@generic K, V, R
+---@overload fun(t: table<K,  V>, value_getter: fun(o: V): R): R[]
+---@overload fun(t: table<K,  V>): V[]
 ---@param t table<K,  V>
----@param value_getter (fun(o: V): R)?
----@return R|V[]
+---@param value_getter (fun(o: V): R?)?
 function this.values(t, value_getter)
     local ret = {}
     for _, o_value in pairs(t) do
@@ -226,7 +227,10 @@ function this.values(t, value_getter)
         if value_getter then
             value = value_getter(o_value)
         end
-        table.insert(ret, value)
+
+        if value then
+            table.insert(ret, value)
+        end
     end
     return ret
 end
@@ -486,11 +490,8 @@ function this.empty(t)
 end
 
 ---@generic T
----@param t T[]
----@param index1 integer
----@param index2 integer
----@param strict boolean?
----@return T[]?
+---@overload fun(t: T[], index1: integer, index2: integer, strict: false|nil): T[]
+---@overload fun(t: T[], index1: integer, index2: integer, strict: true): T[]?
 function this.slice(t, index1, index2, strict)
     local ret = {}
     for i = index1, index2 do
@@ -827,6 +828,30 @@ function this.pick(t, ...)
     end
 
     return ret
+end
+
+---@generic T, R
+---@param t T[]
+---@param value fun(value: T): R
+---@return R[]
+function this.array_to_array(t, value)
+    local ret = {}
+    for _, val in ipairs(t) do
+        table.insert(ret, value(val))
+    end
+    return ret
+end
+
+---@generic T
+---@param t T[]
+---@param value T
+---@param size integer
+function this.fill(t, value, size)
+    for _ = 1, size do
+        table.insert(t, value)
+    end
+
+    return t
 end
 
 return this

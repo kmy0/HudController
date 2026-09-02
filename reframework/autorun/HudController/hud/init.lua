@@ -49,7 +49,7 @@ function this.get_element_by_guiid(gui_id)
 end
 
 ---@param strict boolean?
----@return HudProfileConfig?
+---@return ModProfileConfig?
 function this.get_current(strict)
     if
         not this.profile_switcher.current_hud
@@ -99,10 +99,16 @@ function this.clear_overridden(key)
     this.options.overridden_options[key] = nil
 end
 
----@param new_hud HudProfileConfig
+---@param new_hud ModProfileConfig
 ---@param force boolean?
 function this.request_hud(new_hud, force)
     this.profile_switcher.request_hud(new_hud, force)
+end
+
+---@param new_hud ModProfileConfig
+---@param force boolean?
+function this.request_hud_with_default(new_hud, force)
+    this.profile_switcher.request_hud_with_default(new_hud, force)
 end
 
 function this.clear()
@@ -125,7 +131,7 @@ function this.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then
-        this.request_hud(new_hud, true)
+        this.request_hud_with_default(new_hud, true)
     else
         this.clear()
     end

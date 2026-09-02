@@ -48,7 +48,7 @@ local function init()
         return false
     end
 
-    ---@cast hud_config HudProfileConfig
+    ---@cast hud_config ModProfileConfig
     for name_key, _ in pairs(hud_config.elements) do
         local hudbase = hud.get_element(name_key) --[[@as HudBase]]
         action.store_elem_state(hudbase)
@@ -113,7 +113,7 @@ function this.draw()
             value = elem
         end
 
-        if not action.elem_default[hudbase.hud_id] then
+        if not action.exist_elem_state(hudbase) then
             action.store_elem_state(hudbase)
         end
 

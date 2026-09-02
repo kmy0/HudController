@@ -1,4 +1,4 @@
----@class (exact) HudProfileConfig
+---@class (exact) ModProfileConfig
 ---@field name string
 ---@field key integer
 ---@field elements table<string, HudBaseConfig>
@@ -38,6 +38,7 @@
 ---@field hide_aggro boolean
 ---@field hide_porter_timeout integer
 ---@field hide_handler_timeout integer
+---@field profile HudBaseConfigProfileForShow[]
 
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
@@ -50,7 +51,7 @@ local this = {}
 
 ---@param key integer
 ---@param name string
----@return HudProfileConfig
+---@return ModProfileConfig
 function this.get_hud_profile_config(key, name)
     return {
         key = key,
@@ -96,6 +97,9 @@ function this.get_hud_profile_config(key, name)
         hide_aggro = false,
         hide_handler_timeout = 5,
         hide_porter_timeout = 3,
+        profile = {
+            { key = 0, name = "__placeholder_default", protected = true },
+        },
     }
 end
 
@@ -116,12 +120,41 @@ end
 ---@param hud_elem HudBaseConfig
 ---@return HudBaseConfig
 function this.merge(hud_elem)
-    return util_table.merge2_t(
-        { "hud_type", "name_key", "hud_id", "hud_sub_type" },
-        true,
-        this.get_config(hud_elem.hud_id),
-        hud_elem
-    )
+    local protected = { "hud_type", "name_key", "hud_id", "hud_sub_type" }
+    local profiles = hud_elem.profile
+    hud_elem.profile = nil
+
+    local ret = util_table.merge2_t(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
+
+    for key, profile in pairs(profiles or {}) do
+        ret.profile[key] = util_table.merge2_t(
+            protected,
+            true,
+            this.get_config(hud_elem.hud_id) --[[@as HudBaseConfigProfile]],
+            profile
+        )
+    end
+
+    return ret
+end
+
+---@overload fun(target: HudBaseConfig, source: HudBaseConfig | HudBaseConfigProfile): HudBaseConfig
+---@overload fun(target: HudBaseConfigProfile, source: HudBaseConfig | HudBaseConfigProfile): HudBaseConfigProfile
+function this.merge_profile(target, source)
+    local protected = {
+        "hud_type",
+        "name_key",
+        "hud_id",
+        "hud_sub_type",
+        "current_profile",
+        "current_profile_gui",
+        "enabled",
+        "profile",
+        "key",
+        "default_profile",
+    }
+
+    return util_table.merge2_t(protected, true, target, source)
 end
 
 ---@param elements table<string, HudBaseConfig>
@@ -143,8 +176,8 @@ function this.verify_elements(elements)
     return elements
 end
 
----@param hud_config HudProfileConfig
----@return HudProfileConfig
+---@param hud_config ModProfileConfig
+---@return ModProfileConfig
 function this.verify_hud(hud_config)
     return util_table.merge2_t(
         nil,

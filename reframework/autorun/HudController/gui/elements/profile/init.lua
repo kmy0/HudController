@@ -17,6 +17,8 @@ local ace_map = data.ace.map
 
 local this = {}
 local drag = drag_util:new()
+local drag_profile = drag_util:new()
+local reverse_sort = false
 
 ---@param changed boolean
 ---@param key string
@@ -562,6 +564,7 @@ local function draw_profiles()
 
     if to_remove then
         table.remove(profiles, to_remove)
+        config:save()
     end
 
     if not drag_profile:is_released() and drag_profile:is_drag() then
@@ -592,7 +595,7 @@ function this.draw()
             imgui.end_child_window()
         else
             imgui.separator()
-            imgui.begin_child_window("hud_elements_child_window1", { -1, -1 }, false)
+            imgui.begin_child_window("hud_elements_child_window_main", { -1, -1 }, false)
             draw_elements()
             imgui.end_child_window()
         end

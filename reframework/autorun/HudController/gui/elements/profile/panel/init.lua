@@ -2,6 +2,8 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local main_panel = require("HudController.gui.elements.profile.panel.main_panel")
+local notebook = require("HudController.util.imgui.notebook")
+local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub_panel")
 local util_gui = require("HudController.gui.util")
@@ -9,9 +11,102 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
+local mod_enum = data.mod.enum
 local set = state.set
 
 local this = {}
+
+---@param elem_config HudBaseConfig
+---@param config_key string
+---@return HudBaseConfig, string, integer
+local function draw_notebook(elem_config, config_key)
+    local root = elem_config
+    local config_mod = config.current.mod
+    ---@type NotebookTab[]
+    local tabs = {}
+
+    for _, profile_for_show in ipairs(config_mod.hud[config_mod.combo.hud].profile) do
+        local profile = operations.get_elem_profile(root, profile_for_show.key)
+        ---@type integer?
+        local border_color
+        ---@type integer?
+        local text_color
+
+        if root.default_profile == profile_for_show.key then
+            text_color = data.mod.enum.colors.info
+        end
+
+        if profile_for_show.key ~= mod_enum.elem_profile.DEFAULT and not profile.enabled then
+            border_color = 0xff4f4e4d
+        elseif
+            root.current_profile == profile_for_show.key
+            and root.current_profile_gui ~= root.current_profile
+        then
+            border_color = data.mod.enum.colors.info
+        end
+
+        table.insert(tabs, {
+            label = profile_for_show.name == "__placeholder_default" and config.lang:tr(
+                "hud_profile.text_default_profile"
+            ) or profile_for_show.name,
+            key = profile_for_show.key,
+            border_color = border_color,
+            text_color = text_color,
+        })
+    end
+
+    local changed, new_tab =
+        notebook.draw("elem_profiles" .. config_key, root.current_profile_gui, tabs, {
+            {
+                label = config.lang:tr("hud_profile.button_export"),
+                action = function(tab)
+                    local profile = operations.get_elem_profile(root, tab)
+                    imgui.set_clipboard(json.dump_string(profile))
+                    return tab
+                end,
+                tooltip = config.lang:tr("hud_profile.tooltip_button_export"),
+            },
+            {
+                label = config.lang:tr("hud_profile.button_import"),
+                action = function(tab)
+                    root = operations.import_elem_profile(root)
+                    local profile = operations.get_elem_profile(root, tab)
+
+                    if profile.enabled then
+                        operations.apply_elem_profile(root)
+                    end
+
+                    return tab
+                end,
+                tooltip = config.lang:tr("hud_profile.tooltip_button_import"),
+            },
+            {
+                label = config.lang:tr("hud_profile.button_set_default"),
+                action = function(tab)
+                    root.default_profile = tab
+                    return tab
+                end,
+                get_enabled = function(tab)
+                    local profile = operations.get_elem_profile(root, tab)
+                    return tab ~= root.default_profile and profile.enabled
+                end,
+                tooltip = config.lang:tr("hud_profile.tooltip_button_set_default"),
+            },
+        })
+
+    if changed then
+        root.current_profile_gui = new_tab
+        operations.apply_elem_profile(root)
+        config:save()
+    end
+
+    if root.current_profile_gui ~= mod_enum.elem_profile.DEFAULT then
+        config_key = string.format("%s.profile.%s", config_key, root.current_profile_gui)
+        elem_config = operations.get_elem_profile(root, root.current_profile_gui)
+    end
+
+    return elem_config, config_key, root.current_profile_gui
+end
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
@@ -83,6 +178,8 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem)
             imgui.tree_pop()
         end
     end
+
+    imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -275,7 +372,7 @@ end
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
     if not elem.gui_ignore then
-        draw_panel(elem, elem_config, config_key, false)
+        draw_panel(elem, elem_config, config_key, false, true)
     end
 
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)

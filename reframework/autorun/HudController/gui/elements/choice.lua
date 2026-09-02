@@ -22,7 +22,7 @@ function this.draw_hud()
 
     if set:combo(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input = nil
-        hud.request_hud(config_mod.hud[config_mod.combo.hud])
+        hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
     end
 
     imgui.pop_item_width()
@@ -32,7 +32,7 @@ function this.draw_hud()
         state.input = nil
         hud.operations.new()
         config_mod.combo.hud = #config_mod.hud
-        hud.request_hud(config_mod.hud[config_mod.combo.hud])
+        hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
         config:save()
     end
 
@@ -62,7 +62,7 @@ function this.draw_hud()
     then
         hud.operations.remove(config_mod.hud[config_mod.combo.hud])
         if not util_table.empty(config_mod.hud) then
-            hud.request_hud(config_mod.hud[config_mod.combo.hud])
+            hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
         end
 
         config:save()
