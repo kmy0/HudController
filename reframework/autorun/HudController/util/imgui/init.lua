@@ -367,4 +367,41 @@ function this.get_drag_with()
     return config.lang.font_size * (50 / 16)
 end
 
+---@param text string
+---@param width number?
+---@param disabled boolean?
+function this.header(text, width, disabled)
+    disabled = disabled == nil and false or disabled
+    local draw_list = imgui.get_window_draw_list()
+    local pos = imgui.get_cursor_screen_pos()
+
+    local height = config.lang.font_size + 6
+    local padding_x = 8
+
+    if not width then
+        local window_size = imgui.get_window_size()
+        local cursor = imgui.get_cursor_pos()
+        width = window_size.x - cursor.x
+    end
+
+    local p1 = { pos.x, pos.y }
+    local p2 = { pos.x + width, pos.y + height }
+
+    local bg_color = 0xFF3A3A3A
+    local text_color = 0xFFFFFFFF
+
+    if disabled then
+        bg_color = util_misc.mul_alpha(bg_color, 0.6)
+        text_color = util_misc.mul_alpha(text_color, 0.6)
+    end
+
+    imgui.invisible_button("##header_" .. text, { width, height })
+    draw_list:add_rect_filled(p1, p2, bg_color, 0, 0)
+
+    local text_size = imgui.calc_text_size(text)
+    local text_y = pos.y + (height - text_size.y) * 0.5
+
+    draw_list:add_text({ pos.x + padding_x, text_y }, text_color, text)
+end
+
 return this
