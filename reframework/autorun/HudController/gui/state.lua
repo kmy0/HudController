@@ -1,7 +1,7 @@
 ---@class GuiState
 ---@field combo GuiCombo
 ---@field bind_condition_options table<string, Combo>
----@field input_action string?
+---@field input {buf: string, type: string, key: any?}?
 ---@field listener NewBindListener?
 ---@field set ImguiConfigSet
 
@@ -241,9 +241,8 @@ end
 ---@return boolean, string
 function this.get_input()
     local changed = false
-    changed, this.input_action =
-        imgui.input_text(gui_util.tr("hud.input"), this.input_action, 1 << 6)
-    return changed, this.input_action
+    changed, this.input.buf = imgui.input_text(gui_util.tr("hud.input"), this.input.buf, 1 << 6)
+    return changed, this.input.buf
 end
 
 function this.init_combo_map_icon_filter()

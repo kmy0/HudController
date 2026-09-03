@@ -21,7 +21,7 @@ function this.draw_hud()
     imgui.begin_disabled(config_mod.canvas.draw)
 
     if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
-        state.input_action = nil
+        state.input = nil
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
     end
 
@@ -29,7 +29,7 @@ function this.draw_hud()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("hud.button_new")) then
-        state.input_action = nil
+        state.input = nil
         hud.operations.new()
         config_mod.combo.hud = #config_mod.hud
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
@@ -39,15 +39,17 @@ function this.draw_hud()
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
+    imgui.begin_disabled(state.input ~= nil)
     if imgui.button(gui_util.tr("hud.button_rename")) then
-        state.input_action = config_mod.hud[config_mod.combo.hud].name
+        state.input = { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
     end
+    imgui.end_disabled()
 
     imgui.same_line()
 
     if imgui.button(gui_util.tr("hud.button_remove")) then
         util_imgui.open_popup("hud_remove", 62, 30)
-        state.input_action = nil
+        state.input = nil
     end
 
     if
@@ -96,7 +98,7 @@ function this.draw_hud()
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     if imgui.button(gui_util.tr("hud.button_sort")) then
-        state.input_action = nil
+        state.input = nil
         sorter.is_opened = true
         mod.pause = true
     end
@@ -104,11 +106,16 @@ function this.draw_hud()
     imgui.end_disabled()
     imgui.end_disabled()
 
-    if state.input_action and not mod.pause and not util_mod.is_draw_canvas() then
+    if
+        state.input
+        and not mod.pause
+        and not util_mod.is_draw_canvas()
+        and state.input.type == "rename_hud"
+    then
         local changed, _ = state.get_input()
         if changed then
-            hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input_action)
-            state.input_action = nil
+            hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input.buf)
+            state.input = nil
             config:save()
         end
     end
