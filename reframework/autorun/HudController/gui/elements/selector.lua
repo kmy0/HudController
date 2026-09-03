@@ -18,7 +18,7 @@ local this = {
 function this.close()
     this.is_opened = false
     mod.pause = false
-    state.input_action = nil
+    state.input = nil
 end
 
 function this.draw()
@@ -39,7 +39,7 @@ function this.draw()
 
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_new")) then
-        state.input_action = nil
+        state.input = nil
         config.selector:new_file()
         state.combo.config:swap(config.selector.sorted)
     end
@@ -47,14 +47,15 @@ function this.draw()
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_rename")) then
         local name = state.combo.config:get_value(config_sel.combo_file)
-        state.input_action = name ~= config.selector.default_name and name or ""
+        state.input =
+            { buf = name ~= config.selector.default_name and name or "", type = "rename_config" }
     end
 
     imgui.begin_disabled(util_table.size(config.selector.files) == 1)
     imgui.same_line()
 
     if imgui.button(gui_util.tr("selector.button_remove")) then
-        state.input_action = nil
+        state.input = nil
         util_imgui.open_popup("config_remove", 62, 30)
     end
 
@@ -66,7 +67,7 @@ function this.draw()
 
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_import")) and config.selector:try_import() then
-        state.input_action = nil
+        state.input = nil
         local new_file = config.selector:new_file()
         state.combo.config:swap(config.selector.sorted)
         config.selector.current.combo_file =
@@ -98,26 +99,26 @@ function this.draw()
 
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_duplicate")) then
-        state.input_action = nil
+        state.input = nil
         config.selector:duplicate_current_file()
         state.combo.config:swap(config.selector.sorted)
     end
 
     imgui.same_line()
     if imgui.button(gui_util.tr("selector.button_close")) then
-        state.input_action = nil
+        state.input = nil
         this.close()
     end
 
-    if state.input_action then
+    if state.input and state.input.type == "rename_config" then
         local changed, _ = state.get_input()
         if changed then
-            if state.input_action ~= config.selector.sorted[config_sel.combo_file] then
-                config.selector:rename_current_file(state.input_action)
+            if state.input ~= config.selector.sorted[config_sel.combo_file] then
+                config.selector:rename_current_file(state.input.buf)
                 state.combo.config:swap(config.selector.sorted)
             end
 
-            state.input_action = nil
+            state.input = nil
         end
     end
 
@@ -133,7 +134,7 @@ function this.draw()
     imgui.begin_disabled(state.combo.config_backup:empty())
 
     if imgui.button(gui_util.tr("selector.button_restore")) then
-        state.input_action = nil
+        state.input = nil
         if config.selector:restore_backup() then
             state.combo.config:swap(config.selector.sorted)
             state.combo.config_backup:swap(config.selector.sorted_backup)
@@ -144,7 +145,7 @@ function this.draw()
     imgui.same_line()
 
     if imgui.button(gui_util.tr("selector.button_remove_backup")) then
-        state.input_action = nil
+        state.input = nil
         util_imgui.open_popup("config_remove_backup", 62, 30)
     end
 
