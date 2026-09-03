@@ -90,7 +90,7 @@ function this.draw()
 
         drag:draw_drag_button(hud_name, hud_name)
         imgui.same_line()
-        util_imgui.dummy_button(hud_name, { -1, 0 })
+        util_imgui.header(hud_name)
 
         drag:check_drag_pos(hud_name)
     end
