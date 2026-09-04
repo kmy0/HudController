@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
-local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 
@@ -26,11 +26,11 @@ local function draw_lang_menu()
 
     imgui.separator()
 
-    set:menu_item(gui_util.tr("menu.language.fallback"), "mod.lang.fallback")
+    set:menu_item(util_gui.tr("menu.language.fallback"), "mod.lang.fallback")
     util_imgui.tooltip(config.lang:tr("menu.language.fallback_tooltip"))
 
     imgui.indent(2)
-    util_menubar.draw_menu(gui_util.tr("menu.language.font_size.name"), function()
+    util_menubar.draw_menu(util_gui.tr("menu.language.font_size.name"), function()
         imgui.spacing()
 
         if set:slider_int("##font_size_slider", "mod.lang.font_size", 8, 48) then
@@ -39,7 +39,7 @@ local function draw_lang_menu()
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("menu.language.font_size.button_apply")) then
+        if imgui.button(util_gui.tr("menu.language.font_size.button_apply")) then
             config.lang:change(nil, config_lang.font_size)
         end
 
@@ -51,7 +51,7 @@ local function draw_lang_menu()
 end
 
 function this.draw()
-    util_menubar.draw_menu(gui_util.tr("menu.language.name"), draw_lang_menu)
+    util_menubar.draw_menu(util_gui.tr("menu.language.name"), draw_lang_menu)
 end
 
 return this

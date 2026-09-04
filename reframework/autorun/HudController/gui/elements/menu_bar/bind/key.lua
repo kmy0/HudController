@@ -1,10 +1,10 @@
 local bind_manager = require("HudController.hud.bind.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
 local util_bind = require("HudController.util.game.bind.init")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
@@ -27,7 +27,7 @@ local function draw_buffer(config_mod)
 
     if
         set:slider_int(
-            gui_util.tr("menu.bind.key.slider_buffer"),
+            util_gui.tr("menu.bind.key.slider_buffer"),
             "mod.bind.key.buffer",
             1,
             11,
@@ -52,7 +52,7 @@ local function draw_bind_type(config_mod)
 
     if
         set:slider_int(
-            gui_util.tr("menu.bind.key.slider_bind_type"),
+            util_gui.tr("menu.bind.key.slider_bind_type"),
             "mod.bind.slider.key_bind",
             1,
             3,
@@ -140,7 +140,7 @@ end
 local function draw_add_button(manager, config_mod)
     imgui.same_line()
 
-    if not imgui.button(gui_util.tr("menu.bind.key.button_add")) then
+    if not imgui.button(util_gui.tr("menu.bind.key.button_add")) then
         return
     end
 
@@ -254,20 +254,20 @@ local function draw_listener(manager, config_key, config_mod)
 
     imgui.begin_disabled(state.listener.collision ~= nil or bind.name == "")
 
-    if imgui.button(gui_util.tr("menu.bind.key.button_save")) then
+    if imgui.button(util_gui.tr("menu.bind.key.button_save")) then
         save_bind(manager, config_key, bind)
     end
 
     imgui.end_disabled()
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("menu.bind.key.button_clear")) then
+    if imgui.button(util_gui.tr("menu.bind.key.button_clear")) then
         state.listener.listener:clear()
     end
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("menu.bind.key.button_cancel")) then
+    if imgui.button(util_gui.tr("menu.bind.key.button_cancel")) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
@@ -318,7 +318,7 @@ local function draw_registered_bind(manager, bind, remove)
 
     imgui.table_set_column_index(0)
 
-    if imgui.button(gui_util.tr("menu.bind.key.button_remove", bind.name, bind.bound_value)) then
+    if imgui.button(util_gui.tr("menu.bind.key.button_remove", bind.name, bind.bound_value)) then
         table.insert(remove, bind)
     end
 
@@ -395,7 +395,7 @@ local function draw_key_bind_menu()
 end
 
 function this.draw()
-    if not util_menubar.draw_menu(gui_util.tr("menu.bind.key.name"), draw_key_bind_menu) then
+    if not util_menubar.draw_menu(util_gui.tr("menu.bind.key.name"), draw_key_bind_menu) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end

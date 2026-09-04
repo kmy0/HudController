@@ -1,8 +1,8 @@
 local bind_condition = require("HudController.hud.bind_condition.init")
 local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
-local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
@@ -14,7 +14,7 @@ local this = {}
 
 ---@param config_mod ModSettings
 local function draw_add_set_button(config_mod)
-    if imgui.button(gui_util.tr("menu.bind.condition.button_add_new_condition")) then
+    if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition")) then
         table.insert(
             config_mod.bind.condition.hud,
             bind_condition.new_condition_set(config_mod.hud[1])
@@ -88,13 +88,13 @@ end
 local function draw_set_actions(i, set_remove)
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("menu.bind.condition.button_remove", "hud_condition", i)) then
+    if imgui.button(util_gui.tr("menu.bind.condition.button_remove", "hud_condition", i)) then
         table.insert(set_remove, i)
     end
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("menu.bind.condition.button_duplicate", "hud_condition", i)) then
+    if imgui.button(util_gui.tr("menu.bind.condition.button_duplicate", "hud_condition", i)) then
         return true
     end
 
@@ -107,12 +107,12 @@ end
 ---@param config_mod ModSettings
 local function draw_profile_selector(i, cond_set, config_key, config_mod)
     imgui.same_line()
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
 
     local combo_key = string.format("%s.%s", config_key, "combo_profile")
     if
         set:combo(
-            gui_util.tr("menu.bind.condition.combo_profile", i),
+            util_gui.tr("menu.bind.condition.combo_profile", i),
             combo_key,
             state.combo.hud.values
         )
@@ -165,7 +165,7 @@ end
 ---@param cond_set ConditionSetConfig
 ---@param config_key string
 local function draw_condition_selector(i, cond_set, config_key)
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
 
     set:combo(
         "##conditions." .. i,
@@ -179,7 +179,7 @@ local function draw_condition_selector(i, cond_set, config_key)
     local combo = state.combo.condition
     imgui.begin_disabled(combo:size() == #cond_set.conditions)
 
-    if imgui.button(gui_util.tr("menu.bind.condition.button_add", "condition", i)) then
+    if imgui.button(util_gui.tr("menu.bind.condition.button_add", "condition", i)) then
         add_selected_condition(cond_set, config_key)
     end
 
@@ -224,7 +224,7 @@ local function draw_condition_row(i, j, cond, config_key, cond_remove, config_mo
     imgui.table_set_column_index(0)
     imgui.begin_rect()
 
-    if imgui.button(gui_util.tr("menu.bind.condition.button_remove", "hud_condition", i, j)) then
+    if imgui.button(util_gui.tr("menu.bind.condition.button_remove", "hud_condition", i, j)) then
         table.insert(cond_remove, j)
     end
 
@@ -236,7 +236,7 @@ local function draw_condition_row(i, j, cond, config_key, cond_remove, config_mo
     if cond_class:has_custom_options() then
         cond_class:draw_options()
     elseif cond_class.options then
-        imgui.push_item_width(gui_util.get_item_size())
+        imgui.push_item_width(util_gui.get_item_size())
 
         set:combo(
             string.format("##%s.%s.%s", "cond_opt", i, j),
@@ -425,7 +425,7 @@ local function draw_condition_bind_menu()
 end
 
 function this.draw()
-    util_menubar.draw_menu(gui_util.tr("menu.bind.condition.name"), draw_condition_bind_menu)
+    util_menubar.draw_menu(util_gui.tr("menu.bind.condition.name"), draw_condition_bind_menu)
 end
 
 return this

@@ -3,12 +3,12 @@ local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
 local factory = require("HudController.hud.factory")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local gui_util = require("HudController.gui.util")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local operations = require("HudController.hud.manager.operations")
 local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -110,28 +110,28 @@ local function draw_options()
     util_imgui.separator_text(config.lang:tr("hud.category_general"))
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_mute_gui"),
+            util_gui.tr("hud.box_mute_gui"),
             string.format("mod.hud.int:%s.mute_gui", config_mod.combo.hud)
         ),
         "mute_gui"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_subtitles"),
+            util_gui.tr("hud.box_hide_subtitles"),
             string.format("mod.hud.int:%s.hide_subtitles", config_mod.combo.hud)
         ),
         "hide_subtitles"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_mute_gossip"),
+            util_gui.tr("hud.box_mute_gossip"),
             string.format("mod.hud.int:%s.mute_gossip", config_mod.combo.hud)
         ),
         "mute_gossip"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_area_intro"),
+            util_gui.tr("hud.box_disable_area_intro"),
             string.format("mod.hud.int:%s.disable_area_intro", config_mod.combo.hud)
         ),
         "disable_area_intro"
@@ -139,28 +139,28 @@ local function draw_options()
 
     util_imgui.separator_text(config.lang:tr("hud.category_player"))
     local box = set:checkbox(
-        gui_util.tr("hud.box_hide_danger"),
+        util_gui.tr("hud.box_hide_danger"),
         string.format("mod.hud.int:%s.hide_danger", config_mod.combo.hud)
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_danger"), true)
     check_overriden(box, "hide_danger")
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_aggro"),
+            util_gui.tr("hud.box_hide_aggro"),
             string.format("mod.hud.int:%s.hide_aggro", config_mod.combo.hud)
         ),
         "hide_aggro"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_scoutflies"),
+            util_gui.tr("hud.box_disable_scoutflies"),
             string.format("mod.hud.int:%s.disable_scoutflies", config_mod.combo.hud)
         ),
         "disable_scoutflies"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_weapon"),
+            util_gui.tr("hud.box_hide_weapon"),
             string.format("mod.hud.int:%s.hide_weapon", config_mod.combo.hud)
         ),
         "hide_weapon"
@@ -170,7 +170,7 @@ local function draw_options()
     util_imgui.separator_text(config.lang:tr("hud.category_npc"))
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_handler"),
+            util_gui.tr("hud.box_hide_handler"),
             string.format("mod.hud.int:%s.hide_handler", config_mod.combo.hud)
         ),
         "hide_handler"
@@ -178,7 +178,7 @@ local function draw_options()
     imgui.same_line()
     imgui.set_next_item_width(util_imgui.get_drag_with())
     set:drag_int(
-        gui_util.tr("hud.drag_hide_handler"),
+        util_gui.tr("hud.drag_hide_handler"),
         string.format("mod.hud.int:%s.hide_handler_timeout", config_mod.combo.hud),
         0.1,
         0,
@@ -187,7 +187,7 @@ local function draw_options()
 
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_pet"),
+            util_gui.tr("hud.box_hide_pet"),
             string.format("mod.hud.int:%s.hide_pet", config_mod.combo.hud)
         ),
         "hide_pet"
@@ -196,7 +196,7 @@ local function draw_options()
 
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_no_facility_npc"),
+            util_gui.tr("hud.box_hide_no_facility_npc"),
             string.format("mod.hud.int:%s.hide_no_facility_npc", config_mod.combo.hud)
         ),
         "hide_no_facility_npc"
@@ -205,7 +205,7 @@ local function draw_options()
     imgui.begin_disabled(hud.get_hud_option("hide_no_facility_npc"))
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_no_talk_npc"),
+            util_gui.tr("hud.box_hide_no_talk_npc"),
             string.format("mod.hud.int:%s.hide_no_talk_npc", config_mod.combo.hud)
         ),
         "hide_no_talk_npc"
@@ -214,19 +214,19 @@ local function draw_options()
 
     util_imgui.separator_text(config.lang:tr("hud.category_monster"))
     boxes_to_slider(
-        gui_util.tr("hud.slider_wound_state"),
+        util_gui.tr("hud.slider_wound_state"),
         { "hide_scar", "show_scar", "disable_scar" }
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_small_monsters"),
+            util_gui.tr("hud.box_hide_small_monsters"),
             string.format("mod.hud.int:%s.hide_small_monsters", config_mod.combo.hud)
         ),
         "hide_small_monsters"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_monster_ignore_camp"),
+            util_gui.tr("hud.box_monster_ignore_camp"),
             string.format("mod.hud.int:%s.monster_ignore_camp", config_mod.combo.hud)
         ),
         "monster_ignore_camp"
@@ -234,7 +234,7 @@ local function draw_options()
     util_imgui.tooltip(config.lang:tr("hud.tooltip_monster_ignore_camp"), true)
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_monster_icon"),
+            util_gui.tr("hud.box_hide_monster_icon"),
             string.format("mod.hud.int:%s.hide_monster_icon", config_mod.combo.hud)
         ),
         "hide_monster_icon"
@@ -245,7 +245,7 @@ local function draw_options()
 
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_lock_target"),
+            util_gui.tr("hud.box_hide_lock_target"),
             string.format("mod.hud.int:%s.hide_lock_target", config_mod.combo.hud)
         ),
         "hide_lock_target"
@@ -257,42 +257,42 @@ local function draw_options()
     util_imgui.separator_text(config.lang:tr("hud.category_quest"))
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_quest_intro"),
+            util_gui.tr("hud.box_disable_quest_intro"),
             string.format("mod.hud.int:%s.disable_quest_intro", config_mod.combo.hud)
         ),
         "disable_quest_intro"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_quest_end_camera"),
+            util_gui.tr("hud.box_disable_quest_end_camera"),
             string.format("mod.hud.int:%s.disable_quest_end_camera", config_mod.combo.hud)
         ),
         "disable_quest_end_camera"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_quest_end_outro"),
+            util_gui.tr("hud.box_disable_quest_end_outro"),
             string.format("mod.hud.int:%s.disable_quest_end_outro", config_mod.combo.hud)
         ),
         "disable_quest_end_outro"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_skip_quest_end_timer"),
+            util_gui.tr("hud.box_skip_quest_end_timer"),
             string.format("mod.hud.int:%s.skip_quest_end_timer", config_mod.combo.hud)
         ),
         "skip_quest_end_timer"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_quest_end_timer"),
+            util_gui.tr("hud.box_hide_quest_end_timer"),
             string.format("mod.hud.int:%s.hide_quest_end_timer", config_mod.combo.hud)
         ),
         "hide_quest_end_timer"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_skip_quest_result"),
+            util_gui.tr("hud.box_skip_quest_result"),
             string.format("mod.hud.int:%s.skip_quest_result", config_mod.combo.hud)
         ),
         "skip_quest_result"
@@ -302,14 +302,14 @@ local function draw_options()
     util_imgui.separator_text(config.lang:tr("hud.category_porter"))
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_porter_call"),
+            util_gui.tr("hud.box_disable_porter_call"),
             string.format("mod.hud.int:%s.disable_porter_call", config_mod.combo.hud)
         ),
         "disable_porter_call"
     )
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_hide_porter"),
+            util_gui.tr("hud.box_hide_porter"),
             string.format("mod.hud.int:%s.hide_porter", config_mod.combo.hud)
         ),
         "hide_porter"
@@ -317,7 +317,7 @@ local function draw_options()
     imgui.same_line()
     imgui.set_next_item_width(util_imgui.get_drag_with())
     set:drag_int(
-        gui_util.tr("hud.drag_hide_porter"),
+        util_gui.tr("hud.drag_hide_porter"),
         string.format("mod.hud.int:%s.hide_porter_timeout", config_mod.combo.hud),
         0.1,
         0,
@@ -326,7 +326,7 @@ local function draw_options()
 
     check_overriden(
         set:checkbox(
-            gui_util.tr("hud.box_disable_porter_tracking"),
+            util_gui.tr("hud.box_disable_porter_tracking"),
             string.format("mod.hud.int:%s.disable_porter_tracking", config_mod.combo.hud)
         ),
         "disable_porter_tracking"
@@ -334,14 +334,14 @@ local function draw_options()
 
     util_imgui.separator_text(config.lang:tr("hud.category_profile"))
     set:checkbox(
-        gui_util.tr("hud.box_show_notification"),
+        util_gui.tr("hud.box_show_notification"),
         string.format("mod.hud.int:%s.show_notification", config_mod.combo.hud)
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_show_notification"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_fade"))
     set:checkbox(
-        gui_util.tr("hud.box_fade_opacity"),
+        util_gui.tr("hud.box_fade_opacity"),
         string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud)
     )
 
@@ -351,7 +351,7 @@ local function draw_options()
     )
 
     set:checkbox(
-        gui_util.tr("hud.box_fade_opacity_both"),
+        util_gui.tr("hud.box_fade_opacity_both"),
         string.format("mod.hud.int:%s.fade_opacity_both", config_mod.combo.hud)
     )
 
@@ -361,23 +361,23 @@ local function draw_options()
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config_mod.combo.hud)
     local item_value = config:get(item_config_key)
     set:slider_float(
-        gui_util.tr("hud.slider_fade_in"),
+        util_gui.tr("hud.slider_fade_in"),
         item_config_key,
         0,
         10,
         item_value == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(item_value, "%.1f")
+            or util_gui.seconds_to_minutes_string(item_value, "%.1f")
     )
 
     item_config_key = string.format("mod.hud.int:%s.fade_out", config_mod.combo.hud)
     item_value = config:get(item_config_key)
     set:slider_float(
-        gui_util.tr("hud.slider_fade_out"),
+        util_gui.tr("hud.slider_fade_out"),
         item_config_key,
         0,
         10,
         item_value == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(item_value, "%.1f")
+            or util_gui.seconds_to_minutes_string(item_value, "%.1f")
     )
 
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then
@@ -426,7 +426,7 @@ local function draw_elements()
         drag:draw_drag_button(config_key, elem_config)
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("hud_element.button_remove", elem_config.name_key)) then
+        if imgui.button(util_gui.tr("hud_element.button_remove", elem_config.name_key)) then
             table.insert(remove, elem_config.name_key)
         end
 
@@ -472,12 +472,122 @@ local function draw_elements()
     end
 end
 
+local function draw_profiles()
+    local config_mod = config.current.mod
+    local profiles = config_mod.hud[config_mod.combo.hud].profile
+
+    imgui.begin_disabled(#profiles >= config.max_profile)
+    if imgui.button(util_gui.tr("hud_profile.button_add")) then
+        state.input = nil
+        operations.new_elem_profile_for_show(profiles)
+    end
+    imgui.end_disabled()
+
+    imgui.same_line()
+    if imgui.button(util_gui.tr("hud_profile.button_sort")) then
+        state.input = nil
+        table.sort(profiles, function(a, b)
+            if a.protected then
+                return true
+            elseif b.protected then
+                return false
+            end
+
+            if reverse_sort then
+                return a.name > b.name
+            end
+
+            return a.name < b.name
+        end)
+
+        reverse_sort = not reverse_sort
+    end
+    util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
+
+    imgui.separator()
+
+    drag_profile:clear()
+    ---@type integer?
+    local to_remove
+    for i, profile in ipairs(profiles) do
+        imgui.begin_disabled(profile.protected)
+        drag_profile:draw_drag_button(tostring(profile.key), profile.key)
+        imgui.same_line()
+
+        if imgui.button(util_gui.tr("hud_profile.button_remove", profile.key)) then
+            to_remove = i
+            operations.remove_elem_profile(config_mod.hud[config_mod.combo.hud], profile.key)
+        end
+
+        imgui.same_line()
+        imgui.begin_disabled(state.input ~= nil)
+        if imgui.button(util_gui.tr("hud_profile.button_rename", profile.key)) then
+            state.input = {
+                buf = profile.name,
+                type = "rename_hud_profile",
+                key = profile.key,
+            }
+        end
+        imgui.end_disabled()
+
+        imgui.same_line()
+        util_imgui.header(
+            profile.name == "__placeholder_default"
+                    and config.lang:tr("hud_profile.text_default_profile")
+                or profile.name,
+            nil,
+            profile.protected
+        )
+        drag_profile:check_drag_pos(profile.key)
+        imgui.end_disabled()
+
+        if
+            state.input
+            and state.input.key == profile.key
+            and state.input.type == "rename_hud_profile"
+        then
+            local changed, _ = state.get_input()
+            if changed then
+                operations.rename_elem_profile_for_show(profiles, profile, state.input.buf)
+                state.input = nil
+
+                config:save()
+            end
+        end
+    end
+
+    if drag_profile:is_drag() then
+        state.input = nil
+    end
+
+    if to_remove then
+        table.remove(profiles, to_remove)
+    end
+
+    if not drag_profile:is_released() and drag_profile:is_drag() then
+        table.sort(profiles, function(a, b)
+            if a.protected then
+                return true
+            elseif b.protected then
+                return false
+            end
+            return drag_profile.item_pos[a.key] < drag_profile.item_pos[b.key]
+        end)
+
+        config:save()
+    end
+end
+
 function this.draw()
     if not util_table.empty(config.current.mod.hud) then
-        local header = imgui.collapsing_header(gui_util.tr("hud.header_hud_options"))
-        if header then
-            imgui.begin_child_window("hud_elements_child_window", { -1, -1 }, false)
+        if imgui.collapsing_header(util_gui.tr("hud.header_hud_options")) then
+            imgui.begin_child_window("hud_elements_child_window_options", { -1, -1 }, false)
             draw_options()
+            imgui.spacing()
+            imgui.end_child_window()
+        elseif imgui.collapsing_header(util_gui.tr("hud_profile.header_hud_profile")) then
+            imgui.begin_child_window("hud_elements_child_window_profile", { -1, -1 }, false)
+            draw_profiles()
             imgui.spacing()
             imgui.end_child_window()
         else

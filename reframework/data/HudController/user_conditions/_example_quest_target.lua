@@ -2,8 +2,8 @@ local combo = require("HudController.util.imgui.combo")
 local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
-local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
+local util_gui = require("HudController.gui.util")
 local util_table = require("HudController.util.misc.table")
 local set = require("HudController.gui.state").set
 local s = require("HudController.util.ref.singletons")
@@ -71,7 +71,7 @@ function this:update()
 end
 
 function this:draw_options()
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
     set:combo("##QuestTargetAdd", self:get_config_key_option("combo_add"), self.combo_add.values)
     imgui.pop_item_width()
 
@@ -88,7 +88,7 @@ function this:draw_options()
     end
     imgui.end_disabled()
 
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
     set:combo(
         "##QuestTargetRemove",
         self:get_config_key_option("combo_remove"),

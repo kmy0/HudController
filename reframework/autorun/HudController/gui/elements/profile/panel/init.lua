@@ -1,10 +1,10 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local gui_util = require("HudController.gui.util")
 local main_panel = require("HudController.gui.elements.profile.panel.main_panel")
 local state = require("HudController.gui.state")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub_panel")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -17,7 +17,29 @@ local this = {}
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 ---@param tree boolean?
-local function draw_panel(elem, elem_config, config_key, tree)
+---@param root_elem boolean?
+local function draw_panel(elem, elem_config, config_key, tree, root_elem)
+    if root_elem then
+        local root = elem_config
+        ---@type integer
+        local profile_key
+        elem_config, config_key, profile_key = draw_notebook(elem_config, config_key)
+
+        imgui.begin_disabled(profile_key == mod_enum.elem_profile.DEFAULT)
+        local checkbox_key = string.format("%s.enabled", config_key)
+        if
+            set:checkbox(util_gui.tr("hud_profile.box_profile_enabled", config_key), checkbox_key)
+        then
+            operations.apply_elem_profile(root)
+        end
+        imgui.end_disabled()
+        imgui.separator()
+
+        imgui.begin_disabled(not config:get(checkbox_key))
+    else
+        imgui.begin_disabled(false)
+    end
+
     ---@type string
     local item_config_key
     tree = tree == nil and true or tree
@@ -30,7 +52,7 @@ local function draw_panel(elem, elem_config, config_key, tree)
                     or (
                         ace_map.weaponid_name_to_local_name[elem.name_key]
                         or (ace_map.no_lang_key[elem.name_key] and elem.name_key)
-                        or gui_util.tr_int("hud_subelement." .. elem.name_key)
+                        or util_gui.tr_int("hud_subelement." .. elem.name_key)
                     ),
                 elem:any_gui() and string.format(" (%s)", config.lang:tr("misc.text_changed")) or ""
             )
@@ -70,7 +92,7 @@ end
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
     local elems = util_table.split(children_filtered, function(_, _, value)
-        if gui_util.is_only_thing(value, value.gui_thing) then
+        if util_gui.is_only_thing(value, value.gui_thing) then
             return "box"
         end
         return "panel"
@@ -223,7 +245,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
                         or (
                             ace_map.weaponid_name_to_local_name[child.name_key]
                             or (ace_map.no_lang_key[child.name_key] and child.name_key)
-                            or gui_util.tr_int("hud_subelement." .. child.name_key)
+                            or util_gui.tr_int("hud_subelement." .. child.name_key)
                         ),
                     string.format("%s_%s_tree", config_key, child.name_key)
                 )
