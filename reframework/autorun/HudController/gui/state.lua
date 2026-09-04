@@ -38,7 +38,7 @@ local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
-local gui_util = require("HudController.gui.util")
+local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
@@ -241,7 +241,7 @@ end
 ---@return boolean, string
 function this.get_input()
     local changed = false
-    changed, this.input.buf = imgui.input_text(gui_util.tr("hud.input"), this.input.buf, 1 << 6)
+    changed, this.input.buf = imgui.input_text(util_gui.tr("hud.input"), this.input.buf, 1 << 6)
     return changed, this.input.buf
 end
 

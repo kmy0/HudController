@@ -1,9 +1,9 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
 local util_game = require("HudController.util.game.init")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod
@@ -13,34 +13,34 @@ local this = {
     ---@type table<HudSubType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
     funcs = {},
 }
-local separator_material = gui_util.separator:new({
+local separator_material = util_gui.separator:new({
     "enabled_var0",
     "enabled_var1",
     "enabled_var2",
     "enabled_var3",
     "enabled_var4",
 })
-local separator_scale9 = gui_util.separator:new({
+local separator_scale9 = util_gui.separator:new({
     "enabled_control_point",
     "enabled_blend",
     "enabled_ignore_alpha",
     "enabled_alpha_channel",
 })
-local separator_control_child = gui_util.separator:new({
+local separator_control_child = util_gui.separator:new({
     "enabled_size_x",
     "enabled_size_y",
     "enabled_color",
 })
-local separator_text = gui_util.separator:new({
+local separator_text = util_gui.separator:new({
     "hide_glow",
     "enabled_glow_color",
     "enabled_font_size",
     "enabled_page_alignment",
 })
-local separator_progress_text = gui_util.separator:new({
+local separator_progress_text = util_gui.separator:new({
     "align_left",
 })
-local separator_progress_part = gui_util.separator:new({
+local separator_progress_part = util_gui.separator:new({
     "enabled_offset_x",
     "enabled_clock_offset_x",
     "enabled_num_offset_x",
@@ -63,11 +63,11 @@ local function draw_control_child(elem, elem_config, config_key)
     if elem_config.enabled_size_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_x",
-            label = gui_util.tr("hud_element.entry.box_enable_size_x"),
+            label = util_gui.tr("hud_element.entry.box_enable_size_x"),
         }, {
             {
                 config_key = config_key .. ".size_x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
+                label = util_gui.tr("hud_element.entry.slider_x"),
             },
         }, -4000, 4000, 0.1, "%.1f")
 
@@ -81,11 +81,11 @@ local function draw_control_child(elem, elem_config, config_key)
     if elem_config.enabled_size_y ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_y",
-            label = gui_util.tr("hud_element.entry.box_enable_size_y"),
+            label = util_gui.tr("hud_element.entry.box_enable_size_y"),
         }, {
             {
                 config_key = config_key .. ".size_y",
-                label = gui_util.tr("hud_element.entry.slider_y"),
+                label = util_gui.tr("hud_element.entry.slider_y"),
             },
         }, -4000, 4000, 0.1, "%.1f")
 
@@ -99,7 +99,7 @@ local function draw_control_child(elem, elem_config, config_key)
     if elem_config.enabled_color ~= nil then
         local item_config_key = config_key .. ".enabled_color"
         changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_color", item_config_key),
+            util_gui.tr("hud_element.entry.box_enable_color", item_config_key),
             item_config_key
         )
 
@@ -137,7 +137,7 @@ local function draw_material(elem, elem_config, config_key)
             local var_config = elem_config[var_key] --[[@as MaterialVarFloat]]
             local changed = generic.draw_slider_settings({
                 config_key = string.format("%s.enabled_%s", config_key, var_key),
-                label = gui_util.tr("hud_element.entry.box_enable_" .. var_config.name_key),
+                label = util_gui.tr("hud_element.entry.box_enable_" .. var_config.name_key),
             }, {
                 {
                     config_key = string.format("%s.%s.value", config_key, var_key),
@@ -178,7 +178,7 @@ local function draw_scale9(elem, elem_config, config_key)
         local changed_value = generic.draw_combo(
             {
                 config_key = config_key .. ".enabled_control_point",
-                label = gui_util.tr(
+                label = util_gui.tr(
                     "hud_element.entry.box_enable_scale9_control_point",
                     item_config_key
                 ),
@@ -202,7 +202,7 @@ local function draw_scale9(elem, elem_config, config_key)
         local changed_value = generic.draw_combo(
             {
                 config_key = config_key .. ".enabled_blend",
-                label = gui_util.tr(
+                label = util_gui.tr(
                     "hud_element.entry.box_enable_scale9_blend_type",
                     item_config_key
                 ),
@@ -226,7 +226,7 @@ local function draw_scale9(elem, elem_config, config_key)
         local changed_value = generic.draw_combo(
             {
                 config_key = config_key .. ".enabled_alpha_channel",
-                label = gui_util.tr(
+                label = util_gui.tr(
                     "hud_element.entry.box_enable_scale9_alpha_channel",
                     item_config_key
                 ),
@@ -248,7 +248,7 @@ local function draw_scale9(elem, elem_config, config_key)
     if elem_config.enabled_ignore_alpha ~= nil then
         item_config_key = config_key .. ".enabled_ignore_alpha"
         local changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_scale9_ignore_alpha", item_config_key),
+            util_gui.tr("hud_element.entry.box_enable_scale9_ignore_alpha", item_config_key),
             item_config_key
         )
 
@@ -256,7 +256,7 @@ local function draw_scale9(elem, elem_config, config_key)
 
         item_config_key = config_key .. ".ignore_alpha"
         changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_scale9_ignore_alpha", item_config_key),
+            util_gui.tr("hud_element.entry.box_scale9_ignore_alpha", item_config_key),
             item_config_key
         ) or changed
 
@@ -293,7 +293,7 @@ local function draw_text(elem, elem_config, config_key)
     if elem_config.enabled_font_size ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_font_size",
-            label = gui_util.tr("hud_element.entry.box_enable_font_size", item_config_key),
+            label = util_gui.tr("hud_element.entry.box_enable_font_size", item_config_key),
         }, {
             {
                 config_key = config_key .. ".font_size",
@@ -314,7 +314,7 @@ local function draw_text(elem, elem_config, config_key)
         local changed_value = generic.draw_combo(
             {
                 config_key = config_key .. ".enabled_page_alignment",
-                label = gui_util.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
+                label = util_gui.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
             },
             item_config_key,
             "##" .. item_config_key,
@@ -333,7 +333,7 @@ local function draw_text(elem, elem_config, config_key)
     if elem_config.hide_glow ~= nil then
         if
             set:checkbox(
-                gui_util.tr("hud_element.entry.box_hide_glow", config_key .. ".hide_glow"),
+                util_gui.tr("hud_element.entry.box_hide_glow", config_key .. ".hide_glow"),
                 config_key .. ".hide_glow"
             )
         then
@@ -348,7 +348,7 @@ local function draw_text(elem, elem_config, config_key)
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
         changed = set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_glow_color", item_config_key),
+            util_gui.tr("hud_element.entry.box_enable_glow_color", item_config_key),
             item_config_key
         )
 
@@ -383,7 +383,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     item_config_key = config_key .. ".enabled_box"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_enable_box", item_config_key),
+            util_gui.tr("hud_element.entry.box_enable_box", item_config_key),
             item_config_key
         )
     then
@@ -404,7 +404,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
         config:set(item_config_key, false)
     end
 
-    if imgui.button(gui_util.tr("hud_element.entry.box_preview_box", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.box_preview_box", item_config_key)) then
         config:set(item_config_key, not config:get(item_config_key))
     end
 
@@ -429,21 +429,21 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     changed = generic.draw_slider_settings(nil, {
         {
             config_key = config_key .. ".box.x",
-            label = gui_util.tr("hud_element.entry.pos_x"),
+            label = util_gui.tr("hud_element.entry.pos_x"),
         },
         {
             config_key = config_key .. ".box.y",
-            label = gui_util.tr("hud_element.entry.pos_y"),
+            label = util_gui.tr("hud_element.entry.pos_y"),
         },
     }, -1920, 1920, 1, "%.0f")
     changed = generic.draw_slider_settings(nil, {
         {
             config_key = config_key .. ".box.w",
-            label = gui_util.tr("hud_element.entry.size_x"),
+            label = util_gui.tr("hud_element.entry.size_x"),
         },
         {
             config_key = config_key .. ".box.h",
-            label = gui_util.tr("hud_element.entry.size_y"),
+            label = util_gui.tr("hud_element.entry.size_y"),
         },
     }, -1920, 1920, 1, "%.0f") or changed
 
@@ -478,11 +478,11 @@ local function draw_progress_part(elem, elem_config, config_key)
     if elem_config.enabled_offset_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_offset_x",
-            label = gui_util.tr("hud_element.entry.box_enable_offset_x"),
+            label = util_gui.tr("hud_element.entry.box_enable_offset_x"),
         }, {
             {
                 config_key = config_key .. ".offset_x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
+                label = util_gui.tr("hud_element.entry.slider_x"),
             },
         }, -4000, 4000, 1, "%.0f")
 
@@ -498,11 +498,11 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_clock_offset_x",
-            label = gui_util.tr("hud_element.entry.box_enable_clock_offset_x"),
+            label = util_gui.tr("hud_element.entry.box_enable_clock_offset_x"),
         }, {
             {
                 config_key = config_key .. ".clock_offset_x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
+                label = util_gui.tr("hud_element.entry.slider_x"),
             },
         }, -4000, 4000, 1, "%.0f")
 
@@ -521,11 +521,11 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_num_offset_x",
-            label = gui_util.tr("hud_element.entry.box_enable_num_offset_x"),
+            label = util_gui.tr("hud_element.entry.box_enable_num_offset_x"),
         }, {
             {
                 config_key = config_key .. ".num_offset_x",
-                label = gui_util.tr("hud_element.entry.slider_x"),
+                label = util_gui.tr("hud_element.entry.slider_x"),
             },
         }, -4000, 4000, 1, "%.0f")
 
@@ -565,7 +565,7 @@ local function draw_progress_text(elem, elem_config, config_key)
     if elem_config.align_left ~= nil then
         if
             set:checkbox(
-                gui_util.tr("hud_element.entry.box_align_left"),
+                util_gui.tr("hud_element.entry.box_align_left"),
                 config_key .. ".align_left"
             )
         then

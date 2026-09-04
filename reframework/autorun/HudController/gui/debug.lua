@@ -7,10 +7,10 @@
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
-local gui_util = require("HudController.gui.util")
 local hud_debug = require("HudController.hud.debug.init")
 local mod = require("HudController.data.mod")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -285,20 +285,20 @@ function this.draw()
     local keys
 
     util_imgui.draw_child_window("debug_child_window", function()
-        if imgui.button(gui_util.tr("debug.button_add_profile")) then
+        if imgui.button(util_gui.tr("debug.button_add_profile")) then
             hud_debug.add_all_element_profile()
         end
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("debug.button_write_all")) then
+        if imgui.button(util_gui.tr("debug.button_write_all")) then
             hud_debug.write_all_elements()
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("debug.button_clear_default")) then
+        if imgui.button(util_gui.tr("debug.button_clear_default")) then
             defaults.play_object:clear()
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
@@ -336,15 +336,15 @@ function this.draw()
 
         util_imgui.set_label(config.lang:tr("debug.combo_elem_cache"))
 
-        set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
+        set:checkbox(util_gui.tr("debug.box_show_disabled"), "debug.show_disabled")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-        set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
+        set:checkbox(util_gui.tr("debug.box_enable_log"), "debug.is_debug")
         imgui.same_line()
-        set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
+        set:checkbox(util_gui.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
 
         keys = hud_debug.get_keys(not config_debug.show_disabled)
 
-        if imgui.button(gui_util.tr("debug.button_snapshot")) then
+        if imgui.button(util_gui.tr("debug.button_snapshot")) then
             hud_debug.make_snapshot(keys)
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
@@ -352,13 +352,13 @@ function this.draw()
         imgui.same_line()
         imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
 
-        set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
+        set:checkbox(util_gui.tr("debug.box_filter"), "debug.is_filter")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
         imgui.end_disabled()
 
         imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
 
-        if imgui.button(gui_util.tr("debug.button_perf_test")) then
+        if imgui.button(util_gui.tr("debug.button_perf_test")) then
             hud_debug.perf_test()
         end
         util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")

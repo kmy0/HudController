@@ -5,8 +5,8 @@
 ---@field protected _last_cursor_pos number
 ---@field protected _dir integer
 
-local gui_util = require("HudController.gui.util")
 local mod = require("HudController.data.mod")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class Drag
@@ -26,7 +26,7 @@ function this:draw_drag_button(unique_key, value, y_size)
     self._start_pos = imgui.get_cursor_screen_pos().y
     y_size = y_size or 0
 
-    util_imgui.dummy_button(gui_util.tr("misc.text_drag", unique_key), { 0, y_size })
+    util_imgui.dummy_button(util_gui.tr("misc.text_drag", unique_key), { 0, y_size })
     local hover = imgui.is_item_hovered()
     local mouse_down = imgui.is_mouse_down(0)
 

@@ -2,9 +2,9 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local gui_util = require("HudController.gui.util")
 local m = require("HudController.util.ref.methods")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -84,7 +84,7 @@ local function draw_weapon(elem, elem_config, config_key)
     local item_config_key = config_key .. ".no_focus"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_weapon_no_focus", item_config_key),
+            util_gui.tr("hud_element.entry.box_weapon_no_focus", item_config_key),
             item_config_key
         )
     then
@@ -104,7 +104,7 @@ local function draw_itembar(elem, elem_config, config_key)
     local item_config_key = config_key .. ".children.slider.appear_open"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_appear_open", item_config_key),
+            util_gui.tr("hud_element.entry.box_appear_open", item_config_key),
             item_config_key
         )
     then
@@ -114,7 +114,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.slider.move_next"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_move_next", item_config_key),
+            util_gui.tr("hud_element.entry.box_move_next", item_config_key),
             item_config_key
         )
     then
@@ -125,7 +125,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".start_expanded"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_start_expanded", item_config_key),
+            util_gui.tr("hud_element.entry.box_start_expanded", item_config_key),
             item_config_key
         )
     then
@@ -137,7 +137,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.mantle.always_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_always_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_always_visible", item_config_key),
             item_config_key
         )
     then
@@ -147,7 +147,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.mantle.timer_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_timer_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_timer_visible", item_config_key),
             item_config_key
         )
     then
@@ -161,7 +161,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.all_slider.appear_open"
     if
         set:checkbox(
-            gui_util.tr(
+            util_gui.tr(
                 "hud_element.entry.box_appear_open",
                 item_config_key,
                 "expanded_appear_open"
@@ -175,7 +175,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.all_slider.ammo_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_itembar_ammo_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_itembar_ammo_visible", item_config_key),
             item_config_key
         )
     then
@@ -185,7 +185,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.all_slider.slinger_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_itembar_slinger_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_itembar_slinger_visible", item_config_key),
             item_config_key
         )
     then
@@ -197,7 +197,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.all_slider.disable_right_stick"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_itembar_disable_right_stick", item_config_key),
+            util_gui.tr("hud_element.entry.box_itembar_disable_right_stick", item_config_key),
             item_config_key
         )
     then
@@ -209,7 +209,7 @@ local function draw_itembar(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.all_slider.enable_mouse_control"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_itembar_enable_mouse_control", item_config_key),
+            util_gui.tr("hud_element.entry.box_itembar_enable_mouse_control", item_config_key),
             item_config_key
         )
     then
@@ -222,7 +222,7 @@ local function draw_itembar(elem, elem_config, config_key)
     local config_value = config:get(item_config_key)
     if
         set:slider_int(
-            gui_util.tr("hud_element.entry.slider_expanded_itembar_control"),
+            util_gui.tr("hud_element.entry.slider_expanded_itembar_control"),
             item_config_key,
             -1,
             #mod.map.slider_expanded_itembar_control - 1,
@@ -240,7 +240,7 @@ local function draw_itembar(elem, elem_config, config_key)
     local changed_value = generic.draw_combo(
         nil,
         item_config_key,
-        gui_util.tr("hud_element.entry.combo_expanded_itembar_decide_key"),
+        util_gui.tr("hud_element.entry.combo_expanded_itembar_decide_key"),
         state.combo.item_decide
     )
 
@@ -263,7 +263,7 @@ local function draw_notice(elem, elem_config, config_key)
     local changed_value = generic.draw_combo(
         nil,
         item_config_key,
-        gui_util.tr("hud_element.entry.category_notice_enemy"),
+        util_gui.tr("hud_element.entry.category_notice_enemy"),
         state.combo.enemy_msg_type
     )
 
@@ -273,14 +273,14 @@ local function draw_notice(elem, elem_config, config_key)
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud_element.entry.button_send", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_send", item_config_key)) then
         m.sendEnemyMessage(0, config:get(item_config_key))
     end
 
     item_config_key = config_key .. ".cache_msg"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_cache_messages", item_config_key),
+            util_gui.tr("hud_element.entry.box_cache_messages", item_config_key),
             item_config_key
         )
     then
@@ -288,7 +288,7 @@ local function draw_notice(elem, elem_config, config_key)
     end
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("hud_element.entry.button_clear", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_clear", item_config_key)) then
         elem.message_log_cache:clear()
     end
 
@@ -359,13 +359,13 @@ local function draw_notice(elem, elem_config, config_key)
     generic.draw_combo(
         nil,
         item_config_key,
-        gui_util.tr("hud_element.entry.combo_log_id"),
+        util_gui.tr("hud_element.entry.combo_log_id"),
         state.combo.log_id
     )
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud_element.entry.button_hide", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_hide", item_config_key)) then
         local key = tostring(state.combo.log_id:get_key(config:get(item_config_key .. "_combo")))
         if not elem.log_id[key] then
             local i = util_table.size(elem.log_id)
@@ -410,7 +410,7 @@ local function draw_notice(elem, elem_config, config_key)
                 imgui.table_set_column_index(2)
                 if
                     imgui.button(
-                        gui_util.tr("hud_element.entry.button_remove", "log_id_remove", id)
+                        util_gui.tr("hud_element.entry.button_remove", "log_id_remove", id)
                     )
                 then
                     elem:set_log_id(rows[i], nil)
@@ -487,7 +487,7 @@ local function draw_name_access(elem, elem_config, config_key)
     local config_value = config:get(item_config_key)
     if
         set:slider_float(
-            gui_util.tr("hud_element.entry.slider_draw_distance"),
+            util_gui.tr("hud_element.entry.slider_draw_distance"),
             item_config_key,
             0,
             50,
@@ -550,7 +550,7 @@ local function draw_name_other(elem, elem_config, config_key)
     local config_value = config:get(item_config_key)
     if
         set:slider_float(
-            gui_util.tr("hud_element.entry.slider_draw_distance", item_config_key),
+            util_gui.tr("hud_element.entry.slider_draw_distance", item_config_key),
             item_config_key,
             0,
             50,
@@ -565,7 +565,7 @@ local function draw_name_other(elem, elem_config, config_key)
     config_value = config:get(item_config_key)
     if
         set:slider_float(
-            gui_util.tr("hud_element.entry.slider_draw_distance", item_config_key),
+            util_gui.tr("hud_element.entry.slider_draw_distance", item_config_key),
             item_config_key,
             0,
             50,
@@ -594,7 +594,7 @@ local function draw_ammo(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_parts_behavior"))
     local item_config_key = config_key .. ".no_hide_parts"
     if
-        set:checkbox(gui_util.tr("hud_element.entry.box_no_hide", item_config_key), item_config_key)
+        set:checkbox(util_gui.tr("hud_element.entry.box_no_hide", item_config_key), item_config_key)
     then
         elem:set_no_hide_parts(elem_config.no_hide_parts)
     end
@@ -611,7 +611,7 @@ local function draw_radial(elem, elem_config, config_key)
     local item_config_key = config_key .. ".expanded"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_always_expanded", item_config_key),
+            util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
             item_config_key
         )
     then
@@ -622,7 +622,7 @@ local function draw_radial(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.pallet.expanded"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_always_expanded", item_config_key),
+            util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
             item_config_key
         )
     then
@@ -641,7 +641,7 @@ local function draw_slinger_reticle(elem, elem_config, config_key)
     local item_config_key = config_key .. ".children.slinger.hide_slinger_empty"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_hide_slinger_empty", item_config_key),
+            util_gui.tr("hud_element.entry.box_hide_slinger_empty", item_config_key),
             item_config_key
         )
     then
@@ -663,7 +663,7 @@ local function draw_sharpness(elem, elem_config, config_key)
     local config_value = config:get(item_config_key)
     if
         set:slider_int(
-            gui_util.tr("hud_element.entry.state"),
+            util_gui.tr("hud_element.entry.state"),
             item_config_key,
             -1,
             #mod.map.slider_sharpness_state - 1,
@@ -688,7 +688,7 @@ local function draw_clock(elem, elem_config, config_key)
     local item_config_key = config_key .. ".hide_map_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_hide_map_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_hide_map_visible", item_config_key),
             item_config_key
         )
     then
@@ -709,7 +709,7 @@ local function draw_shortcut_keyboard(elem, elem_config, config_key)
     local item_config_key = config_key .. ".no_hide_elements"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_no_hide_elements", item_config_key),
+            util_gui.tr("hud_element.entry.box_no_hide_elements", item_config_key),
             item_config_key
         )
     then
@@ -723,7 +723,7 @@ local function draw_shortcut_keyboard(elem, elem_config, config_key)
     item_config_key = config_key .. ".always_visible"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_always_visible", item_config_key),
+            util_gui.tr("hud_element.entry.box_always_visible", item_config_key),
             item_config_key
         )
     then
@@ -751,7 +751,7 @@ local function draw_minimap(elem, elem_config, config_key)
     local changed_value = generic.draw_combo(
         nil,
         item_config_key,
-        gui_util.tr("hud_element.entry.combo_map_filter"),
+        util_gui.tr("hud_element.entry.combo_map_filter"),
         state.combo.map_filter
     )
 
@@ -764,7 +764,7 @@ local function draw_minimap(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_classic_minimap"))
     item_config_key = config_key .. ".enabled_classic_minimap"
     if
-        set:checkbox(gui_util.tr("hud_element.entry.box_enable", item_config_key), item_config_key)
+        set:checkbox(util_gui.tr("hud_element.entry.box_enable", item_config_key), item_config_key)
     then
         elem:set_enable_classic_minimap(elem_config.enabled_classic_minimap)
     end
@@ -775,7 +775,7 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_fov",
-            label = gui_util.tr("hud_element.entry.box_enable_map_fov"),
+            label = util_gui.tr("hud_element.entry.box_enable_map_fov"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.fov_map",
@@ -795,7 +795,7 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_icon_scale",
-            label = gui_util.tr("hud_element.entry.box_enable_icon_scale"),
+            label = util_gui.tr("hud_element.entry.box_enable_icon_scale"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.scale_icon",
@@ -813,7 +813,7 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_rot_map",
-            label = gui_util.tr("hud_element.entry.box_enable_rotation"),
+            label = util_gui.tr("hud_element.entry.box_enable_rotation"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.rot_map",
@@ -831,7 +831,7 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_angle_map",
-            label = gui_util.tr("hud_element.entry.box_enable_angle"),
+            label = util_gui.tr("hud_element.entry.box_enable_angle"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.angle_map",
@@ -849,7 +849,7 @@ local function draw_minimap(elem, elem_config, config_key)
     item_config_key = config_key .. ".children.pl_icon_pulse.enabled_play_state"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_hide_pl_icon_pulse", item_config_key),
+            util_gui.tr("hud_element.entry.box_hide_pl_icon_pulse", item_config_key),
             item_config_key
         )
     then
@@ -876,7 +876,7 @@ local function draw_stamina(elem, elem_config, config_key)
     local item_config_key = config_key .. ".children.ex.hide_pulse"
     if
         set:checkbox(
-            gui_util.tr("hud_element.entry.box_hide_pulse", item_config_key),
+            util_gui.tr("hud_element.entry.box_hide_pulse", item_config_key),
             item_config_key
         )
     then

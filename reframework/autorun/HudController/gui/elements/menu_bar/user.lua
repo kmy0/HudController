@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
 local user = require("HudController.hud.user.init")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
@@ -56,12 +56,12 @@ local function draw_user_menu()
     imgui.spacing()
     imgui.indent(2)
 
-    util_menubar.draw_menu(gui_util.tr("menu.user.scripts.name"), function()
+    util_menubar.draw_menu(util_gui.tr("menu.user.scripts.name"), function()
         draw_user_sub_menu(user.script)
     end, nil, user.script:is_need_attention() and mod.enum.colors.info or nil)
     util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
 
-    util_menubar.draw_menu(gui_util.tr("menu.user.conditions.name"), function()
+    util_menubar.draw_menu(util_gui.tr("menu.user.conditions.name"), function()
         draw_user_sub_menu(user.condition)
     end, nil, user.condition:is_need_attention() and mod.enum.colors.info or nil)
     util_imgui.tooltip(string.format(".../reframework/data/%s/user_conditions", config.name))
@@ -72,7 +72,7 @@ end
 
 function this.draw()
     util_menubar.draw_menu(
-        gui_util.tr("menu.user.name"),
+        util_gui.tr("menu.user.name"),
         draw_user_menu,
         nil,
         (user.script:is_need_attention() or user.condition:is_need_attention())

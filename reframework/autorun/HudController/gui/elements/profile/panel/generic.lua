@@ -1,10 +1,10 @@
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
 
@@ -12,7 +12,7 @@ local ace_map = data.ace.map
 local set = state.set
 
 local this = {}
-this.separator = gui_util.separator:new({
+this.separator = util_gui.separator:new({
     "hide",
     "enabled_scale",
     "enabled_offset",
@@ -180,7 +180,7 @@ function this.draw(elem, elem_config, config_key)
     if elem_config.hide ~= nil then
         if
             set:checkbox(
-                gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"),
+                util_gui.tr("hud_element.entry.box_hide", config_key .. ".hide"),
                 config_key .. ".hide"
             )
         then
@@ -197,15 +197,15 @@ function this.draw(elem, elem_config, config_key)
         if
             this.draw_slider_settings({
                 config_key = config_key .. ".enabled_scale",
-                label = gui_util.tr("hud_element.entry.box_enable_scale"),
+                label = util_gui.tr("hud_element.entry.box_enable_scale"),
             }, {
                 {
                     config_key = config_key .. ".scale.x",
-                    label = gui_util.tr("hud_element.entry.slider_x"),
+                    label = util_gui.tr("hud_element.entry.slider_x"),
                 },
                 {
                     config_key = config_key .. ".scale.y",
-                    label = gui_util.tr("hud_element.entry.slider_y"),
+                    label = util_gui.tr("hud_element.entry.slider_y"),
                 },
             }, -10.0, 10.0, 0.01, "%.2f")
         then
@@ -222,16 +222,16 @@ function this.draw(elem, elem_config, config_key)
             this.draw_slider_settings(
                 {
                     config_key = config_key .. ".enabled_offset",
-                    label = gui_util.tr("hud_element.entry.box_enable_offset"),
+                    label = util_gui.tr("hud_element.entry.box_enable_offset"),
                 },
                 {
                     {
                         config_key = config_key .. ".offset.x",
-                        label = gui_util.tr("hud_element.entry.slider_x"),
+                        label = util_gui.tr("hud_element.entry.slider_x"),
                     },
                     {
                         config_key = config_key .. ".offset.y",
-                        label = gui_util.tr("hud_element.entry.slider_y"),
+                        label = util_gui.tr("hud_element.entry.slider_y"),
                     },
                 },
                 -4000,
@@ -256,7 +256,7 @@ function this.draw(elem, elem_config, config_key)
         if
             this.draw_slider_settings({
                 config_key = config_key .. ".enabled_rot",
-                label = gui_util.tr("hud_element.entry.box_enable_rotation"),
+                label = util_gui.tr("hud_element.entry.box_enable_rotation"),
             }, {
                 {
                     config_key = config_key .. ".rot",
@@ -274,7 +274,7 @@ function this.draw(elem, elem_config, config_key)
         if
             this.draw_slider_settings({
                 config_key = config_key .. ".enabled_opacity",
-                label = gui_util.tr("hud_element.entry.box_enable_opacity"),
+                label = util_gui.tr("hud_element.entry.box_enable_opacity"),
             }, {
                 {
                     config_key = config_key .. ".opacity",
@@ -295,7 +295,7 @@ function this.draw(elem, elem_config, config_key)
                 config_key = config_key .. ".enabled_segment",
                 label = string.format(
                     "%s##%s",
-                    gui_util.tr("hud_element.entry.box_enable_segment"),
+                    util_gui.tr("hud_element.entry.box_enable_segment"),
                     config_key
                 ),
             },
@@ -325,7 +325,7 @@ function this.draw(elem, elem_config, config_key)
         )
         if
             set:checkbox(
-                gui_util.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
+                util_gui.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
                 config_key .. ".disable_fade"
             )
         then
@@ -336,7 +336,7 @@ function this.draw(elem, elem_config, config_key)
         imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
         if
             set:checkbox(
-                gui_util.tr(
+                util_gui.tr(
                     "hud_element.entry.box_disable_fade_opacity",
                     config_key .. ".disable_fade_opacity"
                 ),

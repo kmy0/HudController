@@ -16,7 +16,7 @@ local config = require("HudController.config.init")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 local set = require("HudController.gui.state").set
-local gui_util = require("HudController.gui.util")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class CombatCondition
@@ -115,29 +115,29 @@ function this:draw_additional_options()
     local options = self:get_additional_options_table()
 
     set:checkbox(
-        gui_util.tr("menu.bind.condition.quest_in_combat"),
+        util_gui.tr("menu.bind.condition.quest_in_combat"),
         self:get_config_key_option("quest_in_combat")
     )
     set:checkbox(
-        gui_util.tr("menu.bind.condition.ride_ignore_combat"),
+        util_gui.tr("menu.bind.condition.ride_ignore_combat"),
         self:get_config_key_option("ride_ignore_combat")
     )
     util_imgui.tooltip(config.lang:tr("menu.bind.condition.ride_ignore_combat_tooltip"), true)
     set:slider_int(
-        gui_util.tr("menu.bind.condition.out_of_combat_delay"),
+        util_gui.tr("menu.bind.condition.out_of_combat_delay"),
         self:get_config_key_option("out_of_combat_delay"),
         0,
         600,
         options.out_of_combat_delay == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(options.out_of_combat_delay, nil, true)
+            or util_gui.seconds_to_minutes_string(options.out_of_combat_delay, nil, true)
     )
     set:slider_int(
-        gui_util.tr("menu.bind.condition.in_combat_delay"),
+        util_gui.tr("menu.bind.condition.in_combat_delay"),
         self:get_config_key_option("in_combat_delay"),
         0,
         600,
         options.in_combat_delay == 0 and config.lang:tr("misc.text_disabled")
-            or gui_util.seconds_to_minutes_string(options.in_combat_delay, nil, true)
+            or util_gui.seconds_to_minutes_string(options.in_combat_delay, nil, true)
     )
 end
 

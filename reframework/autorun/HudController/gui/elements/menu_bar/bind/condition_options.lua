@@ -1,7 +1,7 @@
 local bind_condition = require("HudController.hud.bind_condition.init")
 local config = require("HudController.config.init")
-local gui_util = require("HudController.gui.util")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
@@ -16,12 +16,12 @@ local function draw_condition_option_menu()
 
     util_imgui.separator_text(config.lang:tr("menu.bind.condition_option.category_general"))
     set:checkbox(
-        gui_util.tr("menu.bind.condition_option.box_switchback"),
+        util_gui.tr("menu.bind.condition_option.box_switchback"),
         "mod.bind.condition.switchback"
     )
     util_imgui.tooltip(config.lang:tr("menu.bind.condition_option.tooltip_switchback"), true)
     set:checkbox(
-        gui_util.tr("menu.bind.condition_option.box_highlight_pass"),
+        util_gui.tr("menu.bind.condition_option.box_highlight_pass"),
         "mod.bind.condition.highlight_pass"
     )
 
@@ -42,7 +42,7 @@ end
 
 function this.draw()
     util_menubar.draw_menu(
-        gui_util.tr("menu.bind.condition_option.name"),
+        util_gui.tr("menu.bind.condition_option.name"),
         draw_condition_option_menu
     )
 end

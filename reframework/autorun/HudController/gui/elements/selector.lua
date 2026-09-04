@@ -1,9 +1,9 @@
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -30,22 +30,22 @@ function this.draw()
     imgui.begin_child_window("selector_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
-    imgui.push_item_width(gui_util.get_item_size())
-    if set:combo(gui_util.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
+    imgui.push_item_width(util_gui.get_item_size())
+    if set:combo(util_gui.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
         config.selector:swap()
         hud.reinit()
     end
     imgui.pop_item_width()
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_new")) then
+    if imgui.button(util_gui.tr("selector.button_new")) then
         state.input = nil
         config.selector:new_file()
         state.combo.config:swap(config.selector.sorted)
     end
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_rename")) then
+    if imgui.button(util_gui.tr("selector.button_rename")) then
         local name = state.combo.config:get_value(config_sel.combo_file)
         state.input =
             { buf = name ~= config.selector.default_name and name or "", type = "rename_config" }
@@ -54,19 +54,19 @@ function this.draw()
     imgui.begin_disabled(util_table.size(config.selector.files) == 1)
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("selector.button_remove")) then
+    if imgui.button(util_gui.tr("selector.button_remove")) then
         state.input = nil
         util_imgui.open_popup("config_remove", 62, 30)
     end
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_export")) then
+    if imgui.button(util_gui.tr("selector.button_export")) then
         config.selector:export()
     end
     util_imgui.tooltip(config.lang:tr("selector.tooltip_button_export"))
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_import")) and config.selector:try_import() then
+    if imgui.button(util_gui.tr("selector.button_import")) and config.selector:try_import() then
         state.input = nil
         local new_file = config.selector:new_file()
         state.combo.config:swap(config.selector.sorted)
@@ -98,14 +98,14 @@ function this.draw()
     end
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_duplicate")) then
+    if imgui.button(util_gui.tr("selector.button_duplicate")) then
         state.input = nil
         config.selector:duplicate_current_file()
         state.combo.config:swap(config.selector.sorted)
     end
 
     imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_close")) then
+    if imgui.button(util_gui.tr("selector.button_close")) then
         state.input = nil
         this.close()
     end
@@ -122,9 +122,9 @@ function this.draw()
         end
     end
 
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
     set:combo(
-        gui_util.tr("selector.combo_backup"),
+        util_gui.tr("selector.combo_backup"),
         "combo_file_backup",
         state.combo.config_backup.values
     )
@@ -133,7 +133,7 @@ function this.draw()
 
     imgui.begin_disabled(state.combo.config_backup:empty())
 
-    if imgui.button(gui_util.tr("selector.button_restore")) then
+    if imgui.button(util_gui.tr("selector.button_restore")) then
         state.input = nil
         if config.selector:restore_backup() then
             state.combo.config:swap(config.selector.sorted)
@@ -144,7 +144,7 @@ function this.draw()
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("selector.button_remove_backup")) then
+    if imgui.button(util_gui.tr("selector.button_remove_backup")) then
         state.input = nil
         util_imgui.open_popup("config_remove_backup", 62, 30)
     end

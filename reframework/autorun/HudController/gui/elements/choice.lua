@@ -1,9 +1,9 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
 local hud = require("HudController.hud.init")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
@@ -17,10 +17,10 @@ local reverse_sort = false
 function this.draw_hud()
     local config_mod = config.current.mod
 
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
     imgui.begin_disabled(config_mod.canvas.draw)
 
-    if set:combo(gui_util.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
+    if set:combo(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input = nil
         hud.request_hud(config_mod.hud[config_mod.combo.hud])
     end
@@ -28,7 +28,7 @@ function this.draw_hud()
     imgui.pop_item_width()
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud.button_new")) then
+    if imgui.button(util_gui.tr("hud.button_new")) then
         state.input = nil
         hud.operations.new()
         config_mod.combo.hud = #config_mod.hud
@@ -40,14 +40,14 @@ function this.draw_hud()
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     imgui.begin_disabled(state.input ~= nil)
-    if imgui.button(gui_util.tr("hud.button_rename")) then
+    if imgui.button(util_gui.tr("hud.button_rename")) then
         state.input = { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
     end
     imgui.end_disabled()
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud.button_remove")) then
+    if imgui.button(util_gui.tr("hud.button_remove")) then
         util_imgui.open_popup("hud_remove", 62, 30)
         state.input = nil
     end
@@ -70,7 +70,7 @@ function this.draw_hud()
 
     imgui.same_line()
 
-    local button = imgui.button(gui_util.tr("hud.button_export"))
+    local button = imgui.button(util_gui.tr("hud.button_export"))
     util_imgui.tooltip(config.lang:tr("hud.button_export_tooltip"))
     if button then
         hud.operations.export(config_mod.hud[config_mod.combo.hud])
@@ -79,7 +79,7 @@ function this.draw_hud()
     imgui.same_line()
     imgui.end_disabled()
 
-    button = imgui.button(gui_util.tr("hud.button_import"))
+    button = imgui.button(util_gui.tr("hud.button_import"))
     util_imgui.tooltip(config.lang:tr("hud.button_import_tooltip"))
     if button then
         hud.operations.import()
@@ -88,7 +88,7 @@ function this.draw_hud()
 
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud.button_save")) then
+    if imgui.button(util_gui.tr("hud.button_save")) then
         config:backup()
         config:save_no_timer()
     end
@@ -97,7 +97,7 @@ function this.draw_hud()
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(config_mod.hud))
 
-    if imgui.button(gui_util.tr("hud.button_sort")) then
+    if imgui.button(util_gui.tr("hud.button_sort")) then
         state.input = nil
         sorter.is_opened = true
         mod.pause = true
@@ -124,14 +124,14 @@ end
 function this.draw_element()
     local config_mod = config.current.mod
 
-    imgui.push_item_width(gui_util.get_item_size())
+    imgui.push_item_width(util_gui.get_item_size())
 
-    set:combo(gui_util.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
+    set:combo(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
 
     imgui.pop_item_width()
     imgui.same_line()
 
-    if imgui.button(gui_util.tr("hud_element.button_add")) then
+    if imgui.button(util_gui.tr("hud_element.button_add")) then
         hud.operations.add_element(
             state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
         )
@@ -144,7 +144,7 @@ function this.draw_element()
             or util_table.empty(config_mod.hud[config_mod.combo.hud].elements or {})
     )
 
-    if imgui.button(gui_util.tr("hud_element.button_sort")) then
+    if imgui.button(util_gui.tr("hud_element.button_sort")) then
         local elements = config_mod.hud[config_mod.combo.hud].elements or {}
         hud.operations.sort_elements(util_table.values(elements), reverse_sort)
         config:save()
