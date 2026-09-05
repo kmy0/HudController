@@ -147,27 +147,31 @@ function this.update(current_hud, force)
         new_profiles = res.profiles
     end
 
-    if
-        not force
-        and current_hud --TODO: refactor
+    local switchback = bind_conditions.switchback
+    local same_as_current = current_hud
         and new_hud_key == current_hud.hud.key
-        and current_hud.profile == new_profiles
-    then
+        and new_profiles == current_hud.profile
+
+    if same_as_current and not force then
         return
-    elseif not new_hud_key and this.previous_hud_key and bind_conditions.switchback then
-        new_hud_key = this.previous_hud_key
-        new_profiles = this.previous_profile_key
-        this.previous_hud_key = nil
-        this.previous_profile_key = nil
-    elseif
-        new_hud_key
+    end
+
+    local restore_hud = switchback and not new_hud_key and this.previous_hud_key
+    local restore_profile = switchback
+        and new_hud_key
         and not new_profiles
         and this.previous_profile_key
-        and bind_conditions.switchback
-    then
+
+    if restore_hud then
+        new_hud_key = this.previous_hud_key
+        new_profiles = this.previous_profile_key
+
+        this.previous_hud_key = nil
+        this.previous_profile_key = nil
+    elseif restore_profile then
         new_profiles = this.previous_profile_key
         this.previous_profile_key = nil
-    elseif new_hud_key then
+    elseif new_hud_key and current_hud then
         this.previous_hud_key = current_hud.hud.key
         this.previous_profile_key = current_hud.profile
     else

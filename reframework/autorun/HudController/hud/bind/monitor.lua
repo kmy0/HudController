@@ -22,39 +22,35 @@ function this:new(...)
 end
 
 function this:execute_actions()
-    local current_hud = hud.get_current()
-    local hud_callback = {}
+    local current_hud = hud.get_current() --[[@as ModProfileConfig]]
+    local requested_hud = hud.profile_switcher.requested_hud
+    local is_fading = fade_manager.is_active()
+
+    local hud_callbacks = {}
 
     for i = 1, #self.managers["hud"].actions do
         local bind = self.managers["hud"].actions[i]
+        local value = bind.bound_value
 
-        if
-            not current_hud
-            or bind.bound_value.hud ~= current_hud.key
-            or bind.bound_value.profile ~= current_hud.profile
-            or (
-                fade_manager.is_active()
-                and (
-                    (
-                        bind.bound_value.hud == current_hud.key
-                        and hud.profile_switcher.requested_hud
-                        and bind.bound_value.hud ~= hud.profile_switcher.requested_hud.hud.key
-                    )
-                    or (
-                        bind.bound_value.profile == current_hud.profile
-                        and hud.profile_switcher.requested_hud
-                        and bind.bound_value.profile
-                            ~= hud.profile_switcher.requested_hud.hud.profile
-                    )
-                )
-            ) --TODO: refactor
-        then
-            table.insert(hud_callback, bind)
-            break
+        local hud_changed = not current_hud or value.hud ~= current_hud.key
+        local profile_changed = not current_hud or value.profile ~= current_hud.profile
+
+        local requested_hud_changed = is_fading
+            and requested_hud
+            and value.hud == current_hud.key
+            and value.hud ~= requested_hud.hud.key
+
+        local requested_profile_changed = is_fading
+            and requested_hud
+            and value.profile == current_hud.profile
+            and value.profile ~= requested_hud.profile
+
+        if hud_changed or profile_changed or requested_hud_changed or requested_profile_changed then
+            table.insert(hud_callbacks, bind)
         end
     end
 
-    self.managers["hud"].actions = hud_callback
+    self.managers["hud"].actions = hud_callbacks
     bind_monitor.execute_actions(self)
 end
 
