@@ -626,7 +626,7 @@ function this:get_root()
     local parent = self.parent
     local ret = parent
     while parent do
-        parent = parent.parent
+        parent = parent.parent --[[@as HudBase?]]
         if parent then
             ret = parent
         end

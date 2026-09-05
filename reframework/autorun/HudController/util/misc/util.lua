@@ -125,7 +125,7 @@ function this.trunc_string2(text, max_width)
     local suffix_width = imgui.calc_text_size(suffix).x
 
     while #text > 0 do
-        text = text:sub(1, -2)
+        text = text:sub(1, -2) --[[@as string]]
 
         if imgui.calc_text_size(text).x + suffix_width <= max_width then
             return text .. suffix
