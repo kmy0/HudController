@@ -143,6 +143,16 @@ function this.request_hud_with_profiles(new_hud, profile_bit, force)
     ---@type table<string, {from: HudBaseConfigProfile, to: HudBaseConfigProfile}>
     local profile_changed = {}
     local profiles = util_misc.unpack_bits(profile_bit)
+    ---@type table<integer, integer>
+    local order = {}
+    for i, p in ipairs(new_hud.profile) do
+        order[p.key] = i
+    end
+
+    table.sort(profiles, function(a, b)
+        return order[a] < order[b]
+    end)
+
     for _, elem in pairs(new_hud.elements) do
         ---@type integer
         local new_profile

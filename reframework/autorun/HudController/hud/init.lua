@@ -112,6 +112,17 @@ function this.request_hud_with_profiles(new_hud, profile_bit, force)
     this.profile_switcher.request_hud_with_profiles(new_hud, profile_bit, force)
 end
 
+---@param new_hud ModProfileConfig
+---@param profile_bit integer
+function this.force_request_hud_with_profiles(new_hud, profile_bit)
+    this.profile_switcher.request_hud_with_profiles(new_hud, profile_bit, this.manager.force_update)
+    this.manager.force_update = false
+end
+
+function this.request_update()
+    this.manager.request_update()
+end
+
 function this.clear()
     this.manager.clear()
 end

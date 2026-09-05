@@ -124,8 +124,9 @@ local function eval_all_conditions()
 end
 
 ---@param current_hud ModHud
+---@param force boolean?
 ---@return {hud: ModProfileConfig?, profile: integer?}?
-function this.update(current_hud)
+function this.update(current_hud, force)
     local bind_conditions = config.current.mod.bind.condition
     ---@type integer?
     local new_hud_key
@@ -147,7 +148,8 @@ function this.update(current_hud)
     end
 
     if
-        current_hud --TODO: refactor
+        not force
+        and current_hud --TODO: refactor
         and new_hud_key == current_hud.hud.key
         and current_hud.profile == new_profiles
     then

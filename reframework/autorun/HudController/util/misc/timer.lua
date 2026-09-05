@@ -7,6 +7,7 @@
 ---@field protected _finished boolean
 ---@field protected _started boolean
 ---@field protected _auto_instances Timer[]
+---@field protected _one_time_instances table<any, Timer>
 ---@field protected _updated_frame integer
 ---@field protected _auto_update boolean
 ---@field protected _type TimerType
@@ -31,6 +32,7 @@ local frame_counter = require("HudController.util.misc.frame_counter")
 local this = {}
 this.__index = this
 this._auto_instances = setmetatable({}, { __mode = "v" })
+this._one_time_instances = {}
 
 ---@param timeout integer
 ---@param optional_args TimerOptionalArgs?
@@ -63,6 +65,20 @@ function this:new(timeout, optional_args)
     o.finished = o._update_on_call(o, o.finished)
 
     return o
+end
+
+---@param key any
+---@param timeout number
+---@param callback fun()
+---@param type TimerType? by default, os_clock
+function this.request_one_timer(key, timeout, callback, type)
+    local t = this._one_time_instances[key]
+    if t then
+        t:restart()
+    else
+        this._one_time_instances[key] =
+            this:new(timeout, { callback = callback, type = type, auto_start = true })
+    end
 end
 
 ---@protected
@@ -199,6 +215,13 @@ end
 re.on_frame(function()
     for _, t in pairs(this._auto_instances) do
         t:update()
+    end
+
+    for key, t in pairs(this._one_time_instances) do
+        t:update()
+        if t:finished() then
+            this._one_time_instances[key] = nil
+        end
     end
 end)
 

@@ -8,6 +8,7 @@ local hud = require("HudController.hud.init")
 local operations = require("HudController.hud.manager.operations")
 local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state")
+local timer = require("HudController.util.misc.timer")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -503,6 +504,7 @@ local function draw_profiles()
         end)
 
         reverse_sort = not reverse_sort
+        hud.request_update()
     end
     util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
 
@@ -578,6 +580,7 @@ local function draw_profiles()
         end)
 
         config:save()
+        timer.request_one_timer("on_elem_profile_sort", 2, hud.request_update, "frame")
     end
 end
 

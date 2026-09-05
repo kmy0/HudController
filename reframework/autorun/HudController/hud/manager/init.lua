@@ -2,6 +2,7 @@
 ---@field overridden_options TableProxy<string, boolean> --FIXME: DEPRECATED
 ---@field is_cleared boolean
 ---@field disable_condition_binds Timer
+---@field force_update boolean
 
 local ace_misc = require("HudController.util.ace.misc")
 local bind_condition = require("HudController.hud.bind_condition.init")
@@ -25,6 +26,7 @@ local this = {
     is_cleared = true,
     overridden_options = options.overridden_options, --FIXME: DEPRECATED
     disable_condition_binds = timer:new(0),
+    force_update = false,
 }
 
 local function verify_elements()
@@ -62,6 +64,10 @@ local function update_key_binds(config_mod)
     end
 
     return is_held
+end
+
+function this.request_update()
+    this.force_update = true
 end
 
 function this.update()
@@ -103,7 +109,7 @@ function this.update()
         return
     end
 
-    local request = bind_condition.update(profile_switcher.current_hud)
+    local request = bind_condition.update(profile_switcher.current_hud, this.force_update)
     if not request then
         return
     end
@@ -111,25 +117,26 @@ function this.update()
     if not request.hud and request.profile then --TODO: refactor
         local target_key = profile_switcher.requested_hud and profile_switcher.requested_hud.profile
             or profile_switcher.current_hud.profile
-        if target_key == request.profile then
+        if target_key == request.profile and not this.force_update then
             return
         end
 
         profile_switcher.request_hud_with_profiles(
             profile_switcher.current_hud.hud or profile_switcher.requested_hud.hud,
-            request.profile
+            request.profile,
+            this.force_update
         )
     elseif not request.profile and request.hud then
         local target_key = profile_switcher.requested_hud and profile_switcher.requested_hud.hud.key
             or profile_switcher.current_hud.hud.key
-        if target_key == request.hud.key then
+        if target_key == request.hud.key and not this.force_update then
             return
         end
 
         config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
             return o.key == request.hud.key
         end) --[[@as integer]]
-        profile_switcher.request_hud_with_default(request.hud)
+        profile_switcher.request_hud_with_default(request.hud, this.force_update)
     else
         local target_key_a = profile_switcher.requested_hud
                 and profile_switcher.requested_hud.hud.key
@@ -138,15 +145,21 @@ function this.update()
                 and profile_switcher.requested_hud.profile
             or profile_switcher.current_hud.profile
 
-        if target_key_a == request.hud.key and target_key_b == request.profile then
+        if
+            target_key_a == request.hud.key
+            and target_key_b == request.profile
+            and not this.force_update
+        then
             return
         end
 
         config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
             return o.key == request.hud.key
         end) --[[@as integer]]
-        profile_switcher.request_hud_with_profiles(request.hud, request.profile)
+        profile_switcher.request_hud_with_profiles(request.hud, request.profile, this.force_update)
     end
+
+    this.force_update = false
 end
 
 function this.clear()
@@ -167,6 +180,7 @@ function this.clear()
 
     cache.clear_all()
     this.is_cleared = true
+    this.force_update = false
 end
 
 function this.init()
