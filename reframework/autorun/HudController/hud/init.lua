@@ -56,15 +56,15 @@ function this.get_current(strict)
         or (
             strict
             and (
-                not this.profile_switcher.current_hud.elements
-                or util_table.empty(this.profile_switcher.current_hud.elements)
+                not this.profile_switcher.current_hud.hud.elements
+                or util_table.empty(this.profile_switcher.current_hud.hud.elements)
             )
         )
     then
         return
     end
 
-    return this.profile_switcher.current_hud
+    return this.profile_switcher.current_hud.hud
 end
 
 ---@return boolean?
@@ -101,14 +101,15 @@ end
 
 ---@param new_hud ModProfileConfig
 ---@param force boolean?
-function this.request_hud(new_hud, force)
-    this.profile_switcher.request_hud(new_hud, force)
+function this.request_hud_with_default(new_hud, force)
+    this.profile_switcher.request_hud_with_default(new_hud, force)
 end
 
 ---@param new_hud ModProfileConfig
+---@param profile_bit integer
 ---@param force boolean?
-function this.request_hud_with_default(new_hud, force)
-    this.profile_switcher.request_hud_with_default(new_hud, force)
+function this.request_hud_with_profiles(new_hud, profile_bit, force)
+    this.profile_switcher.request_hud_with_profiles(new_hud, profile_bit, force)
 end
 
 function this.clear()

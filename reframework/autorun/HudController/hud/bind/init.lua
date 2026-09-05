@@ -44,12 +44,7 @@ local function action_hud(bind)
     local config_mod = config.current.mod
     local hud_config = hud.operations.get_hud_by_key(bind.bound_value.hud --[[@as integer]])
 
-    if bind.bound_value.profile == 0 then
-        hud.request_hud_with_default(hud_config)
-    else
-        hud.request_hud_with_default(hud_config) --TODO:
-    end
-
+    hud.request_hud_with_profiles(hud_config, bind.bound_value.profile)
     config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
         return o.key == bind.bound_value.hud
     end) --[[@as integer]]

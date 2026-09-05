@@ -195,6 +195,8 @@ return {
                 tooltip_add_new_condition = "Conditions sets are evaluated from top to bottom",
                 menubar_element_profiles = "Element Profiles",
                 combo_elem_profile = "Element Profile",
+                button_clear = "Clear",
+                tooltip_wrong_parent_key = "PLACEHOLDER",
             },
             condition_option = {
                 name = "Condition Options",

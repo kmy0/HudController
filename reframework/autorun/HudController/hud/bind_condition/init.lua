@@ -20,6 +20,8 @@ local this = {
     conditions = {},
     ---@type integer?
     previous_hud_key = nil,
+    ---@type integer?
+    previous_profile_key = nil,
     ---@type ConditionSetPass[]
     passing_sets = {},
 }
@@ -42,12 +44,17 @@ end
 
 ---@param conditions ConditionSetConfig[]
 ---@param cache ConditionSetPass[]
+---@param parent_key integer?
 ---@return integer?
-local function eval_all_and_store(conditions, cache)
+local function eval_all_and_store(conditions, cache, parent_key)
     ---@type integer?
     local ret
 
     for i, cond_set in ipairs(conditions) do
+        if parent_key and parent_key ~= cond_set.parent_key then
+            return ret
+        end
+
         util_table.set_nested_value(cache, { i, "pass" }, false)
         util_table.set_nested_value(cache, { i, "children" }, {})
 
@@ -82,8 +89,11 @@ local function eval_conditions()
     local bind_conditions = config.current.mod.bind.condition
     for _, hud_conditions in ipairs(bind_conditions.hud) do
         if eval(hud_conditions.conditions or {}) then
-            for _, profile_conditions in ipairs(hud_conditions.children) do
-                if eval(profile_conditions.conditions or {}) then
+            for _, profile_conditions in ipairs(hud_conditions.children or {}) do
+                if
+                    profile_conditions.parent_key == hud_conditions.key
+                    and eval(profile_conditions.conditions or {})
+                then
                     return { hud = hud_conditions.key, profiles = profile_conditions.key }
                 end
             end
@@ -101,7 +111,8 @@ local function eval_all_conditions()
 
     local hud = eval_all_and_store(bind_conditions.hud, this.passing_sets)
     for i, cond_set in ipairs(bind_conditions.hud) do
-        local res = eval_all_and_store(cond_set.children or {}, this.passing_sets[i].children)
+        local res =
+            eval_all_and_store(cond_set.children or {}, this.passing_sets[i].children, cond_set.key)
         if not profiles then
             profiles = res
         end
@@ -112,8 +123,8 @@ local function eval_all_conditions()
     end
 end
 
----@param current_hud ModProfileConfig
----@return ModProfileConfig?
+---@param current_hud ModHud
+---@return {hud: ModProfileConfig?, profile: integer?}?
 function this.update(current_hud)
     local bind_conditions = config.current.mod.bind.condition
     ---@type integer?
@@ -135,20 +146,38 @@ function this.update(current_hud)
         new_profiles = res.profiles
     end
 
-    if current_hud and new_hud_key == current_hud.key then
+    if
+        current_hud --TODO: refactor
+        and new_hud_key == current_hud.hud.key
+        and current_hud.profile == new_profiles
+    then
         return
     elseif not new_hud_key and this.previous_hud_key and bind_conditions.switchback then
         new_hud_key = this.previous_hud_key
+        new_profiles = this.previous_profile_key
         this.previous_hud_key = nil
+        this.previous_profile_key = nil
+    elseif
+        new_hud_key
+        and not new_profiles
+        and this.previous_profile_key
+        and bind_conditions.switchback
+    then
+        new_profiles = this.previous_profile_key
+        this.previous_profile_key = nil
     elseif new_hud_key then
-        this.previous_hud_key = current_hud.key
+        this.previous_hud_key = current_hud.hud.key
+        this.previous_profile_key = current_hud.profile
     else
         return
     end
 
-    return util_table.value(config.current.mod.hud, function(_, value)
-        return value.key == new_hud_key
-    end)
+    return {
+        hud = util_table.value(config.current.mod.hud, function(_, value)
+            return value.key == new_hud_key
+        end),
+        profile = new_profiles,
+    }
 end
 
 function this.update_conditions_only()
@@ -159,17 +188,20 @@ end
 function this.reset()
     condition_base.reset_all()
     this.previous_hud_key = nil
+    this.previous_profile_key = nil
 end
 
 ---@param key integer
+---@param parent_key integer?
 ---@return ConditionSetConfig
-function this.new_condition_set(key)
+function this.new_condition_set(key, parent_key)
     return {
         key = key,
         conditions = {},
         combo_profile = 1,
         combo_condition = 1,
         collapsed = false,
+        parent_key = parent_key,
         children = {},
     }
 end

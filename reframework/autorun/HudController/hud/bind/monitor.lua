@@ -30,13 +30,24 @@ function this:execute_actions()
 
         if
             not current_hud
-            or bind.bound_value ~= current_hud.key
+            or bind.bound_value.hud ~= current_hud.key
+            or bind.bound_value.profile ~= current_hud.profile
             or (
-                bind.bound_value == current_hud.key
-                and fade_manager.is_active()
-                and hud.profile_switcher.requested_hud
-                and bind.bound_value ~= hud.profile_switcher.requested_hud.key
-            )
+                fade_manager.is_active()
+                and (
+                    (
+                        bind.bound_value.hud == current_hud.key
+                        and hud.profile_switcher.requested_hud
+                        and bind.bound_value.hud ~= hud.profile_switcher.requested_hud.hud.key
+                    )
+                    or (
+                        bind.bound_value.profile == current_hud.profile
+                        and hud.profile_switcher.requested_hud
+                        and bind.bound_value.profile
+                            ~= hud.profile_switcher.requested_hud.hud.profile
+                    )
+                )
+            ) --TODO: refactor
         then
             table.insert(hud_callback, bind)
             break

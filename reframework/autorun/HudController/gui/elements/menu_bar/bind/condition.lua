@@ -15,6 +15,7 @@
 local bind_condition = require("HudController.hud.bind_condition.init")
 local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
+local mod = require("HudController.data.mod")
 local state = require("HudController.gui.state")
 local util_bind = require("HudController.gui.elements.menu_bar.bind.util")
 local util_gui = require("HudController.gui.util")
@@ -349,19 +350,43 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     imgui.indent(2)
     imgui.begin_disabled(util_table.empty(values))
 
-    if
-        imgui.button(
-            util_gui.tr("menu.bind.condition.button_add_new_condition", "element_profiles")
+    local bad_key = util_table.value(cond_set.children, function(_, value)
+        return value.parent_key ~= cond_set.key
+    end)
+
+    if bad_key then
+        local config_mod = config.current.mod
+        local bad_profiles = config_mod.hud[bad_key.parent_key].profile
+        values = util_table.slice(bad_profiles, 2, #bad_profiles)
+
+        imgui.text_colored(
+            config.lang:tr("menu.bind.condition.tooltip_wrong_parent_key"),
+            mod.enum.colors.bad
         )
-    then
-        table.insert(cond_set.children, bind_condition.new_condition_set(elem_profiles[1].key))
-        config:save()
+        if imgui.button(util_gui.tr("menu.bind.condition.button_clear", "element_profiles")) then
+            cond_set.children = {}
+            config:save()
+        end
+    else
+        if
+            imgui.button(
+                util_gui.tr("menu.bind.condition.button_add_new_condition", "element_profiles")
+            )
+        then
+            table.insert(
+                cond_set.children,
+                bind_condition.new_condition_set(elem_profiles[1].key, cond_set.key)
+            )
+            cond_set.children[#cond_set.children].combo_profile = 0
+            config:save()
+        end
     end
 
     if not util_table.empty(cond_set.children) then
         imgui.separator()
     end
 
+    imgui.begin_disabled(bad_key ~= nil)
     cond_set.children = draw_condition_set_list(
         cond_set.children,
         elem_drag,
@@ -392,16 +417,23 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
                     return { i, "children", j, "conditions", k }
                 end,
                 draw_selector = function()
-                    util_bind.profile_multi_combo(
-                        util_gui.tr("menu.bind.condition.combo_elem_profile", i, j),
-                        string.format("%s.combo_profile", config_key),
-                        values
-                    )
+                    if
+                        util_bind.profile_multi_combo(
+                            util_gui.tr("menu.bind.condition.combo_elem_profile", i, j),
+                            string.format("%s.combo_profile", config_key),
+                            values,
+                            bad_key ~= nil
+                        )
+                    then
+                        cond_child.key = config:get(string.format("%s.combo_profile", config_key))
+                        config:save()
+                    end
                 end,
             })
         end
     )
 
+    imgui.end_disabled()
     imgui.end_disabled()
     imgui.spacing()
     imgui.unindent(2)
@@ -471,7 +503,7 @@ local function draw_condition_bind_menu()
                 draw_expanded = function()
                     imgui.separator()
                     util_menubar.draw_menu(
-                        util_gui.tr("menu.bind.condition.menubar_element_profiles"),
+                        util_gui.tr("menu.bind.condition.menubar_element_profiles", i),
                         function()
                             draw_element_profiles(i, cond_set, config_mod.hud[cond_set.key].profile)
                         end

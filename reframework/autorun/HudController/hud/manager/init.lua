@@ -103,22 +103,50 @@ function this.update()
         return
     end
 
-    local hud_config = bind_condition.update(profile_switcher.current_hud)
-    if not hud_config then
+    local request = bind_condition.update(profile_switcher.current_hud)
+    if not request then
         return
     end
 
-    local target_key = profile_switcher.requested_hud and profile_switcher.requested_hud.key
-        or profile_switcher.current_hud.key
-    if hud_config.key == target_key then
-        return
+    if not request.hud and request.profile then --TODO: refactor
+        local target_key = profile_switcher.requested_hud and profile_switcher.requested_hud.profile
+            or profile_switcher.current_hud.profile
+        if target_key == request.profile then
+            return
+        end
+
+        profile_switcher.request_hud_with_profiles(
+            profile_switcher.current_hud.hud or profile_switcher.requested_hud.hud,
+            request.profile
+        )
+    elseif not request.profile and request.hud then
+        local target_key = profile_switcher.requested_hud and profile_switcher.requested_hud.hud.key
+            or profile_switcher.current_hud.hud.key
+        if target_key == request.hud.key then
+            return
+        end
+
+        config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
+            return o.key == request.hud.key
+        end) --[[@as integer]]
+        profile_switcher.request_hud_with_default(request.hud)
+    else
+        local target_key_a = profile_switcher.requested_hud
+                and profile_switcher.requested_hud.hud.key
+            or profile_switcher.current_hud.hud.key
+        local target_key_b = profile_switcher.requested_hud
+                and profile_switcher.requested_hud.profile
+            or profile_switcher.current_hud.profile
+
+        if target_key_a == request.hud.key and target_key_b == request.profile then
+            return
+        end
+
+        config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
+            return o.key == request.hud.key
+        end) --[[@as integer]]
+        profile_switcher.request_hud_with_profiles(request.hud, request.profile)
     end
-
-    config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
-        return o.key == hud_config.key
-    end) --[[@as integer]]
-
-    profile_switcher.request_hud(hud_config)
 end
 
 function this.clear()

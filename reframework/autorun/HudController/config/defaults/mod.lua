@@ -48,6 +48,7 @@
 ---@field combo_profile integer
 ---@field combo_condition integer
 ---@field collapsed boolean
+---@field parent_key integer?
 ---@field children ConditionSetConfig[]
 
 ---@class (exact) ConditionBindStateConfig

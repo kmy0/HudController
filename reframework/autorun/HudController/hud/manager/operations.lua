@@ -324,6 +324,7 @@ function this.remove_elem_profile(hud_config, key)
         end
     end
 
+    ---@return integer
     local function filter_binds(t, t_key)
         local elem_profile_keys = util_misc.unpack_bits(t[t_key])
         local filtered = util_table.filter_array(elem_profile_keys, function(_, value)
@@ -331,6 +332,7 @@ function this.remove_elem_profile(hud_config, key)
         end)
         ---@diagnostic disable-next-line: no-unknown
         t[t_key] = util_misc.pack_bits(filtered)
+        return t[t_key]
     end
 
     local config_mod = config.current.mod
@@ -345,10 +347,16 @@ function this.remove_elem_profile(hud_config, key)
     for _, cond_set in pairs(config_mod.bind.condition.hud) do
         if cond_set.key == hud_config.key then
             for _, cond_child in pairs(cond_set.children) do
-                filter_binds(cond_child, "key")
+                cond_child.combo_profile = filter_binds(cond_child, "key")
             end
         end
+
+        cond_set.children = util_table.filter_array(cond_set.children, function(_, value)
+            return value.combo_profile ~= 0
+        end)
     end
+
+    config_mod.combo.key_bind.elem_profile = 0
 end
 
 ---@param root HudBaseConfig
