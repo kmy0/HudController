@@ -1,4 +1,4 @@
-local bind_condition = require("HudController.hud.bind_condition.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
 local call_queue = require("HudController.hud.call_queue")
 local canvas = require("HudController.hud.canvas.init")
 local config = require("HudController.config.init")

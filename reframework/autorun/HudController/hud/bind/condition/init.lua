@@ -8,11 +8,11 @@ local config = require("HudController.config.init")
 local gui_state = require("HudController.gui.state")
 local util_table = require("HudController.util.misc.table")
 local conditions = {
-    combat = require("HudController.hud.bind_condition.conditions.combat"),
-    game_mode = require("HudController.hud.bind_condition.conditions.game_mode"),
-    village = require("HudController.hud.bind_condition.conditions.village"),
-    weapon = require("HudController.hud.bind_condition.conditions.weapon"),
-    weapon_type = require("HudController.hud.bind_condition.conditions.weapon_type"),
+    combat = require("HudController.hud.bind.condition.conditions.combat"),
+    game_mode = require("HudController.hud.bind.condition.conditions.game_mode"),
+    village = require("HudController.hud.bind.condition.conditions.village"),
+    weapon = require("HudController.hud.bind.condition.conditions.weapon"),
+    weapon_type = require("HudController.hud.bind.condition.conditions.weapon_type"),
 }
 
 local this = {

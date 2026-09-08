@@ -32,7 +32,7 @@ end
 ---@param config MainSettings
 function this.fns.conditions(config)
     local data_ace = require("HudController.data.ace")
-    local bind_condition = require("HudController.hud.bind_condition.init")
+    local bind_condition = require("HudController.hud.bind.condition.init")
 
     local config_cond = config.mod.bind.condition
     local config_wep = config.mod.bind.weapon

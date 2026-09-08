@@ -1,5 +1,5 @@
 local combo = require("HudController.util.imgui.combo")
-local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
+local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
 local m = require("HudController.util.ref.methods")

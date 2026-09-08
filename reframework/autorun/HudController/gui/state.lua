@@ -35,7 +35,7 @@
 ---@field listener BindListener
 ---@field collision string?
 
-local bind_manager = require("HudController.hud.bind.init")
+local bind_manager = require("HudController.hud.bind.key.init")
 local combo = require("HudController.util.imgui.combo")
 local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
@@ -46,8 +46,8 @@ local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
----@module "HudController.hud.bind_condition.init"
-local bind_condition = util_misc.lazy_require("HudController.hud.bind_condition.init")
+---@module "HudController.hud.bind.condition.init"
+local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
 
 local ace_map = data.ace.map
 local mod = data.mod
@@ -181,7 +181,7 @@ local this = {
         }),
         condition = combo:new(nil, {
             translate_fn = function(key)
-                local bind_condition = require("HudController.hud.bind_condition.init")
+                local bind_condition = require("HudController.hud.bind.condition.init")
                 return bind_condition.conditions[key]:get_display_name()
             end,
             sort_fn = function(a, b)

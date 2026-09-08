@@ -1,4 +1,4 @@
-local bind_manager = require("HudController.hud.bind.init")
+local bind_manager = require("HudController.hud.bind.key.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local state = require("HudController.gui.state")

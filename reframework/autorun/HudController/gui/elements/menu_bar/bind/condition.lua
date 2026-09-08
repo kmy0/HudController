@@ -12,7 +12,7 @@
 ---@field draw_selector fun()
 ---@field draw_expanded fun()?
 
-local bind_condition = require("HudController.hud.bind_condition.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
 local mod = require("HudController.data.mod")

@@ -1,4 +1,4 @@
-local bind_condition = require("HudController.hud.bind_condition.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")

@@ -1,4 +1,4 @@
-local bind_condition = require("HudController.hud.bind_condition.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
 local hook_common = require("HudController.hud.hook.common")
 
 re.on_frame(function()

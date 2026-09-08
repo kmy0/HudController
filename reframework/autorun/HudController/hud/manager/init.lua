@@ -5,8 +5,8 @@
 ---@field force_update boolean
 
 local ace_misc = require("HudController.util.ace.misc")
-local bind_condition = require("HudController.hud.bind_condition.init")
-local bind_manager = require("HudController.hud.bind.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
+local bind_manager = require("HudController.hud.bind.key.init")
 local cache = require("HudController.util.misc.cache")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")

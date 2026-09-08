@@ -1,5 +1,5 @@
 local ace_porter = require("HudController.util.ace.porter")
-local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
+local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 
 return function()
     return custom_condition.new_condition("Riding", function(self, option_key)

@@ -2,7 +2,7 @@
 ---@field actions ModBindManager
 ---@field monitor CanvasBindMonitor
 
-local bind_manager = require("HudController.hud.bind.manager")
+local bind_manager = require("HudController.hud.bind.key.manager")
 local e = require("HudController.util.game.enum")
 local mod = require("HudController.data.mod")
 local monitor = require("HudController.hud.canvas.bind.monitor")

@@ -5,8 +5,44 @@ local util_table = require("HudController.util.misc.table")
 
 local this = {}
 
----@return boolean
-function this.init()
+local module_aliases = {
+    ["HudController.hud.bind.init"] = "HudController.hud.bind.key.init",
+    ["HudController.hud.bind.manager"] = "HudController.hud.bind.key.manager",
+    ["HudController.hud.bind.monitor"] = "HudController.hud.bind.key.monitor",
+    ["HudController.hud.bind_condition.init"] = "HudController.hud.bind.condition.init",
+    ["HudController.hud.bind_condition.conditions.combat"] = "HudController.hud.bind.condition.conditions.combat",
+    ["HudController.hud.bind_condition.conditions.custom"] = "HudController.hud.bind.condition.conditions.custom",
+    ["HudController.hud.bind_condition.conditions.game_mode"] = "HudController.hud.bind.condition.conditions.game_mode",
+    ["HudController.hud.bind_condition.conditions.village"] = "HudController.hud.bind.condition.conditions.village",
+    ["HudController.hud.bind_condition.conditions.weapon"] = "HudController.hud.bind.condition.conditions.weapon",
+}
+
+local function register_module_aliases()
+    for old, new in pairs(module_aliases) do
+        ---@diagnostic disable-next-line: no-unknown
+        package.preload[old] = function()
+            return require(new)
+        end
+    end
+end
+
+local function register_legacy_modules()
+    package.preload["HudController.util.game.data"] = function()
+        return {
+            reverse_lookup = util_table.reverse_lookup,
+        }
+    end
+
+    package.preload["HudController.util.game.bind.enum"] = function()
+        return {
+            input_device = e.get("ace.GUIDef.INPUT_DEVICE").enum_to_field,
+            pad_btn = e.get("ace.ACE_PAD_KEY.BITS").enum_to_field,
+            kb_btn = e.get("ace.ACE_MKB_KEY.INDEX").enum_to_field,
+        }
+    end
+end
+
+local function restore_legacy_fields()
     ---@diagnostic disable-next-line: inject-field
     ace.enum = {
         hud = e.get("app.GUIHudDef.TYPE").enum_to_field,
@@ -57,28 +93,17 @@ function this.init()
         auto_id = e.get("app.Communication.AUTO_ID").enum_to_field,
     }
 
-    package.preload["HudController.util.game.data"] = function()
-        local ret = {
-            reverse_lookup = util_table.reverse_lookup,
-        }
-
-        return ret
-    end
-
-    package.preload["HudController.util.game.bind.enum"] = function()
-        local ret = {
-            input_device = e.get("ace.GUIDef.INPUT_DEVICE").enum_to_field,
-            pad_btn = e.get("ace.ACE_PAD_KEY.BITS").enum_to_field,
-            kb_btn = e.get("ace.ACE_MKB_KEY.INDEX").enum_to_field,
-        }
-
-        return ret
-    end
-
     ---@diagnostic disable-next-line: no-unknown
     util_game.data = require("HudController.util.game.data")
     ---@diagnostic disable-next-line: no-unknown
     util_game.bind.enum = require("HudController.util.game.bind.enum")
+end
+
+---@return boolean
+function this.init()
+    register_module_aliases()
+    register_legacy_modules()
+    restore_legacy_fields()
 
     return true
 end

@@ -1,5 +1,5 @@
 local ace_player = require("HudController.util.ace.player")
-local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
+local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 local frame_counter = require("HudController.util.misc.frame_counter")
 local timer = require("HudController.util.misc.timer")
 local value_checker = require("HudController.util.misc.value_checker")

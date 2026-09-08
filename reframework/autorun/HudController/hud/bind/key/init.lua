@@ -13,10 +13,10 @@ local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.init"
 local hud = util_misc.lazy_require("HudController.hud.init")
 local ace_misc = require("HudController.util.ace.misc")
-local bind_monitor = require("HudController.hud.bind.monitor")
+local bind_monitor = require("HudController.hud.bind.key.monitor")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local mod_bind_manager = require("HudController.hud.bind.manager")
+local mod_bind_manager = require("HudController.hud.bind.key.manager")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod

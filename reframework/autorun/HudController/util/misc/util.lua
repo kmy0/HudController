@@ -285,7 +285,7 @@ function this.with_custom_require(fn)
 
         this.try(function()
             ---@diagnostic disable-next-line: no-unknown
-            ret = original_require("reframework.autorun." .. name)
+            ret = original_require("" .. name)
         end)
 
         if not ret then
