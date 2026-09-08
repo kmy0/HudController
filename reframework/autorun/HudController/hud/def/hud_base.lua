@@ -374,7 +374,7 @@ function this:whoami()
 
     while parent do
         table.insert(ret, 1, parent.name_key)
-        parent = parent.parent
+        parent = parent.parent --[[@as HudBase]]
     end
 
     return table.concat(ret, ".")
