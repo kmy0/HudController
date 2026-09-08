@@ -60,7 +60,7 @@ end
 ---@return string
 local function draw_bind_target(config_mod)
     local bind_type = config_mod.bind.slider.key_bind
-    local width = imgui.calc_item_width() / 2 - 4
+    local width = imgui.calc_item_width() / 1.5 - 4
 
     if bind_type == 1 then
         imgui.push_item_width(width)
