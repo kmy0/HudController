@@ -189,7 +189,7 @@ function this:new(args, parent)
     end
 
     o.children.pulse = hud_child:new(args.children.pulse, o, function(_, _, _, ctrl)
-        return util_table.array_merge_t(
+        return util_table.extend(
             play_object.iter_args(ctrl, control_arguments.bar1),
             play_object.iter_args(ctrl, control_arguments.bar2)
         )

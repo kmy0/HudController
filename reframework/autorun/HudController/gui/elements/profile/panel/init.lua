@@ -193,7 +193,7 @@ end
 ---@param config_key string
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
-    local elems = util_table.split(children_filtered, function(_, _, value)
+    local elems = util_table.groupby(children_filtered, function(_, _, value)
         if util_gui.is_only_thing(value, value.gui_thing) then
             return "box"
         end
@@ -280,9 +280,12 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
 
             imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
-            local children = util_table.remove(child_config.children or {}, function(t, index, _)
-                return not t[index].ignore
-            end)
+            local children = util_table.filter_inplace(
+                child_config.children or {},
+                function(t, index, _)
+                    return not t[index].ignore
+                end
+            )
 
             if not util_table.empty(children) then
                 draw_panel_child(child, child_config, children, child_config_key, cursor_pos)
@@ -357,9 +360,12 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
 
             imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
-            local children = util_table.remove(child_config.children or {}, function(t, index, _)
-                return not t[index].ignore
-            end)
+            local children = util_table.filter_inplace(
+                child_config.children or {},
+                function(t, index, _)
+                    return not t[index].ignore
+                end
+            )
 
             if not util_table.empty(children) then
                 util_imgui.separator_text(config.lang:tr("hud_element.entry.category_children"))
@@ -382,7 +388,7 @@ function this.draw(elem, elem_config, config_key)
 
     imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
-    local children = util_table.remove(elem_config.children or {}, function(t, i, _)
+    local children = util_table.filter_inplace(elem_config.children or {}, function(t, i, _)
         return not t[i].ignore
     end)
 

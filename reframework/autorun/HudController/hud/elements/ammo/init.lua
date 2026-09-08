@@ -279,11 +279,8 @@ function this:new(args)
     o.children.bow_icon = hud_child:new(args.children.bow_icon, o, function(_, _, _, ctrl)
         local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
         local ret = {}
-        util_table.array_merge_t(
-            ret,
-            play_object.iter_args(separators, control_arguments.bow_icon_active)
-        )
-        util_table.array_merge_t(
+        util_table.extend(ret, play_object.iter_args(separators, control_arguments.bow_icon_active))
+        util_table.extend(
             ret,
             play_object.iter_args(separators, control_arguments.bow_icon_disable)
         )

@@ -718,7 +718,7 @@ end
 function this:reset_ctrl(ctrl, key)
     local default = play_object_defaults:get(ctrl)
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {})
+        default = util_table.merge(default, self.default_overwrite or {})
     else
         ---@diagnostic disable-next-line: cast-local-type
         default = self.default_overwrite or {} --[[@as HudBaseDefaultOverwrite]]
@@ -973,8 +973,7 @@ function this:get_current_config()
 
     local current_element = current_hud.elements[self.name_key]
     if current_element.current_profile ~= mod.enum.elem_profile.DEFAULT then
-        keys =
-            util_table.array_merge(keys, { "profile", tostring(current_element.current_profile) })
+        keys = util_table.extend(keys, { "profile", tostring(current_element.current_profile) })
     end
 
     local parent = self.parent
@@ -982,7 +981,7 @@ function this:get_current_config()
         util_table.insert_front(keys, parent.name_key, "children")
         parent = parent.parent --[[@as HudBase]]
     end
-    return util_table.get_by_key(current_hud.elements, table.concat(keys, "."))
+    return util_table.get_by_path(current_hud.elements, table.concat(keys, "."))
 end
 
 ---@return HudBaseConfig

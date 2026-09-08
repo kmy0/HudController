@@ -144,7 +144,7 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Sharpness
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         state = true,
     })
     o.children.anim_max = hud_child:new(args.children.anim_max, o, function(_, _, _, ctrl)

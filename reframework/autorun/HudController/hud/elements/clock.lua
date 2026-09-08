@@ -81,7 +81,7 @@ local control_arguments = {
 ---@return Clock
 function this:new(args)
     local o = hud_base.new(self, args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         hide_map_visible = true,
     })
     setmetatable(o, self)

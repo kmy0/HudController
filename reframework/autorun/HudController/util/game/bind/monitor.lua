@@ -150,7 +150,7 @@ function this:get_held_key_names(manager_name)
     ---@type table<string, boolean>
     local ret = {}
     for _, m in pairs(self.managers) do
-        ret = util_table.merge_t(ret, m.held.by_name)
+        ret = util_table.merge(ret, m.held.by_name)
     end
 
     return util_table.keys(ret)
@@ -352,7 +352,7 @@ end
 function this:_resolve_buffer()
     ---@type table<string, boolean>
     local this_frame = {}
-    self.key_buffer.snapshot = util_table.merge_t(self.key_buffer.snapshot, self.key_buffer.keys)
+    self.key_buffer.snapshot = util_table.merge(self.key_buffer.snapshot, self.key_buffer.keys)
 
     for _, m in pairs(self.managers) do
         for _, bind in pairs(m.manager.sorted) do

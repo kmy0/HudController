@@ -375,7 +375,7 @@ local function draw_options()
         local dummy_hud = factory.get_hud_profile_config(-1, "__dummy")
 
         local sorted = util_table.sort(
-            util_table.remove(
+            util_table.filter_inplace(
                 util_table.keys(config_mod.hud[config_mod.combo.hud].options),
                 function(t, i, _)
                     return dummy_hud.options[t[i]] ~= nil and ace_map.option[t[i]] ~= nil

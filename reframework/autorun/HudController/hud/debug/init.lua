@@ -285,7 +285,7 @@ function this.perf_test()
     ---@param measurements number[]
     local function callback(name, stats, measurements)
         this.perf.completed = this.perf.completed + 1
-        this.perf.obj = util_table.remove(this.perf.obj, function(t, i, _)
+        this.perf.obj = util_table.filter_inplace(this.perf.obj, function(t, i, _)
             return t[i] ~= name
         end)
 
@@ -377,7 +377,7 @@ end
 ---@return string[]
 function this.filter(keys)
     keys = util_table.filter(keys, function(_, value)
-        return not util_table.contains(this.snapshot, value)
+        return not util_table.contains_any(this.snapshot, value)
     end)
     return util_table.sort(util_table.values(keys))
 end

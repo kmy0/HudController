@@ -184,7 +184,7 @@ end
 ---@param value string?
 ---@return ComboMap
 function this:get_disabled(key, value)
-    return util_table.value(self.disabled, function(_, item)
+    return util_table.find_value(self.disabled, function(_, item)
         return key == item.key or value == item.value
     end) --[[@as ComboMap]]
 end
@@ -301,7 +301,7 @@ function this:_map(key_to_value)
 
     local t = key_to_value
     if self.map_fn then
-        t = util_table.map_table(t, nil, self.map_fn)
+        t = util_table.transform_items(t, nil, self.map_fn)
     end
 
     for k, v in pairs(t) do

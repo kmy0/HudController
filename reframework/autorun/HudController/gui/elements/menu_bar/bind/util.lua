@@ -25,7 +25,7 @@ local function values_to_multi_combo(values, get_key, get_label, bits)
     ---@diagnostic disable-next-line: no-unknown
     for i, value in ipairs(values) do
         options[i] = get_label(value)
-        selected[i] = util_table.contains(selected_keys, get_key(value))
+        selected[i] = util_table.contains_any(selected_keys, get_key(value))
     end
 
     return options, selected
@@ -101,7 +101,7 @@ function this.elem_profiles_to_name(hud_config, bits)
     ---@type string[]
     local names = {}
     for _, key in ipairs(elem_profile_keys) do
-        local profile = util_table.value(hud_config.profile, function(_, value)
+        local profile = util_table.find_value(hud_config.profile, function(_, value)
             return value.key == key
         end) --[[@as HudBaseConfigProfileForShow]]
         if profile then

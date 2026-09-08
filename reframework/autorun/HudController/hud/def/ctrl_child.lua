@@ -178,7 +178,7 @@ end
 function this:reset_ctrl(obj, key)
     local default = play_object_defaults:get(obj) --[[@as CtrlChildDefault]]
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {})
+        default = util_table.merge(default, self.default_overwrite or {})
     else
         ---@diagnostic disable-next-line: cast-local-type
         default = self.default_overwrite or {} --[[@as CtrlChildDefaultOverwite]]

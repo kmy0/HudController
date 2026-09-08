@@ -64,7 +64,7 @@ setmetatable(this, { __index = ctrl_child })
 ---@return Scale9
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = ctrl_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         ignore_alpha = true,
         control_point = true,
         blend = true,
@@ -147,7 +147,7 @@ end
 function this:reset_ctrl(obj, key)
     local default = play_object_defaults:get(obj) --[[@as Scale9Default]]
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {}) --[[@as Scale9Default]]
+        default = util_table.merge(default, self.default_overwrite or {}) --[[@as Scale9Default]]
     else
         default = (self.default_overwrite or {}) --[[@as Scale9Default]]
     end

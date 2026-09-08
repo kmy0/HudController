@@ -51,7 +51,7 @@ local control_arguments = {
 ---@return SlingerReticleSlinger
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         hide_slinger_empty = true,
     })
     setmetatable(o, self)

@@ -108,7 +108,7 @@ local this = {
             ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
             ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
         },
-        combo_map_filter_init = util_table.merge_t(
+        combo_map_filter_init = util_table.merge(
             util_table.deep_copy(ace.map.map_icon_filter_name_guid_to_index),
             { option_disable = -1 }
         ),

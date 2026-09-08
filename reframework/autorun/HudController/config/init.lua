@@ -67,7 +67,7 @@ function this:load()
     local current_version
     if loaded_config then
         current_version = loaded_config.version
-        self.current = util_table.merge_t(self.default, loaded_config)
+        self.current = util_table.merge(self.default, loaded_config)
     else
         current_version = self.commit
         self.current = util_table.deep_copy(self.default)

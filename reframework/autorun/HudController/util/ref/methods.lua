@@ -157,7 +157,7 @@ end
 
 if is_debug then
     re.on_frame(function()
-        util_table.print(_debug)
+        util_table.pprint(_debug)
         _debug = {}
     end)
 end

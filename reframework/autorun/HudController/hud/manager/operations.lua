@@ -45,9 +45,11 @@ local function get_unique_name(items, name)
     local key = 1
     local ret = name
 
-    while util_table.value(items, function(_, value)
-        return value.name == ret
-    end) do
+    while
+        util_table.find_value(items, function(_, value)
+            return value.name == ret
+        end)
+    do
         key = key + 1
         ret = name .. key
     end
@@ -81,7 +83,7 @@ end
 ---@param ordered_names string[]
 function this.sort(ordered_names)
     local config_mod = config.current.mod
-    local indexes = util_table.array_to_map(ordered_names)
+    local indexes = util_table.index_by_value(ordered_names)
     local current_hud = config_mod.hud[config_mod.combo.hud].name
 
     table.sort(config_mod.hud, function(a, b)
@@ -99,7 +101,7 @@ end
 ---@param hud_config ModProfileConfig
 function this.remove(hud_config)
     local config_mod = config.current.mod
-    local i = util_table.key(config_mod.hud, function(_, value)
+    local i = util_table.find_key(config_mod.hud, function(_, value)
         return value.key == hud_config.key
     end)
 
@@ -107,7 +109,7 @@ function this.remove(hud_config)
         return
     end
 
-    config_mod.hud = util_table.remove(config_mod.hud, function(_, i2, _)
+    config_mod.hud = util_table.filter_inplace(config_mod.hud, function(_, i2, _)
         return i ~= i2
     end)
 
@@ -193,7 +195,7 @@ function this.import()
         return
     end
 
-    local new_hud = util_table.merge2_t({ "key" }, false, this._new(), hud_config)
+    local new_hud = util_table.merge_protected({ "key" }, false, this._new(), hud_config)
     new_hud.name = this.get_name(hud_config.name)
     new_hud.elements = factory.verify_elements(hud_config.elements)
     if not util_table.empty(new_hud.elements) then
@@ -204,7 +206,7 @@ end
 ---@param key integer
 ---@return ModProfileConfig
 function this.get_hud_by_key(key)
-    return util_table.value(config.current.mod.hud, function(_, value)
+    return util_table.find_value(config.current.mod.hud, function(_, value)
         return value.key == key
     end) --[[@as ModProfileConfig]]
 end

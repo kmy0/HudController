@@ -85,7 +85,7 @@ end
 ---@param key string
 ---@return string
 function this:tr(key)
-    local ret = util_table.get_by_key(self.current, key)
+    local ret = util_table.get_by_path(self.current, key)
     if ret then
         return ret
     end
@@ -96,7 +96,7 @@ end
 ---@param key string
 ---@return boolean
 function this:exists(key)
-    local ret = util_table.get_by_key(self.current, key)
+    local ret = util_table.get_by_path(self.current, key)
     return type(ret) == "string"
 end
 

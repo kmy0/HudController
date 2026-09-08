@@ -30,7 +30,7 @@ function this.reveal_elements_pre(args)
         local target_icon = e.get("app.GUIID.ID").UI020012
         local slinger = e.get("app.GUIID.ID").UI020017
 
-        if util_table.contains({ clock, target_icon, slinger }, guiid) then
+        if util_table.contains_any({ clock, target_icon, slinger }, guiid) then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end

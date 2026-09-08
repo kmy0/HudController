@@ -69,7 +69,7 @@ local function make_hud_options_hook(fn, condition)
     condition = condition
         or function(config_path)
             local profile = hud.get_current() --[[@as ModProfileConfig]]
-            return util_table.get_by_key(profile, string.format("elements.%s", config_path))
+            return util_table.get_by_path(profile, string.format("elements.%s", config_path))
         end
     return {
         condition = condition,

@@ -46,20 +46,20 @@ end
 ---@param key string
 ---@return any
 function this:get(key)
-    return util_table.get_by_key(self.current, key)
+    return util_table.get_by_path(self.current, key)
 end
 
 ---@param key string
 ---@param value any
 function this:set(key, value)
-    util_table.set_by_key(self.current, key, value)
+    util_table.set_by_path(self.current, key, value)
     self:save()
 end
 
 function this:load()
     local loaded_config = json.load_file(self.path) --[[@as SettingsBase?]]
     if loaded_config then
-        self.current = util_table.merge_t(self.default, loaded_config)
+        self.current = util_table.merge(self.default, loaded_config)
     else
         self:save_no_timer()
     end

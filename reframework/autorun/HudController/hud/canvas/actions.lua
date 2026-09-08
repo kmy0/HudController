@@ -110,7 +110,7 @@ local function undo(action)
     local save_elem =
         util_table.get_nested_value(this.elem_default, { elem_profile_key, action.hudid })
 
-    util_table.merge_into(elem_config, save_elem)
+    util_table.update(elem_config, save_elem)
     elem:set_rot(elem_config.enabled_rot and save_elem.rot or nil)
     elem:set_opacity(elem_config.enabled_opacity and save_elem.opacity or nil)
     elem:set_hide(save_elem.hide)

@@ -155,7 +155,7 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
         end
 
         if type(res) == "table" then
-            util_table.array_merge(ret, res)
+            util_table.extend(ret, res)
         else
             table.insert(ret, res)
         end

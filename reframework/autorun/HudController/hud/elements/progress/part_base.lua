@@ -60,7 +60,7 @@ setmetatable(this, { __index = hud_child })
 ---@return ProgressPartBase
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         offset_x = true,
         clock_offset_x = true,
         num_offset_x = true,

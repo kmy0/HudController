@@ -122,10 +122,11 @@ function this.merge(hud_elem)
     local profiles = hud_elem.profile
     hud_elem.profile = nil
 
-    local ret = util_table.merge2_t(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
+    local ret =
+        util_table.merge_protected(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
 
     for key, profile in pairs(profiles or {}) do
-        ret.profile[key] = util_table.merge2_t(
+        ret.profile[key] = util_table.merge_protected(
             protected,
             true,
             this.get_config(hud_elem.hud_id) --[[@as HudBaseConfigProfile]],
@@ -152,7 +153,7 @@ function this.merge_profile(target, source)
         "default_profile",
     }
 
-    return util_table.merge2_t(protected, true, target, source)
+    return util_table.merge_protected(protected, true, target, source)
 end
 
 ---@param elements table<string, HudBaseConfig>
@@ -177,7 +178,7 @@ end
 ---@param hud_config ModProfileConfig
 ---@return ModProfileConfig
 function this.verify_hud(hud_config)
-    return util_table.merge2_t(
+    return util_table.merge_protected(
         nil,
         false,
         this.get_hud_profile_config(hud_config.key, hud_config.name),

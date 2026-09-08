@@ -201,7 +201,7 @@ function this.update(current_hud, force)
     end
 
     return {
-        hud = util_table.value(config.current.mod.hud, function(_, value)
+        hud = util_table.find_value(config.current.mod.hud, function(_, value)
             return value.key == new_hud_key
         end),
         profile = new_profiles or {},

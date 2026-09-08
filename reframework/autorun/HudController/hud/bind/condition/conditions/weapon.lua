@@ -19,7 +19,7 @@ function this:new()
     local index_to_name = {}
     ---@type string[]
     local sorted_weapons = {}
-    local weapons = util_table.map_to_array(data_ace.map.weaponid_name_to_local_name)
+    local weapons = util_table.entries(data_ace.map.weaponid_name_to_local_name)
 
     table.sort(weapons, function(a, b)
         return a.value < b.value

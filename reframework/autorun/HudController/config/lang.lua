@@ -47,10 +47,10 @@ end
 ---@param key string
 ---@return string
 function this:tr(key)
-    local ret = util_table.get_by_key(self.current, key)
+    local ret = util_table.get_by_path(self.current, key)
 
     if not ret and self.ref.current.mod.lang.fallback then
-        ret = util_table.get_by_key(self.default, key)
+        ret = util_table.get_by_path(self.default, key)
     end
 
     if not ret then

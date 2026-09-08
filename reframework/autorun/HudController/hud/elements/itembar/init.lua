@@ -149,7 +149,7 @@ function this:get_mantle()
         return
     end
 
-    local mantle_ctrl = util_table.normalize(
+    local mantle_ctrl = util_table.unwrap_first(
         ---@diagnostic disable-next-line: param-type-mismatch
         self.children.mantle:ctrl_getter(GUI020006, nil, disp_ctrl._TargetControl)
     )
@@ -157,7 +157,7 @@ function this:get_mantle()
         return
     end
 
-    return util_table.normalize(
+    return util_table.unwrap_first(
         ---@diagnostic disable-next-line: param-type-mismatch
         self.children.mantle.children.visible_state:ctrl_getter(GUI020006, nil, mantle_ctrl)
     )

@@ -104,7 +104,7 @@ end
 
 ---@param bind Bind
 function this:unregister(bind)
-    self.binds = util_table.remove(self.binds, function(_, i, _)
+    self.binds = util_table.filter_inplace(self.binds, function(_, i, _)
         return self.binds[i].name ~= bind.name
     end)
     self.sorted = self:_sort_binds()

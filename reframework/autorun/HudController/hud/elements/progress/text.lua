@@ -48,7 +48,7 @@ setmetatable(this, { __index = text })
 ---@return ProgressPartText
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = text.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         align_left = true,
         offset_x = true,
         clock_offset_x = true,

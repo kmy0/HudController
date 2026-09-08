@@ -86,7 +86,7 @@ function this:listen_keyboard()
         if
             not name:match("CLICK")
             and kb:isOn(index)
-            and not util_table.contains(self._bind_base.keys, index)
+            and not util_table.contains_any(self._bind_base.keys, index)
         then
             table.insert(self._bind_base.keys, index)
             table.insert(btn_names, enum[index])
@@ -117,7 +117,7 @@ function this:listen_pad()
     local btn_names = {}
     local enum = e.get("ace.ACE_PAD_KEY.BITS")
     for _, bit in pairs(util_misc.extract_bits(btn)) do
-        if enum[bit] and not util_table.contains(self._bind_base.keys, bit) then
+        if enum[bit] and not util_table.contains_any(self._bind_base.keys, bit) then
             table.insert(btn_names, enum[bit])
             table.insert(self._bind_base.keys, bit)
         end

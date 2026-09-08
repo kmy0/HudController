@@ -203,7 +203,7 @@ function this:new(args)
         return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
-        return util_table.array_merge_t(
+        return util_table.extend(
             play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
             play_object.iter_args(ctrl, control_arguments.background)
         )

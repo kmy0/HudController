@@ -135,7 +135,7 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboard
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         no_hide_elements = true,
         always_visible = true,
     })

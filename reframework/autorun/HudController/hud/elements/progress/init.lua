@@ -94,11 +94,11 @@ function this:new(args)
         children_sort = function(a, b)
             local t = { "faint", "best_timer", "quest_timer" }
 
-            if util_table.contains(t, a.name_key) then
+            if util_table.contains_any(t, a.name_key) then
                 return false
             end
 
-            if util_table.contains(t, b.name_key) then
+            if util_table.contains_any(t, b.name_key) then
                 return true
             end
             return a.name_key < b.name_key

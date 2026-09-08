@@ -84,7 +84,7 @@ setmetatable(this, { __index = ctrl_child })
 ---@return Material
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = ctrl_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         var0 = true,
         var1 = true,
         var2 = true,
@@ -136,7 +136,7 @@ end
 function this:reset_ctrl(obj, key)
     local default = play_object_defaults:get(obj) --[[@as MaterialDefault]]
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {})
+        default = util_table.merge(default, self.default_overwrite or {})
     else
         default = (self.default_overwrite or {}) --[[@as MaterialDefault]]
     end

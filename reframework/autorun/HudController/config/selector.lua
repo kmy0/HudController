@@ -97,7 +97,7 @@ function this:load()
 
     local loaded_config = json.load_file(self.path) --[[@as SelectorSettings?]]
     if loaded_config then
-        self.current = util_table.merge_t(self.default, loaded_config)
+        self.current = util_table.merge(self.default, loaded_config)
         self.current.combo_file = util_table.index(self.sorted, function(o)
             return self.files[o].file_name == loaded_config.file
         end) --[[@as integer]]

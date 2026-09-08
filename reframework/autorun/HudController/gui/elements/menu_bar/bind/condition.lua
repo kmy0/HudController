@@ -200,7 +200,7 @@ local function remove_sets(items, remove)
     end
 
     return util_table.filter_array(items, function(key, _)
-        return not util_table.contains(remove, key)
+        return not util_table.contains_any(remove, key)
     end)
 end
 
@@ -246,7 +246,7 @@ local function draw_condition_editor(cond_set, config_key, highlight, path_fn)
     local remove = draw_condition_rows(cond_set.conditions, config_key, highlight, path_fn)
     if not util_table.empty(remove) then
         cond_set.conditions = util_table.filter_array(cond_set.conditions, function(key, _)
-            return not util_table.contains(remove, key)
+            return not util_table.contains_any(remove, key)
         end)
         config:save()
     end
@@ -349,7 +349,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     imgui.spacing()
     imgui.indent(2)
 
-    local bad_key = util_table.value(cond_set.children, function(_, value)
+    local bad_key = util_table.find_value(cond_set.children, function(_, value)
         return value.parent_key ~= cond_set.key
     end)
 

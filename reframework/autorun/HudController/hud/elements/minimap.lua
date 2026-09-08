@@ -154,7 +154,7 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o Minimap
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         enabled_classic_minimap = true,
         default_filter = true,
     })

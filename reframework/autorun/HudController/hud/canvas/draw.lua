@@ -53,7 +53,7 @@ local function get_anchors()
     local ignore = { "NAME_ACCESSIBLE", "NAME_OTHER" }
 
     for hudname, hudid in pairs(e.get_nocache("app.GUIHudDef.TYPE").field_to_enum) do
-        if util_table.contains(ignore, hudname) then
+        if util_table.contains_any(ignore, hudname) then
             goto continue
         end
 
@@ -295,7 +295,8 @@ function this.draw(mouse_pos, mouse_wheel_delta, action)
     if config_canvas.keybinds.draw then
         draw_keybinds(
             mouse_pos,
-            not action and util_table.contains(bind_monitor.monitor:get_held_key_names(), "L_CLICK")
+            not action
+                and util_table.contains_any(bind_monitor.monitor:get_held_key_names(), "L_CLICK")
         )
     end
 

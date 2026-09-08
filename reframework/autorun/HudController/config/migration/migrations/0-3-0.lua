@@ -107,7 +107,7 @@ function this.fns.conditions(config)
             end
         end
 
-        return util_table.array_merge(ret, res)
+        return util_table.extend(ret, res)
     end
 
     local function get_weapon_cond(mode)
@@ -124,7 +124,7 @@ function this.fns.conditions(config)
             ret = tag_and_merge(ret, mode, "MELEE", "_WEAPON_TYPE", WEAPON_TYPE_MELEE)
             ret = tag_and_merge(ret, mode, "RANGED", "_WEAPON_TYPE", WEAPON_TYPE_RANGED)
 
-            local weapons = util_table.map_to_array(data_ace.map.weaponid_name_to_local_name)
+            local weapons = util_table.entries(data_ace.map.weaponid_name_to_local_name)
             table.sort(weapons, function(a, b)
                 return a.value < b.value
             end)
@@ -158,7 +158,7 @@ function this.fns.conditions(config)
         end)
 
         if util_table.empty(unique_multiplayer) then
-            return util_table.array_merge(shared, unique_singleplayer)
+            return util_table.extend(shared, unique_singleplayer)
         end
 
         for _, cond in pairs(unique_singleplayer) do
@@ -169,7 +169,7 @@ function this.fns.conditions(config)
             table.insert(cond.conditions, { class = "_GAME_MODE", combo = GAME_MODE_MULTIPLAYER })
         end
 
-        return util_table.array_merge(shared, unique_singleplayer, unique_multiplayer)
+        return util_table.extend(shared, unique_singleplayer, unique_multiplayer)
     end
 
     if config_wep.singleplayer_only then

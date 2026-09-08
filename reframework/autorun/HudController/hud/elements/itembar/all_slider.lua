@@ -260,7 +260,7 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o ItembarAllSlider
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         control = true,
         decide_key = true,
         appear_open = true,
@@ -759,7 +759,8 @@ end
 function this:any_gui()
     return util_table.any(self.properties, function(key, _)
         if
-            not util_table.contains({ "control", "appear_open", "decide_key" }, key) and self[key]
+            not util_table.contains_any({ "control", "appear_open", "decide_key" }, key)
+            and self[key]
         then
             return true
         end

@@ -17,6 +17,39 @@ local module_aliases = {
     ["HudController.hud.bind_condition.conditions.weapon"] = "HudController.hud.bind.condition.conditions.weapon",
 }
 
+local table_aliases = {
+    remove = "filter_inplace",
+    contains = "contains_any",
+    merge_into = "update",
+    merge_t = "merge",
+    merge2 = "merge_protected",
+    merge2_t = "merge_protected",
+    array_merge = "extend",
+    array_merge_t = "extend",
+    array_merge_copy = "concat",
+    array_merge_copy_t = "concat",
+    merge_nested_array = "extend_nested",
+    map_array = "index_by",
+    map_table = "transform_items",
+    pop_item = "pop",
+    value = "find_value",
+    key = "find_key",
+    print = "pprint",
+    split = "groupby",
+    parse_key = "parse_path_key",
+    split_key = "split_path",
+    get_by_key = "get_by_path",
+    set_by_key = "set_by_path",
+    normalize = "unwrap_first",
+    array_to_map = "index_by_value",
+    to_string = "repr",
+    consume = "collect",
+    consume_map = "collect_pairs",
+    map_to_array = "entries",
+    pick = "select_keys",
+    array_to_array = "transform",
+}
+
 local function register_module_aliases()
     for old, new in pairs(module_aliases) do
         ---@diagnostic disable-next-line: no-unknown
@@ -43,6 +76,11 @@ local function register_legacy_modules()
 end
 
 local function restore_legacy_fields()
+    for old, new in pairs(table_aliases) do
+        ---@diagnostic disable-next-line: inject-field, no-unknown
+        util_table[old] = util_table[new]
+    end
+
     ---@diagnostic disable-next-line: inject-field
     ace.enum = {
         hud = e.get("app.GUIHudDef.TYPE").enum_to_field,
