@@ -284,11 +284,12 @@ function this.get_elem_profile(root, key)
     return root.profile[k]
 end
 
----@param elem_config HudBaseConfig
-function this.is_current_profile(elem_config)
-    local config_mod = config.current.mod
-    local root = config_mod.hud[config_mod.combo.hud].elements[elem_config.name_key]
-    return root.current_profile == elem_config.profile_key
+---@param elem HudBase
+---@return boolean
+function this.is_current_profile(elem)
+    local root = elem:get_root()
+    local root_config = root:get_current_config()
+    return root_config.current_profile == root_config.current_profile_gui
 end
 
 ---@param root HudBaseConfig

@@ -61,7 +61,7 @@ local function draw_control_child(elem, elem_config, config_key)
         imgui.separator()
     end
 
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
     if elem_config.enabled_size_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_x",
@@ -124,7 +124,7 @@ end
 local function draw_material(elem, elem_config, config_key)
     draw_control_child(elem, elem_config, config_key)
 
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
     for i = 0, 4 do
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then
@@ -175,7 +175,7 @@ local function draw_scale9(elem, elem_config, config_key)
     separator_scale9:refresh(elem_config)
     ---@type string
     local item_config_key
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
     if elem_config.enabled_control_point ~= nil then
         item_config_key = config_key .. ".blend"
         local changed_value = generic.draw_combo(
@@ -297,7 +297,7 @@ local function draw_text(elem, elem_config, config_key)
     ---@type string
     local item_config_key
     local changed = false
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
 
     if separator_control_child:had_separators() then
         imgui.separator()
@@ -396,7 +396,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
 
     local item_config_key = config_key .. ".enabled_box"
     local changed = false
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
 
     item_config_key = config_key .. ".enabled_box"
     if
@@ -490,7 +490,7 @@ local function draw_progress_part(elem, elem_config, config_key)
 
     separator_progress_part:refresh(elem_config)
     local changed = false
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
 
     imgui.begin_disabled(elem_config.enabled_offset == true)
 
@@ -586,7 +586,7 @@ local function draw_progress_text(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_align_left"),
                 config_key .. ".align_left"
-            ) and operations.is_current_profile(elem_config)
+            ) and operations.is_current_profile(elem)
         then
             elem:set_align_left(elem_config.align_left)
         end

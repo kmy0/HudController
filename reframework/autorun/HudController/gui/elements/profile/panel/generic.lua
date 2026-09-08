@@ -176,7 +176,7 @@ end
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
     this.separator:refresh(elem_config)
-    local is_current_profile = operations.is_current_profile(elem_config)
+    local is_current_profile = operations.is_current_profile(elem)
 
     imgui.begin_disabled(ace_misc.is_item_slider_open())
     if elem_config.hide ~= nil then

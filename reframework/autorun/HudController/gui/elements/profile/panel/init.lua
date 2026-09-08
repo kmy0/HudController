@@ -169,7 +169,7 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem)
             ---@cast options table<string, integer>
             local sorted = util_table.sort(util_table.keys(options))
             generic.draw_options(sorted, item_config_key, function(option_key, option_config_key)
-                if operations.is_current_profile(elem_config) then
+                if operations.is_current_profile(elem) then
                     elem:set_option(option_key, config:get(option_config_key))
                 end
             end)
@@ -243,7 +243,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                             string.format("%s.%s", child_config_key, var_key)
                         ),
                         string.format("%s.%s", child_config_key, var_key)
-                    ) and operations.is_current_profile(elem_config)
+                    ) and operations.is_current_profile(elem)
                 then
                     child["set_" .. var_key](child, child_config[var_key])
                 end
