@@ -789,19 +789,18 @@ local function draw_minimap(elem, elem_config, config_key)
         elem:set_enable_classic_minimap(elem_config.enabled_classic_minimap)
     end
 
-    imgui.separator()
     imgui.begin_disabled(not elem_config.enabled_classic_minimap)
 
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_fov",
-            label = util_gui.tr("hud_element.entry.box_enable_map_fov"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.fov_map",
-                label = "",
             },
-        }, 0, 180.0, 0.01, "%.2f") and is_current_profile
+        }, 0.01, 0, 180.0, 0.01, "%.2f", config.lang:tr(
+            "hud_element.entry.box_enable_map_fov"
+        )) and is_current_profile
     then
         elem:set_classic_minimap_fov(
             elem_config.children.classic_minimap.enabled_fov
@@ -810,18 +809,16 @@ local function draw_minimap(elem, elem_config, config_key)
         )
     end
 
-    imgui.separator()
-
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_icon_scale",
-            label = util_gui.tr("hud_element.entry.box_enable_icon_scale"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.scale_icon",
-                label = "",
             },
-        }, 0, 25, 0.01, "%.2f") and is_current_profile
+        }, 0.01, 0, 25, 0.01, "%.2f", config.lang:tr(
+            "hud_element.entry.box_enable_icon_scale"
+        )) and is_current_profile
     then
         elem:set_classic_minimap_icon_scale(
             elem_config.children.classic_minimap.enabled_icon_scale
@@ -833,13 +830,13 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_rot_map",
-            label = util_gui.tr("hud_element.entry.box_enable_rotation"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.rot_map",
-                label = "",
             },
-        }, 0, 360, 0.01, "%.1f") and is_current_profile
+        }, 0.01, 0, 360, 0.01, "%.1f", config.lang:tr(
+            "hud_element.entry.box_enable_rotation"
+        )) and is_current_profile
     then
         elem:set_classic_minimap_rot(
             elem_config.children.classic_minimap.enabled_rot_map
@@ -851,13 +848,13 @@ local function draw_minimap(elem, elem_config, config_key)
     if
         generic.draw_slider_settings({
             config_key = config_key .. ".children.classic_minimap.enabled_angle_map",
-            label = util_gui.tr("hud_element.entry.box_enable_angle"),
         }, {
             {
                 config_key = config_key .. ".children.classic_minimap.angle_map",
                 label = "",
             },
-        }, 0, 90, 0.01, "%.1f") and is_current_profile
+        }, 0.01, 0, 90, 0.01, "%.1f", config.lang:tr("hud_element.entry.box_enable_angle"))
+        and is_current_profile
     then
         elem:set_classic_minimap_angle(
             elem_config.children.classic_minimap.enabled_angle_map

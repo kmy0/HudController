@@ -7,8 +7,12 @@
 ---@class NotebookActionButton
 ---@field label string
 ---@field tooltip string?
+---@field size_strings string[]? Strings used to calculate a shared minimum button width
 ---@field get_enabled (fun(tab: any): boolean)?
 ---@field action fun(tab: any): any
+---@field background_color integer?
+---@field hover_color integer?
+---@field border_color integer?
 
 ---@class NotebookState
 ---@field hover {[string]: boolean}
@@ -142,6 +146,10 @@ end
 ---@param hovered boolean
 ---@param border_color integer?
 ---@param text_color integer?
+---@param background_color integer?
+---@param hover_color integer?
+---@param colors NotebookColors
+---@param disabled boolean
 local function tab(
     list,
     x,
@@ -155,6 +163,8 @@ local function tab(
     hovered,
     border_color,
     text_color,
+    background_color,
+    hover_color,
     colors,
     disabled
 )
@@ -162,30 +172,41 @@ local function tab(
     local bg, color
     local fade = disabled and DISABLED or 1
 
+    ---@param value integer
     local function faded(value)
         return fade == 1 and value or util_misc.mul_alpha(value, fade)
     end
 
     if action then
-        bg = ok and (hovered and colors.hover or colors.action)
-            or util_misc.mul_alpha(colors.action, DISABLED)
+        local action_bg = background_color or colors.action --[[@as integer]]
+        local action_hover = hover_color or colors.hover --[[@as integer]]
+        local action_border = border_color or colors.action_border --[[@as integer]]
 
-        color = ok and colors.action_border or util_misc.mul_alpha(colors.action_border, DISABLED)
+        bg = ok and (hovered and action_hover or action_bg)
+            or util_misc.mul_alpha(action_bg, DISABLED)
+
+        color = ok and action_border or util_misc.mul_alpha(action_border, DISABLED)
 
         border(list, x, y, w, h, faded(bg), faded(color))
     elseif active then
-        color = border_color or colors.active_border
+        color = border_color or colors.active_border --[[@as integer]]
 
         list:add_rect_filled({ x, y }, { x + w, y + h }, faded(colors.active), 0, 0)
-
         list:add_rect({ x, y }, { x + w, y + h }, faded(color), 0, 0, 1)
-
         list:add_line({ x + 1, y + h - 1 }, { x + w - 1, y + h - 1 }, faded(colors.active), 1)
     else
         color = border_color and util_misc.mul_alpha(border_color, DISABLED)
-            or colors.inactive_border
+            or colors.inactive_border --[[@as integer]]
 
-        border(list, x, y, w, h, faded(hovered and colors.hover or colors.inactive), faded(color))
+        border(
+            list,
+            x,
+            y,
+            w,
+            h,
+            faded(hovered and colors.hover or colors.inactive --[[@as integer]]),
+            faded(color)
+        )
 
         list:add_line({ x + 1, y + h - 1 }, { x + w - 1, y + h - 1 }, faded(colors.separator), 1)
     end
@@ -241,6 +262,7 @@ function this.draw(id, current_tab, tabs, actions, colors, disabled)
     colors = resolved_colors
 
     local changed = false
+    local frame_tab = current_tab
     local h = config.lang.font_size + 10
 
     local list = imgui.get_window_draw_list()
@@ -289,6 +311,8 @@ function this.draw(id, current_tab, tabs, actions, colors, disabled)
             hovered,
             border_color,
             text_color,
+            nil,
+            nil,
             colors,
             disabled
         )
@@ -308,26 +332,47 @@ function this.draw(id, current_tab, tabs, actions, colors, disabled)
     x = x + ACTION_GAP
 
     for i, btn in ipairs(actions or {}) do
-        local ok = not disabled and enabled(btn, current_tab)
+        local ok = not disabled and enabled(btn, frame_tab)
         local display, tw = label(btn.label)
-
         local w = tw + PAD * 2
+
+        if btn.size_strings then
+            for _, size_text in ipairs(btn.size_strings) do
+                local _, size_tw = label(size_text)
+                w = math.max(w, size_tw + PAD * 2)
+            end
+        end
+
         local tx = x0 + x
-
         local hk = id .. "_action_" .. i
-        local hovered = s.hover[hk] or false
-
-        tab(list, tx, y, w, h, display, false, true, ok, hovered, nil, nil, colors, false)
-
         local clicked, is_hovered = hit(("nb_action_%s_%s"):format(id, i), tx, y, w, h)
+
+        tab(
+            list,
+            tx,
+            y,
+            w,
+            h,
+            display,
+            false,
+            true,
+            ok,
+            is_hovered,
+            btn.border_color,
+            nil,
+            btn.background_color,
+            btn.hover_color,
+            colors,
+            false
+        )
         if not disabled and is_hovered and btn.tooltip then
             imgui.set_tooltip(btn.tooltip)
         end
 
         if ok and clicked then
-            local next_tab = btn.action(current_tab)
+            local next_tab = btn.action(frame_tab)
 
-            if next_tab ~= current_tab then
+            if next_tab ~= frame_tab then
                 current_tab = next_tab
                 changed = true
             end

@@ -2,7 +2,6 @@ local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
-local hud_base = require("HudController.hud.def.hud_base")
 local mod = require("HudController.data.mod")
 local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
@@ -14,7 +13,6 @@ local ace_map = data.ace.map
 local set = state.set
 
 local this = {}
-this.separator = util_gui.separator:new(hud_base.get_boolean_config_keys())
 
 ---@param option_keys string[]
 ---@param config_key string
@@ -41,69 +39,65 @@ function this.draw_options(option_keys, config_key, callback)
     end
 end
 
----@param config_key string
----@param min number
----@param max number
----@param step number
----@param decimals integer
----@return boolean
-function this.draw_step_buttons(config_key, min, max, step, decimals)
-    ---@type boolean
-    local changed
-    local size = config.lang.font_size + 6
-
-    if imgui.button("-##button_minus_" .. config_key, { size, size }) then
-        changed = true
-        local val = math.max(config:get(config_key) - step, min)
-        config:set(config_key, util_misc.round(val, decimals))
-    end
-
-    imgui.same_line()
-
-    if imgui.button("+##button_plus_" .. config_key, { size, size }) then
-        changed = true
-        local val = math.min(config:get(config_key) + step, max)
-        config:set(config_key, util_misc.round(val, decimals))
-    end
-
-    return changed
-end
-
----@param checkbox {config_key: string, label: string}?
----@param sliders {config_key: string, label: string}[]
+---@param checkbox {config_key: string, label: string?}?
+---@param sliders {config_key: string, label: string?}[]
+---@param speed number
 ---@param min number
 ---@param max number
 ---@param step number
 ---@param format string
+---@param label string?
 ---@param additional_text string?
 ---@return boolean
-function this.draw_slider_settings(checkbox, sliders, min, max, step, format, additional_text)
+function this.draw_slider_settings(
+    checkbox,
+    sliders,
+    speed,
+    min,
+    max,
+    step,
+    format,
+    label,
+    additional_text
+)
     local changed = false
-
+    local disabled = false
     if checkbox then
         changed = set:checkbox(
-            string.format("%s##%s", checkbox.label, checkbox.config_key),
+            string.format("%s##%s", checkbox.label or "", checkbox.config_key),
             checkbox.config_key
         )
-        if additional_text and config:get(checkbox.config_key) then
-            imgui.same_line()
-            imgui.text_colored(additional_text, mod.enum.colors.info)
-        end
-
-        imgui.begin_disabled(not config:get(checkbox.config_key))
+        disabled = not config:get(checkbox.config_key)
+        imgui.same_line()
+        imgui.begin_disabled(disabled)
     else
-        if additional_text then
-            imgui.text_colored(additional_text, mod.enum.colors.info)
-        end
-
         imgui.begin_disabled(false)
     end
 
+    local button_size = config.lang.font_size + 6
+    local drag_with = imgui.calc_item_width() / #sliders - button_size * 2 - (#sliders - 1) * 4
+    local decimals = tonumber(format:match("%.(%d+)f")) --[[@as number]]
+    local border_color = 0xff4f4e4d
+    border_color = not disabled and border_color or util_misc.mul_alpha(border_color, 0.6)
     for i = 1, #sliders do
         local slider = sliders[i]
-        changed = set:slider_float(
-            string.format("%s##%s", slider.label, slider.config_key),
+        imgui.push_style_var(14, Vector2f.new(0, 4))
+        util_imgui.with_border(function()
+            if
+                imgui.button("-##button_minus_" .. slider.config_key, { button_size, button_size })
+            then
+                changed = true
+                local val = math.max(config:get(slider.config_key) - step, min)
+                config:set(slider.config_key, util_misc.round(val, decimals))
+            end
+        end, button_size, button_size, border_color)
+
+        imgui.same_line()
+        imgui.set_next_item_width(drag_with)
+        changed = set:drag_float(
+            string.format("%s##%s", slider.label or "", slider.config_key),
             slider.config_key,
+            speed,
             min,
             max,
             format
@@ -111,13 +105,30 @@ function this.draw_slider_settings(checkbox, sliders, min, max, step, format, ad
 
         imgui.same_line()
 
-        changed = this.draw_step_buttons(
-            slider.config_key,
-            min,
-            max,
-            step,
-            tonumber(format:match("%.(%d+)f")) --[[@as number]]
-        ) or changed
+        util_imgui.with_border(function()
+            if
+                imgui.button("+##button_plus_" .. slider.config_key, { button_size, button_size })
+            then
+                changed = true
+                local val = math.min(config:get(slider.config_key) + step, max)
+                config:set(slider.config_key, util_misc.round(val, decimals))
+            end
+        end, button_size, button_size, border_color)
+        imgui.pop_style_var(1)
+        if i < #sliders then
+            imgui.same_line()
+        end
+    end
+
+    if label then
+        util_imgui.set_label(label, -1)
+    end
+
+    if additional_text and (checkbox and config:get(checkbox.config_key) or not checkbox) then
+        imgui.same_line()
+        imgui.spacing()
+        imgui.same_line()
+        imgui.text_colored(additional_text, mod.enum.colors.info)
     end
 
     imgui.end_disabled()
@@ -135,10 +146,9 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
     local changed = false
 
     if checkbox then
-        changed = set:checkbox(
-            string.format("%s##%s", checkbox.label, checkbox.config_key),
-            checkbox.config_key
-        )
+        changed =
+            set:checkbox(string.format("%s##%s", "", checkbox.config_key), checkbox.config_key)
+        imgui.same_line()
         imgui.begin_disabled(not config:get(checkbox.config_key))
     else
         imgui.begin_disabled(false)
@@ -166,7 +176,6 @@ end
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
-    this.separator:refresh(elem_config)
     local is_current_profile = operations.is_current_profile(elem)
 
     imgui.begin_disabled(ace_misc.is_item_slider_open())
@@ -179,8 +188,6 @@ function this.draw(elem, elem_config, config_key)
         then
             elem:set_hide(elem_config.hide)
         end
-
-        this.separator:draw()
     end
     imgui.end_disabled()
 
@@ -188,24 +195,29 @@ function this.draw(elem, elem_config, config_key)
 
     if elem_config.enabled_scale ~= nil then
         if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_scale",
-                label = util_gui.tr("hud_element.entry.box_enable_scale"),
-            }, {
+
+            this.draw_slider_settings(
                 {
-                    config_key = config_key .. ".scale.x",
-                    label = util_gui.tr("hud_element.entry.slider_x"),
+                    config_key = config_key .. ".enabled_scale",
                 },
                 {
-                    config_key = config_key .. ".scale.y",
-                    label = util_gui.tr("hud_element.entry.slider_y"),
+                    {
+                        config_key = config_key .. ".scale.x",
+                    },
+                    {
+                        config_key = config_key .. ".scale.y",
+                    },
                 },
-            }, -10.0, 10.0, 0.01, "%.2f") and is_current_profile
+                0.01,
+                -10.0,
+                10.0,
+                0.01,
+                "%.2f",
+                config.lang:tr("hud_element.entry.box_enable_scale")
+            ) and is_current_profile
         then
             elem:set_scale(elem_config.enabled_scale and elem_config.scale or nil)
         end
-
-        this.separator:draw()
     end
 
     if elem_config.enabled_offset ~= nil then
@@ -215,22 +227,21 @@ function this.draw(elem, elem_config, config_key)
             this.draw_slider_settings(
                 {
                     config_key = config_key .. ".enabled_offset",
-                    label = util_gui.tr("hud_element.entry.box_enable_offset"),
                 },
                 {
                     {
                         config_key = config_key .. ".offset.x",
-                        label = util_gui.tr("hud_element.entry.slider_x"),
                     },
                     {
                         config_key = config_key .. ".offset.y",
-                        label = util_gui.tr("hud_element.entry.slider_y"),
                     },
                 },
-                -4000,
-                4000,
+                1,
+                -1920,
+                1920,
                 1,
                 "%.0f",
+                config.lang:tr("hud_element.entry.box_enable_offset"),
                 elem_config.enabled
                         and string.format(
                             "%s: x=%d, y=%d",
@@ -243,44 +254,38 @@ function this.draw(elem, elem_config, config_key)
         then
             elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
         end
-
-        this.separator:draw()
     end
 
     if elem_config.enabled_rot ~= nil then
         if
             this.draw_slider_settings({
                 config_key = config_key .. ".enabled_rot",
-                label = util_gui.tr("hud_element.entry.box_enable_rotation"),
             }, {
                 {
                     config_key = config_key .. ".rot",
-                    label = "",
                 },
-            }, 0, 360, 0.1, "%.1f") and is_current_profile
+            }, 0.1, 0, 360, 0.1, "%.1f", config.lang:tr(
+                "hud_element.entry.box_enable_rotation"
+            )) and is_current_profile
         then
             elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
         end
-
-        this.separator:draw()
     end
 
     if elem_config.enabled_opacity ~= nil then
         if
             this.draw_slider_settings({
                 config_key = config_key .. ".enabled_opacity",
-                label = util_gui.tr("hud_element.entry.box_enable_opacity"),
             }, {
                 {
                     config_key = config_key .. ".opacity",
-                    label = "",
                 },
-            }, 0, 1, 0.01, "%.2f") and is_current_profile
+            }, 0.01, 0, 1, 0.01, "%.2f", config.lang:tr(
+                "hud_element.entry.box_enable_opacity"
+            )) and is_current_profile
         then
             elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
         end
-
-        this.separator:draw()
     end
 
     if elem_config.enabled_segment ~= nil then
@@ -288,14 +293,9 @@ function this.draw(elem, elem_config, config_key)
         local changed_value = this.draw_combo(
             {
                 config_key = config_key .. ".enabled_segment",
-                label = string.format(
-                    "%s##%s",
-                    util_gui.tr("hud_element.entry.box_enable_segment"),
-                    config_key
-                ),
             },
             item_config_key,
-            "##" .. item_config_key,
+            util_gui.tr("hud_element.entry.box_enable_segment"),
             state.combo.segment,
             state.combo.segment:get_index(nil, config:get(item_config_key))
         )
@@ -306,12 +306,10 @@ function this.draw(elem, elem_config, config_key)
                 elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
             end
         end
-
-        this.separator:draw()
     end
 
     if elem.hud_id then
-        imgui.separator()
+        util_imgui.separator_text(config.lang:tr("hud_element.entry.category_profile_fade"))
 
         local current_hud = hud.get_current()
         ---@cast current_hud ModProfileConfig

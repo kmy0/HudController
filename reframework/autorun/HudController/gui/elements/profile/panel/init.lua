@@ -19,7 +19,7 @@ local this = {}
 
 ---@param elem_config HudBaseConfig
 ---@param config_key string
----@return HudBaseConfig, string, integer
+---@return HudBaseConfig, string
 local function draw_notebook(elem_config, config_key)
     local root = elem_config
     local config_mod = config.current.mod
@@ -56,8 +56,36 @@ local function draw_notebook(elem_config, config_key)
         })
     end
 
+    local key_enabled = string.format("%s.enabled", config_key, elem_config.current_profile_gui)
+    if elem_config.current_profile_gui ~= mod_enum.elem_profile.DEFAULT then
+        key_enabled =
+            string.format("%s.profile.%s.enabled", config_key, elem_config.current_profile_gui)
+    end
+
+    local tab_enabled = config:get(key_enabled)
     local changed, new_tab =
         notebook.draw("elem_profiles" .. config_key, root.current_profile_gui, tabs, {
+            {
+                label = tab_enabled and config.lang:tr("hud_profile.button_enabled")
+                    or config.lang:tr("hud_profile.button_disabled"),
+                action = function(tab)
+                    tab_enabled = not tab_enabled
+                    config:set(key_enabled, tab_enabled)
+                    operations.apply_elem_profile(root)
+                    hud.request_update()
+                    return tab
+                end,
+                background_color = tab_enabled and 0xffad662f,
+                border_color = tab_enabled and 0xff9a6136,
+                hover_color = tab_enabled and 0xffc8783a,
+                get_enabled = function(tab)
+                    return tab ~= mod_enum.elem_profile.DEFAULT
+                end,
+                size_strings = {
+                    config.lang:tr("hud_profile.button_enabled"),
+                    config.lang:tr("hud_profile.button_disabled"),
+                },
+            },
             {
                 label = config.lang:tr("hud_profile.button_export"),
                 action = function(tab)
@@ -107,7 +135,7 @@ local function draw_notebook(elem_config, config_key)
         elem_config = operations.get_elem_profile(root, root.current_profile_gui)
     end
 
-    return elem_config, config_key, root.current_profile_gui
+    return elem_config, config_key
 end
 
 ---@param elem HudBase
@@ -117,23 +145,9 @@ end
 ---@param root_elem boolean?
 local function draw_panel(elem, elem_config, config_key, tree, root_elem)
     if root_elem then
-        local root = elem_config
-        ---@type integer
-        local profile_key
-        elem_config, config_key, profile_key = draw_notebook(elem_config, config_key)
+        elem_config, config_key = draw_notebook(elem_config, config_key)
 
-        imgui.begin_disabled(profile_key == mod_enum.elem_profile.DEFAULT)
-        local checkbox_key = string.format("%s.enabled", config_key)
-        if
-            set:checkbox(util_gui.tr("hud_profile.box_profile_enabled", config_key), checkbox_key)
-        then
-            operations.apply_elem_profile(root)
-            hud.request_update()
-        end
-        imgui.end_disabled()
-        imgui.separator()
-
-        imgui.begin_disabled(not config:get(checkbox_key))
+        imgui.begin_disabled(not config:get(string.format("%s.enabled", config_key)))
     else
         imgui.begin_disabled(false)
     end

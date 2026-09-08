@@ -1,8 +1,3 @@
----@class Separator
----@field ordered_keys string[]
----@field protected _count integer
----@field protected _start_count integer
-
 local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -10,49 +5,6 @@ local util_table = require("HudController.util.misc.table")
 local gui_elements = util_misc.lazy_require("HudController.gui.elements.init")
 
 local this = {}
-
----@class Separator
-local Separator = {}
----@diagnostic disable-next-line: inject-field
-Separator.__index = Separator
-
----@param ordered_keys any
----@return Separator
-function Separator:new(ordered_keys)
-    local o = {
-        ordered_keys = ordered_keys,
-        _count = -1,
-        _start_count = -1,
-    }
-    setmetatable(o, self)
-    return o
-end
-
----@param t table<string, any>
-function Separator:refresh(t)
-    self._count = -1
-    for i = 1, #self.ordered_keys do
-        if t[self.ordered_keys[i]] ~= nil then
-            self._count = self._count + 1
-        end
-    end
-    self._start_count = self._count
-end
-
-function Separator:has_separators()
-    return self._count > 0
-end
-
-function Separator:had_separators()
-    return self._start_count > -1
-end
-
-function Separator:draw()
-    if self:has_separators() then
-        imgui.separator()
-        self._count = self._count - 1
-    end
-end
 
 ---@param key string
 ---@param ... string | integer
@@ -183,5 +135,4 @@ function this.is_gui_disabled()
     return gui_elements.selector.is_opened or gui_elements.sorter.is_opened
 end
 
-this.separator = Separator
 return this

@@ -629,4 +629,19 @@ function this.multi_combo(label, default_preview, options, selected, disabled, w
     return changed, selected
 end
 
+---@param draw_fn fun()
+---@param size_x number?
+---@param size_y number?
+---@param color integer?
+function this.with_border(draw_fn, size_x, size_y, color)
+    color = color or 0xff4f4e4d
+    size_x = size_x or imgui.calc_item_width()
+    size_y = size_y or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local draw_list = imgui.get_window_draw_list()
+    draw_fn()
+    draw_list:add_rect({ pos.x, pos.y }, { pos.x + size_x, pos.y + size_y }, 0xff4f4e4d, 0, 0, 1)
+end
+
 return this

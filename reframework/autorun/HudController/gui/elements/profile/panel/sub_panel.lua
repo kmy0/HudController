@@ -1,14 +1,8 @@
 local config = require("HudController.config.init")
-local control_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local material = require("HudController.hud.def.material")
 local operations = require("HudController.hud.manager.operations")
-local progress_part = require("HudController.hud.elements.progress.part_base")
-local progress_text = require("HudController.hud.elements.progress.text")
-local scale9 = require("HudController.hud.def.scale9")
 local state = require("HudController.gui.state")
-local text = require("HudController.hud.def.text")
 local util_game = require("HudController.util.game.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -20,12 +14,6 @@ local this = {
     ---@type table<HudSubType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
     funcs = {},
 }
-local separator_material = util_gui.separator:new(material.get_boolean_config_keys())
-local separator_scale9 = util_gui.separator:new(scale9.get_boolean_config_keys())
-local separator_control_child = util_gui.separator:new(control_child.get_boolean_config_keys())
-local separator_text = util_gui.separator:new(text.get_boolean_config_keys())
-local separator_progress_text = util_gui.separator:new(progress_text.get_boolean_config_keys())
-local separator_progress_part = util_gui.separator:new(progress_part.get_boolean_config_keys())
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
@@ -35,66 +23,52 @@ local function draw_control_child(elem, elem_config, config_key)
     ---@cast elem_config CtrlChildConfig
 
     local changed = false
-    separator_control_child:refresh(elem_config)
-
-    if separator_control_child:has_separators() then
-        imgui.separator()
-    end
-
     local is_current_profile = operations.is_current_profile(elem)
     if elem_config.enabled_size_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_x",
-            label = util_gui.tr("hud_element.entry.box_enable_size_x"),
         }, {
             {
                 config_key = config_key .. ".size_x",
-                label = util_gui.tr("hud_element.entry.slider_x"),
             },
-        }, -4000, 4000, 0.1, "%.1f")
+        }, 1, -1920, 1920, 1, "%.1f", config.lang:tr("hud_element.entry.box_enable_size_x"))
 
         if changed and is_current_profile then
             elem:set_size_x(elem_config.enabled_size_x and elem_config.size_x or nil)
         end
-
-        separator_control_child:draw()
     end
 
     if elem_config.enabled_size_y ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_size_y",
-            label = util_gui.tr("hud_element.entry.box_enable_size_y"),
         }, {
             {
                 config_key = config_key .. ".size_y",
-                label = util_gui.tr("hud_element.entry.slider_y"),
             },
-        }, -4000, 4000, 0.1, "%.1f")
+        }, 1, -1920, 1920, 1, "%.1f", config.lang:tr("hud_element.entry.box_enable_size_y"))
 
         if changed and is_current_profile then
             elem:set_size_y(elem_config.enabled_size_y and elem_config.size_y or nil)
         end
-
-        separator_control_child:draw()
     end
 
     if elem_config.enabled_color ~= nil then
         local item_config_key = config_key .. ".enabled_color"
-        changed = set:checkbox(
-            util_gui.tr("hud_element.entry.box_enable_color", item_config_key),
-            item_config_key
-        )
+        changed = set:checkbox("##checkbox." .. item_config_key, item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_color)
+        imgui.same_line()
         item_config_key = config_key .. ".color"
-        changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
+        changed = set:color_edit(
+            util_gui.tr("hud_element.entry.color_color", item_config_key),
+            item_config_key
+        ) or changed
 
         if changed and is_current_profile then
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
         end
 
         imgui.end_disabled()
-        separator_control_child:draw()
     end
 end
 
@@ -109,7 +83,6 @@ local function draw_material(elem, elem_config, config_key)
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then
             util_imgui.separator_text(config.lang:tr("hud_element.entry.category_animation"))
-            separator_material:refresh(elem_config)
             break
         end
     end
@@ -118,15 +91,22 @@ local function draw_material(elem, elem_config, config_key)
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then
             local var_config = elem_config[var_key] --[[@as MaterialVarFloat]]
-            local changed = generic.draw_slider_settings({
-                config_key = string.format("%s.enabled_%s", config_key, var_key),
-                label = util_gui.tr("hud_element.entry.box_enable_" .. var_config.name_key),
-            }, {
+            local changed = generic.draw_slider_settings(
                 {
-                    config_key = string.format("%s.%s.value", config_key, var_key),
-                    label = "",
+                    config_key = string.format("%s.enabled_%s", config_key, var_key),
                 },
-            }, 0, 5, 0.01, "%.2f")
+                {
+                    {
+                        config_key = string.format("%s.%s.value", config_key, var_key),
+                    },
+                },
+                0.01,
+                0,
+                5,
+                0.01,
+                "%.2f",
+                config.lang:tr("hud_element.entry.box_enable_" .. var_config.name_key)
+            )
 
             if changed and is_current_profile then
                 ---@cast elem Material
@@ -135,8 +115,6 @@ local function draw_material(elem, elem_config, config_key)
                     var_key
                 )
             end
-
-            separator_material:draw()
         end
     end
 end
@@ -152,7 +130,6 @@ local function draw_scale9(elem, elem_config, config_key)
     ---@cast elem_config Scale9Config
     ---@cast elem Scale9
 
-    separator_scale9:refresh(elem_config)
     ---@type string
     local item_config_key
     local is_current_profile = operations.is_current_profile(elem)
@@ -181,8 +158,6 @@ local function draw_scale9(elem, elem_config, config_key)
 
             config:set(item_config_key, changed_value.value)
         end
-
-        separator_scale9:draw()
     end
 
     if elem_config.enabled_blend ~= nil then
@@ -207,8 +182,6 @@ local function draw_scale9(elem, elem_config, config_key)
             end
             config:set(item_config_key, changed_value.value)
         end
-
-        separator_scale9:draw()
     end
 
     if elem_config.enabled_alpha_channel ~= nil then
@@ -235,8 +208,6 @@ local function draw_scale9(elem, elem_config, config_key)
             end
             config:set(item_config_key, changed_value.value)
         end
-
-        separator_scale9:draw()
     end
 
     if elem_config.enabled_ignore_alpha ~= nil then
@@ -261,7 +232,6 @@ local function draw_scale9(elem, elem_config, config_key)
         end
 
         imgui.end_disabled()
-        separator_scale9:draw()
     end
 end
 
@@ -279,29 +249,22 @@ local function draw_text(elem, elem_config, config_key)
     local changed = false
     local is_current_profile = operations.is_current_profile(elem)
 
-    if separator_control_child:had_separators() then
-        imgui.separator()
-    end
-
-    separator_text:refresh(elem_config)
-
     if elem_config.enabled_font_size ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_font_size",
-            label = util_gui.tr("hud_element.entry.box_enable_font_size", item_config_key),
         }, {
             {
                 config_key = config_key .. ".font_size",
-                label = "",
             },
-        }, 0, 1000, 0.1, "%.1f") or changed
+        }, 0.1, 0, 1000, 0.1, "%.1f", config.lang:tr(
+            "hud_element.entry.box_enable_font_size"
+        )) or changed
 
         if changed and is_current_profile then
             elem:set_font_size(elem_config.enabled_font_size and elem_config.font_size or nil)
         end
 
         imgui.end_disabled()
-        separator_text:draw()
     end
 
     if elem_config.enabled_page_alignment ~= nil then
@@ -309,10 +272,9 @@ local function draw_text(elem, elem_config, config_key)
         local changed_value = generic.draw_combo(
             {
                 config_key = config_key .. ".enabled_page_alignment",
-                label = util_gui.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
             },
             item_config_key,
-            "##" .. item_config_key,
+            util_gui.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
             state.combo.page_alignment,
             state.combo.page_alignment:get_index(nil, config:get(item_config_key))
         )
@@ -323,8 +285,6 @@ local function draw_text(elem, elem_config, config_key)
             end
             config:set(item_config_key, changed_value.value)
         end
-
-        separator_scale9:draw()
     end
 
     if elem_config.hide_glow ~= nil then
@@ -336,30 +296,25 @@ local function draw_text(elem, elem_config, config_key)
         then
             elem:set_hide_glow(elem_config.hide_glow)
         end
-
-        separator_text:draw()
     end
 
     imgui.begin_disabled(elem_config.hide_glow ~= nil and elem_config.hide_glow)
 
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
-        changed = set:checkbox(
-            util_gui.tr("hud_element.entry.box_enable_glow_color", item_config_key),
-            item_config_key
-        )
+        changed = set:checkbox("##checkbox." .. item_config_key, item_config_key)
 
         imgui.begin_disabled(not elem_config.enabled_glow_color)
-
+        imgui.same_line()
         item_config_key = config_key .. ".glow_color"
-        changed = set:color_edit("##" .. item_config_key, item_config_key) or changed
+        changed = set:color_edit(util_gui.tr("hud_element.entry.color_glow"), item_config_key)
+            or changed
 
         if changed and is_current_profile then
             elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
         end
 
         imgui.end_disabled()
-        separator_text:draw()
     end
 
     imgui.end_disabled()
@@ -427,23 +382,19 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     changed = generic.draw_slider_settings(nil, {
         {
             config_key = config_key .. ".box.x",
-            label = util_gui.tr("hud_element.entry.pos_x"),
         },
         {
             config_key = config_key .. ".box.y",
-            label = util_gui.tr("hud_element.entry.pos_y"),
         },
-    }, -1920, 1920, 1, "%.0f")
+    }, 1, -1920, 1920, 1, "%.0f", config.lang:tr("hud_element.entry.pos"))
     changed = generic.draw_slider_settings(nil, {
         {
             config_key = config_key .. ".box.w",
-            label = util_gui.tr("hud_element.entry.size_x"),
         },
         {
             config_key = config_key .. ".box.h",
-            label = util_gui.tr("hud_element.entry.size_y"),
         },
-    }, -1920, 1920, 1, "%.0f") or changed
+    }, 1, -1920, 1920, 1, "%.0f", config.lang:tr("hud_element.entry.size")) or changed
 
     if changed and is_current_profile then
         elem:set_box({
@@ -464,11 +415,6 @@ local function draw_progress_part(elem, elem_config, config_key)
     ---@cast elem ProgressPartBase
     ---@cast elem_config ProgressPartBaseConfig
 
-    if generic.separator:had_separators() then
-        imgui.separator()
-    end
-
-    separator_progress_part:refresh(elem_config)
     local changed = false
     local is_current_profile = operations.is_current_profile(elem)
 
@@ -477,19 +423,17 @@ local function draw_progress_part(elem, elem_config, config_key)
     if elem_config.enabled_offset_x ~= nil then
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_offset_x",
-            label = util_gui.tr("hud_element.entry.box_enable_offset_x"),
         }, {
             {
                 config_key = config_key .. ".offset_x",
-                label = util_gui.tr("hud_element.entry.slider_x"),
             },
-        }, -4000, 4000, 1, "%.0f")
+        }, 1, -1920, 1920, 1, "%.0f", config.lang:tr(
+            "hud_element.entry.box_enable_offset_x"
+        ))
 
         if changed and is_current_profile then
             elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
         end
-
-        separator_progress_part:draw()
     end
 
     if elem_config.enabled_clock_offset_x ~= nil then
@@ -497,13 +441,13 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_clock_offset_x",
-            label = util_gui.tr("hud_element.entry.box_enable_clock_offset_x"),
         }, {
             {
                 config_key = config_key .. ".clock_offset_x",
-                label = util_gui.tr("hud_element.entry.slider_x"),
             },
-        }, -4000, 4000, 1, "%.0f")
+        }, 1, -1920, 1920, 1, "%.0f", config.lang:tr(
+            "hud_element.entry.box_enable_clock_offset_x"
+        ))
 
         if changed and is_current_profile then
             elem:set_clock_offset_x(
@@ -512,7 +456,6 @@ local function draw_progress_part(elem, elem_config, config_key)
         end
 
         imgui.end_disabled()
-        separator_progress_part:draw()
     end
 
     if elem_config.enabled_num_offset_x ~= nil then
@@ -520,13 +463,13 @@ local function draw_progress_part(elem, elem_config, config_key)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_num_offset_x",
-            label = util_gui.tr("hud_element.entry.box_enable_num_offset_x"),
         }, {
             {
                 config_key = config_key .. ".num_offset_x",
-                label = util_gui.tr("hud_element.entry.slider_x"),
             },
-        }, -4000, 4000, 1, "%.0f")
+        }, 1, -1929, 1920, 1, "%.0f", config.lang:tr(
+            "hud_element.entry.box_enable_num_offset_x"
+        ))
 
         if changed and is_current_profile then
             elem:set_num_offset_x(
@@ -535,7 +478,6 @@ local function draw_progress_part(elem, elem_config, config_key)
         end
 
         imgui.end_disabled()
-        separator_progress_part:draw()
     end
 
     imgui.end_disabled()
@@ -551,16 +493,6 @@ local function draw_progress_text(elem, elem_config, config_key)
     ---@cast elem ProgressPartText
     ---@cast elem_config ProgressPartTextConfig
 
-    if
-        separator_text:had_separators()
-        or generic.separator:had_separators()
-        or separator_progress_part:had_separators()
-    then
-        imgui.separator()
-    end
-
-    separator_progress_text:refresh(elem_config)
-
     if elem_config.align_left ~= nil then
         if
             set:checkbox(
@@ -570,8 +502,6 @@ local function draw_progress_text(elem, elem_config, config_key)
         then
             elem:set_align_left(elem_config.align_left)
         end
-
-        separator_progress_text:draw()
     end
 end
 
