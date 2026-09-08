@@ -118,6 +118,20 @@ function this:_write(ctrl)
     return ret
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "align_left",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(part_base.get_boolean_config_keys(self), t)
+end
+
 ---@return ProgressPartTextConfig
 function this.get_config()
     return {

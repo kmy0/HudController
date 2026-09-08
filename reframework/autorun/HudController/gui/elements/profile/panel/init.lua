@@ -193,8 +193,8 @@ end
 ---@param config_key string
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
-    local elems = util_table.groupby(children_filtered, function(_, _, value)
-        if util_gui.is_only_thing(value, value.gui_thing) then
+    local elems = util_table.groupby(children_filtered, function(_, name_key, value)
+        if util_gui.is_only_thing(elem.children[name_key], value, value.gui_thing) then
             return "box"
         end
         return "panel"

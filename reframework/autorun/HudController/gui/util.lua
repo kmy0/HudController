@@ -10,36 +10,6 @@ local util_table = require("HudController.util.misc.table")
 local gui_elements = util_misc.lazy_require("HudController.gui.elements.init")
 
 local this = {}
-local all_bools = {
-    "enabled_scale",
-    "enabled_offset",
-    "enabled_rot",
-    "enabled_opacity",
-    "enabled_play_state",
-    "enabled_alpha_channel",
-    "enabled_blend",
-    "enabled_color",
-    "enabled_control_point",
-    "enabled_ignore_alpha",
-    "enabled_var0",
-    "enabled_var1",
-    "enabled_var2",
-    "enabled_var3",
-    "enabled_var4",
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_segment",
-    "hide_glow",
-    "enabled_glow_color",
-    "enabled_font_size",
-    "enabled_offset_x",
-    "align_left",
-    "enabled_page_alignment",
-    "enabled_num_offset_x",
-    "enabled_clock_offset_x",
-    "enabled_fov",
-    "enabled_icon_scale",
-}
 
 ---@class Separator
 local Separator = {}
@@ -177,21 +147,18 @@ function this.seconds_to_minutes_string(n, n_format, pad)
     )
 end
 
+---@param elem HudBase
 ---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config
 ---@param thing string?
 ---@return boolean
-function this.is_only_thing(elem_config, thing)
+function this.is_only_thing(elem, elem_config, thing)
     thing = thing or "hide"
 
     if elem_config[thing] == nil then
         return false
     end
 
-    if elem_config.name_key == "text" then
-        util_table.any(all_bools, function(_, value)
-            return elem_config[value] ~= nil
-        end)
-    end
+    local all_bools = elem:get_boolean_config_keys()
     if
         (elem_config.children and not util_table.empty(elem_config.children))
         or util_table.any(all_bools, function(_, value)

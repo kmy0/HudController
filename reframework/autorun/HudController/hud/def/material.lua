@@ -222,4 +222,22 @@ function this:_write(obj)
     return true
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "enabled_var0",
+        "enabled_var1",
+        "enabled_var2",
+        "enabled_var3",
+        "enabled_var4",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(ctrl_child.get_boolean_config_keys(self), t)
+end
+
 return this

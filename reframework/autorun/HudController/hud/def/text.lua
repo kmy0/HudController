@@ -206,4 +206,21 @@ function this:_write(obj)
     return true
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "hide_glow",
+        "enabled_glow_color",
+        "enabled_font_size",
+        "enabled_page_alignment",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(ctrl_child.get_boolean_config_keys(self), t)
+end
+
 return this

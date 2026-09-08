@@ -27,6 +27,7 @@
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
+---@field get_boolean_config_keys fun(self: HudBase?): string[]
 ---@field restore_all_force_invis fun()
 ---@field hide_timer Timer
 ---@field disable_fade boolean?
@@ -994,6 +995,20 @@ end
 function this:get_profile_key()
     local current_config = self:get_root_config()
     return tostring(current_config.current_profile)
+end
+
+---@param _ HudBase?
+---@return string[]
+function this.get_boolean_config_keys(_)
+    return {
+        "enabled_scale",
+        "enabled_offset",
+        "enabled_rot",
+        "enabled_opacity",
+        "enabled_play_state",
+        "enabled_segment",
+        -- "enabled_color_scale", -- not exposed
+    }
 end
 
 function this.restore_all_force_invis()

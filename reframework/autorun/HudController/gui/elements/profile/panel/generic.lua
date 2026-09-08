@@ -2,6 +2,7 @@ local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
+local hud_base = require("HudController.hud.def.hud_base")
 local mod = require("HudController.data.mod")
 local operations = require("HudController.hud.manager.operations")
 local state = require("HudController.gui.state")
@@ -13,17 +14,7 @@ local ace_map = data.ace.map
 local set = state.set
 
 local this = {}
-this.separator = util_gui.separator:new({
-    "hide",
-    "enabled_scale",
-    "enabled_offset",
-    "enabled_rot",
-    "enabled_opacity",
-    "enabled_color",
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_segment",
-})
+this.separator = util_gui.separator:new(hud_base.get_boolean_config_keys())
 
 ---@param option_keys string[]
 ---@param config_key string

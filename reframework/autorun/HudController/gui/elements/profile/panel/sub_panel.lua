@@ -1,8 +1,14 @@
 local config = require("HudController.config.init")
+local control_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
+local material = require("HudController.hud.def.material")
 local operations = require("HudController.hud.manager.operations")
+local progress_part = require("HudController.hud.elements.progress.part_base")
+local progress_text = require("HudController.hud.elements.progress.text")
+local scale9 = require("HudController.hud.def.scale9")
 local state = require("HudController.gui.state")
+local text = require("HudController.hud.def.text")
 local util_game = require("HudController.util.game.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -14,38 +20,12 @@ local this = {
     ---@type table<HudSubType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
     funcs = {},
 }
-local separator_material = util_gui.separator:new({
-    "enabled_var0",
-    "enabled_var1",
-    "enabled_var2",
-    "enabled_var3",
-    "enabled_var4",
-})
-local separator_scale9 = util_gui.separator:new({
-    "enabled_control_point",
-    "enabled_blend",
-    "enabled_ignore_alpha",
-    "enabled_alpha_channel",
-})
-local separator_control_child = util_gui.separator:new({
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_color",
-})
-local separator_text = util_gui.separator:new({
-    "hide_glow",
-    "enabled_glow_color",
-    "enabled_font_size",
-    "enabled_page_alignment",
-})
-local separator_progress_text = util_gui.separator:new({
-    "align_left",
-})
-local separator_progress_part = util_gui.separator:new({
-    "enabled_offset_x",
-    "enabled_clock_offset_x",
-    "enabled_num_offset_x",
-})
+local separator_material = util_gui.separator:new(material.get_boolean_config_keys())
+local separator_scale9 = util_gui.separator:new(scale9.get_boolean_config_keys())
+local separator_control_child = util_gui.separator:new(control_child.get_boolean_config_keys())
+local separator_text = util_gui.separator:new(text.get_boolean_config_keys())
+local separator_progress_text = util_gui.separator:new(progress_text.get_boolean_config_keys())
+local separator_progress_part = util_gui.separator:new(progress_part.get_boolean_config_keys())
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig

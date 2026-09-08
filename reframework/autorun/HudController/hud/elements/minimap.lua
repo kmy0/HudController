@@ -334,6 +334,21 @@ function this:_write(ctrl)
     return hud_base._write(self, ctrl)
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "enabled_fov",
+        "enabled_icon_scale",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(hud_child.get_boolean_config_keys(self), t)
+end
+
 ---@return MinimapConfig
 function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").MINIMAP, "MINIMAP") --[[@as MinimapConfig]]

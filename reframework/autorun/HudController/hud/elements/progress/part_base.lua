@@ -169,6 +169,22 @@ function this:any_gui()
     end)
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "enabled_offset_x",
+        "enabled_num_offset_x",
+        "enabled_clock_offset_x",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(hud_child.get_boolean_config_keys(self), t)
+end
+
 ---@param name_key string
 ---@return ProgressPartBaseConfig
 function this.get_config(name_key)

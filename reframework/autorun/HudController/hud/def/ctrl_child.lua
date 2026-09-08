@@ -304,4 +304,20 @@ function this:_write(obj)
     return true
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "enabled_color",
+        "enabled_size_x",
+        "enabled_size_y",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(hud_child.get_boolean_config_keys(self), t)
+end
+
 return this
