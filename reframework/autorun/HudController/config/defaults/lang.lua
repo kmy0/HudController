@@ -196,8 +196,8 @@ return {
                 menubar_element_profiles = "Element Profiles",
                 combo_elem_profile = "Element Profile",
                 button_clear = "Clear",
-                tooltip_wrong_parent_key = "PLACEHOLDER",
-                tooltip_elem_condition_set = "PLACEHOLDER",
+                tooltip_wrong_parent_key = "These element profile conditions belong to %s and are currently inactive.\nSwitch back to %s to use them.",
+                tooltip_elem_condition_set = "Condition sets are applied from top to bottom. Within each passing set, selected profiles are evaluated from right to left.\nThe first enabled profile available for an element is used.",
             },
             condition_option = {
                 name = "Condition Options",

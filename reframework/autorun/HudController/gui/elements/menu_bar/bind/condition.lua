@@ -348,19 +348,25 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
 
     imgui.spacing()
     imgui.indent(2)
-    imgui.begin_disabled(util_table.empty(values))
 
     local bad_key = util_table.value(cond_set.children, function(_, value)
         return value.parent_key ~= cond_set.key
     end)
 
+    imgui.begin_disabled(util_table.empty(values) and not bad_key)
+
     if bad_key then
         local config_mod = config.current.mod
-        local bad_profiles = config_mod.hud[bad_key.parent_key].profile
+        local bad_hud = config_mod.hud[bad_key.parent_key]
+        local bad_profiles = bad_hud.profile
         values = util_table.slice(bad_profiles, 2, #bad_profiles)
 
         imgui.text_colored(
-            config.lang:tr("menu.bind.condition.tooltip_wrong_parent_key"),
+            string.format(
+                config.lang:tr("menu.bind.condition.tooltip_wrong_parent_key"),
+                bad_hud.name,
+                bad_hud.name
+            ),
             mod.enum.colors.bad
         )
         if imgui.button(util_gui.tr("menu.bind.condition.button_clear", "element_profiles")) then
