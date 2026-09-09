@@ -648,7 +648,7 @@ end
 
 ---@return boolean
 function this:any_gui()
-    return self:any()
+    return next(self.write_properies) ~= nil
 end
 
 ---@return HudBaseChangedProperties
