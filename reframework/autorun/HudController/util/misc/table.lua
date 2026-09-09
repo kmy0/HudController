@@ -338,7 +338,7 @@ end
 ---@return T[]
 function this.extend(target, ...)
     local arrays_to_merge = { ... }
-    for i = 2, #arrays_to_merge do
+    for i = 1, #arrays_to_merge do
         local t = arrays_to_merge[i]
         table.move(t, 1, #t, #target + 1, target)
     end
