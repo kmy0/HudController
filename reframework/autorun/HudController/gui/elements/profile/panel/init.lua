@@ -143,7 +143,8 @@ end
 ---@param config_key string
 ---@param tree boolean?
 ---@param root_elem boolean?
-local function draw_panel(elem, elem_config, config_key, tree, root_elem)
+---@param indent number?
+local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent)
     if root_elem then
         elem_config, config_key = draw_notebook(elem_config, config_key)
 
@@ -171,6 +172,10 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem)
         )
 
     if not tree or node then
+        if indent then
+            imgui.indent(indent)
+        end
+
         generic.draw(elem, elem_config, config_key)
 
         imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
@@ -196,6 +201,10 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem)
         if node then
             imgui.tree_pop()
         end
+
+        if indent then
+            imgui.unindent(indent)
+        end
     end
 
     imgui.end_disabled()
@@ -217,11 +226,13 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
     ---@type Vector2f[]
     local node_positions = {}
     local text_size = imgui.calc_text_size("")
+    local indent = config.lang.font_size * (20 / 16)
+    local indent_offset = -(config.lang.font_size - 16) / 4
 
     if node_pos then
-        imgui.indent(20)
+        imgui.indent(indent)
         node_pos = Vector2f.new(node_pos.x, node_pos.y)
-        node_pos.x = node_pos.x + 20
+        node_pos.x = node_pos.x + indent + indent_offset
         table.insert(node_positions, node_pos)
     end
 
@@ -290,7 +301,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
             local cursor_pos = imgui.get_cursor_screen_pos()
             cursor_pos.y = cursor_pos.y + text_size.y / 2 - 5
 
-            draw_panel(child, child_config, child_config_key)
+            draw_panel(child, child_config, child_config_key, nil, nil, indent - 21)
 
             imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
@@ -315,27 +326,26 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
     end
 
     if node_pos then
+        local offset_x = config.lang.font_size * (8 / 16)
         local start_pos = node_positions[1]
-        start_pos.x = start_pos.x - 8
+        start_pos.x = start_pos.x - offset_x
         start_pos.y = start_pos.y + text_size.y + 1
-
-        imgui.draw_list_path_line_to(start_pos)
+        local dl = imgui.get_window_draw_list()
 
         for i = 2, #node_positions do
-            local pos = node_positions[i]
-            pos.x = pos.x - 8
-            pos.y = pos.y + 5
+            local s_pos = node_positions[i]
+            s_pos.x = s_pos.x - offset_x + indent_offset
+            s_pos.y = s_pos.y + 5
+            local e_pos = Vector2f.new(s_pos.x, s_pos.y)
+            e_pos.x = e_pos.x + offset_x - 2
 
-            local _node_pos = Vector2f.new(pos.x, pos.y)
-            _node_pos.x = _node_pos.x + 7
+            dl:add_line(start_pos, s_pos, 4285032552, 2)
+            dl:add_line(s_pos, e_pos, 4285032552, 2)
 
-            imgui.draw_list_path_line_to(pos)
-            imgui.draw_list_path_line_to(_node_pos)
-            imgui.draw_list_path_line_to(pos)
+            start_pos = s_pos
         end
 
-        imgui.unindent(20)
-        imgui.draw_list_path_stroke(4285032552, false, 2)
+        imgui.unindent(indent)
     end
 end
 
