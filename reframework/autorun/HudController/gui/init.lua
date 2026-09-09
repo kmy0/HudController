@@ -111,7 +111,10 @@ function this.draw()
         gui_elements.choice.draw_hud()
         util_imgui.end_disabled()
         imgui.end_group()
-        util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
+        if config_mod.enable_condition_binds then
+            util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
+        end
+
         util_imgui.begin_disabled(util_table.empty(config_mod.hud))
         gui_elements.choice.draw_element()
         util_imgui.end_disabled()
