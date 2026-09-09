@@ -309,6 +309,7 @@ return {
         box_hide_aggro = "Hide Aggro Line",
         drag_hide_porter = "Delay",
         drag_hide_handler = "Delay",
+        tooltip_choice_disabled = "Disabled while Condition Binds are active",
     },
     hud_profile = {
         header_hud_profile = "Element Profiles",
