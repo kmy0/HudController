@@ -20,7 +20,7 @@ local function draw_tools_menu()
 
     imgui.separator()
 
-    imgui.begin_disabled(util_mod.is_draw_canvas())
+    util_imgui.begin_disabled(util_mod.is_draw_canvas())
     if util_imgui.menu_item(util_gui.tr("selector.name"), nil, nil, true) then
         mod.pause = true
         gui_selector.is_opened = true
@@ -30,7 +30,7 @@ local function draw_tools_menu()
         state.combo.config:swap(config.selector.sorted)
         state.combo.config_backup:swap(config.selector.sorted_backup)
     end
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     if util_imgui.menu_item(util_gui.tr("debug.name"), nil, nil, true) then
         local config_debug = config.gui.current.gui.debug

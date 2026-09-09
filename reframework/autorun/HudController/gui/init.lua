@@ -12,7 +12,6 @@ local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
 local state = require("HudController.gui.state")
-local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -67,14 +66,14 @@ function this.draw()
         return
     end
 
-    imgui.begin_disabled(util_gui.is_gui_disabled())
+    util_imgui.begin_disabled(gui_elements.selector.is_opened or gui_elements.sorter.is_opened)
 
     if imgui.begin_menu_bar() then
         gui_elements.menu_bar.draw()
         imgui.end_menu_bar()
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     if gui_elements.selector.is_opened then
         gui_elements.selector.draw()
@@ -99,7 +98,7 @@ function this.draw()
     end
 
     imgui.indent(3)
-    imgui.begin_disabled(
+    util_imgui.begin_disabled(
         not config_mod.enabled
             or gui_elements.selector.is_opened
             or gui_elements.sorter.is_opened
@@ -108,21 +107,21 @@ function this.draw()
 
     util_imgui.draw_child_window("hud_child_window", function()
         imgui.begin_group()
-        imgui.begin_disabled(config_mod.enable_condition_binds)
+        util_imgui.begin_disabled(config_mod.enable_condition_binds)
         gui_elements.choice.draw_hud()
-        imgui.end_disabled()
+        util_imgui.end_disabled()
         imgui.end_group()
         util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
-        imgui.begin_disabled(util_table.empty(config_mod.hud))
+        util_imgui.begin_disabled(util_table.empty(config_mod.hud))
         gui_elements.choice.draw_element()
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end, 48, 4)
 
     imgui.separator()
 
     gui_elements.profile.draw()
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
     imgui.unindent(3)
 
     if config.lang.font then

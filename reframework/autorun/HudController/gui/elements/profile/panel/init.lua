@@ -122,7 +122,7 @@ local function draw_notebook(elem_config, config_key)
                 end,
                 tooltip = config.lang:tr("hud_profile.tooltip_button_set_default"),
             },
-        }, nil, util_gui.is_gui_disabled())
+        })
 
     if changed then
         root.current_profile_gui = new_tab
@@ -148,9 +148,9 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
     if root_elem then
         elem_config, config_key = draw_notebook(elem_config, config_key)
 
-        imgui.begin_disabled(not config:get(string.format("%s.enabled", config_key)))
+        util_imgui.begin_disabled(not config:get(string.format("%s.enabled", config_key)))
     else
-        imgui.begin_disabled(false)
+        util_imgui.begin_disabled(false)
     end
 
     ---@type string
@@ -178,7 +178,9 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
 
         generic.draw(elem, elem_config, config_key)
 
-        imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
+        util_imgui.begin_disabled(
+            elem_config.hide ~= nil and elem_config.hide and not elem.hide_write
+        )
 
         item_config_key = config_key .. ".options"
         local options = config:get(item_config_key)
@@ -197,7 +199,7 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
         main_panel.draw(elem, elem_config, config_key)
         sub_panel.draw(elem, elem_config, config_key)
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
         if node then
             imgui.tree_pop()
         end
@@ -207,7 +209,7 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
         end
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -303,7 +305,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
 
             draw_panel(child, child_config, child_config_key, nil, nil, indent - 21)
 
-            imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+            util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
             local children = util_table.filter_inplace(
                 child_config.children or {},
@@ -316,7 +318,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                 draw_panel_child(child, child_config, children, child_config_key, cursor_pos)
             end
 
-            imgui.end_disabled()
+            util_imgui.end_disabled()
 
             if node_pos then
                 table.insert(node_positions, cursor_pos)
@@ -382,7 +384,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
         then
             draw_panel(child, child_config, child_config_key, false)
 
-            imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+            util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
             local children = util_table.filter_inplace(
                 child_config.children or {},
@@ -396,7 +398,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
                 draw_panel_child(child, child_config, children, child_config_key)
             end
 
-            imgui.end_disabled()
+            util_imgui.end_disabled()
         end
         ::continue::
     end
@@ -410,7 +412,7 @@ function this.draw(elem, elem_config, config_key)
         draw_panel(elem, elem_config, config_key, false, true)
     end
 
-    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
+    util_imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
     local children = util_table.filter_inplace(elem_config.children or {}, function(t, i, _)
         return not t[i].ignore
@@ -428,7 +430,7 @@ function this.draw(elem, elem_config, config_key)
         end
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 return this

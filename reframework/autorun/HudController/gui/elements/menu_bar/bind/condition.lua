@@ -170,7 +170,7 @@ local function draw_add_condition(conditions, config_key, combo_condition_key)
     imgui.same_line()
 
     local combo = state.combo.condition
-    imgui.begin_disabled(combo:size() == #conditions)
+    util_imgui.begin_disabled(combo:size() == #conditions)
 
     if imgui.button(util_gui.tr("menu.bind.condition.button_add", "condition", config_key)) then
         local index = config:get(combo_condition_key) --[[@as integer]]
@@ -188,7 +188,7 @@ local function draw_add_condition(conditions, config_key, combo_condition_key)
         advance_combo_index(combo_condition_key, combo)
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param items ConditionSetConfig[]
@@ -353,7 +353,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
         return value.parent_key ~= cond_set.key
     end)
 
-    imgui.begin_disabled(util_table.empty(values) and not bad_key)
+    util_imgui.begin_disabled(util_table.empty(values) and not bad_key)
 
     if bad_key then
         local config_mod = config.current.mod
@@ -394,7 +394,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
         imgui.separator()
     end
 
-    imgui.begin_disabled(bad_key ~= nil)
+    util_imgui.begin_disabled(bad_key ~= nil)
     cond_set.children = draw_condition_set_list(
         cond_set.children,
         elem_drag,
@@ -429,8 +429,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
                         util_bind.profile_multi_combo(
                             util_gui.tr("menu.bind.condition.combo_elem_profile", i, j),
                             string.format("%s.combo_profile", config_key),
-                            values,
-                            bad_key ~= nil
+                            values
                         )
                     then
                         cond_child.key = config:get(string.format("%s.combo_profile", config_key))
@@ -441,8 +440,8 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
         end
     )
 
-    imgui.end_disabled()
-    imgui.end_disabled()
+    util_imgui.end_disabled()
+    util_imgui.end_disabled()
     imgui.spacing()
     imgui.unindent(2)
 end
@@ -452,7 +451,7 @@ local function draw_condition_bind_menu()
 
     imgui.spacing()
     imgui.indent(2)
-    imgui.begin_disabled(util_table.empty(config_mod.hud))
+    util_imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition")) then
         table.insert(
@@ -521,7 +520,7 @@ local function draw_condition_bind_menu()
         end
     )
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
     imgui.unindent(2)
     imgui.spacing()
 end

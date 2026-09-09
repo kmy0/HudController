@@ -56,7 +56,7 @@ local function draw_control_child(elem, elem_config, config_key)
         local item_config_key = config_key .. ".enabled_color"
         changed = set:checkbox("##checkbox." .. item_config_key, item_config_key)
 
-        imgui.begin_disabled(not elem_config.enabled_color)
+        util_imgui.begin_disabled(not elem_config.enabled_color)
         imgui.same_line()
         item_config_key = config_key .. ".color"
         changed = set:color_edit(
@@ -68,7 +68,7 @@ local function draw_control_child(elem, elem_config, config_key)
             elem:set_color(elem_config.enabled_color and elem_config.color or nil)
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 end
 
@@ -217,7 +217,7 @@ local function draw_scale9(elem, elem_config, config_key)
             item_config_key
         )
 
-        imgui.begin_disabled(not elem_config.enabled_ignore_alpha)
+        util_imgui.begin_disabled(not elem_config.enabled_ignore_alpha)
 
         item_config_key = config_key .. ".ignore_alpha"
         changed = set:checkbox(
@@ -231,7 +231,7 @@ local function draw_scale9(elem, elem_config, config_key)
             )
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 end
 
@@ -264,7 +264,7 @@ local function draw_text(elem, elem_config, config_key)
             elem:set_font_size(elem_config.enabled_font_size and elem_config.font_size or nil)
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 
     if elem_config.enabled_page_alignment ~= nil then
@@ -298,13 +298,13 @@ local function draw_text(elem, elem_config, config_key)
         end
     end
 
-    imgui.begin_disabled(elem_config.hide_glow ~= nil and elem_config.hide_glow)
+    util_imgui.begin_disabled(elem_config.hide_glow ~= nil and elem_config.hide_glow)
 
     if elem_config.enabled_glow_color ~= nil then
         item_config_key = config_key .. ".enabled_glow_color"
         changed = set:checkbox("##checkbox." .. item_config_key, item_config_key)
 
-        imgui.begin_disabled(not elem_config.enabled_glow_color)
+        util_imgui.begin_disabled(not elem_config.enabled_glow_color)
         imgui.same_line()
         item_config_key = config_key .. ".glow_color"
         changed = set:color_edit(util_gui.tr("hud_element.entry.color_glow"), item_config_key)
@@ -314,10 +314,10 @@ local function draw_text(elem, elem_config, config_key)
             elem:set_glow_color(elem_config.enabled_glow_color and elem_config.glow_color or nil)
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -349,7 +349,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
     end
     util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_numbers_box"), true)
 
-    imgui.begin_disabled(not elem_config.enabled_box)
+    util_imgui.begin_disabled(not elem_config.enabled_box)
     imgui.same_line()
 
     item_config_key = config_key .. ".preview_box"
@@ -405,7 +405,7 @@ local function draw_damage_numbers(elem, elem_config, config_key)
         })
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -418,7 +418,7 @@ local function draw_progress_part(elem, elem_config, config_key)
     local changed = false
     local is_current_profile = operations.is_current_profile(elem)
 
-    imgui.begin_disabled(elem_config.enabled_offset == true)
+    util_imgui.begin_disabled(elem_config.enabled_offset == true)
 
     if elem_config.enabled_offset_x ~= nil then
         changed = generic.draw_slider_settings({
@@ -437,7 +437,7 @@ local function draw_progress_part(elem, elem_config, config_key)
     end
 
     if elem_config.enabled_clock_offset_x ~= nil then
-        imgui.begin_disabled(elem_config.enabled_offset_x == false)
+        util_imgui.begin_disabled(elem_config.enabled_offset_x == false)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_clock_offset_x",
@@ -455,11 +455,11 @@ local function draw_progress_part(elem, elem_config, config_key)
             )
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 
     if elem_config.enabled_num_offset_x ~= nil then
-        imgui.begin_disabled(elem_config.enabled_offset_x == false)
+        util_imgui.begin_disabled(elem_config.enabled_offset_x == false)
 
         changed = generic.draw_slider_settings({
             config_key = config_key .. ".enabled_num_offset_x",
@@ -477,10 +477,10 @@ local function draw_progress_part(elem, elem_config, config_key)
             )
         end
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase

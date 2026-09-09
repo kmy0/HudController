@@ -72,17 +72,15 @@ end
 ---@param name string
 ---@param config_key string
 ---@param values HudBaseConfigProfileForShow[]
----@param disabled boolean?
 ---@param width number?
 ---@return boolean
-function this.profile_multi_combo(name, config_key, values, disabled, width)
+function this.profile_multi_combo(name, config_key, values, width)
     local options, selected = profile_multi_combo_values(values, config:get(config_key))
     local changed, choice = util_imgui.multi_combo(
         name,
         config.lang:tr("misc.text_none"),
         options,
         selected,
-        disabled,
         width or util_gui.get_item_size()
     )
 

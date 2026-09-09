@@ -49,7 +49,7 @@ local function draw_bind_type()
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
     }
 
-    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
+    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, true) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
@@ -85,7 +85,6 @@ local function draw_bind_target(config_mod)
             "##elem_profile_hud_bind",
             "mod.combo.key_bind.elem_profile",
             values,
-            util_table.empty(values) or state.listener ~= nil,
             width - 0.5 --FIXME: no idea why its misalinged by 0.5
         )
 
@@ -264,13 +263,13 @@ local function draw_listener(manager, config_key, config_mod)
 
     update_collision(manager, bind, config_mod)
 
-    imgui.begin_disabled(state.listener.collision ~= nil or bind.name == "")
+    util_imgui.begin_disabled(state.listener.collision ~= nil or bind.name == "")
 
     if imgui.button(util_gui.tr("menu.bind.key.button_save")) then
         save_bind(manager, config_key, bind)
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
     imgui.same_line()
 
     if imgui.button(util_gui.tr("menu.bind.key.button_clear")) then
@@ -392,7 +391,7 @@ local function draw_key_bind_menu()
     draw_buffer(config_mod)
     draw_bind_type()
 
-    imgui.begin_disabled(
+    util_imgui.begin_disabled(
         state.listener ~= nil
             or config_mod.bind.slider.key_bind == 1 and util_table.empty(config_mod.hud)
     )
@@ -401,7 +400,7 @@ local function draw_key_bind_menu()
 
     draw_add_button(manager, config_mod)
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     draw_listener(manager, config_key, config_mod)
     draw_registered_binds(manager, config_key)

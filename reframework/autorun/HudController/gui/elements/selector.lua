@@ -51,7 +51,7 @@ function this.draw()
             { buf = name ~= config.selector.default_name and name or "", type = "rename_config" }
     end
 
-    imgui.begin_disabled(util_table.size(config.selector.files) == 1)
+    util_imgui.begin_disabled(util_table.size(config.selector.files) == 1)
     imgui.same_line()
 
     if imgui.button(util_gui.tr("selector.button_remove")) then
@@ -78,7 +78,7 @@ function this.draw()
     end
     util_imgui.tooltip(config.lang:tr("selector.tooltip_button_import"))
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     if
         util_imgui.popup_yesno(
@@ -131,7 +131,7 @@ function this.draw()
     imgui.pop_item_width()
     imgui.same_line()
 
-    imgui.begin_disabled(state.combo.config_backup:empty())
+    util_imgui.begin_disabled(state.combo.config_backup:empty())
 
     if imgui.button(util_gui.tr("selector.button_restore")) then
         state.input = nil
@@ -149,7 +149,7 @@ function this.draw()
         util_imgui.open_popup("config_remove_backup", 62, 30)
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     if
         util_imgui.popup_yesno(

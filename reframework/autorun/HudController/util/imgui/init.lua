@@ -1,9 +1,14 @@
 local config = require("HudController.config.init")
+local disabled = require("HudController.util.imgui.disabled")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local uuid = require("HudController.util.misc.uuid")
 
-local this = {}
+local this = {
+    begin_disabled = disabled.begin_disabled,
+    end_disabled = disabled.end_disabled,
+    is_disabled = disabled.is_disabled,
+}
 ---@type table<string, number>
 local child_window_sizes = {}
 
@@ -41,9 +46,9 @@ function this.tooltip_exclamation(text)
 end
 
 function this.tooltip_text(text)
-    imgui.begin_disabled(true)
+    this.begin_disabled(true)
     imgui.text(string.format("( %s )", text))
-    imgui.end_disabled()
+    this.end_disabled()
 end
 
 ---@param label string
@@ -220,7 +225,7 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     local id = label
     local ret = selected_obj
 
-    imgui.begin_disabled(disabled)
+    this.begin_disabled(disabled)
 
     label, id = table.unpack(util_misc.split_string(label, "##"))
     label = label .. checkmark_padding
@@ -269,7 +274,7 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
         imgui.close_current_popup()
     end
 
-    imgui.end_disabled()
+    this.end_disabled()
     return changed, ret
 end
 
@@ -425,15 +430,10 @@ end
 ---@param default_preview string
 ---@param options string[]
 ---@param selected boolean[]
----@param disabled boolean?
 ---@param width integer?
 ---@return boolean, boolean[]
-function this.multi_combo(label, default_preview, options, selected, disabled, width)
+function this.multi_combo(label, default_preview, options, selected, width)
     width = width or imgui.calc_item_width()
-
-    if disabled == nil then
-        disabled = false
-    end
 
     local popup_id = "##" .. label .. "_popup"
     ---@type string[]
@@ -444,6 +444,7 @@ function this.multi_combo(label, default_preview, options, selected, disabled, w
         end
     end
 
+    local disabled = this.is_disabled()
     local frame_height = config.lang.font_size + 6.0
     local arrow_region_width = frame_height
     local text_padding = 4.0
@@ -523,14 +524,14 @@ function this.multi_combo(label, default_preview, options, selected, disabled, w
     local pos = imgui.get_cursor_screen_pos()
     local draw_list = imgui.get_window_draw_list()
 
-    imgui.begin_disabled(disabled)
+    this.begin_disabled(disabled)
 
     local clicked = false
     if imgui.invisible_button("##" .. label .. "_btn", { width, frame_height }) then
         clicked = true
     end
 
-    imgui.end_disabled()
+    this.end_disabled()
 
     local hovered = imgui.is_item_hovered()
     if text_oversize then
@@ -685,10 +686,9 @@ end
 ---@param values string[]
 ---@param width number?
 ---@param height number?
----@param disabled boolean?
 ---@return boolean
 ---@return integer
-function this.slider_list(label, index, v_min, v_max, values, width, height, disabled)
+function this.slider_list(label, index, v_min, v_max, values, width, height)
     local count = v_max - v_min + 1
 
     if count <= 0 or #values == 0 then
@@ -716,7 +716,7 @@ function this.slider_list(label, index, v_min, v_max, values, width, height, dis
     local separator_color = 0xffe0853d
     local text_color = 0xffffffff
 
-    if disabled then
+    if this.is_disabled() then
         separator_color = util_misc.mul_alpha(separator_color, 0.6)
         text_color = util_misc.mul_alpha(text_color, 0.6)
     end

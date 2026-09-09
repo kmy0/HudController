@@ -18,7 +18,7 @@ function this.draw_hud()
     local config_mod = config.current.mod
 
     imgui.push_item_width(util_gui.get_item_size())
-    imgui.begin_disabled(config_mod.canvas.draw)
+    util_imgui.begin_disabled(config_mod.canvas.draw)
 
     if set:combo(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
         state.input = nil
@@ -37,13 +37,13 @@ function this.draw_hud()
     end
 
     imgui.same_line()
-    imgui.begin_disabled(util_table.empty(config_mod.hud))
+    util_imgui.begin_disabled(util_table.empty(config_mod.hud))
 
-    imgui.begin_disabled(state.input ~= nil)
+    util_imgui.begin_disabled(state.input ~= nil)
     if imgui.button(util_gui.tr("hud.button_rename")) then
         state.input = { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
     end
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     imgui.same_line()
 
@@ -77,7 +77,7 @@ function this.draw_hud()
     end
 
     imgui.same_line()
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     button = imgui.button(util_gui.tr("hud.button_import"))
     util_imgui.tooltip(config.lang:tr("hud.button_import_tooltip"))
@@ -95,7 +95,7 @@ function this.draw_hud()
     util_imgui.tooltip(config.lang:tr("hud.tooltip_save"))
 
     imgui.same_line()
-    imgui.begin_disabled(util_table.empty(config_mod.hud))
+    util_imgui.begin_disabled(util_table.empty(config_mod.hud))
 
     if imgui.button(util_gui.tr("hud.button_sort")) then
         state.input = nil
@@ -103,8 +103,8 @@ function this.draw_hud()
         mod.pause = true
     end
 
-    imgui.end_disabled()
-    imgui.end_disabled()
+    util_imgui.end_disabled()
+    util_imgui.end_disabled()
 
     if
         state.input
@@ -139,7 +139,7 @@ function this.draw_element()
     end
 
     imgui.same_line()
-    imgui.begin_disabled(
+    util_imgui.begin_disabled(
         not config_mod.hud[config_mod.combo.hud]
             or util_table.empty(config_mod.hud[config_mod.combo.hud].elements or {})
     )
@@ -152,7 +152,7 @@ function this.draw_element()
     end
     util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 return this

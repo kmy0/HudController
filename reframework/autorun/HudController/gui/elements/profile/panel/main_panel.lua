@@ -43,7 +43,7 @@ local function group_things(elem, t, t_config_key, f, tr, chunk_size)
         for j = 1, #chunk do
             local key = chunk[j]
             local item_config_key = string.format("%s.%s", t_config_key, key)
-            imgui.begin_disabled(
+            util_imgui.begin_disabled(
                 key ~= "ALL"
                     and config:get(t_config_key .. ".ALL") ~= nil
                     and config:get(t_config_key .. ".ALL")
@@ -63,7 +63,7 @@ local function group_things(elem, t, t_config_key, f, tr, chunk_size)
                 f(elem, key, config:get(item_config_key))
             end
 
-            imgui.end_disabled()
+            util_imgui.end_disabled()
         end
 
         imgui.end_group()
@@ -436,16 +436,16 @@ local function draw_notice(elem, elem_config, config_key)
     end
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_enemy"))
-    imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
+    util_imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
     group_things(
         elem,
         elem_config.enemy_log,
         string.format("%s.%s", config_key, "enemy_log"),
         is_current_profile and elem.set_enemy_log or function() end
     )
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
-    imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.CAMP)
+    util_imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.CAMP)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_camp"))
     group_things(
         elem,
@@ -453,7 +453,7 @@ local function draw_notice(elem, elem_config, config_key)
         string.format("%s.%s", config_key, "camp_log"),
         is_current_profile and elem.set_camp_log or function() end
     )
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby"))
     group_things(
@@ -794,7 +794,7 @@ local function draw_minimap(elem, elem_config, config_key)
         elem:set_enable_classic_minimap(elem_config.enabled_classic_minimap)
     end
 
-    imgui.begin_disabled(not elem_config.enabled_classic_minimap)
+    util_imgui.begin_disabled(not elem_config.enabled_classic_minimap)
 
     if
         generic.draw_slider_settings({
@@ -884,7 +884,7 @@ local function draw_minimap(elem, elem_config, config_key)
         elem.children.pl_icon_pulse:set_play_state(elem_config.children.pl_icon_pulse.play_state)
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase

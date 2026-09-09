@@ -320,7 +320,7 @@ function this.draw()
         imgui.set_next_item_width(combo_width)
         set:combo("##combo_elem_cache", "debug.combo_elem_cache", state.combo.elem_cache.values)
 
-        imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
+        util_imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
         imgui.set_next_item_width(drag_width)
         imgui.same_line()
 
@@ -332,7 +332,7 @@ function this.draw()
 
         set:drag_int("##slider_jitter", "debug.slider_jitter", 0.25, 1, 1024)
         util_imgui.tooltip(config.lang:tr("debug.slider_jitter"))
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
         util_imgui.set_label(config.lang:tr("debug.combo_elem_cache"))
 
@@ -350,20 +350,20 @@ function this.draw()
         util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
 
         imgui.same_line()
-        imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
+        util_imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
 
         set:checkbox(util_gui.tr("debug.box_filter"), "debug.is_filter")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
-        imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
+        util_imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
 
         if imgui.button(util_gui.tr("debug.button_perf_test")) then
             hud_debug.perf_test()
         end
         util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
         if hud_debug.perf.total ~= hud_debug.perf.completed then
             imgui.same_line()

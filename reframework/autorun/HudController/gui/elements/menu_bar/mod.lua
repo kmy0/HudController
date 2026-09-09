@@ -34,7 +34,7 @@ local function draw_mod_menu()
     )
     util_imgui.tooltip(config.lang:tr("menu.config.disable_condition_binds_timed_tooltip"))
 
-    imgui.begin_disabled(not config_mod.disable_condition_binds_timed)
+    util_imgui.begin_disabled(not config_mod.disable_condition_binds_timed)
     imgui.indent(2)
     local item_config_key = "mod.disable_condition_binds_time"
     local item_value = config:get(item_config_key)
@@ -46,7 +46,7 @@ local function draw_mod_menu()
         util_gui.seconds_to_minutes_string(item_value, "%.0f")
     )
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
     imgui.unindent(2)
 
     set:menu_item(

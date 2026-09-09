@@ -209,7 +209,7 @@ local function draw_options()
         "hide_no_facility_npc"
     )
 
-    imgui.begin_disabled(hud.get_hud_option("hide_no_facility_npc"))
+    util_imgui.begin_disabled(hud.get_hud_option("hide_no_facility_npc"))
     check_overriden(
         set:checkbox(
             util_gui.tr("hud.box_hide_no_talk_npc"),
@@ -217,7 +217,7 @@ local function draw_options()
         ),
         "hide_no_talk_npc"
     )
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud.category_monster"))
     boxes_to_slider(
@@ -248,7 +248,7 @@ local function draw_options()
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_monster_icon"), true)
 
-    imgui.begin_disabled(not hud.get_hud_option("hide_monster_icon"))
+    util_imgui.begin_disabled(not hud.get_hud_option("hide_monster_icon"))
 
     check_overriden(
         set:checkbox(
@@ -259,7 +259,7 @@ local function draw_options()
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_lock_target"), true)
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud.category_quest"))
     check_overriden(
@@ -470,12 +470,12 @@ local function draw_profiles()
     local config_mod = config.current.mod
     local profiles = config_mod.hud[config_mod.combo.hud].profile
 
-    imgui.begin_disabled(#profiles >= config.max_profile)
+    util_imgui.begin_disabled(#profiles >= config.max_profile)
     if imgui.button(util_gui.tr("hud_profile.button_add")) then
         state.input = nil
         operations.new_elem_profile_for_show(profiles)
     end
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     imgui.same_line()
     if imgui.button(util_gui.tr("hud_profile.button_sort")) then
@@ -505,7 +505,7 @@ local function draw_profiles()
     ---@type integer?
     local to_remove
     for i, profile in ipairs(profiles) do
-        imgui.begin_disabled(profile.protected)
+        util_imgui.begin_disabled(profile.protected)
         drag_profile:draw_drag_button(tostring(profile.key), profile.key)
         imgui.same_line()
 
@@ -515,7 +515,7 @@ local function draw_profiles()
         end
 
         imgui.same_line()
-        imgui.begin_disabled(state.input ~= nil)
+        util_imgui.begin_disabled(state.input ~= nil)
         if imgui.button(util_gui.tr("hud_profile.button_rename", profile.key)) then
             state.input = {
                 buf = profile.name,
@@ -523,7 +523,7 @@ local function draw_profiles()
                 key = profile.key,
             }
         end
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
         imgui.same_line()
         util_imgui.header(
@@ -534,7 +534,7 @@ local function draw_profiles()
             profile.protected
         )
         drag_profile:check_drag_pos(profile.key)
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
         if
             state.input

@@ -1,8 +1,6 @@
 local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
----@module "HudController.gui.elements.init"
-local gui_elements = util_misc.lazy_require("HudController.gui.elements.init")
 
 local this = {}
 
@@ -129,10 +127,6 @@ end
 function this.get_item_size()
     local step = 200 / config.lang.default_font_size
     return step * config.lang.font_size
-end
-
-function this.is_gui_disabled()
-    return gui_elements.selector.is_opened or gui_elements.sorter.is_opened
 end
 
 return this

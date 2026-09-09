@@ -29,6 +29,7 @@
 ---@field separator integer?
 
 local config = require("HudController.config.init")
+local disabled = require("HudController.util.imgui.disabled")
 local util_misc = require("HudController.util.misc.init")
 
 local this = {
@@ -247,14 +248,12 @@ end
 ---@param tabs NotebookTab[]
 ---@param actions NotebookActionButton[]?
 ---@param colors NotebookColors?
----@param disabled boolean?
 ---@param stretch_tabs boolean? Stretch tabs to fill the width left after action buttons
 ---@return boolean changed
 ---@return any current_tab
-function this.draw(id, current_tab, tabs, actions, colors, disabled, stretch_tabs)
+function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
     local s = get_state(id)
-    disabled = disabled or false
-
+    local disabled = disabled.is_disabled()
     ---@type table<string, integer>
     local resolved_colors = {}
     for name, value in pairs(DEFAULT_COLORS) do

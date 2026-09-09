@@ -72,9 +72,9 @@ function this.draw_slider_settings(
         )
         disabled = not config:get(checkbox.config_key)
         imgui.same_line()
-        imgui.begin_disabled(disabled)
+        util_imgui.begin_disabled(disabled)
     else
-        imgui.begin_disabled(false)
+        util_imgui.begin_disabled(false)
     end
 
     local button_size = config.lang.font_size + 6
@@ -134,7 +134,7 @@ function this.draw_slider_settings(
         imgui.text_colored(additional_text, mod.enum.colors.info)
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
     return changed
 end
@@ -152,9 +152,9 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
         changed =
             set:checkbox(string.format("%s##%s", "", checkbox.config_key), checkbox.config_key)
         imgui.same_line()
-        imgui.begin_disabled(not config:get(checkbox.config_key))
+        util_imgui.begin_disabled(not config:get(checkbox.config_key))
     else
-        imgui.begin_disabled(false)
+        util_imgui.begin_disabled(false)
     end
 
     local item_config_key = config_key .. "_combo"
@@ -163,7 +163,7 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
     end
 
     if set:combo(label, item_config_key, combo.values) or changed then
-        imgui.end_disabled()
+        util_imgui.end_disabled()
         local index = config:get(item_config_key)
         return {
             key = combo:get_key(index),
@@ -172,7 +172,7 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
         }
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 ---@param elem HudBase
@@ -181,7 +181,7 @@ end
 function this.draw(elem, elem_config, config_key)
     local is_current_profile = operations.is_current_profile(elem)
 
-    imgui.begin_disabled(ace_misc.is_item_slider_open())
+    util_imgui.begin_disabled(ace_misc.is_item_slider_open())
     if elem_config.hide ~= nil then
         if
             set:checkbox(
@@ -192,9 +192,9 @@ function this.draw(elem, elem_config, config_key)
             elem:set_hide(elem_config.hide)
         end
     end
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 
-    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
+    util_imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
 
     if elem_config.enabled_scale ~= nil then
         if
@@ -317,7 +317,7 @@ function this.draw(elem, elem_config, config_key)
         local current_hud = hud.get_current()
         ---@cast current_hud ModProfileConfig
 
-        imgui.begin_disabled(
+        util_imgui.begin_disabled(
             not config.current.mod.enable_fade
                 or current_hud.fade_in == 0 and current_hud.fade_out == 0
         )
@@ -331,7 +331,7 @@ function this.draw(elem, elem_config, config_key)
         end
         util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade"), true)
 
-        imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
+        util_imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
         if
             set:checkbox(
                 util_gui.tr(
@@ -344,11 +344,11 @@ function this.draw(elem, elem_config, config_key)
             elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
         end
         util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade_opacity"), true)
-        imgui.end_disabled()
-        imgui.end_disabled()
+        util_imgui.end_disabled()
+        util_imgui.end_disabled()
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 return this
