@@ -162,7 +162,7 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
         config:set(item_config_key, default_index or 1)
     end
 
-    if set:combo(label, item_config_key, combo.values) or changed then
+    if set:combo_filter(label, item_config_key, combo) or changed then
         util_imgui.end_disabled()
         local index = config:get(item_config_key)
         return {

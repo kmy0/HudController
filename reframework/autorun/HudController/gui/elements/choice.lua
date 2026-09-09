@@ -20,7 +20,7 @@ function this.draw_hud()
     imgui.push_item_width(util_gui.get_item_size())
     util_imgui.begin_disabled(config_mod.canvas.draw)
 
-    if set:combo(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud.values) then
+    if set:combo_filter(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud) then
         state.input = nil
         hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
     end
@@ -126,7 +126,7 @@ function this.draw_element()
 
     imgui.push_item_width(util_gui.get_item_size())
 
-    set:combo(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem.values)
+    set:combo_filter(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem)
 
     imgui.pop_item_width()
     imgui.same_line()

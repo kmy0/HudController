@@ -170,4 +170,12 @@ function this:slider_list(name, config_key, v_min, v_max, values)
     return self:generic_config(name, config_key, util_imgui.slider_list, v_min, v_max, values)
 end
 
+---@param name string
+---@param config_key string
+---@param combo Combo
+---@return boolean
+function this:combo_filter(name, config_key, combo)
+    return self:generic_config(name, config_key, util_imgui.combo_filter, combo)
+end
+
 return this

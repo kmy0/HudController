@@ -318,4 +318,36 @@ function this:_map(key_to_value)
     end
 end
 
+---@param query string
+---@return ComboMap[]
+function this:filter_by_key(query)
+    ---@type ComboMap[]
+    local ret = {}
+    query = query:lower()
+    for _, m in ipairs(self.map) do
+        local key = tostring(m.key):lower()
+        if query == "" or key:match(query) then
+            table.insert(ret, m)
+        end
+    end
+
+    return ret
+end
+
+---@param query string
+---@return ComboMap[]
+function this:filter_by_value(query)
+    ---@type ComboMap[]
+    local ret = {}
+    query = query:lower()
+    for _, m in ipairs(self.map) do
+        local v = m.value:lower()
+        if query == "" or v:match(query) then
+            table.insert(ret, m)
+        end
+    end
+
+    return ret
+end
+
 return this

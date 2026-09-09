@@ -32,6 +32,7 @@ return {
         text_id = "ID",
         text_none = "None",
         text_screen_pos = "Screen Position",
+        text_search = "Search",
     },
     debug = {
         name = "Debug",

@@ -318,7 +318,7 @@ function this.draw()
         local combo_width = util_imgui.get_something_with_any_width(drag_width * 2)
 
         imgui.set_next_item_width(combo_width)
-        set:combo("##combo_elem_cache", "debug.combo_elem_cache", state.combo.elem_cache.values)
+        set:combo_filter("##combo_elem_cache", "debug.combo_elem_cache", state.combo.elem_cache)
 
         util_imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
         imgui.set_next_item_width(drag_width)

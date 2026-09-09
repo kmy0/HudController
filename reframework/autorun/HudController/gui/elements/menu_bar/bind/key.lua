@@ -65,7 +65,7 @@ local function draw_bind_target(config_mod)
     if bind_type == 1 then
         imgui.push_item_width(width)
 
-        if set:combo("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud.values) then
+        if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud) then
             config_mod.combo.key_bind.elem_profile = 0
             config:save()
         end
@@ -102,28 +102,28 @@ local function draw_bind_target(config_mod)
         manager = bind_manager.option_hud
         config_key = "mod.bind.key.option_hud"
 
-        set:combo(
+        set:combo_filter(
             "##bind_option_combo",
             "mod.combo.key_bind.option_hud",
-            state.combo.option_bind.values
+            state.combo.option_bind
         )
     else
         manager = bind_manager.option_mod
         config_key = "mod.bind.key.option_mod"
 
-        set:combo(
+        set:combo_filter(
             "##bind_option_mod_combo",
             "mod.combo.key_bind.option_mod",
-            state.combo.option_mod_bind.values
+            state.combo.option_mod_bind
         )
     end
 
     imgui.same_line()
 
-    set:combo(
+    set:combo_filter(
         "##bind_action_type_combo",
         "mod.combo.key_bind.action_type",
-        state.combo.bind_action_type.values
+        state.combo.bind_action_type
     )
     util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
 

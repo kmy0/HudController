@@ -139,10 +139,10 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
                 cond_class:draw_options()
             elseif cond_class.options then
                 imgui.push_item_width(util_gui.get_item_size())
-                set:combo(
+                set:combo_filter(
                     string.format("##cond_opt.%s.%s", config_key, k),
                     string.format("%s.conditions.int:%s.combo", config_key, k),
-                    state.bind_condition_options[cond.class].values
+                    state.bind_condition_options[cond.class]
                 )
                 imgui.pop_item_width()
             else
@@ -165,7 +165,7 @@ end
 ---@param combo_condition_key string
 local function draw_add_condition(conditions, config_key, combo_condition_key)
     imgui.push_item_width(util_gui.get_item_size())
-    set:combo("##conditions." .. config_key, combo_condition_key, state.combo.condition.values)
+    set:combo_filter("##conditions." .. config_key, combo_condition_key, state.combo.condition)
     imgui.pop_item_width()
     imgui.same_line()
 
@@ -494,10 +494,10 @@ local function draw_condition_bind_menu()
                 draw_selector = function()
                     imgui.push_item_width(util_gui.get_item_size())
                     if
-                        set:combo(
+                        set:combo_filter(
                             util_gui.tr("menu.bind.condition.combo_profile", i),
                             string.format("%s.combo_profile", config_key),
-                            state.combo.hud.values
+                            state.combo.hud
                         )
                     then
                         cond_set.key = config_mod.hud[config:get(
