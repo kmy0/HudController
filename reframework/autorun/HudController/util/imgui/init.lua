@@ -684,19 +684,17 @@ end
 ---@param v_min number
 ---@param v_max number
 ---@param values string[]
----@param width number?
----@param height number?
 ---@return boolean
 ---@return integer
-function this.slider_list(label, index, v_min, v_max, values, width, height)
+function this.slider_list(label, index, v_min, v_max, values)
     local count = v_max - v_min + 1
 
     if count <= 0 or #values == 0 then
         return false, index
     end
 
-    width = width or imgui.calc_item_width()
-    height = height or (imgui.get_default_font_size() + 8)
+    local width = imgui.calc_item_width()
+    local height = (config.lang.font_size + 8)
 
     local pos = imgui.get_cursor_screen_pos()
     local grab_padding = 2
