@@ -248,9 +248,10 @@ end
 ---@param actions NotebookActionButton[]?
 ---@param colors NotebookColors?
 ---@param disabled boolean?
+---@param stretch_tabs boolean? Stretch tabs to fill the width left after action buttons
 ---@return boolean changed
 ---@return any current_tab
-function this.draw(id, current_tab, tabs, actions, colors, disabled)
+function this.draw(id, current_tab, tabs, actions, colors, disabled, stretch_tabs)
     local s = get_state(id)
     disabled = disabled or false
 
@@ -282,18 +283,70 @@ function this.draw(id, current_tab, tabs, actions, colors, disabled)
         1
     )
 
-    for _, item in ipairs(tabs) do
+    local action_list = actions or {}
+    ---@type table<integer, number>
+    local action_widths = {}
+    local actions_w = 0
+
+    for i, btn in ipairs(action_list) do
+        local _, tw = label(btn.label)
+        local w = tw + PAD * 2
+
+        if btn.size_strings then
+            for _, size_text in ipairs(btn.size_strings) do
+                local _, size_tw = label(size_text)
+                w = math.max(w, size_tw + PAD * 2)
+            end
+        end
+
+        action_widths[i] = w
+        actions_w = actions_w + w
+    end
+
+    if #action_list > 1 then
+        actions_w = actions_w + GAP * (#action_list - 1) --[[@as number]]
+    end
+
+    ---@type table<integer, number>
+    local tab_widths = {}
+    local tabs_w = 0
+
+    for i, item in ipairs(tabs) do
+        local _, tw = label(item.label)
+        local w = tw + PAD * 2
+        tab_widths[i] = w
+        tabs_w = tabs_w + w
+    end
+
+    if stretch_tabs and #tabs > 0 then
+        local cursor_pos = imgui.get_cursor_pos()
+        local cursor_start = imgui.get_cursor_start_pos()
+        local available_w = ws.x - cursor_pos.x - cursor_start.x
+        local gaps_w = GAP * math.max(#tabs - 1, 0)
+        local action_gap_w = #action_list > 0 and (GAP + ACTION_GAP) or 0
+        local stretch_w = available_w - actions_w - gaps_w - action_gap_w
+
+        if stretch_w > tabs_w then
+            local extra = (stretch_w - tabs_w) / #tabs --[[@as number]]
+
+            for i = 1, #tab_widths do
+                tab_widths[i] = tab_widths[i] + extra
+            end
+        end
+    end
+
+    for i, item in ipairs(tabs) do
         local key = item.key
         local text = item.label
         local border_color = item.border_color
         local text_color = item.text_color
 
-        local display, tw = label(text)
+        local display, _ = label(text)
 
         local active = current_tab == key
         local hover_key = id .. "_" .. key --[[@as string]]
 
-        local w = tw + PAD * 2
+        local w = tab_widths[i]
         local tx = x0 + x
 
         local hovered = s.hover[hover_key] or false
@@ -331,17 +384,10 @@ function this.draw(id, current_tab, tabs, actions, colors, disabled)
 
     x = x + ACTION_GAP
 
-    for i, btn in ipairs(actions or {}) do
+    for i, btn in ipairs(action_list) do
         local ok = not disabled and enabled(btn, frame_tab)
-        local display, tw = label(btn.label)
-        local w = tw + PAD * 2
-
-        if btn.size_strings then
-            for _, size_text in ipairs(btn.size_strings) do
-                local _, size_tw = label(size_text)
-                w = math.max(w, size_tw + PAD * 2)
-            end
-        end
+        local display = label(btn.label)
+        local w = action_widths[i]
 
         local tx = x0 + x
         local hk = id .. "_action_" .. i

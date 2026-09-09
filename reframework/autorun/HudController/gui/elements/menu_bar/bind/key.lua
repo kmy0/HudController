@@ -49,7 +49,7 @@ local function draw_bind_type()
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
     }
 
-    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs) then
+    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
@@ -79,15 +79,15 @@ local function draw_bind_target(config_mod)
             values = {}
         end
 
+        imgui.pop_item_width()
         imgui.same_line()
         util_menubar_bind.profile_multi_combo(
             "##elem_profile_hud_bind",
             "mod.combo.key_bind.elem_profile",
             values,
             util_table.empty(values) or state.listener ~= nil,
-            width
+            width - 0.5 --FIXME: no idea why its misalinged by 0.5
         )
-        imgui.pop_item_width()
 
         return bind_manager.hud, "mod.bind.key.hud"
     end
