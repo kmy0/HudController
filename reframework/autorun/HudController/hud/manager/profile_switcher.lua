@@ -40,12 +40,11 @@ local function switch_profile(update_elements)
             options.clear()
             hook.hook_options(hud)
             options.apply_option_many(hud.options)
+            this.current_hud = this.requested_hud
 
             if update_elements then
                 elements.update_elements(hud.elements)
             end
-
-            this.current_hud = this.requested_hud
         end)
     end)
 end
