@@ -22,16 +22,19 @@ function this.draw_options(option_keys, config_key, callback)
         local key = option_keys[i]
         local option_data = ace_map.option[key]
         local option_config_key = string.format("%s.%s", config_key, key)
-        local config_value = config:get(option_config_key)
+        local values = { config.lang:tr("hud.option_disable") }
+
+        for _, item in ipairs(option_data.items) do
+            table.insert(values, item.name_local)
+        end
 
         if
-            set:slider_int(
+            set:slider_list(
                 option_data.name_local,
                 option_config_key,
                 -1,
                 #option_data.items - 1,
-                (config_value == -1 and config.lang:tr("hud.option_disable"))
-                    or option_data.items[config_value + 1].name_local
+                values
             ) and callback
         then
             callback(key, option_config_key)

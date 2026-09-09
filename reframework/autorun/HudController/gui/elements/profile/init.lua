@@ -43,16 +43,20 @@ end
 local function boxes_to_slider(label, boxes)
     local config_mod = config.current.mod
     local value = 0
-    local display = config.lang:tr("hud.option_disable")
+    local values = util_table.extend(
+        { config.lang:tr("hud.option_disable") },
+        util_table.values(boxes, function(o)
+            return config.lang:tr("hud.box_" .. o)
+        end)
+    )
     for i = 1, #boxes do
         if config:get(string.format("mod.hud.int:%s.%s", config_mod.combo.hud, boxes[i])) then
             value = i
-            display = config.lang:tr("hud.box_" .. boxes[i])
             break
         end
     end
 
-    local changed, value = imgui.slider_int(label, value, 0, #boxes, display)
+    local changed, value = util_imgui.slider_list(label, value, 0, #boxes, values)
     if changed then
         for i = 1, #boxes do
             config:set(string.format("mod.hud.int:%s.%s", config_mod.combo.hud, boxes[i]), false)

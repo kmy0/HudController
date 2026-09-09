@@ -1,4 +1,3 @@
-local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local state = require("HudController.gui.state")
 local util_ace = require("HudController.util.ace.init")
@@ -18,12 +17,12 @@ local function draw_grid_menu()
         util_ace.scene_fade.reset()
     end
 
-    set:slider_int(
+    set:slider_list(
         util_gui.tr("menu.grid.combo_ratio"),
         "mod.grid.combo_grid_ratio",
         1,
         #mod.map.slider_grid_ratio,
-        mod.map.slider_grid_ratio[config:get("mod.grid.combo_grid_ratio")]
+        mod.map.slider_grid_ratio
     )
     set:color_edit(util_gui.tr("menu.grid.color_center"), "mod.grid.color_center")
 

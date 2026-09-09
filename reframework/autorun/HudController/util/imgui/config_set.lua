@@ -170,4 +170,27 @@ function this:notebook(id, config_key, tabs, actions, colors, disabled, stretch_
     )
 end
 
+---@param name string
+---@param config_key string
+---@param v_min number
+---@param v_max number
+---@param values string[]
+---@param width number?
+---@param height number?
+---@param disabled boolean?
+---@return boolean
+function this:slider_list(name, config_key, v_min, v_max, values, width, height, disabled)
+    return self:generic_config(
+        name,
+        config_key,
+        util_imgui.slider_list,
+        v_min,
+        v_max,
+        values,
+        width,
+        height,
+        disabled
+    )
+end
+
 return this

@@ -641,4 +641,108 @@ function this.with_border(draw_fn, size_x, size_y, color)
     draw_list:add_rect({ pos.x, pos.y }, { pos.x + size_x, pos.y + size_y }, 0xff4f4e4d, 0, 0, 1)
 end
 
+---@param text string
+---@param max_width number
+---@return string
+function this.fit_text(text, max_width)
+    if imgui.calc_text_size(text).x <= max_width then
+        return text
+    end
+
+    local suffix = "..."
+    local suffix_width = imgui.calc_text_size(suffix).x
+
+    if suffix_width >= max_width then
+        return suffix
+    end
+
+    local len = utf8.len(text) or #text
+
+    while len > 0 do
+        local byte_end = utf8.offset(text, len + 1)
+        ---@type string
+        local candidate
+        if byte_end then
+            candidate = text:sub(1, byte_end - 1) .. suffix
+        else
+            candidate = text .. suffix
+        end
+
+        if imgui.calc_text_size(candidate).x <= max_width then
+            return candidate
+        end
+
+        len = len - 1
+    end
+
+    return suffix
+end
+
+---@param label string
+---@param index integer
+---@param v_min number
+---@param v_max number
+---@param values string[]
+---@param width number?
+---@param height number?
+---@param disabled boolean?
+---@return boolean
+---@return integer
+function this.slider_list(label, index, v_min, v_max, values, width, height, disabled)
+    local count = v_max - v_min + 1
+
+    if count <= 0 or #values == 0 then
+        return false, index
+    end
+
+    width = width or imgui.calc_item_width()
+    height = height or (imgui.get_default_font_size() + 8)
+
+    local pos = imgui.get_cursor_screen_pos()
+    local grab_padding = 2
+    local inner_width = width - grab_padding * 2
+    local segment_width = inner_width / count
+
+    imgui.set_next_item_width(width)
+    imgui.push_style_var(imgui.ImGuiStyleVar.GrabMinSize, segment_width)
+
+    local changed
+    changed, index = imgui.slider_int(label, index, v_min, v_max, " ")
+
+    imgui.pop_style_var(1)
+
+    local draw_list = imgui.get_window_draw_list()
+    local padding = 5
+    local separator_color = 0xffe0853d
+    local text_color = 0xffffffff
+
+    if disabled then
+        separator_color = util_misc.mul_alpha(separator_color, 0.6)
+        text_color = util_misc.mul_alpha(text_color, 0.6)
+    end
+
+    local inner_left = pos.x + grab_padding
+
+    for i = 1, count - 1 do
+        local x = inner_left + segment_width * i
+
+        draw_list:add_line({ x, pos.y + 2 }, { x, pos.y + height - 4 }, separator_color, 2.0)
+    end
+
+    for i = 1, count do
+        local value = values[i] or ""
+        local left = inner_left + segment_width * (i - 1)
+        local available = math.max(0, segment_width - padding * 2)
+        local text = this.fit_text(tostring(value), available)
+        local size = imgui.calc_text_size(text)
+
+        draw_list:add_text({
+            left + (segment_width - size.x) * 0.5,
+            pos.y + (height - size.y) * 0.5,
+        }, text_color, text)
+    end
+
+    return changed, index
+end
+
 return this
