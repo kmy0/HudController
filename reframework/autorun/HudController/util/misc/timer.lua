@@ -44,7 +44,7 @@ function this:new(timeout, optional_args)
         callback = optional_args.callback,
         _finished = false,
         _started = false,
-        _update_frame = 0,
+        _updated_frame = 0,
         _auto_update = optional_args.auto_update,
         _type = optional_args.type or "os_clock",
     }
