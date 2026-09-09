@@ -208,9 +208,8 @@ end
 ---@param selected_obj boolean?
 ---@param enabled_obj boolean?
 ---@param close_on_click boolean?
----@param offset_y number?
 ---@return boolean, boolean?
-function this.menu_item(label, selected_obj, enabled_obj, close_on_click, offset_y)
+function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     local pos_screen = imgui.get_cursor_screen_pos()
     local pos = imgui.get_cursor_pos()
     local win_size = imgui.get_window_size()
@@ -236,15 +235,13 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click, offset
     local changed = this.dummy_button2("##" .. id, button_size)
 
     if imgui.is_item_hovered() then
-        -- no idea why the position just changes sometimes? wtf is this
-        offset_y = offset_y or 0
         -- there is 2px padding from somewhere, which is visible when highlight from hover is active
         -- i gave up on trying to find where its coming from
         local dl = imgui.get_window_draw_list()
         local screen_pos = imgui.get_cursor_screen_pos()
         local end_pos = {
             screen_pos.x + button_size[1] - 1,
-            screen_pos.y - button_size[2] - 2 + offset_y,
+            screen_pos.y - button_size[2] - 4,
         }
         dl:add_line(end_pos, { end_pos[1], end_pos[2] + button_size[2] }, 0xff4f4e4d, 3)
     end
@@ -617,7 +614,7 @@ function this.multi_combo(label, default_preview, options, selected, disabled, w
     local popup_flags = 4 | 64 -- NoMove | AlwaysAutoResize
     if imgui.begin_popup(popup_id, popup_flags) then
         for i, name in ipairs(options) do
-            if this.menu_item(name .. "##" .. i, selected[i], nil, nil, -2) then
+            if this.menu_item(name .. "##" .. i, selected[i], nil, nil) then
                 selected[i] = not selected[i]
                 changed = true
             end
