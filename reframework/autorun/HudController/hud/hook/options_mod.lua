@@ -8,7 +8,11 @@ local this = {}
 
 function this.block_input_all_post(_)
     local config_mod = config.current.mod
-    if config_mod.block_input then
+    if
+        config_mod.block_input
+        and reframework:is_drawing_ui()
+        and config.gui.current.gui.main.is_opened
+    then
         m.enablePlNoHit()
         s.get("app.GameInputManager")
             :setPlayerButtonMask(e.get("app.PlayerDef.ButtonMask.USER").ALL)
@@ -18,7 +22,11 @@ end
 function this.block_input_itembar_pre(_)
     local config_mod = config.current.mod
     --FIXME: disabling all input is not enough to stop the wheel?
-    if config_mod.block_input then
+    if
+        config_mod.block_input
+        and reframework:is_drawing_ui()
+        and config.gui.current.gui.main.is_opened
+    then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
