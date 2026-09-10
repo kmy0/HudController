@@ -17,7 +17,6 @@ local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
 local mod = require("HudController.data.mod")
 local state = require("HudController.gui.state")
-local util_bind = require("HudController.gui.elements.menu_bar.bind.util")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
@@ -426,10 +425,17 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
                 end,
                 draw_selector = function()
                     if
-                        util_bind.profile_multi_combo(
+                        set:combo_multi_bits(
                             util_gui.tr("menu.bind.condition.combo_elem_profile", i, j),
                             string.format("%s.combo_profile", config_key),
-                            values
+                            config.lang:tr("misc.text_none"),
+                            values,
+                            function(v)
+                                return v.key
+                            end,
+                            function(v)
+                                return v.name
+                            end
                         )
                     then
                         cond_child.key = config:get(string.format("%s.combo_profile", config_key))

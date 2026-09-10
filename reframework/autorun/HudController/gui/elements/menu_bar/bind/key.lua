@@ -81,11 +81,18 @@ local function draw_bind_target(config_mod)
 
         imgui.pop_item_width()
         imgui.same_line()
-        util_menubar_bind.profile_multi_combo(
+        set:combo_multi_bits(
             "##elem_profile_hud_bind",
             "mod.combo.key_bind.elem_profile",
+            config.lang:tr("misc.text_none"),
             values,
-            width - 0.5 --FIXME: no idea why its misalinged by 0.5
+            function(v)
+                return v.key
+            end,
+            function(v)
+                return v.name
+            end,
+            width - 0.5
         )
 
         return bind_manager.hud, "mod.bind.key.hud"

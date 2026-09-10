@@ -178,4 +178,43 @@ function this:combo_filter(name, config_key, combo)
     return self:generic_config(name, config_key, util_imgui.combo_filter, combo)
 end
 
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param options string[]
+---@param width integer?
+---@return boolean
+function this:combo_multi(name, config_key, default_preview, options, width)
+    return self:generic_config(
+        name,
+        config_key,
+        util_imgui.combo_multi,
+        default_preview,
+        options,
+        width
+    )
+end
+
+---@generic T
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param values T[]
+---@param get_key fun(value: T): integer
+---@param get_label fun(value: T): string
+---@param width integer?
+---@return boolean
+function this:combo_multi_bits(name, config_key, default_preview, values, get_key, get_label, width)
+    return self:generic_config(
+        name,
+        config_key,
+        util_imgui.combo_multi_bits,
+        default_preview,
+        values,
+        get_key,
+        get_label,
+        width
+    )
+end
+
 return this
