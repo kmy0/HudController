@@ -425,7 +425,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
                 end,
                 draw_selector = function()
                     if
-                        set:combo_multi_bits(
+                        set:combo_multi_bits_filter(
                             util_gui.tr("menu.bind.condition.combo_elem_profile", i, j),
                             string.format("%s.combo_profile", config_key),
                             config.lang:tr("misc.text_none"),

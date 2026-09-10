@@ -81,7 +81,7 @@ local function draw_bind_target(config_mod)
 
         imgui.pop_item_width()
         imgui.same_line()
-        set:combo_multi_bits(
+        set:combo_multi_bits_filter(
             "##elem_profile_hud_bind",
             "mod.combo.key_bind.elem_profile",
             config.lang:tr("misc.text_none"),

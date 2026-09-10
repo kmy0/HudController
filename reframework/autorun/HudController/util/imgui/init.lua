@@ -1,5 +1,4 @@
 local combo_filter = require("HudController.util.imgui.combo_filter")
-local combo_multi = require("HudController.util.imgui.combo_multi")
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
 local util_game = require("HudController.util.game.init")
@@ -11,8 +10,6 @@ local this = {
     end_disabled = disabled.end_disabled,
     is_disabled = disabled.is_disabled,
     combo_filter = combo_filter.combo_filter,
-    combo_multi = combo_multi.combo_multi,
-    combo_multi_bits = combo_multi.combo_multi_bits,
 }
 ---@type table<string, number>
 local child_window_sizes = {}
