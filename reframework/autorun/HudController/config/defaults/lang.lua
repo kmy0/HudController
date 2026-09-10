@@ -33,6 +33,7 @@ return {
         text_none = "None",
         text_screen_pos = "Screen Position",
         text_search = "Search",
+        text_ellipsis = "...",
     },
     debug = {
         name = "Debug",

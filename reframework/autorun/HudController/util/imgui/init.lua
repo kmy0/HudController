@@ -544,4 +544,39 @@ function this.slider_list(label, index, v_min, v_max, values)
     return changed, index
 end
 
+---@param id string
+---@param options {
+--- name: string,
+--- callback: fun(),
+--- tooltip: string?,
+--- disabled: boolean?,
+--- }[]
+function this.option_button(id, options)
+    local popup_id = "##" .. id .. "_popup"
+    local frame_height = config.lang.font_size + 6.0
+    local pos = imgui.get_cursor_screen_pos()
+
+    if imgui.button(string.format("%s##%s", config.lang:tr("misc.text_ellipsis"), id)) then
+        imgui.open_popup(popup_id)
+    end
+
+    imgui.set_next_window_pos({ pos.x, pos.y + frame_height }, 1)
+
+    local popup_flags = 4 | 64
+    if imgui.begin_popup(popup_id, popup_flags) then
+        for i, opt in ipairs(options) do
+            disabled.begin_disabled(opt.disabled ~= nil and opt.disabled or false)
+            if this.menu_item(opt.name .. "##" .. i, nil, nil, true) then
+                opt.callback()
+            end
+            disabled.end_disabled()
+
+            if opt.tooltip then
+                this.tooltip(opt.tooltip)
+            end
+        end
+        imgui.end_popup()
+    end
+end
+
 return this

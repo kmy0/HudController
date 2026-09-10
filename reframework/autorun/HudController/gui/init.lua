@@ -13,7 +13,6 @@ local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
-local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
 
@@ -106,18 +105,7 @@ function this.draw()
     )
 
     util_imgui.draw_child_window("hud_child_window", function()
-        imgui.begin_group()
-        util_imgui.begin_disabled(config_mod.enable_condition_binds)
-        gui_elements.choice.draw_hud()
-        util_imgui.end_disabled()
-        imgui.end_group()
-        if config_mod.enable_condition_binds then
-            util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
-        end
-
-        util_imgui.begin_disabled(util_table.empty(config_mod.hud))
-        gui_elements.choice.draw_element()
-        util_imgui.end_disabled()
+        gui_elements.choice.draw()
     end, 48, 4)
 
     imgui.separator()

@@ -14,19 +14,22 @@ local set = state.set
 local this = {}
 local reverse_sort = false
 
-function this.draw_hud()
+local function draw_hud()
     local config_mod = config.current.mod
 
-    imgui.push_item_width(util_gui.get_item_size())
-    util_imgui.begin_disabled(config_mod.canvas.draw)
+    imgui.table_next_row()
+    imgui.table_set_column_index(0)
 
+    imgui.begin_group()
+    util_imgui.begin_disabled(config_mod.enable_condition_binds)
+    imgui.push_item_width(util_gui.get_item_size())
     if set:combo_filter(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud) then
         state.input = nil
         hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
     end
-
     imgui.pop_item_width()
-    imgui.same_line()
+
+    imgui.table_set_column_index(1)
 
     if imgui.button(util_gui.tr("hud.button_new")) then
         state.input = nil
@@ -37,19 +40,62 @@ function this.draw_hud()
     end
 
     imgui.same_line()
-    util_imgui.begin_disabled(util_table.empty(config_mod.hud))
 
-    util_imgui.begin_disabled(state.input ~= nil)
+    util_imgui.begin_disabled(state.input ~= nil or util_table.empty(config_mod.hud))
     if imgui.button(util_gui.tr("hud.button_rename")) then
         state.input = { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
     end
     util_imgui.end_disabled()
 
     imgui.same_line()
+    util_imgui.option_button("hud_choice", {
+        {
+            name = util_gui.tr("hud.button_remove"),
+            callback = function()
+                util_imgui.open_popup("hud_remove", 62, 30)
+                state.input = nil
+            end,
+            disabled = util_table.empty(config_mod.hud),
+        },
+        {
+            name = util_gui.tr("hud.button_export"),
+            callback = function()
+                hud.operations.export(config_mod.hud[config_mod.combo.hud])
+            end,
+            tooltip = config.lang:tr("hud.button_export_tooltip"),
+            disabled = util_table.empty(config_mod.hud),
+        },
+        {
+            name = util_gui.tr("hud.button_import"),
+            callback = function()
+                hud.operations.import()
+                config:save()
+            end,
+            tooltip = config.lang:tr("hud.button_import_tooltip"),
+        },
+        {
+            name = util_gui.tr("hud.button_save"),
+            callback = function()
+                config:backup()
+                config:save_no_timer()
+            end,
+            tooltip = config.lang:tr("hud.tooltip_save"),
+        },
+        {
+            name = util_gui.tr("hud.button_sort"),
+            callback = function()
+                state.input = nil
+                sorter.is_opened = true
+                mod.pause = true
+            end,
+            disabled = util_table.empty(config_mod.hud),
+        },
+    })
 
-    if imgui.button(util_gui.tr("hud.button_remove")) then
-        util_imgui.open_popup("hud_remove", 62, 30)
-        state.input = nil
+    util_imgui.end_disabled()
+    imgui.end_group()
+    if config_mod.enable_condition_binds then
+        util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
     end
 
     if
@@ -68,51 +114,17 @@ function this.draw_hud()
         config:save()
     end
 
-    imgui.same_line()
-
-    local button = imgui.button(util_gui.tr("hud.button_export"))
-    util_imgui.tooltip(config.lang:tr("hud.button_export_tooltip"))
-    if button then
-        hud.operations.export(config_mod.hud[config_mod.combo.hud])
-    end
-
-    imgui.same_line()
-    util_imgui.end_disabled()
-
-    button = imgui.button(util_gui.tr("hud.button_import"))
-    util_imgui.tooltip(config.lang:tr("hud.button_import_tooltip"))
-    if button then
-        hud.operations.import()
-        config:save()
-    end
-
-    imgui.same_line()
-
-    if imgui.button(util_gui.tr("hud.button_save")) then
-        config:backup()
-        config:save_no_timer()
-    end
-    util_imgui.tooltip(config.lang:tr("hud.tooltip_save"))
-
-    imgui.same_line()
-    util_imgui.begin_disabled(util_table.empty(config_mod.hud))
-
-    if imgui.button(util_gui.tr("hud.button_sort")) then
-        state.input = nil
-        sorter.is_opened = true
-        mod.pause = true
-    end
-
-    util_imgui.end_disabled()
-    util_imgui.end_disabled()
-
     if
         state.input
         and not mod.pause
         and not util_mod.is_draw_canvas()
         and state.input.type == "rename_hud"
     then
+        imgui.table_next_row()
+        imgui.table_set_column_index(0)
+        imgui.push_item_width(util_gui.get_item_size())
         local changed, _ = state.get_input()
+        imgui.pop_item_width()
         if changed then
             hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input.buf)
             state.input = nil
@@ -121,15 +133,17 @@ function this.draw_hud()
     end
 end
 
-function this.draw_element()
+local function draw_element()
     local config_mod = config.current.mod
 
+    imgui.table_next_row()
+    imgui.table_set_column_index(0)
+
     imgui.push_item_width(util_gui.get_item_size())
-
     set:combo_filter(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem)
-
     imgui.pop_item_width()
-    imgui.same_line()
+
+    imgui.table_set_column_index(1)
 
     if imgui.button(util_gui.tr("hud_element.button_add")) then
         hud.operations.add_element(
@@ -153,6 +167,21 @@ function this.draw_element()
     util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))
 
     util_imgui.end_disabled()
+end
+
+function this.draw()
+    local config_mod = config.current.mod
+
+    if imgui.begin_table("choice_table", 2, imgui.TableFlags.SizingFixedFit) then
+        util_imgui.begin_disabled(config_mod.canvas.draw)
+        draw_hud()
+        util_imgui.end_disabled()
+
+        util_imgui.begin_disabled(util_table.empty(config_mod.hud))
+        draw_element()
+        util_imgui.end_disabled()
+        imgui.end_table()
+    end
 end
 
 return this
