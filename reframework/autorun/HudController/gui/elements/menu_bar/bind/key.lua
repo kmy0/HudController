@@ -79,7 +79,6 @@ local function draw_bind_target(config_mod)
             values = {}
         end
 
-        imgui.pop_item_width()
         imgui.same_line()
         set:combo_multi_bits_filter(
             "##elem_profile_hud_bind",
@@ -91,10 +90,9 @@ local function draw_bind_target(config_mod)
             end,
             function(v)
                 return v.name
-            end,
-            width - 0.5
+            end
         )
-
+        imgui.pop_item_width()
         return bind_manager.hud, "mod.bind.key.hud"
     end
 

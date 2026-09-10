@@ -189,10 +189,9 @@ end
 ---@param selected boolean[]
 ---@param default_preview string
 ---@param options string[]
----@param width integer?
 ---@return boolean, boolean[]
-function this.combo_multi(label, selected, default_preview, options, width)
-    width = width or imgui.calc_item_width()
+function this.combo_multi(label, selected, default_preview, options)
+    local width = imgui.calc_item_width()
     local popup_id = "##" .. label .. "_popup"
     local frame_height = config.lang.font_size + 6.0
     local preview, full_preview, text_oversize =
@@ -232,10 +231,9 @@ end
 ---@param selected boolean[]
 ---@param default_preview string
 ---@param options string[]
----@param width integer?
 ---@return boolean, boolean[]
-function this.combo_multi_filter(label, selected, default_preview, options, width)
-    width = width or imgui.calc_item_width()
+function this.combo_multi_filter(label, selected, default_preview, options)
+    local width = imgui.calc_item_width()
     local combo_id = label
     local popup_id = "##" .. label .. "_filter_popup"
     local frame_height = config.lang.font_size + 6.0
@@ -305,9 +303,8 @@ end
 ---@param values T[]
 ---@param get_key fun(value: T): integer
 ---@param get_label fun(value: T): string
----@param width integer?
 ---@return boolean, integer
-function this.combo_multi_bits(label, bits, default_preview, values, get_key, get_label, width)
+function this.combo_multi_bits(label, bits, default_preview, values, get_key, get_label)
     local selected_keys = util_misc.unpack_bits(bits)
     ---@type string[]
     local options = {}
@@ -319,7 +316,7 @@ function this.combo_multi_bits(label, bits, default_preview, values, get_key, ge
         selected[i] = util_table.contains_any(selected_keys, get_key(value))
     end
 
-    local changed, choice = this.combo_multi(label, selected, default_preview, options, width)
+    local changed, choice = this.combo_multi(label, selected, default_preview, options)
     if not changed then
         return false, bits
     end
@@ -340,17 +337,8 @@ end
 ---@param values T[]
 ---@param get_key fun(value: T): integer
 ---@param get_label fun(value: T): string
----@param width integer?
 ---@return boolean, integer
-function this.combo_multi_bits_filter(
-    label,
-    bits,
-    default_preview,
-    values,
-    get_key,
-    get_label,
-    width
-)
+function this.combo_multi_bits_filter(label, bits, default_preview, values, get_key, get_label)
     local selected_keys = util_misc.unpack_bits(bits)
     ---@type string[]
     local options = {}
@@ -362,8 +350,7 @@ function this.combo_multi_bits_filter(
         selected[i] = util_table.contains_any(selected_keys, get_key(value))
     end
 
-    local changed, choice =
-        this.combo_multi_filter(label, selected, default_preview, options, width)
+    local changed, choice = this.combo_multi_filter(label, selected, default_preview, options)
     if not changed then
         return false, bits
     end
