@@ -1,6 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
+local popup = require("HudController.util.imgui.popup")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
@@ -52,8 +53,19 @@ local function draw_hud()
         {
             name = util_gui.tr("hud.button_remove"),
             callback = function()
-                util_imgui.open_popup("hud_remove", 62, 30)
                 state.input = nil
+                popup.request({
+                    id = "hud_emove",
+                    callback = function()
+                        hud.operations.remove(config_mod.hud[config_mod.combo.hud])
+                        if not util_table.empty(config_mod.hud) then
+                            hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
+                        end
+
+                        config:save()
+                    end,
+                    fn = popup.popup_yesno,
+                })
             end,
             disabled = util_table.empty(config_mod.hud),
         },
@@ -96,22 +108,6 @@ local function draw_hud()
     imgui.end_group()
     if config_mod.enable_condition_binds then
         util_imgui.tooltip(config.lang:tr("hud.tooltip_choice_disabled"))
-    end
-
-    if
-        util_imgui.popup_yesno(
-            "hud_remove",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
-        )
-    then
-        hud.operations.remove(config_mod.hud[config_mod.combo.hud])
-        if not util_table.empty(config_mod.hud) then
-            hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
-        end
-
-        config:save()
     end
 
     if

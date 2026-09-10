@@ -11,6 +11,7 @@ local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
+local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 
@@ -115,6 +116,7 @@ function this.draw()
     util_imgui.end_disabled()
     imgui.unindent(3)
 
+    popup.resolve()
     if config.lang.font then
         imgui.pop_font()
     end

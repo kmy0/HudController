@@ -2,6 +2,7 @@ local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
+local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -66,7 +67,16 @@ function this.draw()
                 name = util_gui.tr("selector.button_remove"),
                 callback = function()
                     state.input = nil
-                    util_imgui.open_popup("config_remove", 62, 30)
+                    popup.request({
+                        id = "config_remove",
+                        callback = function()
+                            if config.selector:delete_current_file() then
+                                state.combo.config:swap(config.selector.sorted)
+                                hud.reinit()
+                            end
+                        end,
+                        fn = popup.popup_yesno,
+                    })
                 end,
                 disabled = util_table.size(config.selector.files) == 1,
                 tooltip = config.lang:tr("selector.tooltip_remove"),
@@ -156,38 +166,19 @@ function this.draw()
         util_imgui.tooltip(config.lang:tr("selector.tooltip_remove_backup"))
         if b then
             state.input = nil
-            util_imgui.open_popup("config_remove_backup", 62, 30)
+            popup.request({
+                id = "config_remove_backup",
+                callback = function()
+                    if config.selector:delete_current_backup() then
+                        state.combo.config_backup:swap(config.selector.sorted_backup)
+                    end
+                end,
+                fn = popup.popup_yesno,
+            })
         end
 
         util_imgui.end_disabled()
         imgui.end_table()
-    end
-
-    if
-        util_imgui.popup_yesno(
-            "config_remove",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
-        )
-    then
-        if config.selector:delete_current_file() then
-            state.combo.config:swap(config.selector.sorted)
-            hud.reinit()
-        end
-    end
-
-    if
-        util_imgui.popup_yesno(
-            "config_remove_backup",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
-        )
-    then
-        if config.selector:delete_current_backup() then
-            state.combo.config_backup:swap(config.selector.sorted_backup)
-        end
     end
 
     local spacing = 4
