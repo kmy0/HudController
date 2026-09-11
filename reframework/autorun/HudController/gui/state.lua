@@ -31,6 +31,12 @@
 ---@field chat_log Combo
 ---@field lobby_log Combo
 ---@field auto_id Combo
+---@field object_category Combo
+---@field npc_type Combo
+---@field enemy_type Combo
+---@field panel_type Combo
+---@field gossip_type Combo
+---@field nameplate_type Combo
 
 ---@class (exact) HudBindOpt
 ---@field hud integer
@@ -241,6 +247,36 @@ local this = {
                 return ret
             end,
         }),
+        object_category = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        npc_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        enemy_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        panel_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        gossip_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        nameplate_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
     },
     bind_condition_options = {},
     set = config_set:new(config),
@@ -381,6 +417,16 @@ function this.init()
     this.combo.chat_log:swap(util_table.key_to_key(notice_config.chat_log))
     this.combo.lobby_log:swap(util_table.key_to_key(notice_config.lobby_log))
     this.combo.auto_id:swap(util_table.key_to_key(notice_config.auto_id))
+
+    local name_access_config = factory.get_elem_config_by_type(mod.enum.hud_type.NAME_ACCESS) --[[@as NameAccessConfig]]
+    this.combo.object_category:swap(util_table.key_to_key(name_access_config.object_category))
+    this.combo.npc_type:swap(util_table.key_to_key(name_access_config.npc_type))
+    this.combo.enemy_type:swap(util_table.key_to_key(name_access_config.enemy_type))
+    this.combo.panel_type:swap(util_table.key_to_key(name_access_config.panel_type))
+    this.combo.gossip_type:swap(util_table.key_to_key(name_access_config.gossip_type))
+
+    local name_other_config = factory.get_elem_config_by_type(mod.enum.hud_type.NAME_OTHER) --[[@as NameOtherConfig]]
+    this.combo.nameplate_type:swap(util_table.key_to_key(name_other_config.nameplate_type))
 
     init_condition_combo()
     this.translate_combo()

@@ -17,65 +17,11 @@ local this = {
     funcs = {},
 }
 
----@param elem HudBase
----@param t table<string, boolean>
----@param t_config_key string
----@param f fun(self: HudBase, name_key: string, val: boolean)
----@param tr (fun(key: string): string)?
----@param chunk_size integer?
-local function group_things(elem, t, t_config_key, f, tr, chunk_size)
-    local sorted = util_table.sort(util_table.keys(t))
-    local chunks = util_table.chunks(sorted, chunk_size or 5)
-
-    if not tr then
-        tr = function(key)
-            return key
-        end
-    end
-
-    for i = 1, #chunks do
-        local chunk = chunks[i]
-
-        imgui.begin_group()
-
-        for j = 1, #chunk do
-            local key = chunk[j]
-            local item_config_key = string.format("%s.%s", t_config_key, key)
-            util_imgui.begin_disabled(
-                key ~= "ALL"
-                    and config:get(t_config_key .. ".ALL") ~= nil
-                    and config:get(t_config_key .. ".ALL")
-            )
-
-            if
-                set:checkbox(
-                    string.format(
-                        "%s %s##%s",
-                        config.lang:tr("hud_element.entry.box_hide"),
-                        tr(key),
-                        item_config_key
-                    ),
-                    item_config_key
-                )
-            then
-                f(elem, key, config:get(item_config_key))
-            end
-
-            util_imgui.end_disabled()
-        end
-
-        imgui.end_group()
-        if i ~= #chunks then
-            imgui.same_line()
-        end
-    end
-end
-
----@param elem Notice
+---@param elem Notice | NameOther | NameAccess
 ---@param item_config_key string
 ---@param label string
 ---@param entry_key string
----@param set_fn fun(self: Notice, key: string, value: boolean)
+---@param set_fn fun(self: any, key: string, value: boolean)
 ---@param combo_key string
 ---@param is_current_profile boolean
 ---@param is_key_disabled fun(item_config_key: string, key: any, value: string): boolean
@@ -562,44 +508,69 @@ local function draw_name_access(elem, elem_config, config_key)
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
     end
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_object_category"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.object_category,
-        string.format("%s.%s", config_key, "object_category"),
-        is_current_profile and elem.set_object_category or function() end
+        config_key .. ".object_category",
+        config.lang:tr("hud_element.entry.combo_object_category"),
+        "object_category",
+        elem.set_object_category,
+        "object_category",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_type"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.npc_type,
-        string.format("%s.%s", config_key, "npc_type"),
-        is_current_profile and elem.set_npc_type or function() end
+        config_key .. ".npc_type",
+        config.lang:tr("hud_element.entry.combo_npc_type"),
+        "npc_type",
+        elem.set_npc_type,
+        "npc_type",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_enemy_type"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.enemy_type,
-        string.format("%s.%s", config_key, "enemy_type"),
-        is_current_profile and elem.set_enemy_type or function() end
+        config_key .. ".enemy_type",
+        config.lang:tr("hud_element.entry.combo_enemy_type"),
+        "enemy_type",
+        elem.set_enemy_type,
+        "enemy_type",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_panel_type"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.panel_type,
-        string.format("%s.%s", config_key, "panel_type"),
-        is_current_profile and elem.set_panel_type or function() end
+        config_key .. ".panel_type",
+        config.lang:tr("hud_element.entry.combo_panel_type"),
+        "panel_type",
+        elem.set_panel_type,
+        "panel_type",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_gossip_type"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.gossip_type,
-        string.format("%s.%s", config_key, "gossip_type"),
-        is_current_profile and elem.set_gossip_type or function() end
+        config_key .. ".gossip_type",
+        config.lang:tr("hud_element.entry.combo_gossip_type"),
+        "gossip_type",
+        elem.set_gossip_type,
+        "gossip_type",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 end
 
@@ -641,12 +612,17 @@ local function draw_name_other(elem, elem_config, config_key)
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
     end
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_nameplate_type"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.nameplate_type,
-        string.format("%s.%s", config_key, "nameplate_type"),
-        is_current_profile and elem.set_nameplate_type or function() end
+        config_key .. ".nameplate_type",
+        config.lang:tr("hud_element.entry.combo_nameplate_type"),
+        "nameplate_type",
+        elem.set_nameplate_type,
+        "nameplate_type",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 end
 
