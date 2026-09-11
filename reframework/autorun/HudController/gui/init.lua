@@ -94,7 +94,7 @@ function this.draw()
     end
 
     if not gui_elements.selector.is_opened then
-        imgui.spacing()
+        util_imgui.spacer(0, 1)
     end
 
     imgui.indent(3)
@@ -107,9 +107,7 @@ function this.draw()
 
     util_imgui.draw_child_window("hud_child_window", function()
         gui_elements.choice.draw()
-    end, 48, 4)
-
-    imgui.separator()
+    end, 48, 6)
 
     gui_elements.profile.draw()
 

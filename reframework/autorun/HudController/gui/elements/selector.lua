@@ -25,7 +25,7 @@ end
 function this.draw()
     local config_sel = config.selector.current
 
-    imgui.spacing()
+    util_imgui.spacer(0, 1)
     imgui.indent(3)
 
     imgui.begin_child_window("selector_window", { 0, this.window_size }, false, 1 << 3)
@@ -181,7 +181,7 @@ function this.draw()
         imgui.end_table()
     end
 
-    local spacing = 4
+    local spacing = 6
     local size = imgui.get_cursor_pos().y - pos.y - spacing
     this.window_size = size > 0 and size or this.window_size
 
