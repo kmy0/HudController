@@ -265,6 +265,7 @@ return {
         option_disable = "Do Not Change",
         box_mute_gui = "Mute GUI Sounds",
         category_fade = "Fade",
+        tooltip_category_fade = "Fade elements when switching Hud or element profiles",
         box_show_notification = "Show notification",
         tooltip_show_notification = "Show notification when switching to this profile",
         box_fade_opacity = "Fade only opacity-modified elements",

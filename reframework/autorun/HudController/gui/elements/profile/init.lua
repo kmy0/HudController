@@ -347,10 +347,12 @@ local function draw_options()
     util_imgui.tooltip(config.lang:tr("hud.tooltip_show_notification"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_fade"))
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_category_fade"))
     set:checkbox(
         util_gui.tr("hud.box_fade_opacity"),
         string.format("mod.hud.int:%s.fade_opacity", config_mod.combo.hud)
     )
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_fade_opacity"), true)
 
     local item_config_key = string.format("mod.hud.int:%s.fade_in", config_mod.combo.hud)
     local item_value = config:get(item_config_key)
