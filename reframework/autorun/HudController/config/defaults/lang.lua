@@ -231,6 +231,7 @@ return {
                 },
                 tooltip_action_type = "Bind Action",
                 tooltip_element_profile = "Element Profile",
+                tooltip_no_binds = "No binds configured",
             },
             key_option = {
                 name = "Key Options",

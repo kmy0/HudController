@@ -471,6 +471,7 @@ local function draw_all_registed_binds()
     end
 
     if not any then
+        util_imgui.tooltip_text(config.lang:tr("menu.bind.key.tooltip_no_binds"))
         imgui.invisible_button("invbutton_all_binds", { util_gui.get_item_size() * 1.5, 0 })
     end
 end
