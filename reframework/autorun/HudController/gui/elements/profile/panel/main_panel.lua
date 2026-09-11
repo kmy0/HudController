@@ -22,20 +22,15 @@ local this = {
 ---@param label string
 ---@param entry_key string
 ---@param set_fn fun(self: any, key: string, value: boolean)
----@param combo_key string
 ---@param is_current_profile boolean
----@param is_key_disabled fun(item_config_key: string, key: any, value: string): boolean
-local function notice_combo_hide(
-    elem,
-    item_config_key,
-    label,
-    entry_key,
-    set_fn,
-    combo_key,
-    is_current_profile,
-    is_key_disabled
-)
-    local combo = state.get_cached_combo(combo_key, item_config_key, is_key_disabled)
+local function combo_hide(elem, item_config_key, label, entry_key, set_fn, is_current_profile)
+    local combo = state.get_cached_combo(
+        entry_key,
+        item_config_key,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
     local combo_index_key = item_config_key .. "_combo"
 
     imgui.set_next_item_width(
@@ -393,95 +388,68 @@ local function draw_notice(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".system_log",
         config.lang:tr("hud_element.entry.combo_notice_system"),
         "system_log",
         elem.set_system_log,
-        "system_log",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".enemy_log",
         config.lang:tr("hud_element.entry.combo_notice_enemy"),
         "enemy_log",
         elem.set_enemy_log,
-        "enemy_log",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".camp_log",
         config.lang:tr("hud_element.entry.combo_notice_camp"),
         "camp_log",
         elem.set_camp_log,
-        "camp_log",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".chat_log",
         config.lang:tr("hud_element.entry.combo_notice_lobby"),
         "chat_log",
         elem.set_chat_log,
-        "chat_log",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".lobby_log",
         config.lang:tr("hud_element.entry.combo_notice_lobby_target"),
         "lobby_log",
         elem.set_lobby_log,
-        "lobby_log",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".auto_id",
         config.lang:tr("hud_element.entry.combo_notice_auto_id"),
         "auto_id",
         elem.set_auto_id,
-        "auto_id",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".log_id",
         config.lang:tr("hud_element.entry.combo_notice_system_id"),
         "log_id",
         elem.set_log_id,
-        "log_id",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+
+        is_current_profile
     )
 end
 
@@ -508,69 +476,50 @@ local function draw_name_access(elem, elem_config, config_key)
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
     end
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".object_category",
         config.lang:tr("hud_element.entry.combo_object_category"),
         "object_category",
         elem.set_object_category,
-        "object_category",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".npc_type",
         config.lang:tr("hud_element.entry.combo_npc_type"),
         "npc_type",
         elem.set_npc_type,
-        "npc_type",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".enemy_type",
         config.lang:tr("hud_element.entry.combo_enemy_type"),
         "enemy_type",
         elem.set_enemy_type,
-        "enemy_type",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".panel_type",
         config.lang:tr("hud_element.entry.combo_panel_type"),
         "panel_type",
         elem.set_panel_type,
-        "panel_type",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+        is_current_profile
     )
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".gossip_type",
         config.lang:tr("hud_element.entry.combo_gossip_type"),
         "gossip_type",
         elem.set_gossip_type,
-        "gossip_type",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+
+        is_current_profile
     )
 end
 
@@ -612,17 +561,14 @@ local function draw_name_other(elem, elem_config, config_key)
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
     end
 
-    notice_combo_hide(
+    combo_hide(
         elem,
         config_key .. ".nameplate_type",
         config.lang:tr("hud_element.entry.combo_nameplate_type"),
         "nameplate_type",
         elem.set_nameplate_type,
-        "nameplate_type",
-        is_current_profile,
-        function(item_config_key, key, _)
-            return config:get(item_config_key)[key]
-        end
+
+        is_current_profile
     )
 end
 
