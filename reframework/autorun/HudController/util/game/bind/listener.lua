@@ -1,10 +1,9 @@
 ---@class (exact) BindListener
 ---@field protected _bind_base BindBase
----@field protected _last_device string
+---@field protected _last_device BindDevice
 
 local ace_misc = require("HudController.util.ace.misc")
 local e = require("HudController.util.game.enum")
-local s = require("HudController.util.ref.singletons")
 local util_misc = require("HudController.util.misc.util")
 local util_table = require("HudController.util.misc.table")
 
@@ -132,8 +131,7 @@ end
 
 ---@return BindBase
 function this:listen()
-    local device = e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
-        :get_LastInputDeviceIgnoreMouseMove()]
+    local device = ace_misc.get_last_device(self._last_device)
     if device == "KEYBOARD" or device == "PAD" then
         self._last_device = device
     end

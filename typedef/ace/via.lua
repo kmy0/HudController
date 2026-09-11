@@ -12,6 +12,8 @@
 ---@class via.gui.DrawableElement : via.gui.PlayObject
 ---@class via.gui.MaskableElement : via.gui.DrawableElement
 ---@class via.Scene : via.clr.ManagedObject
+---@class via.hid.DeviceServiceBase : via.Object
+---@class via.hid.NativeDeviceBase : via.clr.ManagedObject
 
 ---@class via.Size
 ---@field w System.Single
@@ -198,3 +200,15 @@
 
 ---@class via.gui.GUIController : via.clr.ManagedObject
 ---@field get_Component fun(self: via.gui.GUIController): via.gui.GUI
+
+---@class via.hid.Keyboard : via.hid.DeviceServiceBase
+---@field get_Device fun(self: via.hid.Keyboard): via.hid.KeyboardDevice
+
+---@class via.hid.KeyboardDevice : via.hid.NativeDeviceBase
+---@field get_AnyKeyDown fun(self: via.hid.KeyboardDevice): System.Boolean
+
+---@class via.hid.MouseDevice : via.hid.NativeDeviceBase
+---@field get_ButtonDown fun(self: via.hid.MouseDevice): via.hid.MouseButton
+
+---@class via.hid.Mouse : via.hid.DeviceServiceBase
+---@field get_Device fun(self: via.hid.Mouse): via.hid.MouseDevice

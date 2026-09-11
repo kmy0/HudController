@@ -6,10 +6,12 @@
 ---@field protected _buffer_max integer
 ---@field protected _pause boolean
 ---@field protected _on_release_callbacks string[] key names
----@field protected _all_keys {PAD: table<integer, boolean>, KEYBOARD: table<integer, boolean>}
+---@field protected _all_keys {[BindDevice]: table<integer, boolean>}
+
+---@alias BindDevice "PAD" | "KEYBOARD"
 
 ---@class (exact) KeyBuffer
----@field device string
+---@field device BindDevice
 ---@field keys table<integer, boolean>
 ---@field snapshot table<integer, boolean>
 ---@field frame integer
@@ -25,8 +27,6 @@
 ---@field actions Bind[]
 
 local ace_misc = require("HudController.util.ace.misc")
-local e = require("HudController.util.game.enum")
-local singletons = require("HudController.util.ref.singletons")
 local util_table = require("HudController.util.misc.table")
 
 ---@class BindMonitor
@@ -398,13 +398,7 @@ function this:monitor()
         return
     end
 
-    local device = e.get("ace.GUIDef.INPUT_DEVICE")[singletons
-        .get("app.GUIManager")
-        :get_LastInputDeviceIgnoreMouseMove()]
-
-    if device == "MOUSE" then
-        device = "KEYBOARD"
-    end
+    local device = ace_misc.get_last_device(self.key_buffer.device)
 
     self:_clear_triggers()
     self:_buffer_keys(device)

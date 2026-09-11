@@ -8,6 +8,7 @@
 ---@class via.gui.BlendType : System.Enum
 ---@class via.gui.AlphaChannelType : System.Enum
 ---@class via.gui.PageAlignment : System.Enum
+---@class via.hid.MouseButton : System.Enum
 
 ---@class app.GUIDefApp.DRAW_SEGMENT : via.gui.Segment
 ---@class app.GUIHudDef.TYPE : System.Enum
