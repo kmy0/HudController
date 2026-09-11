@@ -139,28 +139,38 @@ local function draw_combo(
         0
     )
 
-    local text_y = pos.y + (frame_height - config.lang.font_size) * 0.5
-    draw_list:add_text({ pos.x + text_padding, text_y }, text_col, preview)
-
     local r = config.lang.font_size * 0.40
-    local cx = pos.x + width - arrow_region_width * 0.5
-    local cy = pos.y + frame_height * 0.5
-    if imgui.is_popup_open(popup_id) then
-        draw_list:add_rect_filled({
-            pos.x + width - arrow_region_width,
-            pos.y,
-        }, {
-            pos.x + width,
-            pos.y + frame_height,
-        }, 0xff4f4e4d, 0, 0)
+    local arrow_width = 2 * 0.866 * r
+    local arrow_fits = width >= arrow_width + 2 * text_padding
+
+    local text_width = imgui.calc_text_size(preview).x
+    local available_text_width = width - 2 * text_padding - (arrow_fits and arrow_region_width or 0)
+    local text_fits = available_text_width > 0 and text_width <= available_text_width
+    if text_fits then
+        local text_y = pos.y + (frame_height - config.lang.font_size) * 0.5
+        draw_list:add_text({ pos.x + text_padding, text_y }, text_col, preview)
     end
 
-    draw_list:add_triangle_filled(
-        { cx, cy + 0.750 * r },
-        { cx - 0.866 * r, cy - 0.750 * r },
-        { cx + 0.866 * r, cy - 0.750 * r },
-        text_col
-    )
+    if arrow_fits then
+        local cx = pos.x + width - arrow_region_width * 0.5
+        local cy = pos.y + frame_height * 0.5
+        if imgui.is_popup_open(popup_id) then
+            draw_list:add_rect_filled({
+                pos.x + width - arrow_region_width,
+                pos.y,
+            }, {
+                pos.x + width,
+                pos.y + frame_height,
+            }, 0xff4f4e4d, 0, 0)
+        end
+
+        draw_list:add_triangle_filled(
+            { cx, cy + 0.750 * r },
+            { cx - 0.866 * r, cy - 0.750 * r },
+            { cx + 0.866 * r, cy - 0.750 * r },
+            text_col
+        )
+    end
 
     if label then
         util_imgui.set_label(label, -1)
