@@ -476,6 +476,7 @@ local function draw_name_access(elem, elem_config, config_key)
         elem:set_npc_draw_distance(elem_config.npc_draw_distance)
     end
 
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
     combo_hide(
         elem,
         config_key .. ".object_category",
@@ -561,6 +562,7 @@ local function draw_name_other(elem, elem_config, config_key)
         elem:set_pet_draw_distance(elem_config.pet_draw_distance)
     end
 
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
     combo_hide(
         elem,
         config_key .. ".nameplate_type",
