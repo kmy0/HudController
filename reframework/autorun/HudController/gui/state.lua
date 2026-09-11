@@ -4,6 +4,7 @@
 ---@field input {buf: string, type: string, key: any?}?
 ---@field listener NewBindListener?
 ---@field set ImguiConfigSet
+---@field combo_cache table<string, Combo>
 
 ---@class (exact) GuiCombo
 ---@field hud_elem Combo
@@ -24,6 +25,12 @@
 ---@field map_filter Combo
 ---@field condition Combo
 ---@field elem_cache Combo
+---@field system_log Combo
+---@field enemy_log Combo
+---@field camp_log Combo
+---@field chat_log Combo
+---@field lobby_log Combo
+---@field auto_id Combo
 
 ---@class (exact) HudBindOpt
 ---@field hud integer
@@ -41,6 +48,7 @@ local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
+local factory = require("HudController.hud.factory")
 local game_lang = require("HudController.util.game.lang")
 local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
@@ -159,7 +167,7 @@ local this = {
             map_fn = function(value)
                 local id = e.get("app.ChatDef.LOG_ID")[value]
                 return string.format(
-                    "%s - %s",
+                    "[%s]  %s",
                     id,
                     util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
                 )
@@ -196,9 +204,47 @@ local this = {
                 return mod.enum.elem_cache[a.key] < mod.enum.elem_cache[b.key]
             end,
         }),
+        system_log = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        enemy_log = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        camp_log = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        chat_log = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        lobby_log = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+        }),
+        auto_id = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+            translate_fn = function(key, _)
+                local ret = ace_map.auto_id_to_text[e.get("app.Communication.AUTO_ID")[key]] --[[@as string]]
+                if not ret then
+                    ret = config.lang:tr("misc.text_unknown")
+                end
+                return ret
+            end,
+        }),
     },
     bind_condition_options = {},
     set = config_set:new(config),
+    combo_cache = {},
 }
 
 local function init_condition_combo()
@@ -247,6 +293,35 @@ function this.get_input()
     local changed = false
     changed, this.input.buf = imgui.input_text(util_gui.tr("hud.input"), this.input.buf, 1 << 6)
     return changed, this.input.buf
+end
+
+function this.clear_cache()
+    this.combo_cache = {}
+end
+
+---@param key string
+---@param item_config_key string
+---@param is_key_disabled (fun(item_config_key: string, key: any, value: string): boolean)?
+function this.get_cached_combo(key, item_config_key, is_key_disabled)
+    local cache_key = string.format("COMBO|%s|%s", key, item_config_key)
+    local ret = this.combo_cache[cache_key]
+    if not ret then
+        this.combo_cache[cache_key] = util_table.deep_copy(this.combo[key])
+        ret = this.combo_cache[cache_key]
+
+        if is_key_disabled then
+            local disabled_items = {}
+            for _, map in ipairs(ret.map) do
+                if is_key_disabled(item_config_key, map.key, map.value) then
+                    table.insert(disabled_items, map.key)
+                end
+            end
+
+            ret:disable_items(disabled_items)
+        end
+    end
+
+    return ret
 end
 
 function this.init_combo_map_icon_filter()
@@ -298,6 +373,15 @@ function this.init()
     this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
     this.combo.map_filter:swap(mod.map.combo_map_filter_init)
     this.combo.hud:swap(config.current.mod.hud)
+
+    local notice_config = factory.get_elem_config_by_type(mod.enum.hud_type.NOTICE) --[[@as NoticeConfig]]
+    this.combo.system_log:swap(util_table.key_to_key(notice_config.system_log))
+    this.combo.enemy_log:swap(util_table.key_to_key(notice_config.enemy_log))
+    this.combo.camp_log:swap(util_table.key_to_key(notice_config.camp_log))
+    this.combo.chat_log:swap(util_table.key_to_key(notice_config.chat_log))
+    this.combo.lobby_log:swap(util_table.key_to_key(notice_config.lobby_log))
+    this.combo.auto_id:swap(util_table.key_to_key(notice_config.auto_id))
+
     init_condition_combo()
     this.translate_combo()
 end

@@ -140,6 +140,7 @@ function this.reinit()
 
     config.lang:change()
     state.translate_combo()
+    state.clear_cache()
     this.manager.reinit()
     this.operations.reload()
     user.reinit()

@@ -436,15 +436,27 @@ end
 
 ---@generic K, V
 ---@param t table<K, V>
----@param key_transform (fun(o: K): any)?
----@param value_transform (fun(o: V): any)?
+---@param key_transform (fun(key: K, value: V?): any)?
+---@param value_transform (fun(value: V, key: K?): any)?
 ---@return table<any, any>
 function this.transform_items(t, key_transform, value_transform)
     local ret = {}
     for k, v in pairs(t) do
-        ret[key_transform and key_transform(k) or k] = value_transform and value_transform(v) or v
+        ret[key_transform and key_transform(k, v) or k] = value_transform and value_transform(v, k)
+            or v
     end
     return ret
+end
+
+---@generic K, V
+---@param t table<K, V>
+---@return table<K, K>
+function this.key_to_key(t)
+    return this.transform_items(t, function(key, _)
+        return key
+    end, function(_, key)
+        return key
+    end)
 end
 
 ---@param t table

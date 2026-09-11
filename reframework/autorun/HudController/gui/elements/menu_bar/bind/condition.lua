@@ -219,6 +219,7 @@ local function finalize_set_list(items, dragger, remove, duplicate)
 
     if not util_table.empty(remove) then
         items = remove_sets(items, remove)
+        state.clear_cache()
         config:save()
     end
 

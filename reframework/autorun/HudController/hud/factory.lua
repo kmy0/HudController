@@ -200,4 +200,12 @@ function this.get_elem_config(hud_elem)
     return cls.get_config(hud_elem.hud_type, hud_elem.name_key)
 end
 
+---@param hud_type HudType
+---@param hud_name string?
+---@return HudBaseConfig
+function this.get_elem_config_by_type(hud_type, hud_name)
+    local cls = hud_elements[hud_type]
+    return cls.get_config(hud_type, hud_name or "__placeholder")
+end
+
 return this

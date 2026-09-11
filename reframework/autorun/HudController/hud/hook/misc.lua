@@ -1,4 +1,5 @@
 local cache = require("HudController.util.misc.cache")
+local state = require("HudController.gui.state")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 
 local this = {}
@@ -6,6 +7,7 @@ local this = {}
 function this.reset_hud_default_post(_)
     play_object_defaults:clear()
     cache.clear_all()
+    state.clear_cache()
 end
 
 function this.reset_cache_post(_)

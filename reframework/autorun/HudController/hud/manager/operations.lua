@@ -127,7 +127,6 @@ function this.remove(hud_config)
     end
 
     config_mod.bind.key.hud = bind_manager.hud:get_base_binds()
-
     config_mod.bind.condition.hud = util_table.filter_array(
         config_mod.bind.condition.hud,
         function(_, value)
@@ -138,6 +137,8 @@ function this.remove(hud_config)
     util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
         value.combo_profile = hud_index_by_key(config_mod.hud, value.key) or 1
     end)
+
+    state.clear_cache()
 end
 
 ---@param name string
@@ -374,6 +375,7 @@ function this.remove_elem_profile(hud_config, key)
     end
 
     config_mod.combo.key_bind.elem_profile = 0
+    state.clear_cache()
 end
 
 ---@param root HudBaseConfig

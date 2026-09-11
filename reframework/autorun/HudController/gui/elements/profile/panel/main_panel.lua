@@ -1,6 +1,5 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local e = require("HudController.util.game.enum")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local m = require("HudController.util.ref.methods")
 local operations = require("HudController.hud.manager.operations")
@@ -12,7 +11,6 @@ local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
 local set = state.set
-local ace_map = data.ace.map
 
 local this = {
     ---@type table<HudType, fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string)>
@@ -70,6 +68,93 @@ local function group_things(elem, t, t_config_key, f, tr, chunk_size)
         if i ~= #chunks then
             imgui.same_line()
         end
+    end
+end
+
+---@param elem Notice
+---@param item_config_key string
+---@param label string
+---@param entry_key string
+---@param set_fn fun(self: Notice, key: string, value: boolean)
+---@param combo_key string
+---@param is_current_profile boolean
+---@param is_key_disabled fun(item_config_key: string, key: any, value: string): boolean
+local function notice_combo_hide(
+    elem,
+    item_config_key,
+    label,
+    entry_key,
+    set_fn,
+    combo_key,
+    is_current_profile,
+    is_key_disabled
+)
+    local combo = state.get_cached_combo(combo_key, item_config_key, is_key_disabled)
+    local combo_index_key = item_config_key .. "_combo"
+
+    imgui.set_next_item_width(
+        util_imgui.get_something_with_button_width(config.lang:tr("hud_element.entry.button_hide"))
+    )
+    util_imgui.begin_disabled(combo:empty())
+    generic.draw_combo(nil, item_config_key, "##" .. item_config_key, combo)
+
+    imgui.same_line()
+    if imgui.button(util_gui.tr("hud_element.entry.button_hide", item_config_key)) then
+        local index = config:get(combo_index_key)
+        local key = combo:get_key(index)
+
+        if not elem[entry_key][key] then
+            if is_current_profile then
+                set_fn(elem, key, true)
+            end
+
+            config:set(string.format("%s.%s", item_config_key, key), true)
+            config:set(combo_index_key, combo:disable_item(key))
+        end
+    end
+
+    util_imgui.end_disabled()
+    util_imgui.set_label(label, -1)
+
+    local item_count = #combo.disabled
+    if item_count > 0 then
+        local item_height = imgui.calc_text_size("A").y + 10
+        local height = math.min(item_height * item_count, 4 * (config.lang.font_size * (46 / 16)))
+
+        if
+            imgui.begin_child_window(
+                "entries" .. item_config_key,
+                { imgui.calc_item_width(), height },
+                false
+            )
+        then
+            for i, map in ipairs(combo.disabled) do
+                if elem[entry_key][map.key] then
+                    if
+                        imgui.button(
+                            util_gui.tr(
+                                "hud_element.entry.button_remove",
+                                item_config_key,
+                                i,
+                                map.key
+                            )
+                        )
+                    then
+                        if is_current_profile then
+                            set_fn(elem, map.key, false)
+                        end
+
+                        config:set(string.format("%s.%s", item_config_key, map.key), false)
+                        config:set(combo_index_key, combo:enable_item(map.key))
+                    end
+
+                    imgui.same_line()
+                    imgui.text(map.value)
+                end
+            end
+        end
+
+        imgui.end_child_window()
     end
 end
 
@@ -268,10 +353,15 @@ local function draw_notice(elem, elem_config, config_key)
 
     local is_current_profile = operations.is_current_profile(elem)
     local item_config_key = config_key .. ".tools_enemy_message_type"
+
+    imgui.set_next_item_width(
+        util_imgui.get_something_with_button_width(config.lang:tr("hud_element.entry.button_send"))
+    )
+
     local changed_value = generic.draw_combo(
         nil,
         item_config_key,
-        util_gui.tr("hud_element.entry.category_notice_enemy"),
+        "##" .. item_config_key,
         state.combo.enemy_msg_type
     )
 
@@ -284,6 +374,8 @@ local function draw_notice(elem, elem_config, config_key)
     if imgui.button(util_gui.tr("hud_element.entry.button_send", item_config_key)) then
         m.sendEnemyMessage(0, config:get(item_config_key))
     end
+
+    util_imgui.set_label(config.lang:tr("hud_element.entry.combo_tool_enemy"), -1)
 
     item_config_key = config_key .. ".cache_msg"
     if
@@ -306,7 +398,7 @@ local function draw_notice(elem, elem_config, config_key)
                 "notice_cached_messages",
                 7,
                 1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
-                Vector2f.new(0, 4 * 46)
+                Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
             )
         then
             for _, header in ipairs({
@@ -353,138 +445,97 @@ local function draw_notice(elem, elem_config, config_key)
         end
     end
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system"))
-    group_things(
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
+
+    notice_combo_hide(
         elem,
-        elem_config.system_log,
-        string.format("%s.%s", config_key, "system_log"),
-        is_current_profile and elem.set_system_log or function() end
-    )
-
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_system_id"))
-    item_config_key = config_key .. ".log_id"
-
-    generic.draw_combo(
-        nil,
-        item_config_key,
-        util_gui.tr("hud_element.entry.combo_log_id"),
-        state.combo.log_id
-    )
-
-    imgui.same_line()
-
-    if imgui.button(util_gui.tr("hud_element.entry.button_hide", item_config_key)) then
-        local key = tostring(state.combo.log_id:get_key(config:get(item_config_key .. "_combo")))
-        if not elem.log_id[key] then
-            local i = util_table.size(elem.log_id)
-            config:set(item_config_key, elem.log_id)
-            if is_current_profile then
-                elem:set_log_id(key, i)
-            end
+        config_key .. ".system_log",
+        config.lang:tr("hud_element.entry.combo_notice_system"),
+        "system_log",
+        elem.set_system_log,
+        "system_log",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
         end
-    end
+    )
 
-    if not util_table.empty(elem.log_id) then
-        if
-            imgui.begin_table(
-                "log_id_hide",
-                3,
-                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
-                Vector2f.new(0, 4 * 46)
-            )
-        then
-            for _, header in ipairs({
-                config.lang:tr("misc.text_id"),
-                config.lang:tr("misc.text_message"),
-                "",
-            }) do
-                imgui.table_setup_column(header)
-            end
-
-            local rows = util_table.sort(util_table.keys(elem.log_id), function(a, b)
-                return elem.log_id[a] > elem.log_id[b]
-            end)
-
-            imgui.table_headers_row()
-            for i = 1, #rows do
-                imgui.table_next_row()
-                local id = tonumber(rows[i])
-
-                imgui.table_set_column_index(0)
-                imgui.text(id)
-
-                imgui.table_set_column_index(1)
-                imgui.text(util_misc.trunc_string(ace_map.log_id_to_text[id]))
-                util_imgui.tooltip(ace_map.log_id_to_text[id])
-
-                imgui.table_set_column_index(2)
-                if
-                    imgui.button(
-                        util_gui.tr("hud_element.entry.button_remove", "log_id_remove", id)
-                    )
-                then
-                    if is_current_profile then
-                        elem:set_log_id(rows[i], nil)
-                    end
-
-                    config:set(item_config_key, elem.log_id)
-                end
-            end
-
-            imgui.end_table()
+    notice_combo_hide(
+        elem,
+        config_key .. ".enemy_log",
+        config.lang:tr("hud_element.entry.combo_notice_enemy"),
+        "enemy_log",
+        elem.set_enemy_log,
+        "enemy_log",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
         end
-    end
-
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_enemy"))
-    util_imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.ENEMY)
-    group_things(
-        elem,
-        elem_config.enemy_log,
-        string.format("%s.%s", config_key, "enemy_log"),
-        is_current_profile and elem.set_enemy_log or function() end
-    )
-    util_imgui.end_disabled()
-
-    util_imgui.begin_disabled(elem_config.system_log.ALL or elem_config.system_log.CAMP)
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_camp"))
-    group_things(
-        elem,
-        elem_config.camp_log,
-        string.format("%s.%s", config_key, "camp_log"),
-        is_current_profile and elem.set_camp_log or function() end
-    )
-    util_imgui.end_disabled()
-
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby"))
-    group_things(
-        elem,
-        elem_config.chat_log,
-        string.format("%s.%s", config_key, "chat_log"),
-        is_current_profile and elem.set_chat_log or function() end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_lobby_target"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.lobby_log,
-        string.format("%s.%s", config_key, "lobby_log"),
-        is_current_profile and elem.set_lobby_log or function() end
+        config_key .. ".camp_log",
+        config.lang:tr("hud_element.entry.combo_notice_camp"),
+        "camp_log",
+        elem.set_camp_log,
+        "camp_log",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 
-    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_notice_auto_id"))
-    group_things(
+    notice_combo_hide(
         elem,
-        elem_config.auto_id,
-        string.format("%s.%s", config_key, "auto_id"),
-        is_current_profile and elem.set_auto_id or function() end,
-        function(key)
-            local ret = ace_map.auto_id_to_text[e.get("app.Communication.AUTO_ID")[key]]
-            if not ret then
-                ret = config.lang:tr("misc.text_unknown")
-            end
-            return ret
-        end,
-        12
+        config_key .. ".chat_log",
+        config.lang:tr("hud_element.entry.combo_notice_lobby"),
+        "chat_log",
+        elem.set_chat_log,
+        "chat_log",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
+
+    notice_combo_hide(
+        elem,
+        config_key .. ".lobby_log",
+        config.lang:tr("hud_element.entry.combo_notice_lobby_target"),
+        "lobby_log",
+        elem.set_lobby_log,
+        "lobby_log",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
+
+    notice_combo_hide(
+        elem,
+        config_key .. ".auto_id",
+        config.lang:tr("hud_element.entry.combo_notice_auto_id"),
+        "auto_id",
+        elem.set_auto_id,
+        "auto_id",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
+
+    notice_combo_hide(
+        elem,
+        config_key .. ".log_id",
+        config.lang:tr("hud_element.entry.combo_notice_system_id"),
+        "log_id",
+        elem.set_log_id,
+        "log_id",
+        is_current_profile,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
     )
 end
 
