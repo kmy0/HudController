@@ -96,6 +96,7 @@ function this.sort(ordered_names)
     util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
         value.combo_profile = hud_index_by_key(config_mod.hud, value.key) or 1
     end)
+    state.clear_cache()
 end
 
 ---@param hud_config ModProfileConfig

@@ -89,16 +89,6 @@ local function build_condition_tooltip(conditions, config_key)
     return table.concat(text, "\n")
 end
 
----@param combo_key string
----@param combo Combo
-local function advance_combo_index(combo_key, combo)
-    local index = (config:get(combo_key) or 1) + 1 --[[@as integer]]
-    if index > combo:size() then
-        index = 1
-    end
-    config:set(combo_key, index)
-end
-
 ---@param conditions ConditionConfigBase[]
 ---@param config_key string
 ---@param highlight boolean
@@ -164,27 +154,26 @@ end
 ---@param combo_condition_key string
 local function draw_add_condition(conditions, config_key, combo_condition_key)
     imgui.push_item_width(util_gui.get_item_size())
-    set:combo_filter("##conditions." .. config_key, combo_condition_key, state.combo.condition)
+
+    local combo = state.get_cached_combo("condition", config_key, function(_, key, _)
+        return util_table.any(conditions, function(_, value)
+            return key == value.class
+        end)
+    end)
+
+    util_imgui.begin_disabled(combo:empty())
+    set:combo_filter("##conditions." .. config_key, combo_condition_key, combo)
     imgui.pop_item_width()
     imgui.same_line()
-
-    local combo = state.combo.condition
-    util_imgui.begin_disabled(combo:size() == #conditions)
 
     if imgui.button(util_gui.tr("menu.bind.condition.button_add", "condition", config_key)) then
         local index = config:get(combo_condition_key) --[[@as integer]]
         local cond_key = combo:get_key(index) --[[@as string]]
+        local cond = bind_condition.conditions[cond_key]
 
-        if
-            not util_table.any(conditions, function(_, v)
-                return cond_key == v.class
-            end)
-        then
-            table.insert(conditions, bind_condition.conditions[cond_key]:new_config())
-            config:save()
-        end
-
-        advance_combo_index(combo_condition_key, combo)
+        table.insert(conditions, cond:new_config())
+        config:set(combo_condition_key, combo:disable_item(cond_key))
+        config:save()
     end
 
     util_imgui.end_disabled()
@@ -215,6 +204,7 @@ local function finalize_set_list(items, dragger, remove, duplicate)
         util_table.sort(items, function(a, b)
             return dragger.item_pos[a] < dragger.item_pos[b]
         end)
+        state.clear_cache()
     end
 
     if not util_table.empty(remove) then
@@ -245,6 +235,11 @@ local function draw_condition_editor(cond_set, config_key, highlight, path_fn)
 
     local remove = draw_condition_rows(cond_set.conditions, config_key, highlight, path_fn)
     if not util_table.empty(remove) then
+        local combo = state.get_cached_combo("condition", config_key)
+
+        for _, i in ipairs(remove) do
+            config:set(combo_condition_key, combo:enable_item(cond_set.conditions[i].class))
+        end
         cond_set.conditions = util_table.filter_array(cond_set.conditions, function(key, _)
             return not util_table.contains_any(remove, key)
         end)
