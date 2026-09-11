@@ -15,124 +15,163 @@ local set = state.set
 
 local this = {}
 
----@param config_mod ModSettings
-local function draw_buffer(config_mod)
-    local buffer = config_mod.bind.key.buffer - 1
-
-    local display_value = config.lang:tr("misc.text_disabled")
-    if buffer == 1 then
-        display_value = string.format("%s %s", buffer, config.lang:tr("misc.text_frame"))
-    elseif buffer > 1 then
-        display_value = string.format("%s %s", buffer, config.lang:tr("misc.text_frame_plural"))
-    end
-
-    if
-        set:slider_int(
-            util_gui.tr("menu.bind.key.slider_buffer"),
-            "mod.bind.key.buffer",
-            1,
-            11,
-            display_value
-        )
-    then
-        bind_manager.monitor:set_max_buffer_frame(config_mod.bind.key.buffer)
-    end
-
-    util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_buffer"))
-end
-
 local function draw_bind_type()
     ---@type NotebookTab[]
     local tabs = {
+        { label = config.lang:tr("menu.bind.key.all"), key = 0 },
         { label = config.lang:tr("menu.bind.key.hud"), key = 1 },
         { label = config.lang:tr("menu.bind.key.option"), key = 2 },
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
     }
 
-    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, true) then
+    if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
         state.listener = nil
         bind_manager.monitor:unpause()
     end
 end
 
----@param config_mod ModSettings
----@return ModBindManager
----@return string
-local function draw_bind_target(config_mod)
-    local bind_type = config_mod.bind.slider.key_bind
-    local width = imgui.calc_item_width() / 1.5 - 4
+---@param combo_id string
+---@param config_key string
+---@param combo any
+local function draw_bind_combo(combo_id, config_key, combo)
+    imgui.push_item_width(-1)
+    set:combo_filter(combo_id, config_key, combo)
+    imgui.pop_item_width()
+end
 
-    if bind_type == 1 then
-        imgui.push_item_width(width)
+---@param values HudBaseConfigProfileForShow[]
+---@param disabled boolean
+local function draw_elem_profile_combo(values, disabled)
+    imgui.push_item_width(-util_imgui.get_button_width(util_gui.tr("menu.bind.key.button_add")) - 8)
 
-        if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud) then
-            config_mod.combo.key_bind.elem_profile = 0
-            config:save()
+    util_imgui.begin_disabled(disabled)
+
+    set:combo_multi_bits_filter(
+        "##elem_profile_hud_bind",
+        disabled and "" or "mod.combo.key_bind.elem_profile",
+        config.lang:tr("misc.text_none"),
+        values,
+        function(v)
+            return v.key
+        end,
+        function(v)
+            return v.name
         end
+    )
 
-        local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
-        ---@type HudBaseConfigProfileForShow[]
-        local values
-        if hud_profile then
-            values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
-        else
-            values = {}
-        end
-
-        imgui.same_line()
-        set:combo_multi_bits_filter(
-            "##elem_profile_hud_bind",
-            "mod.combo.key_bind.elem_profile",
-            config.lang:tr("misc.text_none"),
-            values,
-            function(v)
-                return v.key
-            end,
-            function(v)
-                return v.name
-            end
-        )
-        imgui.pop_item_width()
-        return bind_manager.hud, "mod.bind.key.hud"
+    if not disabled then
+        util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_element_profile"))
     end
 
-    imgui.push_item_width(width)
+    util_imgui.end_disabled()
+    imgui.pop_item_width()
+end
+
+---@param left_fn fun()
+---@param right_fn fun()
+local function draw_bind_table(left_fn, right_fn)
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 2))
+
+    if imgui.begin_table("bind_table1", 2, imgui.TableFlags.SizingStretchSame) then
+        imgui.table_next_row()
+
+        imgui.table_set_column_index(0)
+        left_fn()
+
+        imgui.table_set_column_index(1)
+        right_fn()
+
+        imgui.end_table()
+    end
+
+    imgui.pop_style_var(1)
+end
+
+---@param config_mod ModSettings
+---@return ModBindManager?
+---@return string?
+local function draw_bind_target(config_mod)
+    local bind_type = config_mod.bind.slider.key_bind
+    if bind_type == 0 then
+        return
+    end
+
+    if bind_type == 1 then
+        ---@type HudBaseConfigProfileForShow[]
+        local values = {}
+        draw_bind_table(function()
+            imgui.push_item_width(-1)
+
+            if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud) then
+                config_mod.combo.key_bind.elem_profile = 0
+                config:save()
+            end
+
+            imgui.pop_item_width()
+
+            local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
+            if hud_profile then
+                values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
+            end
+        end, function()
+            config_mod.combo.key_bind.action_type = state.combo.bind_action_type:get_index("ENABLE") --[[@as integer]]
+
+            util_imgui.begin_disabled(true)
+
+            draw_bind_combo(
+                "##bind_action_type_combo",
+                "mod.combo.key_bind.action_type",
+                state.combo.bind_action_type
+            )
+
+            util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
+
+            util_imgui.end_disabled()
+        end)
+
+        draw_elem_profile_combo(values, util_table.empty(values))
+
+        return bind_manager.hud, "mod.bind.key.hud"
+    end
 
     ---@type ModBindManager
     local manager
     ---@type string
     local config_key
-
     if bind_type == 2 then
         manager = bind_manager.option_hud
         config_key = "mod.bind.key.option_hud"
+    else
+        manager = bind_manager.option_mod
+        config_key = "mod.bind.key.option_mod"
+    end
 
-        set:combo_filter(
+    draw_bind_table(function()
+        draw_bind_combo(
             "##bind_option_combo",
             "mod.combo.key_bind.option_hud",
             state.combo.option_bind
         )
-    else
-        manager = bind_manager.option_mod
-        config_key = "mod.bind.key.option_mod"
+    end, function()
+        if bind_type == 2 then
+            draw_bind_combo(
+                "##bind_action_type_combo",
+                "mod.combo.key_bind.action_type",
+                state.combo.bind_action_type
+            )
+        else
+            draw_bind_combo(
+                "##bind_option_mod_combo",
+                "mod.combo.key_bind.option_mod",
+                state.combo.option_mod_bind
+            )
+        end
 
-        set:combo_filter(
-            "##bind_option_mod_combo",
-            "mod.combo.key_bind.option_mod",
-            state.combo.option_mod_bind
-        )
-    end
+        util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
+    end)
 
+    draw_elem_profile_combo({}, true)
     imgui.same_line()
-
-    set:combo_filter(
-        "##bind_action_type_combo",
-        "mod.combo.key_bind.action_type",
-        state.combo.bind_action_type
-    )
-    util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
-
-    imgui.pop_item_width()
 
     return manager, config_key
 end
@@ -219,10 +258,7 @@ local function update_collision(manager, bind, config_mod)
         return
     end
 
-    local collision_name = get_bind_target_name(manager, collision)
-
-    state.listener.collision =
-        string.format("%s %s", config.lang:tr("menu.bind.tooltip_bound"), collision_name)
+    state.listener.collision = get_bind_target_name(manager, collision)
 end
 
 ---@param manager ModBindManager
@@ -277,6 +313,13 @@ local function draw_listener(manager, config_key, config_mod)
     util_imgui.end_disabled()
     imgui.same_line()
 
+    util_imgui.begin_disabled(util_table.empty(bind.keys))
+    if imgui.button(util_gui.tr("menu.bind.key.button_undo")) then
+        state.listener.listener:undo()
+    end
+    util_imgui.end_disabled()
+
+    imgui.same_line()
     if imgui.button(util_gui.tr("menu.bind.key.button_clear")) then
         state.listener.listener:clear()
     end
@@ -289,11 +332,19 @@ local function draw_listener(manager, config_key, config_mod)
     end
 
     imgui.end_table()
-    imgui.separator()
 
     if state.listener and state.listener.collision then
-        imgui.text_colored(state.listener.collision, mod.enum.colors.bad)
-        imgui.separator()
+        imgui.text_colored(
+            string.format(
+                "%s %s",
+                config.lang:tr("menu.bind.tooltip_bound"),
+                util_misc.trunc_string2(
+                    state.listener.collision,
+                    config.lang.font_size * (215 / 16)
+                )
+            ),
+            mod.enum.colors.bad
+        )
     end
 
     imgui.text(table.concat(bind_name, " + "))
@@ -305,22 +356,12 @@ end
 ---@return string
 local function get_registered_bind_target_name(manager, bind)
     if manager.name == bind_manager.manager_names.HUD then
-        return util_menubar_bind.get_hud_bind_name(bind.bound_value)
+        return util_menubar_bind.get_hud_bind_name(bind)
     elseif manager.name == bind_manager.manager_names.OPTION_HUD then
-        return util_menubar_bind.get_option_hud_bind_name(bind.bound_value)
+        return util_menubar_bind.get_option_hud_bind_name(bind)
     end
 
-    return util_menubar_bind.get_option_mod_bind_name(bind.bound_value)
-end
-
----@param bind ModBind
----@return string
-local function get_action_type_name(bind)
-    if bind.action_type == bind_manager.action_type.NONE then
-        return ""
-    end
-
-    return config.lang:tr("menu.bind.key.action_type." .. bind.action_type)
+    return util_menubar_bind.get_option_mod_bind_name(bind)
 end
 
 ---@param manager ModBindManager
@@ -340,19 +381,28 @@ local function draw_registered_bind(manager, bind, remove)
         table.insert(remove, bind)
     end
 
-    local truncated = util_misc.trunc_string2(opt_name, config.lang.font_size * (215 / 16))
-    imgui.table_set_column_index(1)
-    imgui.text(truncated)
+    imgui.same_line()
+    imgui.spacing()
 
-    if opt_name ~= truncated then
+    imgui.table_set_column_index(1)
+    imgui.text(util_menubar_bind.get_action_name(bind))
+    imgui.same_line()
+    imgui.spacing()
+
+    local truncated = util_misc.trunc_string2(opt_name, config.lang.font_size * (215 / 16))
+    imgui.table_set_column_index(2)
+    imgui.text(truncated)
+    imgui.same_line()
+    imgui.spacing()
+
+    if truncated ~= opt_name then
         util_imgui.tooltip(opt_name)
     end
 
-    imgui.table_set_column_index(2)
-    imgui.text(bind.name_display)
-
     imgui.table_set_column_index(3)
-    imgui.text(get_action_type_name(bind))
+    imgui.text(util_menubar_bind.get_key_bind_name(bind))
+    imgui.same_line()
+    imgui.spacing()
 end
 
 ---@param manager ModBindManager
@@ -361,10 +411,11 @@ local function draw_registered_binds(manager, config_key)
     local binds = config:get(config_key) --[=[@as ModBind[]]=]
 
     if util_table.empty(binds) then
+        imgui.invisible_button("invbutton" .. config_key, { util_gui.get_item_size() * 1.5, 0 })
         return
     end
 
-    if not imgui.begin_table("keybind_state", 4, 1 << 9) then
+    if not imgui.begin_table("keybind_state", 4) then
         return
     end
 
@@ -373,7 +424,18 @@ local function draw_registered_binds(manager, config_key)
     ---@type ModBind[]
     local remove = {}
     for i = 1, #binds do
-        draw_registered_bind(manager, binds[i], remove)
+        local b = binds[i]
+        local color = 0
+
+        if state.listener and state.listener.collision == get_bind_target_name(manager, b) then
+            color = mod.enum.colors.bad
+        end
+
+        imgui.push_style_color(5, color)
+        imgui.begin_rect()
+        draw_registered_bind(manager, b, remove)
+        imgui.end_rect(0, 0)
+        imgui.pop_style_color(1)
     end
 
     if not util_table.empty(remove) then
@@ -387,28 +449,67 @@ local function draw_registered_binds(manager, config_key)
     imgui.end_table()
 end
 
+local function draw_all_registed_binds()
+    local any = false
+
+    if not util_table.empty(bind_manager.hud.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.hud"))
+        draw_registered_binds(bind_manager.hud, "mod.bind.key.hud")
+    end
+
+    if not util_table.empty(bind_manager.option_hud.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.option"))
+        draw_registered_binds(bind_manager.option_hud, "mod.bind.key.option_hud")
+    end
+
+    if not util_table.empty(bind_manager.option_mod.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.option_mod"))
+        draw_registered_binds(bind_manager.option_mod, "mod.bind.key.option_mod")
+    end
+
+    if not any then
+        imgui.invisible_button("invbutton_all_binds", { util_gui.get_item_size() * 1.5, 0 })
+    end
+end
+
 local function draw_key_bind_menu()
     imgui.spacing()
     imgui.indent(2)
 
     local config_mod = config.current.mod
 
-    draw_buffer(config_mod)
+    -- draw_buffer(config_mod)
+
+    imgui.begin_group()
     draw_bind_type()
+    imgui.end_group()
 
     util_imgui.begin_disabled(
         state.listener ~= nil
             or config_mod.bind.slider.key_bind == 1 and util_table.empty(config_mod.hud)
     )
 
+    imgui.same_line()
+    imgui.begin_group()
+
     local manager, config_key = draw_bind_target(config_mod)
 
-    draw_add_button(manager, config_mod)
+    if manager and config_key then
+        draw_add_button(manager, config_mod)
 
-    util_imgui.end_disabled()
+        util_imgui.end_disabled()
 
-    draw_listener(manager, config_key, config_mod)
-    draw_registered_binds(manager, config_key)
+        draw_listener(manager, config_key, config_mod)
+        draw_registered_binds(manager, config_key)
+    else
+        util_imgui.end_disabled()
+        draw_all_registed_binds()
+    end
+
+    imgui.end_group()
 
     imgui.unindent(2)
     imgui.spacing()

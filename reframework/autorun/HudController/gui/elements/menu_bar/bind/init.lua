@@ -1,6 +1,7 @@
 local condition = require("HudController.gui.elements.menu_bar.bind.condition")
 local condition_options = require("HudController.gui.elements.menu_bar.bind.condition_options")
 local key = require("HudController.gui.elements.menu_bar.bind.key")
+local key_options = require("HudController.gui.elements.menu_bar.bind.key_options")
 local util_gui = require("HudController.gui.util")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 
@@ -11,6 +12,7 @@ local function draw_bind_menu()
     imgui.indent(2)
 
     key.draw()
+    key_options.draw()
     condition.draw()
     condition_options.draw()
 

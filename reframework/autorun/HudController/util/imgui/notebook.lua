@@ -30,7 +30,9 @@
 
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
+local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
 
 local this = {
     ---@type {[string]: NotebookState}
@@ -72,42 +74,10 @@ local function get_state(id)
 end
 
 ---@param text string
----@return number
-local function width(text)
-    return imgui.calc_text_size(text).x
-end
-
----@param text string
 ---@return string, number
 local function label(text)
-    local w = width(text)
-
-    if w <= MAX_W then
-        return text, w
-    end
-
-    local suffix = "..."
-    local sw = width(suffix)
-
-    if sw >= MAX_W then
-        return suffix, sw
-    end
-
-    local out = ""
-
-    for _, cp in utf8.codes(text) do
-        local next = out .. utf8.char(cp)
-
-        if width(next .. suffix) > MAX_W then
-            break
-        end
-
-        out = next --[[@as string]]
-    end
-
-    out = out .. suffix
-
-    return out, width(out)
+    local fitted = util_imgui.fit_text(text, MAX_W)
+    return fitted, imgui.calc_text_size(fitted).x
 end
 
 ---@param btn NotebookActionButton
@@ -128,7 +98,16 @@ end
 ---@param h number
 ---@param bg integer
 ---@param color integer
-local function border(list, x, y, w, h, bg, color)
+---@param vertical boolean
+local function border(list, x, y, w, h, bg, color, vertical)
+    if vertical then
+        list:add_rect_filled({ x + INSET, y }, { x + w - 1, y + h }, bg, 0, 0)
+        list:add_line({ x + INSET, y }, { x + w - 1, y }, color, 1)
+        list:add_line({ x + INSET, y + h }, { x + w - 1, y + h }, color, 1)
+        list:add_line({ x + INSET, y }, { x + INSET, y + h }, color, 1)
+        return
+    end
+
     list:add_rect_filled({ x, y + INSET }, { x + w, y + h - 1 }, bg, 0, 0)
     list:add_line({ x, y + INSET }, { x, y + h - 1 }, color, 1)
     list:add_line({ x + w, y + INSET }, { x + w, y + h - 1 }, color, 1)
@@ -150,7 +129,8 @@ end
 ---@param background_color integer?
 ---@param hover_color integer?
 ---@param colors NotebookColors
----@param disabled boolean
+---@param is_disabled boolean
+---@param vertical boolean
 local function tab(
     list,
     x,
@@ -167,11 +147,12 @@ local function tab(
     background_color,
     hover_color,
     colors,
-    disabled
+    is_disabled,
+    vertical
 )
     ---@type integer, integer
     local bg, color
-    local fade = disabled and DISABLED or 1
+    local fade = is_disabled and DISABLED or 1
 
     ---@param value integer
     local function faded(value)
@@ -185,16 +166,20 @@ local function tab(
 
         bg = ok and (hovered and action_hover or action_bg)
             or util_misc.mul_alpha(action_bg, DISABLED)
-
         color = ok and action_border or util_misc.mul_alpha(action_border, DISABLED)
 
-        border(list, x, y, w, h, faded(bg), faded(color))
+        border(list, x, y, w, h, faded(bg), faded(color), vertical)
     elseif active then
         color = border_color or colors.active_border --[[@as integer]]
 
         list:add_rect_filled({ x, y }, { x + w, y + h }, faded(colors.active), 0, 0)
         list:add_rect({ x, y }, { x + w, y + h }, faded(color), 0, 0, 1)
-        list:add_line({ x + 1, y + h - 1 }, { x + w - 1, y + h - 1 }, faded(colors.active), 1)
+
+        if vertical then
+            list:add_line({ x + w - 1, y + 1 }, { x + w - 1, y + h - 1 }, faded(colors.active), 1)
+        else
+            list:add_line({ x + 1, y + h - 1 }, { x + w - 1, y + h - 1 }, faded(colors.active), 1)
+        end
     else
         color = border_color and util_misc.mul_alpha(border_color, DISABLED)
             or colors.inactive_border --[[@as integer]]
@@ -206,10 +191,25 @@ local function tab(
             w,
             h,
             faded(hovered and colors.hover or colors.inactive --[[@as integer]]),
-            faded(color)
+            faded(color),
+            vertical
         )
 
-        list:add_line({ x + 1, y + h - 1 }, { x + w - 1, y + h - 1 }, faded(colors.separator), 1)
+        if vertical then
+            list:add_line(
+                { x + w - 1, y + 1 },
+                { x + w - 1, y + h - 1 },
+                faded(colors.separator),
+                1
+            )
+        else
+            list:add_line(
+                { x + 1, y + h - 1 },
+                { x + w - 1, y + h - 1 },
+                faded(colors.separator),
+                1
+            )
+        end
     end
 
     if action then
@@ -222,11 +222,10 @@ local function tab(
 
     color = faded(color)
 
-    local s = imgui.calc_text_size(text)
-
+    local size = imgui.calc_text_size(text)
     list:add_text({
-        x + (w - s.x) / 2,
-        y + (h - s.y) / 2,
+        x + (w - size.x) / 2,
+        y + (h - size.y) / 2,
     }, color, text)
 end
 
@@ -248,47 +247,36 @@ end
 ---@param tabs NotebookTab[]
 ---@param actions NotebookActionButton[]?
 ---@param colors NotebookColors?
----@param stretch_tabs boolean? Stretch tabs to fill the width left after action buttons
+---@param stretch_tabs boolean? Stretch tabs to fill the available width
+---@param vertical boolean?
 ---@return boolean changed
 ---@return any current_tab
-function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
+function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertical)
+    vertical = vertical or false
+
     local s = get_state(id)
-    local disabled = disabled.is_disabled()
-    ---@type table<string, integer>
-    local resolved_colors = {}
-    for name, value in pairs(DEFAULT_COLORS) do
-        resolved_colors[name] = colors and colors[name] or value
-    end
-    colors = resolved_colors
+    local is_disabled = disabled.is_disabled()
+    colors = util_table.merge(DEFAULT_COLORS, colors or {})
 
     local changed = false
     local frame_tab = current_tab
     local h = config.lang.font_size + 10
-
     local list = imgui.get_window_draw_list()
     local pos = imgui.get_cursor_screen_pos()
-
-    local x0 = pos.x
-    local x = 0
-    local y = pos.y
-
     local wp = imgui.get_window_pos()
     local ws = imgui.get_window_size()
-
-    list:add_line(
-        { wp.x, y + h - 1 },
-        { wp.x + ws.x, y + h - 1 },
-        disabled and util_misc.mul_alpha(colors.separator, DISABLED) or colors.separator,
-        1
-    )
-
     local action_list = actions or {}
+
     ---@type table<integer, number>
     local action_widths = {}
     local actions_w = 0
+    local column_w = 0
+
+    ---@type table<integer, string>
+    local action_displays = {}
 
     for i, btn in ipairs(action_list) do
-        local _, tw = label(btn.label)
+        local display, tw = label(btn.label)
         local w = tw + PAD * 2
 
         if btn.size_strings then
@@ -298,8 +286,10 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
             end
         end
 
+        action_displays[i] = display
         action_widths[i] = w
         actions_w = actions_w + w
+        column_w = math.max(column_w, w) --[[@as number]]
     end
 
     if #action_list > 1 then
@@ -308,51 +298,72 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
 
     ---@type table<integer, number>
     local tab_widths = {}
+    ---@type table<integer, string>
+    local tab_displays = {}
     local tabs_w = 0
 
     for i, item in ipairs(tabs) do
-        local _, tw = label(item.label)
+        local display, tw = label(item.label)
         local w = tw + PAD * 2
+        tab_displays[i] = display
         tab_widths[i] = w
         tabs_w = tabs_w + w
+        column_w = math.max(column_w, w) --[[@as number]]
     end
 
-    if stretch_tabs and #tabs > 0 then
-        local cursor_pos = imgui.get_cursor_pos()
-        local cursor_start = imgui.get_cursor_start_pos()
-        local available_w = ws.x - cursor_pos.x - cursor_start.x
-        local gaps_w = GAP * math.max(#tabs - 1, 0)
-        local action_gap_w = #action_list > 0 and (GAP + ACTION_GAP) or 0
-        local stretch_w = available_w - actions_w - gaps_w - action_gap_w
+    if vertical then
+        if stretch_tabs then
+            local cursor_pos = imgui.get_cursor_pos()
+            local cursor_start = imgui.get_cursor_start_pos()
+            local available_w = ws.x - cursor_pos.x - cursor_start.x
+            column_w = math.max(column_w, available_w)
+        end
 
-        if stretch_w > tabs_w then
-            local extra = (stretch_w - tabs_w) / #tabs --[[@as number]]
+        list:add_line(
+            { pos.x + column_w - 1, wp.y },
+            { pos.x + column_w - 1, wp.y + ws.y },
+            is_disabled and util_misc.mul_alpha(colors.separator, DISABLED) or colors.separator,
+            1
+        )
+    else
+        if stretch_tabs and #tabs > 0 then
+            local cursor_pos = imgui.get_cursor_pos()
+            local cursor_start = imgui.get_cursor_start_pos()
+            local available_w = ws.x - cursor_pos.x - cursor_start.x
+            local gaps_w = GAP * math.max(#tabs - 1, 0)
+            local action_gap_w = #action_list > 0 and (GAP + ACTION_GAP) or 0
+            local stretch_w = available_w - actions_w - gaps_w - action_gap_w
 
-            for i = 1, #tab_widths do
-                tab_widths[i] = tab_widths[i] + extra
+            if stretch_w > tabs_w then
+                local extra = (stretch_w - tabs_w) / #tabs --[[@as number]]
+                for i = 1, #tab_widths do
+                    tab_widths[i] = tab_widths[i] + extra
+                end
             end
         end
+
+        list:add_line(
+            { wp.x, pos.y + h - 1 },
+            { wp.x + ws.x, pos.y + h - 1 },
+            is_disabled and util_misc.mul_alpha(colors.separator, DISABLED) or colors.separator,
+            1
+        )
     end
+
+    local x = pos.x
+    local y = pos.y
 
     for i, item in ipairs(tabs) do
         local key = item.key
-        local text = item.label
-        local border_color = item.border_color
-        local text_color = item.text_color
-
-        local display, _ = label(text)
-
+        local display = tab_displays[i]
         local active = current_tab == key
-        local hover_key = id .. "_" .. key --[[@as string]]
-
-        local w = tab_widths[i]
-        local tx = x0 + x
-
+        local hover_key = (vertical and id .. "_vertical_" or id .. "_") .. key --[[@as string]]
         local hovered = s.hover[hover_key] or false
+        local w = vertical and column_w or tab_widths[i]
 
         tab(
             list,
-            tx,
+            x,
             y,
             w,
             h,
@@ -361,40 +372,52 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
             false,
             true,
             hovered,
-            border_color,
-            text_color,
+            item.border_color,
+            item.text_color,
             nil,
             nil,
             colors,
-            disabled
+            is_disabled,
+            vertical
         )
 
-        local clicked, is_hovered = hit(("nb_tab_%s_%s"):format(id, key), tx, y, w, h)
+        local hit_id = vertical and ("nb_vertical_tab_%s_%s"):format(id, key)
+            or ("nb_tab_%s_%s"):format(id, key)
+        local clicked, is_hovered = hit(hit_id, x, y, w, h)
 
-        if not disabled and clicked and not active then
+        if not is_disabled and clicked and not active then
             current_tab = key
             changed = true
         end
 
         s.hover[hover_key] = is_hovered
 
-        x = x + w + GAP
+        if vertical then
+            y = y + h + GAP
+        else
+            x = x + w + GAP
+        end
     end
 
-    x = x + ACTION_GAP
+    if #action_list > 0 then
+        if vertical then
+            y = y + ACTION_GAP
+        else
+            x = x + ACTION_GAP
+        end
+    end
 
     for i, btn in ipairs(action_list) do
-        local ok = not disabled and enabled(btn, frame_tab)
-        local display = label(btn.label)
-        local w = action_widths[i]
-
-        local tx = x0 + x
-        local hk = id .. "_action_" .. i
-        local clicked, is_hovered = hit(("nb_action_%s_%s"):format(id, i), tx, y, w, h)
+        local ok = not is_disabled and enabled(btn, frame_tab)
+        local display = action_displays[i]
+        local w = vertical and column_w or action_widths[i]
+        local hit_id = vertical and ("nb_vertical_action_%s_%s"):format(id, i)
+            or ("nb_action_%s_%s"):format(id, i)
+        local clicked, is_hovered = hit(hit_id, x, y, w, h)
 
         tab(
             list,
-            tx,
+            x,
             y,
             w,
             h,
@@ -408,9 +431,11 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
             btn.background_color,
             btn.hover_color,
             colors,
-            false
+            false,
+            vertical
         )
-        if not disabled and is_hovered and btn.tooltip then
+
+        if not is_disabled and is_hovered and btn.tooltip then
             imgui.set_tooltip(btn.tooltip)
         end
 
@@ -423,14 +448,16 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs)
             end
         end
 
-        s.hover[hk] = is_hovered
-
-        x = x + w + GAP
+        if vertical then
+            y = y + h + GAP
+        else
+            x = x + w + GAP
+        end
     end
 
     imgui.set_cursor_screen_pos({
-        x0,
-        y + h,
+        vertical and pos.x + column_w or pos.x,
+        vertical and pos.y or pos.y + h,
     })
 
     imgui.spacing()

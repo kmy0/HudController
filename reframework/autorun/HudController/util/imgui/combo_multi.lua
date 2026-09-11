@@ -339,6 +339,7 @@ end
 ---@param get_label fun(value: T): string
 ---@return boolean, integer
 function this.combo_multi_bits_filter(label, bits, default_preview, values, get_key, get_label)
+    bits = bits or 0
     local selected_keys = util_misc.unpack_bits(bits)
     ---@type string[]
     local options = {}

@@ -99,6 +99,15 @@ function this:listen_keyboard()
     return self._bind_base
 end
 
+function this:undo()
+    table.remove(self._bind_base.keys, #self._bind_base.keys)
+    if util_table.empty(self._bind_base.keys) then
+        self._bind_base.name_display = ""
+    else
+        self._bind_base.name_display = self._bind_base.name_display:gsub("%s+%+%s*[^+]*$", "")
+    end
+end
+
 ---@return BindBase
 function this:listen_pad()
     if not self._bind_base or self._bind_base.device ~= "PAD" then

@@ -5,6 +5,9 @@ local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local uuid = require("HudController.util.misc.uuid")
 
+local FRAME_PADDING_X = 4.0
+local ITEM_SPACING_X = 8.0
+
 local this = {
     begin_disabled = disabled.begin_disabled,
     end_disabled = disabled.end_disabled,
@@ -342,17 +345,20 @@ function this.draw_text_outlined(text, x, y, color, outline_color)
     draw.text(text, x, y, color)
 end
 
+---@param label string
+---@return number
+function this.get_button_width(label)
+    return imgui.calc_text_size(util_misc.split_string(label, "##")[1]).x + FRAME_PADDING_X * 2
+end
+
 ---@param button_label string
 ---@param ... number
 ---@return number
 function this.get_something_with_button_width(button_label, ...)
     local other_widths = { ... }
-    local FRAME_PADDING_X = 4.0
-    local ITEM_SPACING_X = 8.0
 
     local total_width = imgui.calc_item_width()
-    local button_width = imgui.calc_text_size(util_misc.split_string(button_label, "##")[1]).x
-        + FRAME_PADDING_X * 2
+    local button_width = this.get_button_width(button_label)
 
     local ret = total_width - button_width - ITEM_SPACING_X
 
@@ -365,7 +371,6 @@ end
 ---@param width number
 ---@return number
 function this.get_something_with_any_width(width)
-    local FRAME_PADDING_X = 4.0
     local total_width = imgui.calc_item_width()
     local button_width = width + FRAME_PADDING_X * 2
     local ret = total_width - button_width

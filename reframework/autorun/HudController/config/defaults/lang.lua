@@ -211,14 +211,15 @@ return {
             key = {
                 name = "Key",
                 hud = "Hud",
+                all = "All",
                 option = "Hud Option",
                 option_mod = "Mod Option",
-                slider_bind_type = "Bind Type",
                 slider_buffer = "Buffer",
                 tooltip_buffer = "Time window to detect multi-key combination (e.g. A+B) before triggering single keys",
                 text_default = "Press any key...",
                 button_add = "Add",
                 button_save = "Save",
+                button_undo = "Undo",
                 button_remove = "Remove",
                 button_cancel = "Cancel",
                 button_clear = "Clear",
@@ -229,6 +230,10 @@ return {
                     TOGGLE_HOLD = "Toggle Hold",
                 },
                 tooltip_action_type = "Bind Action",
+                tooltip_element_profile = "Element Profile",
+            },
+            key_option = {
+                name = "Key Options",
             },
         },
         user = {

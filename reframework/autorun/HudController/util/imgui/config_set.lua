@@ -156,9 +156,19 @@ end
 ---@param actions NotebookActionButton[]?
 ---@param colors NotebookColors?
 ---@param stretch_tabs boolean?
+---@param vertical boolean?
 ---@return boolean
-function this:notebook(id, config_key, tabs, actions, colors, stretch_tabs)
-    return self:generic_config(id, config_key, notebook.draw, tabs, actions, colors, stretch_tabs)
+function this:notebook(id, config_key, tabs, actions, colors, stretch_tabs, vertical)
+    return self:generic_config(
+        id,
+        config_key,
+        notebook.draw,
+        tabs,
+        actions,
+        colors,
+        stretch_tabs,
+        vertical
+    )
 end
 
 ---@param name string
