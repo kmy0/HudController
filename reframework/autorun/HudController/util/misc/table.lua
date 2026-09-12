@@ -152,52 +152,47 @@ end
 
 ---@generic T: table
 ---@param protected string[]?
----@param ignore_empty boolean?
+---@param prune_unknown boolean?
 ---@param ... T
 ---@return T
-function this.merge_protected(protected, ignore_empty, ...)
+function this.merge_protected(protected, prune_unknown, ...)
     if protected == nil then
         protected = {}
     end
 
-    if ignore_empty == nil then
-        ignore_empty = false
+    if prune_unknown == nil then
+        prune_unknown = false
     end
 
     local tables_to_merge = { ... }
-    assert(#tables_to_merge > 1, "There should be at least two tables to merge them")
-
-    for key, table in ipairs(tables_to_merge) do
-        assert(
-            type(table) == "table",
-            string.format("Expected a table as function parameter %d", key)
-        )
-    end
-
-    local result = this.deep_copy(tables_to_merge[1])
+    local defaults = tables_to_merge[1]
+    local result = this.deep_copy(defaults)
+    local open_table = this.empty(defaults)
 
     for i = 2, #tables_to_merge do
         local from = tables_to_merge[i]
+
         for key, value in pairs(from) do
-            if
-                this.contains_any(protected, key)
-                or ignore_empty
-                    and result[key] == nil
-                    and (type(key) ~= "string" or not key:find("_combo"))
-            then
+            if this.contains_any(protected, key) then
                 goto continue
             end
 
             if
-                type(value) == "table"
-                and (not ignore_empty or (ignore_empty and not this.empty(value)))
+                prune_unknown
+                and not open_table
+                and defaults[key] == nil
+                and (type(key) ~= "string" or not key:find("_combo"))
             then
+                goto continue
+            end
+
+            if type(value) == "table" and (not prune_unknown or not this.empty(value)) then
                 result[key] = result[key] or {}
-                assert(type(result[key]) == "table", string.format("Expected a table: '%s'", key))
-                result[key] = this.merge_protected(protected, ignore_empty, result[key], value)
+                result[key] = this.merge_protected(protected, prune_unknown, result[key], value)
             else
                 result[key] = value
             end
+
             ::continue::
         end
     end
