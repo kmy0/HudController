@@ -2,7 +2,7 @@
 ---@field values string[]
 ---@field map ComboMap[]
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
----@field map_fn (fun(value: any): string)?
+---@field map_fn (fun(value: any, key: any): string)?
 ---@field _translate_fn (fun(key: any, value:any): string)?
 ---@field _is_disabled_fn (fun(self: Combo): boolean)?
 ---@field _getter_fn (fun(self: Combo): any?)?
@@ -12,7 +12,7 @@
 
 ---@class (exact) ComboOptionalArgs
 ---@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
----@field map_fn (fun(value: any): string)?
+---@field map_fn (fun(value: any, key: any): string)?
 ---@field translate_fn (fun(key: any, value:any): string)?
 ---@field is_disabled_fn (fun(self: Combo): boolean)?
 ---@field getter_fn (fun(self: Combo): any?)?
@@ -348,6 +348,24 @@ function this:filter_by_value(query)
     end
 
     return ret
+end
+
+---@param key any
+---@return string
+function this:get_value_by_key(key)
+    local index = self:get_index(key) --[[@as integer]]
+    return self:get_value(index)
+end
+
+---@param key any
+---@return string
+function this:find_disabled(key)
+    for _, map in pairs(self.disabled) do
+        if map.key == key then
+            return map.value
+        end
+        ---@diagnostic disable-next-line: missing-return
+    end
 end
 
 return this

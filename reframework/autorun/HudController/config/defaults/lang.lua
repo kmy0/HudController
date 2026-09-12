@@ -364,6 +364,7 @@ return {
             BUTTON_PRESS = "Button Press",
         },
         entry = {
+            button_remove_all = "Remove All",
             category_profile_fade = "Profile Fade",
             category_ingame_settings = "Ingame Settings",
             category_children = "Child Elements",

@@ -54,7 +54,6 @@ local config = require("HudController.config.init")
 local config_set = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
-local factory = require("HudController.hud.factory")
 local game_lang = require("HudController.util.game.lang")
 local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
@@ -175,7 +174,7 @@ local this = {
                 return string.format(
                     "[%s]  %s",
                     id,
-                    util_misc.trunc_string(ace_map.log_id_to_text[id], 50)
+                    util_misc.trunc_string(ace_map.log_id_to_text[tonumber(id)], 50)
                 )
             end,
         }),
@@ -214,25 +213,40 @@ local this = {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         enemy_log = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
             end,
         }),
         camp_log = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         chat_log = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         lobby_log = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
             end,
         }),
         auto_id = combo:new(nil, {
@@ -246,35 +260,56 @@ local this = {
                 end
                 return ret
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         object_category = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
             end,
         }),
         npc_type = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         enemy_type = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
             end,
         }),
         panel_type = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         gossip_type = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
+            map_fn = function(_, key)
+                return key
+            end,
         }),
         nameplate_type = combo:new(nil, {
             sort_fn = function(a, b)
                 return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
             end,
         }),
     },
@@ -406,27 +441,36 @@ function this.init()
     this.combo.enemy_msg_type:swap(e.get("app.ChatDef.ENEMY_LOG_TYPE").enum_to_field)
     this.combo.config:swap(config.selector.sorted)
     this.combo.config_backup:swap(config.selector.sorted_backup)
-    this.combo.log_id:swap(e.get("app.ChatDef.LOG_ID").enum_to_field)
+    this.combo.log_id:swap(
+        util_table.transform_items(e.get("app.ChatDef.LOG_ID").enum_to_field, function(key, _)
+            return tostring(key)
+        end)
+    )
     this.combo.map_filter:swap(mod.map.combo_map_filter_init)
     this.combo.hud:swap(config.current.mod.hud)
-
-    local notice_config = factory.get_elem_config_by_type(mod.enum.hud_type.NOTICE) --[[@as NoticeConfig]]
-    this.combo.system_log:swap(util_table.key_to_key(notice_config.system_log))
-    this.combo.enemy_log:swap(util_table.key_to_key(notice_config.enemy_log))
-    this.combo.camp_log:swap(util_table.key_to_key(notice_config.camp_log))
-    this.combo.chat_log:swap(util_table.key_to_key(notice_config.chat_log))
-    this.combo.lobby_log:swap(util_table.key_to_key(notice_config.lobby_log))
-    this.combo.auto_id:swap(util_table.key_to_key(notice_config.auto_id))
-
-    local name_access_config = factory.get_elem_config_by_type(mod.enum.hud_type.NAME_ACCESS) --[[@as NameAccessConfig]]
-    this.combo.object_category:swap(util_table.key_to_key(name_access_config.object_category))
-    this.combo.npc_type:swap(util_table.key_to_key(name_access_config.npc_type))
-    this.combo.enemy_type:swap(util_table.key_to_key(name_access_config.enemy_type))
-    this.combo.panel_type:swap(util_table.key_to_key(name_access_config.panel_type))
-    this.combo.gossip_type:swap(util_table.key_to_key(name_access_config.gossip_type))
-
-    local name_other_config = factory.get_elem_config_by_type(mod.enum.hud_type.NAME_OTHER) --[[@as NameOtherConfig]]
-    this.combo.nameplate_type:swap(util_table.key_to_key(name_other_config.nameplate_type))
+    this.combo.system_log:swap(
+        util_table.merge({ ALL = -100 }, e.get("app.ChatDef.SYSTEM_MSG_TYPE").field_to_enum)
+    )
+    this.combo.enemy_log:swap(e.get("app.ChatDef.ENEMY_LOG_TYPE").field_to_enum)
+    this.combo.camp_log:swap(e.get("app.ChatDef.CAMP_LOG_TYPE").field_to_enum)
+    this.combo.chat_log:swap(
+        util_table.merge({ ALL = -100 }, e.get("app.ChatDef.MSG_TYPE").field_to_enum)
+    )
+    this.combo.lobby_log:swap(e.get("app.ChatDef.SEND_TARGET").field_to_enum)
+    this.combo.auto_id:swap(e.get("app.Communication.AUTO_ID").field_to_enum)
+    this.combo.object_category:swap(
+        util_table.merge(
+            { ALL = -100 },
+            e.get("app.GUIAccessIconControl.OBJECT_CATEGORY").field_to_enum
+        )
+    )
+    this.combo.npc_type:swap(e.get("app.GUI020001PanelParams.NPC_TYPE"))
+    this.combo.enemy_type:swap({ "BOSS", "ZAKO", "ANIMAL" })
+    this.combo.panel_type:swap(e.get("app.GUI020001PanelParams.PANEL_TYPE"))
+    this.combo.gossip_type:swap(e.get("app.GUI020001PanelParams.GOSSIP_TYPE"))
+    this.combo.nameplate_type:swap(
+        util_table.merge({ ALL = -100 }, e.get("app.cGUIMemberPartsDef.MemberType").field_to_enum)
+    )
 
     init_condition_combo()
     this.translate_combo()

@@ -1,13 +1,13 @@
 ---@class (exact) Notice : HudBase
 ---@field get_config fun(): NoticeConfig
 ---@field cache_msg boolean
----@field system_log table<string, boolean>
----@field lobby_log table<string, boolean>
----@field enemy_log table<string, boolean>
----@field camp_log table<string, boolean>
----@field chat_log table<string, boolean>
+---@field system_log table<string, integer>
+---@field lobby_log table<string, integer>
+---@field enemy_log table<string, integer>
+---@field camp_log table<string, integer>
+---@field chat_log table<string, integer>
 ---@field log_id table<string, integer>
----@field auto_id table<string, boolean>
+---@field auto_id table<string, integer>
 ---@field message_log_cache CircularBuffer<CachedMessage>
 ---@field protected _queued_callbacks table<app.cGUI020100PanelBase, boolean>
 ---@field get_cls_name_short fun(cls_name: string): string
@@ -37,13 +37,13 @@
 
 ---@class (exact) NoticeConfig : HudBaseConfig
 ---@field cache_msg boolean
----@field system_log table<string, boolean>
----@field lobby_log table<string, boolean>
----@field enemy_log table<string, boolean>
----@field camp_log table<string, boolean>
----@field chat_log table<string, boolean>
+---@field system_log table<string, integer>
+---@field lobby_log table<string, integer>
+---@field enemy_log table<string, integer>
+---@field camp_log table<string, integer>
+---@field chat_log table<string, integer>
 ---@field log_id table<string, integer>
----@field auto_id table<string, boolean>
+---@field auto_id table<string, integer>
 ---@field children {
 --- Item: HudChildConfig,
 --- Tutorial: HudChildConfig,
@@ -112,8 +112,8 @@ function this:new(args)
     o.chat_log = args.chat_log
     o.cache_msg = args.cache_msg
     o.auto_id = args.auto_id
+    o.log_id = args.log_id
     o._queued_callbacks = {}
-    o:_set_log_id(args.log_id)
 
     for _, cls_name in pairs(cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
@@ -135,52 +135,40 @@ function this:new(args)
     return o
 end
 
----@protected
----@param log_id table<string, integer>
-function this:_set_log_id(log_id)
-    self.log_id = {}
-    -- required because of merge2, merge2 removes all keys that do not exist in default config
-    for k, v in pairs(log_id) do
-        if type(v) == "number" then
-            self.log_id[k] = v
-        end
-    end
+---@param name_key string
+---@param order integer?
+function this:set_system_log(name_key, order)
+    self.system_log[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_system_log(name_key, hide)
-    self.system_log[name_key] = hide
+---@param order integer?
+function this:set_lobby_log(name_key, order)
+    self.lobby_log[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_lobby_log(name_key, hide)
-    self.lobby_log[name_key] = hide
+---@param order integer?
+function this:set_enemy_log(name_key, order)
+    self.enemy_log[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_enemy_log(name_key, hide)
-    self.enemy_log[name_key] = hide
+---@param order integer?
+function this:set_camp_log(name_key, order)
+    self.camp_log[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_camp_log(name_key, hide)
-    self.camp_log[name_key] = hide
+---@param order integer?
+function this:set_chat_log(name_key, order)
+    self.chat_log[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_chat_log(name_key, hide)
-    self.chat_log[name_key] = hide
-end
-
----@param name_key string
----@param hide boolean
-function this:set_auto_id(name_key, hide)
-    self.auto_id[name_key] = hide
+---@param order integer?
+function this:set_auto_id(name_key, order)
+    self.auto_id[name_key] = order
 end
 
 ---@param val boolean
@@ -188,10 +176,10 @@ function this:set_cache_msg(val)
     self.cache_msg = val
 end
 
----@param key string
----@param val integer?
-function this:set_log_id(key, val)
-    self.log_id[key] = val
+---@param id string
+---@param order integer?
+function this:set_log_id(id, order)
+    self.log_id[id] = order
 end
 
 ---@param msg CachedMessage
@@ -264,9 +252,9 @@ function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NOTICE, "NOTICE") --[[@as NoticeConfig]]
 
     base.hud_type = mod.enum.hud_type.NOTICE
-    base.system_log = { ALL = false }
+    base.system_log = {}
     base.lobby_log = {}
-    base.chat_log = { ALL = false }
+    base.chat_log = {}
     base.enemy_log = {}
     base.camp_log = {}
     base.cache_msg = false
@@ -277,36 +265,6 @@ function this.get_config()
         local cls_short = this.get_cls_name_short(cls_name)
         base.children[cls_short] = hud_child.get_config(cls_short)
         base.children[cls_short].hide = nil
-    end
-
-    for name, _ in e.iter("app.ChatDef.SYSTEM_MSG_TYPE") do
-        base.system_log[name] = false
-    end
-
-    for name, _ in e.iter("app.ChatDef.SEND_TARGET") do
-        base.lobby_log[name] = false
-    end
-
-    for name, _ in e.iter("app.ChatDef.ENEMY_LOG_TYPE") do
-        base.enemy_log[name] = false
-    end
-
-    for name, _ in e.iter("app.ChatDef.CAMP_LOG_TYPE") do
-        base.camp_log[name] = false
-    end
-
-    for name, _ in e.iter("app.ChatDef.MSG_TYPE") do
-        base.chat_log[name] = false
-    end
-
-    for _, id in e.iter("app.ChatDef.LOG_ID") do
-        -- required because of merge2, merge2 removes all keys that do not exist in default config
-        ---@diagnostic disable-next-line: assign-type-mismatch
-        base.log_id[tostring(id)] = "dummy"
-    end
-
-    for name, _ in e.iter("app.Communication.AUTO_ID") do
-        base.auto_id[name] = false
     end
 
     return base
