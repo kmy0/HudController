@@ -1,4 +1,4 @@
----@class (exact) ProgressPartText : Text, ProgressPartBaseConfig
+---@class (exact) ProgressPartText : Text, ProgressPartBase
 ---@field align_left boolean
 ---@field ctrl_getter fun(self: ProgressPartText, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartText, ctrl: via.gui.Control): boolean)?

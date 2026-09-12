@@ -8,6 +8,7 @@ local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local set = state.set
@@ -173,6 +174,121 @@ function this.draw_combo(checkbox, config_key, label, combo, default_index)
     end
 
     util_imgui.end_disabled()
+end
+
+---@param elem Notice | NameOther | NameAccess | Subtitles
+---@param item_config_key string
+---@param label string
+---@param entry_key string
+---@param set_fn fun(self: any, key: string, value: integer?)
+---@param is_current_profile boolean
+---@param combo_key string?
+---@param button_label_path string?
+function this.combo_hide(
+    elem,
+    item_config_key,
+    label,
+    entry_key,
+    set_fn,
+    is_current_profile,
+    combo_key,
+    button_label_path
+)
+    local combo = state.get_cached_combo(
+        combo_key or entry_key,
+        item_config_key,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
+    local combo_index_key = item_config_key .. "_combo"
+    button_label_path = button_label_path or "hud_element.entry.button_hide"
+    imgui.set_next_item_width(
+        util_imgui.get_something_with_button_width(config.lang:tr(button_label_path))
+    )
+    util_imgui.begin_disabled(combo:empty())
+    this.draw_combo(nil, item_config_key, "##" .. item_config_key, combo)
+
+    imgui.same_line()
+    if imgui.button(util_gui.tr(button_label_path, item_config_key)) then
+        local index = config:get(combo_index_key)
+        local key = combo:get_key(index)
+        local order = 0
+
+        for _, o in
+            pairs(config:get(item_config_key) --[[@as table<string, integer>]])
+        do
+            order = math.max(order, o + 1)
+        end
+
+        if is_current_profile then
+            set_fn(elem, key, order)
+        end
+
+        config:set(string.format("%s.%s", item_config_key, key), order)
+        config:set(combo_index_key, combo:disable_item(key))
+    end
+
+    util_imgui.end_disabled()
+    util_imgui.set_label(label, -1)
+
+    local item_count = #combo.disabled
+    if item_count > 0 then
+        item_count = item_count + 1
+        local item_height = (config.lang.font_size + 6) * item_count
+            + 4 * math.max(item_count - 1, 0)
+        local height = math.min(item_height, 4 * (config.lang.font_size * (46 / 16)))
+
+        if
+            imgui.begin_child_window(
+                "entries" .. item_config_key,
+                { imgui.calc_item_width(), height },
+                false
+            )
+        then
+            if
+                imgui.button(util_gui.tr("hud_element.entry.button_remove_all", item_config_key))
+            then
+                if is_current_profile then
+                    ---@diagnostic disable-next-line: no-unknown
+                    elem[entry_key] = {}
+                end
+
+                combo:enable_all_items()
+                config:set(item_config_key, {})
+                config:set(combo_index_key, 1)
+            end
+
+            local keys = util_table.sort(
+                util_table.entries(config:get(item_config_key) --[[@as table<string, integer>]]),
+                function(a, b)
+                    return a.value < b.value
+                end
+            )
+
+            for i, map in ipairs(keys) do
+                local value = combo:find_disabled(map.key)
+
+                if
+                    imgui.button(
+                        util_gui.tr("hud_element.entry.button_remove", item_config_key, i, map.key)
+                    )
+                then
+                    if is_current_profile then
+                        set_fn(elem, map.key, nil)
+                    end
+
+                    config:set(string.format("%s.%s", item_config_key, map.key), nil)
+                    config:set(combo_index_key, combo:enable_item(map.key))
+                end
+
+                imgui.same_line()
+                imgui.text(util_misc.split_string(value, "##")[1])
+            end
+        end
+
+        imgui.end_child_window()
+    end
 end
 
 ---@param elem HudBase
