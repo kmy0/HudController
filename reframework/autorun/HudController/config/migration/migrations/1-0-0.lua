@@ -1,9 +1,12 @@
 ---@diagnostic disable: undefined-field, no-unknown, inject-field
 
-local factory = require("HudController.hud.factory")
 local migration_base = require("HudController.util.misc.migration_base")
-local subtitles = require("HudController.hud.elements.subtitles")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+---@module "HudController.hud.factory"
+local factory = util_misc.lazy_require("HudController.hud.factory")
+---@module "HudController.hud.elements.subtitles"
+local subtitles = util_misc.lazy_require("HudController.hud.elements.subtitles")
 
 local this = migration_base.new("1.0.0")
 
