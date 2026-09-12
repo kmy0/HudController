@@ -148,6 +148,25 @@ function this.hud_hooks.subtitles()
                 elements.subtitles.cache_subtitles_pre
             )
         end),
+        ["SUBTITLES.cache_sfx"] = make_hud_options_hook(function()
+            m.hook(
+                "soundlib.SoundContainer.trigger(soundlib.SoundManager.RequestInfo)",
+                elements.subtitles.log_sfx_pre
+            )
+        end),
+        ["SUBTITLES._mute_sfx"] = make_hud_options_hook(function()
+            m.hook(
+                "soundlib.SoundContainer.trigger(soundlib.SoundManager.RequestInfo)",
+                elements.subtitles.mute_sfx_pre
+            )
+        end, function(_)
+            local subtitles = common.get_elem_t("Subtitles")
+            if not subtitles then
+                return false
+            end
+
+            return subtitles:any_mute_sfx()
+        end),
     }
 end
 

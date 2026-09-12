@@ -48,6 +48,8 @@
 ---@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
 ---@class app.GUI060010 : app.GUIHudBase
+---@class soundlib.SoundTriggerInfo : soundlib.SoundObjectBase
+---@class soundlib.SoundObjectBase : via.clr.ManagedObject
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -654,3 +656,7 @@
 
 ---@class app.GameInputManager : ace.GAElementBase
 ---@field setPlayerButtonMask fun(self: app.GameInputManager, mask: app.PlayerDef.ButtonMask.USER)
+
+---@class soundlib.SoundManager.RequestInfo : soundlib.SoundTriggerInfo
+---@field get_EventId fun(self: soundlib.SoundManager.RequestInfo): System.UInt32
+---@field get_SrcGameObj fun(self: soundlib.SoundManager.RequestInfo): via.GameObject

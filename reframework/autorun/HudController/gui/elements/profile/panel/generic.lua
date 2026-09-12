@@ -232,59 +232,58 @@ function this.combo_hide(
     util_imgui.end_disabled()
     util_imgui.set_label(label, -1)
 
-    local item_count = #combo.disabled
-    if item_count > 0 then
-        item_count = item_count + 1
-        local item_height = (config.lang.font_size + 6) * item_count
-            + 4 * math.max(item_count - 1, 0)
-        local height = math.min(item_height, 4 * (config.lang.font_size * (46 / 16)))
+    this.child_window_thing_remove("entries" .. item_config_key, #combo.disabled, function()
+        if imgui.button(util_gui.tr("hud_element.entry.button_remove_all", item_config_key)) then
+            if is_current_profile then
+                ---@diagnostic disable-next-line: no-unknown
+                elem[entry_key] = {}
+            end
 
-        if
-            imgui.begin_child_window(
-                "entries" .. item_config_key,
-                { imgui.calc_item_width(), height },
-                false
-            )
-        then
+            combo:enable_all_items()
+            config:set(item_config_key, {})
+            config:set(combo_index_key, 1)
+        end
+
+        local keys = util_table.sort(
+            util_table.entries(config:get(item_config_key) --[[@as table<string, integer>]]),
+            function(a, b)
+                return a.value < b.value
+            end
+        )
+
+        for i, map in ipairs(keys) do
+            local value = combo:find_disabled(map.key)
+
             if
-                imgui.button(util_gui.tr("hud_element.entry.button_remove_all", item_config_key))
+                imgui.button(
+                    util_gui.tr("hud_element.entry.button_remove", item_config_key, i, map.key)
+                )
             then
                 if is_current_profile then
-                    ---@diagnostic disable-next-line: no-unknown
-                    elem[entry_key] = {}
+                    set_fn(elem, map.key, nil)
                 end
 
-                combo:enable_all_items()
-                config:set(item_config_key, {})
-                config:set(combo_index_key, 1)
+                config:set(string.format("%s.%s", item_config_key, map.key), nil)
+                config:set(combo_index_key, combo:enable_item(map.key))
             end
 
-            local keys = util_table.sort(
-                util_table.entries(config:get(item_config_key) --[[@as table<string, integer>]]),
-                function(a, b)
-                    return a.value < b.value
-                end
-            )
+            imgui.same_line()
+            imgui.text(util_misc.split_string(value, "##")[1])
+        end
+    end)
+end
 
-            for i, map in ipairs(keys) do
-                local value = combo:find_disabled(map.key)
+---@param id string
+---@param size integer
+---@param draw_fn fun()
+function this.child_window_thing_remove(id, size, draw_fn)
+    if size > 0 then
+        size = size + 1
+        local item_height = (config.lang.font_size + 6) * size + 4 * math.max(size - 1, 0)
+        local height = math.min(item_height, 4 * (config.lang.font_size * (46 / 16)))
 
-                if
-                    imgui.button(
-                        util_gui.tr("hud_element.entry.button_remove", item_config_key, i, map.key)
-                    )
-                then
-                    if is_current_profile then
-                        set_fn(elem, map.key, nil)
-                    end
-
-                    config:set(string.format("%s.%s", item_config_key, map.key), nil)
-                    config:set(combo_index_key, combo:enable_item(map.key))
-                end
-
-                imgui.same_line()
-                imgui.text(util_misc.split_string(value, "##")[1])
-            end
+        if imgui.begin_child_window(id, { imgui.calc_item_width(), height }, false) then
+            draw_fn()
         end
 
         imgui.end_child_window()

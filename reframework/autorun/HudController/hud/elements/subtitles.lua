@@ -2,7 +2,11 @@
 ---@field get_config fun(): SubtitlesConfig
 ---@field previous_category string?
 ---@field cache_subtitles boolean
+---@field cache_sfx boolean
+---@field cache_sfx_cooldown integer
 ---@field subtitles_cache CircularBuffer<CachedSubtitle>
+---@field cache_sfx_pause boolean
+---@field sfx_cache CircularBuffer<CachedSfx>
 ---@field hide_subtitles table<string, integer>
 ---@field hide_npc_id table<string, integer>
 ---@field hide_dialogue_type table<string, integer>
@@ -11,12 +15,15 @@
 ---@field mute_npc_id table<string, integer>
 ---@field mute_dialogue_type table<string, integer>
 ---@field mute_dialogue_actor_type table<string, integer>
+---@field mute_sfx table<string, integer>
 ---@field children table<string, HudChild> | {
 --- background: Scale9,
 --- }
 
 ---@class (exact) SubtitlesConfig : HudBaseConfig
 ---@field cache_subtitles boolean
+---@field cache_sfx boolean
+---@field cache_sfx_cooldown integer
 ---@field hide_subtitles table<string, integer>
 ---@field hide_npc_id table<string, integer>
 ---@field hide_dialogue_type table<string, integer>
@@ -25,6 +32,7 @@
 ---@field mute_npc_id table<string, integer>
 ---@field mute_dialogue_type table<string, integer>
 ---@field mute_dialogue_actor_type table<string, integer>
+---@field mute_sfx table<string, integer>
 ---@field children table<string, HudChildConfig> | {
 --- background: Scale9Config,
 --- }
@@ -39,6 +47,10 @@
 ---@field npc string
 ---@field talker_type string
 ---@field cls string
+
+---@class (exact) CachedSfx
+---@field game_object string
+---@field event_id string
 
 local circular_buffer = require("HudController.util.misc.circular_buffer")
 local data = require("HudController.data.init")
@@ -77,6 +89,7 @@ local control_arguments = {
 ---@class Subtitles
 local this = {
     subtitles_cache = circular_buffer:new(50),
+    sfx_cache = circular_buffer:new(200),
 }
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
@@ -98,7 +111,11 @@ function this:new(args)
     o.mute_npc_id = args.mute_npc_id
     o.mute_dialogue_type = args.mute_dialogue_type
     o.mute_dialogue_actor_type = args.mute_dialogue_actor_type
+    o.mute_sfx = args.mute_sfx
     o.cache_subtitles = args.cache_subtitles
+    o.cache_sfx = args.cache_sfx
+    o.cache_sfx_pause = false
+    o.cache_sfx_cooldown = args.cache_sfx_cooldown
 
     for _, child in pairs(args.children) do
         o.children[child.name_key] = hud_child:new(child, o, function(sel, hudbase, _, ctrl)
@@ -148,9 +165,19 @@ function this:set_cache_subtitles(val)
     self.cache_subtitles = val
 end
 
+---@param val boolean
+function this:set_cache_sfx(val)
+    self.cache_sfx = val
+end
+
 ---@param msg CachedSubtitle
-function this:push_back(msg)
+function this:push_back_subtitle(msg)
     this.subtitles_cache:push_back(msg)
+end
+
+---@param msg CachedSfx
+function this:push_back_sfx(msg)
+    this.sfx_cache:push_back(msg)
 end
 
 ---@param name_key string
@@ -201,6 +228,12 @@ function this:set_mute_dialogue_actor_type(name_key, order)
     self.mute_dialogue_actor_type[name_key] = order
 end
 
+---@param name_key string
+---@param order integer?
+function this:set_mute_sfx(name_key, order)
+    self.mute_sfx[name_key] = order
+end
+
 ---@return boolean
 function this:any_hide()
     for _, t in pairs({
@@ -231,6 +264,11 @@ function this:any_mute()
     end
 
     return false
+end
+
+---@return boolean
+function this:any_mute_sfx()
+    return not util_table.empty(self.mute_sfx)
 end
 
 ---@param key HudBaseWriteKey
@@ -269,6 +307,8 @@ function this.get_config()
     }
 
     base.cache_subtitles = false
+    base.cache_sfx = false
+    base.cache_sfx_cooldown = 3
     base.hide_subtitles = {}
     base.hide_npc_id = {}
     base.hide_dialogue_type = {}
@@ -278,6 +318,7 @@ function this.get_config()
     base.mute_npc_id = {}
     base.mute_dialogue_type = {}
     base.mute_dialogue_actor_type = {}
+    base.mute_sfx = {}
 
     return base
 end

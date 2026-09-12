@@ -439,6 +439,21 @@ function this.to_base36(n)
     return result
 end
 
+---@param n integer
+---@return string
+function this.to_base62(n)
+    local chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    local result = ""
+
+    repeat
+        local r = n % 62
+        result = chars:sub(r + 1, r + 1) .. result
+        n = math.floor(n / 62)
+    until n == 0
+
+    return result
+end
+
 ---@param col integer
 ---@param factor number 0.0 - 1.0
 ---@return integer

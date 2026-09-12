@@ -69,7 +69,7 @@ end
 
 ---@param key any
 ---@param timeout number
----@param callback fun()
+---@param callback fun()?
 ---@param type TimerType? by default, os_clock
 function this.request_one_timer(key, timeout, callback, type)
     local t = this._one_time_instances[key]
@@ -79,6 +79,12 @@ function this.request_one_timer(key, timeout, callback, type)
         this._one_time_instances[key] =
             this:new(timeout, { callback = callback, type = type, auto_start = true })
     end
+end
+
+---@param key any
+---@return boolean
+function this.is_active(key)
+    return this._one_time_instances[key] ~= nil
 end
 
 ---@protected
