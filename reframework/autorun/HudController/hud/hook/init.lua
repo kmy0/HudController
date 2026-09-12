@@ -109,6 +109,42 @@ end
 
 function this.hud_hooks.subtitles()
     m.hook("app.cDialogueSubtitleManager.updateDisp()", elements.update.update_subtitles_pre)
+
+    this.hud_option_hooks["SUBTITLES"] = {
+        ["SUBTITLES._hide_subtitles"] = make_hud_options_hook(function()
+            m.hook(
+                "app.cDialogueSubtitleManager.dispText(app.cDialogueSubtitleManager.RequestData, System.Int32)",
+                elements.subtitles.hide_subtitles_pre
+            )
+        end, function(_)
+            local subtitles = common.get_elem_t("Subtitles")
+            if not subtitles or subtitles.hide then
+                return false
+            end
+
+            return subtitles:any_hide()
+        end),
+        ["SUBTITLES._mute_subtitles"] = make_hud_options_hook(function()
+            m.hook(
+                "app.SoundDialogueTriggerManager.shouldTrigger(app.DialogueDef.DialogueVoiceParam, soundlib.SoundContainer, System.UInt32)",
+                elements.subtitles.mute_subtitles_pre,
+                elements.subtitles.mute_subtitles_post
+            )
+        end, function(_)
+            local subtitles = common.get_elem_t("Subtitles")
+            if not subtitles then
+                return false
+            end
+
+            return subtitles:any_mute()
+        end),
+        ["SUBTITLES.cache_subtitles"] = make_hud_options_hook(function()
+            m.hook(
+                "app.cDialogueSubtitleManager.dispText(app.cDialogueSubtitleManager.RequestData, System.Int32)",
+                elements.subtitles.cache_subtitles_pre
+            )
+        end),
+    }
 end
 
 function this.hud_hooks.training_room_hud()
@@ -751,13 +787,6 @@ function this.option_hooks.hide_weapon()
     )
 end
 
-function this.option_hooks.hide_subtitles()
-    m.hook(
-        "app.cDialogueSubtitleManager.dispText(app.cDialogueSubtitleManager.RequestData, System.Int32)",
-        options.misc.hide_gossip_subtitles_pre
-    )
-end
-
 function this.option_hooks.mute_gui()
     common.mute_gui_element(function(_)
         local hud_config = common.get_hud()
@@ -773,14 +802,6 @@ function this.option_hooks.disable_area_intro()
     m.hook(
         "app.GUI020206.requestBase(System.Guid, System.Guid, app.FieldDef.STAGE, app.FieldDef.LIFE_AREA, System.Boolean)",
         options.misc.disable_area_intro_pre
-    )
-end
-
-function this.option_hooks.mute_gossip()
-    m.hook(
-        "app.SoundDialogueTriggerManager.shouldTrigger(app.DialogueDef.DialogueVoiceParam, soundlib.SoundContainer, System.UInt32)",
-        options.misc.mute_gossip_subtitles_pre,
-        options.misc.mute_gossip_subtitles_post
     )
 end
 
@@ -974,10 +995,8 @@ function this.init()
     this.option["hide_scar"] = this.option_hooks.scar
     this.option["hide_danger"] = this.option_hooks.hide_danger
     this.option["hide_weapon"] = this.option_hooks.hide_weapon
-    this.option["hide_subtitles"] = this.option_hooks.hide_subtitles
     this.option["mute_gui"] = this.option_hooks.mute_gui
     this.option["disable_area_intro"] = this.option_hooks.disable_area_intro
-    this.option["mute_gossip"] = this.option_hooks.mute_gossip
     this.option["hide_aggro"] = this.option_hooks.hide_aggro
     --
     this.option_mod["mod.block_input"] = this.option_mod_hooks.block_input

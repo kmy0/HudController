@@ -1,0 +1,18 @@
+---@meta
+
+---@class (exact) Enum.app.DialogueDef.ACTOR_TYPE : Enum<app.DialogueDef.ACTOR_TYPE>
+---@field NPC app.DialogueDef.ACTOR_TYPE
+---@field PL app.DialogueDef.ACTOR_TYPE
+---@field PORTER app.DialogueDef.ACTOR_TYPE
+---@field OTOMO app.DialogueDef.ACTOR_TYPE
+---@field NONE app.DialogueDef.ACTOR_TYPE
+---@field ["NPC"] app.DialogueDef.ACTOR_TYPE
+---@field ["PL"] app.DialogueDef.ACTOR_TYPE
+---@field ["PORTER"] app.DialogueDef.ACTOR_TYPE
+---@field ["OTOMO"] app.DialogueDef.ACTOR_TYPE
+---@field ["NONE"] app.DialogueDef.ACTOR_TYPE
+---@field [0] "NPC"
+---@field [1] "PL"
+---@field [2] "PORTER"
+---@field [3] "OTOMO"
+---@field [4] "NONE"

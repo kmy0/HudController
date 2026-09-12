@@ -36,7 +36,6 @@ local this = {
     map = {
         options_hud = {
             mute_gui = "box_mute_gui",
-            hide_subtitles = "box_hide_subtitles",
             disable_scoutflies = "box_disable_scoutflies",
             disable_porter_call = "box_disable_porter_call",
             hide_porter = "box_hide_porter",
@@ -61,7 +60,6 @@ local this = {
             disable_porter_tracking = "box_disable_porter_tracking",
             hide_weapon = "box_hide_weapon",
             hide_pet = "box_hide_pet",
-            mute_gossip = "box_mute_gossip",
             hide_aggro = "box_hide_aggro",
         },
         options_mod = {

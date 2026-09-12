@@ -62,6 +62,7 @@
 ---@class app.GUI020600.TYPE : System.Enum
 ---@class app.QuestDef.EM_REWARD_RANK : System.Enum
 ---@class app.PlayerDef.ButtonMask.USER : System.Enum
+---@class app.DialogueDef.ACTOR_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

@@ -11,6 +11,7 @@ local this = {
     shortcut_keyboard = require("HudController.hud.hook.elements.shortcut_keyboard"),
     chat_log = require("HudController.hud.hook.elements.chat_log"),
     minimap = require("HudController.hud.hook.elements.minimap"),
+    subtitles = require("HudController.hud.hook.elements.subtitles"),
 }
 
 return this

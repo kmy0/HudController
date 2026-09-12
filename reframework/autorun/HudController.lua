@@ -54,6 +54,7 @@ m.canOpenStartMenu =
     m.wrap(m.get("app.cGUISystemModuleSystemInputOpenController.canOpenStartMenu(System.Boolean)")) --[[@as fun(check_open_item_slider_flag: System.Boolean): System.Boolean]]
 m.enablePlNoHit =
     m.wrap(m.get("app.GUIFlowGUI050001View.cGUI050001ViewFlowBase.makePlInvincible()")) --[[@as fun()]]
+m.getNpcName = m.wrap(m.get("app.NpcUtil.getNpcName(app.NpcDef.ID)")) --[[@as fun(id: app.NpcDef.ID): System.String]]
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then

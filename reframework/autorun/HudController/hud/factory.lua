@@ -6,7 +6,6 @@
 ---@field mute_gui boolean
 ---@field fade_in number
 ---@field fade_out number
----@field hide_subtitles boolean
 ---@field show_notification boolean
 ---@field fade_opacity boolean
 ---@field disable_scoutflies boolean
@@ -33,7 +32,6 @@
 ---@field disable_porter_tracking boolean
 ---@field hide_weapon boolean
 ---@field hide_pet boolean
----@field mute_gossip boolean
 ---@field hide_aggro boolean
 ---@field hide_porter_timeout integer
 ---@field hide_handler_timeout integer
@@ -64,7 +62,6 @@ function this.get_hud_profile_config(key, name)
         mute_gui = false,
         fade_in = 0,
         fade_out = 0,
-        hide_subtitles = false,
         show_notification = true,
         fade_opacity = false,
         disable_scoutflies = false,
@@ -91,7 +88,6 @@ function this.get_hud_profile_config(key, name)
         disable_porter_tracking = false,
         hide_weapon = false,
         hide_pet = false,
-        mute_gossip = false,
         hide_aggro = false,
         hide_handler_timeout = 5,
         hide_porter_timeout = 3,

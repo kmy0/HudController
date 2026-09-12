@@ -1,6 +1,8 @@
 ---@diagnostic disable: undefined-field, no-unknown, inject-field
 
+local factory = require("HudController.hud.factory")
 local migration_base = require("HudController.util.misc.migration_base")
+local subtitles = require("HudController.hud.elements.subtitles")
 local util_table = require("HudController.util.misc.table")
 
 local this = migration_base.new("1.0.0")
@@ -69,6 +71,29 @@ function this.fns.name_other(config)
                 }) do
                     elem[entry] = bool_table_to_ordered(elem[entry])
                 end
+            end
+        end
+    end
+end
+
+---@param config MainSettings
+function this.fns.subtitles(config)
+    for _, profile in pairs(config.mod.hud) do
+        if profile.hide_subtitles or profile.mute_gossip then
+            local elem = factory.merge(profile.elements.SUBTITLES or subtitles.get_config()) --[[@as SubtitlesConfig]]
+
+            if profile.hide_subtitles then
+                elem.hide_dialogue_type = {
+                    GOSSIP = 1,
+                    NAGARA = 2,
+                }
+            end
+
+            if profile.mute_gossip then
+                elem.mute_dialogue_type = {
+                    GOSSIP = 1,
+                    NAGARA = 2,
+                }
             end
         end
     end

@@ -37,6 +37,10 @@
 ---@field panel_type Combo
 ---@field gossip_type Combo
 ---@field nameplate_type Combo
+---@field subtitles Combo
+---@field npc Combo
+---@field dialogue_type Combo
+---@field dialogue_actor_type Combo
 
 ---@class (exact) HudBindOpt
 ---@field hud integer
@@ -312,6 +316,50 @@ local this = {
                 return key
             end,
         }),
+        subtitles = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+            map_fn = function(value, key)
+                local npc_name = ace_map.subtitles[key].npc.name
+                if npc_name == "" then
+                    npc_name = config.lang:tr("misc.text_unknown")
+                end
+                return string.format(
+                    "[%s]  %s##%s",
+                    npc_name,
+                    util_misc.trunc_string(value, 50),
+                    key
+                )
+            end,
+        }),
+        npc = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+            map_fn = function(value, key)
+                if value == "" then
+                    value = config.lang:tr("misc.text_unknown")
+                end
+                return string.format("%s##%s", value, key)
+            end,
+        }),
+        dialogue_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
+            end,
+        }),
+        dialogue_actor_type = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.value < b.value
+            end,
+            map_fn = function(_, key)
+                return key
+            end,
+        }),
     },
     bind_condition_options = {},
     set = config_set:new(config),
@@ -471,6 +519,18 @@ function this.init()
     this.combo.nameplate_type:swap(
         util_table.merge({ ALL = -100 }, e.get("app.cGUIMemberPartsDef.MemberType").field_to_enum)
     )
+    this.combo.npc:swap(util_table.collect_any(ace_map.subtitles, function(_, value)
+        return tostring(value.npc.id)
+    end, function(_, value)
+        return value.npc.name
+    end))
+    this.combo.subtitles:swap(util_table.collect_any(ace_map.subtitles, function(key, _)
+        return key
+    end, function(_, value)
+        return value.text
+    end))
+    this.combo.dialogue_type:swap(e.get("app.DialogueType.TYPE").field_to_enum)
+    this.combo.dialogue_actor_type:swap(e.get("app.DialogueDef.ACTOR_TYPE").field_to_enum)
 
     init_condition_combo()
     this.translate_combo()

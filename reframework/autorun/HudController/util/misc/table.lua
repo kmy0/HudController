@@ -763,6 +763,23 @@ end
 
 ---@generic K, V
 ---@param t {[K]: V}
+---@param key_fn fun(key: K, value: V): any?
+---@param value_fn (fun(key: K, value: V): any?)?
+---@return table
+function this.collect_any(t, key_fn, value_fn)
+    local ret = {}
+    for k, v in pairs(t) do
+        local key = key_fn(k, v)
+        if key ~= nil then
+            local value = value_fn and value_fn(k, v) or v
+            ret[key] = value
+        end
+    end
+    return ret
+end
+
+---@generic K, V
+---@param t {[K]: V}
 ---@return {key: K, value: V}[]
 function this.entries(t)
     local ret = {}

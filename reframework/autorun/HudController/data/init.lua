@@ -151,6 +151,37 @@ local function get_weapon_map()
     end
 end
 
+local function get_subtitles_map()
+    local dict = s.get("app.DialogueManager")._DiaDataDict
+    local entries = dict._entries
+
+    util_game.do_something(entries, function(_, _, entry)
+        local dialog_data_info = entry.value
+        if dialog_data_info then
+            local dialog_data = dialog_data_info:get_Setting()
+            local npc_id = dialog_data:get_BeginNpcId()
+
+            if npc_id == -1 then
+                return
+            end
+
+            local msg_data = dialog_data:get_MsgData()
+            local npc_name = m.getNpcName(npc_id)
+
+            util_game.do_something(msg_data:getValues(), function(_, _, value)
+                local guid = value:get_MessageText()
+                local text = util_game.lang.get_message_local2(guid)
+                if text ~= "" then
+                    ace_map.subtitles[util_game.format_guid(guid)] = {
+                        npc = { id = npc_id, name = npc_name },
+                        text = util_game.lang.get_message_local2(guid),
+                    }
+                end
+            end)
+        end
+    end)
+end
+
 ---@return boolean
 function this.init()
     if
@@ -164,6 +195,7 @@ function this.init()
 
     if
         not e.wrap_init(function()
+            _G.__DUMP_ENUM = true
             e.new("app.WeaponDef.TYPE")
             e.new("app.Option.ID")
             e.new("app.GUIHudDef.DISPLAY")
@@ -213,6 +245,8 @@ function this.init()
             e.new("app.Communication.AUTO_ID")
             e.new("app.GUI020600.TYPE")
             e.new("app.PlayerDef.ButtonMask.USER")
+            e.new("app.DialogueDef.ACTOR_TYPE")
+            _G.__DUMP_ENUM = false
         end)
     then
         return false
@@ -223,6 +257,7 @@ function this.init()
     get_weapon_map()
     get_option_map()
     get_log_id_text()
+    get_subtitles_map()
 
     for field_name, _ in
         e.iter_many({

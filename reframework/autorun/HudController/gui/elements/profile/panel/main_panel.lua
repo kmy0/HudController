@@ -17,30 +17,41 @@ local this = {
     funcs = {},
 }
 
----@param elem Notice | NameOther | NameAccess
+---@param elem Notice | NameOther | NameAccess | Subtitles
 ---@param item_config_key string
 ---@param label string
 ---@param entry_key string
 ---@param set_fn fun(self: any, key: string, value: integer?)
 ---@param is_current_profile boolean
-local function combo_hide(elem, item_config_key, label, entry_key, set_fn, is_current_profile)
+---@param combo_key string?
+---@param button_label_path string?
+local function combo_hide(
+    elem,
+    item_config_key,
+    label,
+    entry_key,
+    set_fn,
+    is_current_profile,
+    combo_key,
+    button_label_path
+)
     local combo = state.get_cached_combo(
-        entry_key,
+        combo_key or entry_key,
         item_config_key,
         function(item_config_key, key, _)
             return config:get(item_config_key)[key]
         end
     )
     local combo_index_key = item_config_key .. "_combo"
-
+    button_label_path = button_label_path or "hud_element.entry.button_hide"
     imgui.set_next_item_width(
-        util_imgui.get_something_with_button_width(config.lang:tr("hud_element.entry.button_hide"))
+        util_imgui.get_something_with_button_width(config.lang:tr(button_label_path))
     )
     util_imgui.begin_disabled(combo:empty())
     generic.draw_combo(nil, item_config_key, "##" .. item_config_key, combo)
 
     imgui.same_line()
-    if imgui.button(util_gui.tr("hud_element.entry.button_hide", item_config_key)) then
+    if imgui.button(util_gui.tr(button_label_path, item_config_key)) then
         local index = config:get(combo_index_key)
         local key = combo:get_key(index)
         local order = 0
@@ -113,7 +124,7 @@ local function combo_hide(elem, item_config_key, label, entry_key, set_fn, is_cu
                 end
 
                 imgui.same_line()
-                imgui.text(value)
+                imgui.text(util_misc.split_string(value, "##")[1])
             end
         end
 
@@ -906,6 +917,168 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
+local function draw_subtitles(elem, elem_config, config_key)
+    ---@cast elem Subtitles
+    ---@cast elem_config SubtitlesConfig
+
+    local is_current_profile = operations.is_current_profile(elem)
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
+
+    local item_config_key = config_key .. ".cache_subtitles"
+    if
+        set:checkbox(
+            util_gui.tr("hud_element.entry.box_cache_subtitles", item_config_key),
+            item_config_key
+        ) and is_current_profile
+    then
+        elem:set_cache_subtitles(elem_config.cache_subtitles)
+    end
+
+    imgui.same_line()
+    if imgui.button(util_gui.tr("hud_element.entry.button_clear", item_config_key)) then
+        elem.subtitles_cache:clear()
+    end
+
+    if elem_config.cache_subtitles then
+        if
+            imgui.begin_table(
+                "subtitles_cached_subtitles",
+                7,
+                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
+                Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
+            )
+        then
+            for _, header in ipairs({
+                config.lang:tr("misc.text_row"),
+                config.lang:tr("misc.text_talker"),
+                config.lang:tr("misc.text_talker_type"),
+                config.lang:tr("misc.text_type"),
+                config.lang:tr("misc.text_child_element"),
+                config.lang:tr("misc.text_message"),
+            }) do
+                imgui.table_setup_column(header)
+            end
+
+            imgui.table_headers_row()
+            for i = #elem.subtitles_cache, 1, -1 do
+                imgui.table_next_row()
+                local entry = elem.subtitles_cache[i]
+
+                imgui.table_set_column_index(0)
+                imgui.text(i)
+
+                imgui.table_set_column_index(1)
+                imgui.text(entry.npc)
+
+                imgui.table_set_column_index(2)
+                imgui.text(entry.talker_type)
+
+                imgui.table_set_column_index(3)
+                imgui.text(entry.type)
+
+                imgui.table_set_column_index(4)
+                imgui.text(entry.cls)
+
+                imgui.table_set_column_index(5)
+                imgui.text(util_misc.trunc_string(entry.text))
+                util_imgui.tooltip(entry.text)
+            end
+
+            imgui.end_table()
+        end
+    end
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
+    combo_hide(
+        elem,
+        config_key .. ".hide_subtitles",
+        config.lang:tr("hud_element.entry.combo_subtitles"),
+        "hide_subtitles",
+        elem.set_hide_subtitles,
+        is_current_profile,
+        "subtitles"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".hide_npc_id",
+        config.lang:tr("hud_element.entry.combo_npc"),
+        "hide_npc_id",
+        elem.set_hide_npc_id,
+        is_current_profile,
+        "npc"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".hide_dialogue_type",
+        config.lang:tr("hud_element.entry.combo_dialogue_type"),
+        "hide_dialogue_type",
+        elem.set_hide_dialogue_type,
+        is_current_profile,
+        "dialogue_type"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".hide_dialogue_actor_type",
+        config.lang:tr("hud_element.entry.combo_dialogue_actor_type"),
+        "hide_dialogue_actor_type",
+        elem.set_hide_dialogue_actor_type,
+        is_current_profile,
+        "dialogue_actor_type"
+    )
+
+    util_imgui.separator_text(config.lang:tr("hud_element.entry.category_subtitles_mute"))
+    combo_hide(
+        elem,
+        config_key .. ".mute_subtitles",
+        config.lang:tr("hud_element.entry.combo_subtitles"),
+        "mute_subtitles",
+        elem.set_mute_subtitles,
+        is_current_profile,
+        "subtitles",
+        "hud_element.entry.button_mute"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".mute_npc_id",
+        config.lang:tr("hud_element.entry.combo_npc"),
+        "mute_npc_id",
+        elem.set_mute_npc_id,
+        is_current_profile,
+        "npc",
+        "hud_element.entry.button_mute"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".mute_dialogue_type",
+        config.lang:tr("hud_element.entry.combo_dialogue_type"),
+        "mute_dialogue_type",
+        elem.set_mute_dialogue_type,
+        is_current_profile,
+        "dialogue_type",
+        "hud_element.entry.button_mute"
+    )
+
+    combo_hide(
+        elem,
+        config_key .. ".mute_dialogue_actor_type",
+        config.lang:tr("hud_element.entry.combo_dialogue_actor_type"),
+        "mute_dialogue_actor_type",
+        elem.set_mute_dialogue_actor_type,
+        is_current_profile,
+        "dialogue_actor_type",
+        "hud_element.entry.button_mute"
+    )
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
 function this.draw(elem, elem_config, config_key)
     local f = this.funcs[
         elem_config.hud_type --[[@as HudType]]
@@ -928,5 +1101,6 @@ this.funcs[mod.enum.hud_type.CLOCK] = draw_clock
 this.funcs[mod.enum.hud_type.SHORTCUT_KEYBOARD] = draw_shortcut_keyboard
 this.funcs[mod.enum.hud_type.MINIMAP] = draw_minimap
 this.funcs[mod.enum.hud_type.STAMINA] = draw_stamina
+this.funcs[mod.enum.hud_type.SUBTITLES] = draw_subtitles
 
 return this

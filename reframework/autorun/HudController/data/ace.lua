@@ -18,6 +18,7 @@
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
 ---@field auto_id_to_text table<app.Communication.AUTO_ID, string>
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
+---@field subtitles {[string]: {npc: {id: app.NpcDef.ID, name: string}, text: string }}
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -101,6 +102,7 @@ local this = {
             ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
         },
         auto_id_to_text = {},
+        subtitles = {},
     },
 }
 

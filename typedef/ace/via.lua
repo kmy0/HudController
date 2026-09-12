@@ -14,6 +14,7 @@
 ---@class via.Scene : via.clr.ManagedObject
 ---@class via.hid.DeviceServiceBase : via.Object
 ---@class via.hid.NativeDeviceBase : via.clr.ManagedObject
+---@class via.gui.DialogueUserData : via.clr.ManagedObject
 
 ---@class via.Size
 ---@field w System.Single

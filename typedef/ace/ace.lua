@@ -18,7 +18,6 @@
 ---@class ace.cGUIFlowBase : ace.cStateBase
 ---@class ace.cStateBase : ace.cNonCycleTypeObject
 ---@class ace.cGUIFlowContextBase : via.clr.ManagedObject
----@class ace.DialogueManagerBase : ace.GAElement
 ---@class ace.GimmickBase : ace.GimmickBaseCore
 ---@class ace.GimmickBaseCore : via.Behavior
 ---@class ace.mcGimmickBase : ace.minicomponent.cUpdatableBase
@@ -28,6 +27,9 @@
 ---@class ace.GameStateBase : via.clr.ManagedObject
 ---@class ace.cGUIInputCtrl_FluentScrollList : ace.cGUIInputCtrl
 ---@class ace.cGUISystemModuleBase : via.clr.ManagedObject
+---@class ace.DialogueManagerBase.cDialogueDataInfoBase : via.clr.ManagedObject
+---@class ace.user_data.DialogueSettingBase : via.gui.DialogueUserData
+---@class ace.user_data.ExcelUserData : via.UserData
 
 ---@class ace.DYNAMIC_ARRAY<T>: {[integer]: T}, System.ValueType
 ---@field _Array System.Array<any>
@@ -118,3 +120,6 @@
 
 ---@class ace.TIMER : System.ValueType
 ---@field _Timer System.Single
+
+---@class ace.DialogueManagerBase : ace.GAElement
+---@field _DiaDataDict System.Dictionary<System.Int32, app.DialogueManager.cDialogueDataInfo>

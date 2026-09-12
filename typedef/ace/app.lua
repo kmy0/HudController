@@ -162,8 +162,15 @@
 ---@class app.cDialogueSubtitleManager.RequestData : via.clr.ManagedObject
 ---@field SubTitleParam app.DialogueDef.SubTitleParam
 
+---@class app.DialogueDef.DialogueSubtitleReqParam : via.clr.ManagedObject
+---@field get_TalkerId fun(self: app.DialogueDef.DialogueSubtitleReqParam): app.NpcDef.ID
+---@field MessageId System.Guid
+---@field TalkerType app.DialogueDef.ACTOR_TYPE
+
 ---@class app.DialogueDef.SubTitleParam : via.clr.ManagedObject
 ---@field DialogueType app.DialogueType.TYPE
+---@field baseParam app.DialogueDef.DialogueSubtitleReqParam
+---@field SubTitleType app.GUI020400.SUBTITLES_CATEGORY
 
 ---@class app.GUI020006 : app.GUIHudBase
 ---@field get_IsAllSliderMode fun(self: app.GUI020006): System.Boolean
@@ -574,6 +581,9 @@
 
 ---@class app.DialogueDef.DialogueVoiceParam : via.clr.ManagedObject
 ---@field TalkType app.DialogueType.TYPE
+---@field MessageId System.Guid
+---@field TalkerType app.DialogueDef.ACTOR_TYPE
+---@field get_TalkerId fun(self: app.DialogueDef.DialogueVoiceParam): app.NpcDef.ID
 
 ---@class app.cGUIMapCameraController : via.clr.ManagedObject
 ---@field _GUICameraParam app.cGUICameraParam
@@ -624,3 +634,16 @@
 
 ---@class app.GUI020902 : app.GUIHudBase
 ---@field _PanelPosition via.gui.Panel
+
+---@class app.DialogueManager.cDialogueDataInfo : ace.DialogueManagerBase.cDialogueDataInfoBase
+---@field get_Setting fun(self: app.DialogueManager.cDialogueDataInfo) : app.user_data.DialogueSetting
+
+---@class app.user_data.DialogueSetting : ace.user_data.DialogueSettingBase
+---@field get_BeginNpcId fun(self: app.user_data.DialogueSetting): app.NpcDef.ID
+---@field get_MsgData fun(self: app.user_data.DialogueSetting): app.user_data.DialogueMessage
+
+---@class app.user_data.DialogueMessage : ace.user_data.ExcelUserData
+---@field getValues fun(self: app.user_data.DialogueMessage): System.Array<app.user_data.DialogueMessage.cData>
+
+---@class app.user_data.DialogueMessage.cData : ace.user_data.ExcelUserData.cData
+---@field get_MessageText fun(self: app.user_data.DialogueMessage.cData): System.Guid
