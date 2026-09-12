@@ -647,3 +647,6 @@
 
 ---@class app.user_data.DialogueMessage.cData : ace.user_data.ExcelUserData.cData
 ---@field get_MessageText fun(self: app.user_data.DialogueMessage.cData): System.Guid
+
+---@class app.GameInputManager : ace.GAElementBase
+---@field setPlayerButtonMask fun(self: app.GameInputManager, mask: app.PlayerDef.ButtonMask.USER)
