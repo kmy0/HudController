@@ -171,6 +171,10 @@
 ---@field DialogueType app.DialogueType.TYPE
 ---@field baseParam app.DialogueDef.DialogueSubtitleReqParam
 ---@field SubTitleType app.GUI020400.SUBTITLES_CATEGORY
+---@field EndCallBack app.GUI020400.EndCallBack
+
+---@class app.GUI020400.EndCallBack : System.MulticastDelegate
+---@field Invoke fun(self: app.GUI020400.EndCallBack)
 
 ---@class app.GUI020006 : app.GUIHudBase
 ---@field get_IsAllSliderMode fun(self: app.GUI020006): System.Boolean

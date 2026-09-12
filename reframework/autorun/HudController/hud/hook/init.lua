@@ -116,6 +116,10 @@ function this.hud_hooks.subtitles()
                 "app.cDialogueSubtitleManager.dispText(app.cDialogueSubtitleManager.RequestData, System.Int32)",
                 elements.subtitles.hide_subtitles_pre
             )
+            m.hook(
+                "app.SoundDialogueTriggerManager.onSpeakSkip(app.DialogueDef.DialogueVoiceParam)",
+                elements.subtitles.hide_subtitles_pre2
+            )
         end, function(_)
             local subtitles = common.get_elem_t("Subtitles")
             if not subtitles or subtitles.hide then

@@ -14,6 +14,8 @@
 ---@class System.Single : number, System.ValueType
 ---@class System.Type : System.Reflection.MemberInfo
 ---@class System.Double : number, System.ValueType
+---@class System.MulticastDelegate : System.Delegate
+---@class System.Delegate : via.clr.ManagedObject
 
 ---@class System.String : string, via.clr.ManagedObject
 ---@field ToString fun(self: System.String): System.String
