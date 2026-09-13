@@ -31,8 +31,6 @@ local this = {}
 local COLOR_PASS = 0xff3eb231
 local COLOR_FAIL = 0xff6a6a6a
 local COLOR_NONE = 0
-local TABLE_FLAGS = 1 << 9
-local TABLE_COLUMNS = 3
 
 ---@param color integer
 ---@param rounding integer
@@ -101,7 +99,7 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
         imgui.text(config.lang:tr("menu.bind.condition.text_no_condition"))
     end
 
-    if imgui.begin_table("conditions_" .. config_key, TABLE_COLUMNS, TABLE_FLAGS) then
+    if imgui.begin_table("conditions_" .. config_key, 3, 0) then
         for k, cond in ipairs(conditions) do
             local cond_class = bind_condition.conditions[cond.class]
             if not cond_class then
