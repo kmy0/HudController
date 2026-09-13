@@ -56,14 +56,7 @@ return function(elem, elem_config, config_key)
     end
 
     if elem_config.cache_subtitles then
-        if
-            imgui.begin_table(
-                "subtitles_cached_subtitles",
-                7,
-                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
-                Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
-            )
-        then
+        generic.table_thing("subtitles_cached_subtitles", 7, function()
             for _, header in ipairs({
                 config.lang:tr("misc.text_row"),
                 config.lang:tr("misc.text_talker"),
@@ -99,9 +92,7 @@ return function(elem, elem_config, config_key)
                 imgui.text(util_misc.trunc_string(entry.text))
                 util_imgui.tooltip(entry.text)
             end
-
-            imgui.end_table()
-        end
+        end)
     end
 
     item_config_key = config_key .. ".cache_sfx"
@@ -148,14 +139,7 @@ return function(elem, elem_config, config_key)
             state.combo.sfx_game_object
         )
 
-        if
-            imgui.begin_table(
-                "subtitles_cached_sfx",
-                6,
-                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
-                Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
-            )
-        then
+        generic.table_thing("subtitles_cached_sfx", 6, function()
             for _, header in ipairs({
                 config.lang:tr("misc.text_row"),
                 "##mute_game_object",
@@ -198,9 +182,7 @@ return function(elem, elem_config, config_key)
                 imgui.table_set_column_index(5)
                 imgui.text(entry.bnk)
             end
-
-            imgui.end_table()
-        end
+        end)
     end
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))

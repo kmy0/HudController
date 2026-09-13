@@ -57,14 +57,7 @@ return function(elem, elem_config, config_key)
     end
 
     if elem_config.cache_msg then
-        if
-            imgui.begin_table(
-                "notice_cached_messages",
-                7,
-                1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
-                Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
-            )
-        then
+        generic.table_thing("notice_cached_messages", 7, function()
             for _, header in ipairs({
                 config.lang:tr("misc.text_row"),
                 config.lang:tr("misc.text_type"),
@@ -104,9 +97,7 @@ return function(elem, elem_config, config_key)
                 imgui.text(util_misc.trunc_string(entry.msg))
                 util_imgui.tooltip(entry.msg)
             end
-
-            imgui.end_table()
-        end
+        end)
     end
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))

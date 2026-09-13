@@ -274,6 +274,26 @@ function this.combo_hide(
 end
 
 ---@param id string
+---@param col_count integer
+---@param draw_fn fun()
+function this.table_thing(id, col_count, draw_fn)
+    if
+        imgui.begin_table(
+            id,
+            col_count,
+            imgui.TableFlags.BordersH
+                | imgui.TableFlags.BordersOuterV
+                | imgui.TableFlags.SizingFixedFit
+                | imgui.TableFlags.ScrollY --[[@as ImGuiTableFlags]],
+            Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
+        )
+    then
+        draw_fn()
+        imgui.end_table()
+    end
+end
+
+---@param id string
 ---@param size integer
 ---@param draw_fn fun()
 function this.child_window_thing_remove(id, size, draw_fn)
