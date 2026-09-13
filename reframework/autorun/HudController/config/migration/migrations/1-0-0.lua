@@ -7,6 +7,9 @@ local util_table = require("HudController.util.misc.table")
 local factory = util_misc.lazy_require("HudController.hud.factory")
 ---@module "HudController.hud.elements.subtitles"
 local subtitles = util_misc.lazy_require("HudController.hud.elements.subtitles")
+---@module "HudController.hud.elements.quest_end_timer"
+local quest_end_timer = util_misc.lazy_require("HudController.hud.elements.quest_end_timer")
+local mod_enum = require("HudController.data.mod").enum
 
 local this = migration_base.new("1.0.0")
 
@@ -117,6 +120,24 @@ function this.fns.conditions(config)
         b.key = b.hud_key
         b.combo_profile = b.combo_hud
         b.children = {}
+    end
+end
+
+---@param config MainSettings
+function this.fns.quest_end_timer(config)
+    for _, profile in pairs(config.mod.hud) do
+        if profile.skip_quest_end_timer or profile.hide_quest_end_timer then
+            local elem =
+                factory.merge(profile.elements.QUEST_END_TIMER or quest_end_timer.get_config()) --[[@as QuestEndTimerConfig]]
+
+            if profile.skip_quest_end_timer then
+                elem.quest_end_timer = mod_enum.quest_end_timer.SKIP
+            elseif profile.hide_quest_end_timer then
+                elem.quest_end_timer = mod_enum.quest_end_timer.HIDE
+            end
+
+            profile.elements.QUEST_END_TIMER = elem
+        end
     end
 end
 

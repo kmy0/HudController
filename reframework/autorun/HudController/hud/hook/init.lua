@@ -24,6 +24,7 @@ local options = require("HudController.hud.hook.options.init")
 local options_mod = require("HudController.hud.hook.options_mod")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+local mod_enum = require("HudController.data.mod").enum
 
 local ace_map = data.ace.map
 local mod_map = data.mod.map
@@ -560,6 +561,52 @@ function this.hud_hooks.quest_end_timer()
         util_ref.capture_this,
         elements.update.update_quest_end_timer_post
     )
+
+    this.hud_option_hooks["QUEST_END_TIMER"] = {
+        ["QUEST_END_TIMER._skip_quest_end_timer"] = make_hud_options_hook(function()
+            m.hook(
+                "app.cQuestSuccessFreePlayTime.enter()",
+                elements.quest_end_timer.skip_quest_end_timer_pre
+            )
+            m.hook(
+                "ace.GUIManagerBase`2<app.GUIID.ID,app.GUIFunc.TYPE>"
+                    .. ".openGUI(app.GUIID.ID, System.Object, ace.GUIDef.CtrlGUIFunc`2<app.GUIID.ID,app.GUIFunc.TYPE>, "
+                    .. "ace.GUIDef.CtrlGUICheckFunc`2<app.GUIID.ID,app.GUIFunc.TYPE>)",
+                elements.quest_end_timer.skip_quest_end_timer_open_pre
+            )
+            common.mute_gui_element(function(args)
+                local quest_end_timer = common.get_elem_t("QuestEndTimer")
+                local guiid = util_ref.to_short(args[3])
+                if
+                    quest_end_timer
+                    and quest_end_timer.quest_end_timer == mod_enum.quest_end_timer.SKIP
+                    and guiid == e.get("app.GUIID.ID").UI020202
+                then
+                    return true
+                end
+
+                return false
+            end)
+        end, function(_)
+            local quest_end_timer = common.get_elem_t("QuestEndTimer")
+            return (
+                quest_end_timer
+                and quest_end_timer.quest_end_timer == mod_enum.quest_end_timer.SKIP
+            ) or false
+        end),
+        ["QUEST_END_TIMER._hide_quest_end_timer"] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020202.guiVisibleUpdate()",
+                elements.quest_end_timer.hide_quest_end_input_pre
+            )
+        end, function(_)
+            local quest_end_timer = common.get_elem_t("QuestEndTimer")
+            return (
+                quest_end_timer
+                and quest_end_timer.quest_end_timer == mod_enum.quest_end_timer.HIDE
+            ) or false
+        end),
+    }
 end
 
 function this.hud_hooks.button_press()
@@ -731,28 +778,6 @@ function this.option_hooks.disable_quest_end_camera()
         nil,
         options.quest.disable_quest_end_camera_post
     )
-end
-
-function this.option_hooks.skip_quest_end_timer()
-    m.hook("app.cQuestSuccessFreePlayTime.enter()", options.quest.skip_quest_end_timer_pre)
-    m.hook(
-        "ace.GUIManagerBase`2<app.GUIID.ID,app.GUIFunc.TYPE>"
-            .. ".openGUI(app.GUIID.ID, System.Object, ace.GUIDef.CtrlGUIFunc`2<app.GUIID.ID,app.GUIFunc.TYPE>, "
-            .. "ace.GUIDef.CtrlGUICheckFunc`2<app.GUIID.ID,app.GUIFunc.TYPE>)",
-        options.quest.skip_quest_end_timer_open_pre
-    )
-    m.hook("app.GUI020202.guiVisibleUpdate()", options.quest.hide_quest_end_input_pre)
-    common.mute_gui_element(function(args)
-        local guiid = util_ref.to_short(args[3])
-        if
-            hud.get_hud_option("skip_quest_end_timer")
-            and guiid == e.get("app.GUIID.ID").UI020202
-        then
-            return true
-        end
-
-        return false
-    end)
 end
 
 function this.option_hooks.skip_quest_result()
@@ -1010,8 +1035,6 @@ function this.init()
     this.option["disable_quest_end_outro"] =
         { this.option_hooks.disable_quest_intro, this.option_hooks.disable_quest_end_outro }
     this.option["disable_quest_end_camera"] = this.option_hooks.disable_quest_end_camera
-    this.option["skip_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
-    this.option["hide_quest_end_timer"] = this.option_hooks.skip_quest_end_timer
     this.option["skip_quest_result"] = this.option_hooks.skip_quest_result
     this.option["disable_scar"] = this.option_hooks.scar
     this.option["show_scar"] = this.option_hooks.scar

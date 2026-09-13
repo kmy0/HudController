@@ -26,6 +26,7 @@
 ---@field elem_profile ElemProfileIndex.*
 ---@field expanded_itembar_control ExpandedItembarControl.*
 ---@field sharpness_state SharpnessState.*
+---@field quest_end_timer QuestEndTimerSetting.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -205,6 +206,12 @@ this.enum.sharpness_state = { ---@class SharpnessState.*
     DISABLED = -1,
     SMALL = 0,
     BIG = 1,
+}
+---@enum QuestEndTimerSetting
+this.enum.quest_end_timer = { ---@class QuestEndTimerSetting.*
+    DISABLED = -1,
+    SKIP = 0,
+    HIDE = 1,
 }
 
 ---@return boolean

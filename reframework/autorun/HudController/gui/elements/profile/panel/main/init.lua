@@ -31,6 +31,9 @@ local funcs = {
     [mod.enum.hud_type.SUBTITLES] = require(
         "HudController.gui.elements.profile.panel.main.subtitles"
     ),
+    [mod.enum.hud_type.QUEST_END_TIMER] = require(
+        "HudController.gui.elements.profile.panel.main.quest_end_timer"
+    ),
 }
 
 ---@param elem HudBase

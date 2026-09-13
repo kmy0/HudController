@@ -12,6 +12,7 @@ local this = {
     chat_log = require("HudController.hud.hook.elements.chat_log"),
     minimap = require("HudController.hud.hook.elements.minimap"),
     subtitles = require("HudController.hud.hook.elements.subtitles"),
+    quest_end_timer = require("HudController.hud.hook.elements.quest_end_timer"),
 }
 
 return this

@@ -271,20 +271,6 @@ local function draw_options()
     )
     check_overriden(
         set:checkbox(
-            util_gui.tr("hud.box_skip_quest_end_timer"),
-            string.format("mod.hud.int:%s.skip_quest_end_timer", config_mod.combo.hud)
-        ),
-        "skip_quest_end_timer"
-    )
-    check_overriden(
-        set:checkbox(
-            util_gui.tr("hud.box_hide_quest_end_timer"),
-            string.format("mod.hud.int:%s.hide_quest_end_timer", config_mod.combo.hud)
-        ),
-        "hide_quest_end_timer"
-    )
-    check_overriden(
-        set:checkbox(
             util_gui.tr("hud.box_skip_quest_result"),
             string.format("mod.hud.int:%s.skip_quest_result", config_mod.combo.hud)
         ),

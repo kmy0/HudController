@@ -1,4 +1,3 @@
-local ace_item = require("HudController.util.ace.item")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
@@ -15,7 +14,11 @@ local function is_result_skip()
     local skip = hud_config and hud.get_hud_option("skip_quest_result")
     local notice = common.get_elem_t("Notice")
     local skip_seamless = notice
-        and (notice.hide or notice.system_log.ALL or notice.system_log["QUEST_RESULT"])
+        and (
+            notice.hide
+            or notice.system_log.ALL ~= nil
+            or notice.system_log["QUEST_RESULT"] ~= nil
+        )
     return skip, skip_seamless
 end
 
@@ -175,65 +178,5 @@ function this.hide_quest_result_post(_)
     end
 end
 --#endregion
-
---#region skip_quest_end_timer/hide_quest_end_timer
-function this.skip_quest_end_timer_open_pre(args)
-    local hud_config = common.get_hud()
-    if
-        hud_config
-        and (hud.get_hud_option("skip_quest_end_timer"))
-        and sdk.to_int64(args[3]) == e.get("app.GUIID.ID").UI020202
-    then
-        return sdk.PreHookResult.SKIP_ORIGINAL
-    end
-end
-
-function this.skip_quest_end_timer_pre(_)
-    local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("skip_quest_end_timer") then
-        local quest_dir = s.get("app.MissionManager"):get_QuestDirector()
-        quest_dir:QuestReturnSkip()
-    end
-end
-
-function this.hide_quest_end_input_pre(args)
-    local GUI020202 = sdk.to_managed_object(args[2]) --[[@as app.GUI020202]]
-    local skip_panel = GUI020202._SkipPanel
-    local input = GUI020202._Input
-    local hud_config = common.get_hud()
-
-    if
-        hud_config
-        and (
-            not hud.get_hud_option("skip_quest_end_timer")
-            and hud.get_hud_option("hide_quest_end_timer")
-        )
-    then
-        input:setEnableCtrl(false)
-        skip_panel:set_ForceInvisible(true)
-    else
-        input:setEnableCtrl(true)
-        skip_panel:set_ForceInvisible(false)
-    end
-end
---#endregion
-
-function this.skip_bowling_result_pre(args)
-    local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("skip_quest_result") then
-        local bowlfac = s.get("app.FacilityManager"):get_Bowling()
-        local bowlup = s.get("app.GameMiniEventManager"):get_Bowling()
-        local reward_rank = bowlup:get_TotalScoreRank()
-        local rewards = bowlfac:getRewardItems(reward_rank)
-
-        util_game.do_something(rewards, function(_, _, value)
-            ace_item.add_item(value:get_ItemId(), value.Num)
-        end)
-
-        local reult_end = sdk.to_managed_object(args[2]) --[[@as app.cBowlingUpdater.cUpdater_ResultEnd]]
-        reult_end:setEndTrue()
-        return sdk.PreHookResult.SKIP_ORIGINAL
-    end
-end
 
 return this

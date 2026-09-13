@@ -16,8 +16,6 @@
 ---@field disable_area_intro boolean
 ---@field disable_quest_intro boolean
 ---@field disable_quest_end_camera boolean
----@field hide_quest_end_timer boolean
----@field skip_quest_end_timer boolean
 ---@field disable_quest_end_outro boolean
 ---@field hide_monster_icon boolean
 ---@field hide_lock_target boolean
@@ -75,8 +73,6 @@ function this.get_hud_profile_config(key, name)
         hide_monster_icon = false,
         hide_lock_target = false,
         disable_quest_end_outro = false,
-        skip_quest_end_timer = false,
-        hide_quest_end_timer = false,
         hide_no_talk_npc = false,
         hide_no_facility_npc = false,
         monster_ignore_camp = false,

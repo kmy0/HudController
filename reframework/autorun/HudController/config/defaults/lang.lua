@@ -366,6 +366,8 @@ return {
             BUTTON_PRESS = "Button Press",
         },
         entry = {
+            category_quest_end_timer_behavior = "Timer Behavior",
+            slider_quest_end_timer = "Quest End Timer",
             combo_listen_to_go = "Listen To Game Object",
             drag_sfx_cooldown = "Duplicate Event Cooldown",
             button_mute_game_object = "Mute Game Object",
