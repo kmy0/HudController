@@ -124,13 +124,6 @@ local function draw_options()
     )
     check_overriden(
         set:checkbox(
-            util_gui.tr("hud.box_hide_subtitles"),
-            string.format("mod.hud.int:%s.hide_subtitles", config_mod.combo.hud)
-        ),
-        "hide_subtitles"
-    )
-    check_overriden(
-        set:checkbox(
             util_gui.tr("hud.box_disable_area_intro"),
             string.format("mod.hud.int:%s.disable_area_intro", config_mod.combo.hud)
         ),
