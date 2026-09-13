@@ -15,6 +15,7 @@
 ---@field combo_item_decide table<string, {value: string, sort: integer}>
 ---@field combo_map_filter_init table<string, integer>
 ---@field combo_map_filter table<string, integer>
+---@field slider_quest_end_timer string[]
 
 ---@class (exact) ModEnum
 ---@field hud_type HudType.*
@@ -23,6 +24,8 @@
 ---@field canvas CanvasActionEnum.*
 ---@field elem_cache ElemCache.*
 ---@field elem_profile ElemProfileIndex.*
+---@field expanded_itembar_control ExpandedItembarControl.*
+---@field sharpness_state SharpnessState.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -46,9 +49,7 @@ local this = {
             disable_quest_end_camera = "box_disable_quest_end_camera",
             hide_monster_icon = "box_hide_monster_icon",
             disable_quest_end_outro = "box_disable_quest_end_outro",
-            skip_quest_end_timer = "box_skip_quest_end_timer",
             hide_lock_target = "box_hide_lock_target",
-            hide_quest_end_timer = "box_hide_quest_end_timer",
             hide_no_talk_npc = "box_hide_no_talk_npc",
             hide_no_facility_npc = "box_hide_no_facility_npc",
             monster_ignore_camp = "box_monster_ignore_camp",
@@ -81,6 +82,10 @@ local this = {
         slider_expanded_itembar_control = {
             "expanded_itembar_disable_dpad",
             "expanded_itembar_disable_face",
+        },
+        slider_quest_end_timer = {
+            "box_skip_quest_end_timer",
+            "box_hide_quest_end_timer",
         },
         slider_sharpness_state = {
             "small",
@@ -188,6 +193,18 @@ this.enum.elem_cache = { ---@class ElemCache.*
 ---@enum ElemProfileIndex
 this.enum.elem_profile = { ---@class ElemProfileIndex.*
     DEFAULT = 0,
+}
+---@enum ExpandedItembarControl
+this.enum.expanded_itembar_control = { ---@class ExpandedItembarControl.*
+    DISABLED = -1,
+    DISABLE_DPAD = 0,
+    DISABLE_FACE = 1,
+}
+---@enum SharpnessState
+this.enum.sharpness_state = { ---@class SharpnessState.*
+    DISABLED = -1,
+    SMALL = 0,
+    BIG = 1,
 }
 
 ---@return boolean

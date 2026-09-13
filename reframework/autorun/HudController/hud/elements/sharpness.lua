@@ -1,7 +1,7 @@
 ---@class (exact) Sharpness : HudBase
 ---@field get_config fun(): SharpnessConfig
 ---@field GUI020015 app.GUI020015
----@field state integer
+---@field state SharpnessState
 ---@field mark_write fun(self: Sharpness, key: SharpnessProperty)
 ---@field mark_idle fun(self: Sharpness, key: SharpnessProperty)
 ---@field children {
@@ -14,7 +14,7 @@
 
 ---@class (exact) SharpnessConfig : HudBaseConfig
 ---@field options {AUTO_SCALING_SHARPNESS: integer}
----@field state integer
+---@field state SharpnessState
 ---@field children {
 --- anim_max: HudChildConfig,
 --- background: HudChildConfig,
@@ -45,6 +45,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
+local mod_enum = require("HudController.data.mod").enum
 
 local mod = data.mod
 
@@ -163,7 +164,7 @@ function this:new(args)
         return play_object.iter_args(ctrl, control_arguments.background)
     end)
 
-    if args.state ~= -1 then
+    if args.state ~= mod_enum.sharpness_state.DISABLED then
         o:set_state(args.state)
     else
         o.state = args.state
@@ -172,9 +173,9 @@ function this:new(args)
     return o
 end
 
----@param val integer
+---@param val SharpnessState
 function this:set_state(val)
-    if val ~= -1 then
+    if val ~= mod_enum.sharpness_state.DISABLED then
         self:mark_write("state")
         self.state = val
     else
@@ -206,9 +207,9 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    if self.state == 0 then
+    if self.state == mod_enum.sharpness_state.SMALL then
         self:get_GUI020015():setGaugeModeStatus(e.get("app.GUI020015.DEFAULT_STATUS").DEFAULT)
-    elseif self.state == 1 then
+    elseif self.state == mod_enum.sharpness_state.BIG then
         self:get_GUI020015():setGaugeModeStatus(e.get("app.GUI020015.DEFAULT_STATUS").SELECT)
     end
 
@@ -221,7 +222,7 @@ function this.get_config()
     local children = base.children
     base.options.AUTO_SCALING_SHARPNESS = -1
     base.hud_type = mod.enum.hud_type.SHARPNESS
-    base.state = -1
+    base.state = mod_enum.sharpness_state.DISABLED
 
     children.anim_max = { name_key = "anim_max", hide = false }
     children.frame = { name_key = "frame", hide = false }

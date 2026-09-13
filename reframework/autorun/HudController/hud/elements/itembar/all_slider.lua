@@ -3,7 +3,7 @@
 ---@field appear_open boolean
 ---@field disable_right_stick boolean
 ---@field enable_mouse_control boolean
----@field control integer
+---@field control ExpandedItembarControl
 ---@field decide_key string
 ---@field slinger_visible boolean
 ---@field ammo_visible boolean
@@ -38,7 +38,7 @@
 ---@field appear_open boolean
 ---@field disable_right_stick boolean
 ---@field enable_mouse_control boolean
----@field control integer
+---@field control ExpandedItembarControl
 ---@field decide_key string
 ---@field slinger_visible boolean
 ---@field ammo_visible boolean
@@ -100,6 +100,7 @@ local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+local mod_enum = require("HudController.data.mod").enum
 
 ---@class ItembarAllSlider
 local this = {}
@@ -304,10 +305,10 @@ function this:new(args, parent)
         o:set_disable_right_stick(args.disable_right_stick)
     end
 
-    if args.control ~= -1 then
+    if args.control ~= mod_enum.expanded_itembar_control.DISABLED then
         o:set_control(args.control)
     else
-        o.control = -1
+        o.control = mod_enum.expanded_itembar_control.DISABLED
     end
 
     o:set_ammo_visible(args.ammo_visible)
@@ -509,7 +510,7 @@ function this:set_appear_open(appear_open)
     self.appear_open = appear_open
 end
 
----@param val integer
+---@param val ExpandedItembarControl
 function this:set_control(val)
     if val ~= -1 then
         self:mark_write("control")
@@ -698,7 +699,11 @@ function this:_write(ctrl)
         self:update_all_icons()
     end
 
-    if self.control ~= -1 or self.disable_right_stick or self.decide_key ~= "option_disable" then
+    if
+        self.control ~= mod_enum.expanded_itembar_control.DISABLED
+        or self.disable_right_stick
+        or self.decide_key ~= "option_disable"
+    then
         local device = e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
             :get_LastInputDeviceIgnoreMouseMove()]
         local input = util_table.deep_copy(self.input_default)
@@ -713,11 +718,11 @@ function this:_write(ctrl)
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RS
             end
 
-            if self.control == 0 then
+            if self.control == mod_enum.expanded_itembar_control.DISABLE_DPAD then
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_RIGHT_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
-            elseif self.control == 1 then
+            elseif self.control == mod_enum.expanded_itembar_control.DISABLE_FACE then
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_KEY
@@ -729,7 +734,7 @@ function this:_write(ctrl)
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
             end
 
-            if self.control > -1 then
+            if self.control ~= mod_enum.expanded_itembar_control.DISABLED then
                 for i = 2, #input.buttons do
                     input.buttons[i] = -1
                 end
@@ -749,7 +754,7 @@ end
 
 ---@return boolean
 function this:any()
-    return self.control ~= -1
+    return self.control ~= mod_enum.expanded_itembar_control.DISABLED
         or self.decide_key ~= "option_disable"
         or self.appear_open
         or hud_child.any(self)
@@ -797,7 +802,7 @@ function this.get_config()
     base.ammo_visible = false
     base.slinger_visible = false
     base.disable_right_stick = false
-    base.control = -1
+    base.control = mod_enum.expanded_itembar_control.DISABLED
     base.decide_key = "option_disable"
     base.enable_mouse_control = false
     base.appear_open = false
