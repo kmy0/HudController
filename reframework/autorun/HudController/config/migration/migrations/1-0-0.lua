@@ -98,6 +98,8 @@ function this.fns.subtitles(config)
                     NAGARA = 2,
                 }
             end
+
+            profile.elements.SUBTITLES = elem
         end
     end
 end
