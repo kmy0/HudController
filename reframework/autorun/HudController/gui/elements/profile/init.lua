@@ -187,29 +187,22 @@ local function draw_options()
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_pet"), true)
 
-    check_overriden(
-        set:checkbox(
-            util_gui.tr("hud.box_hide_no_facility_npc"),
-            string.format("mod.hud.int:%s.hide_no_facility_npc", config_mod.combo.hud)
-        ),
-        "hide_no_facility_npc"
+    boxes_to_slider(
+        util_gui.tr("hud.slider_hide_npc"),
+        { "hide_no_facility_npc", "hide_no_talk_npc" }
     )
-
-    util_imgui.begin_disabled(hud.get_hud_option("hide_no_facility_npc"))
-    check_overriden(
-        set:checkbox(
-            util_gui.tr("hud.box_hide_no_talk_npc"),
-            string.format("mod.hud.int:%s.hide_no_talk_npc", config_mod.combo.hud)
-        ),
-        "hide_no_talk_npc"
-    )
-    util_imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud.category_monster"))
     boxes_to_slider(
         util_gui.tr("hud.slider_wound_state"),
         { "hide_scar", "show_scar", "disable_scar" }
     )
+    boxes_to_slider(
+        util_gui.tr("hud.slider_monster_icons"),
+        { "hide_monster_icon", "hide_lock_target" }
+    )
+    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_monster_icon"), true)
+
     check_overriden(
         set:checkbox(
             util_gui.tr("hud.box_hide_small_monsters"),
@@ -225,27 +218,6 @@ local function draw_options()
         "monster_ignore_camp"
     )
     util_imgui.tooltip(config.lang:tr("hud.tooltip_monster_ignore_camp"), true)
-    check_overriden(
-        set:checkbox(
-            util_gui.tr("hud.box_hide_monster_icon"),
-            string.format("mod.hud.int:%s.hide_monster_icon", config_mod.combo.hud)
-        ),
-        "hide_monster_icon"
-    )
-    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_monster_icon"), true)
-
-    util_imgui.begin_disabled(not hud.get_hud_option("hide_monster_icon"))
-
-    check_overriden(
-        set:checkbox(
-            util_gui.tr("hud.box_hide_lock_target"),
-            string.format("mod.hud.int:%s.hide_lock_target", config_mod.combo.hud)
-        ),
-        "hide_lock_target"
-    )
-    util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_lock_target"), true)
-
-    util_imgui.end_disabled()
 
     util_imgui.separator_text(config.lang:tr("hud.category_quest"))
     check_overriden(

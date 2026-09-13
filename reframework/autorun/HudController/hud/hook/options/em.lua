@@ -43,7 +43,10 @@ end
 --#region hide_monster_icon
 function this.hide_monster_icon_out_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local out_frame_target = util_ref.get_this() --[[@as app.cGUI060000OutFrameTarget]]
         local arr = out_frame_target._OutFrameIcons
 
@@ -74,7 +77,10 @@ end
 
 function this.hide_monster_icon_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         if clear_map_navi then
             if clear_map_navi_lines() then
                 clear_map_navi = false
@@ -101,7 +107,10 @@ end
 
 function this.skip_monster_select_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local ctx_holder = sdk.to_managed_object(args[3]) --[[@as app.cEnemyContextHolder]]
         local ctx = ctx_holder:get_Em()
 
@@ -113,7 +122,10 @@ end
 
 function this.hide_em_iteractables_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
 
         util_game.do_something(access_control:get_AccessIconInfos(), function(_, _, value)
@@ -122,7 +134,9 @@ function this.hide_em_iteractables_post(_)
 
             if
                 cat_name == "ENEMY"
-                and hud.get_hud_option("hide_monster_icon")
+                and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option(
+                    "hide_lock_target"
+                ))
                 and is_hide_enemy_access_paint(value:get_GameObject())
             then
                 value:clear()
@@ -133,7 +147,10 @@ end
 
 function this.disable_scoutflies_em_tracking_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
         if target_access.Category == e.get("app.TARGET_ACCESS_KEY.CATEGORY").ENEMY then
             return sdk.PreHookResult.SKIP_ORIGINAL
@@ -143,7 +160,10 @@ end
 
 function this.hide_map_em_navi_points_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local insman = s.get("app.GuideInsectManager")
         local ctrl = insman:getMasterEntityNavigationController()
 
@@ -166,7 +186,10 @@ end
 --#region fix lock target
 function this.get_near_monsters_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local pos = sdk.to_valuetype(args[3], "via.vec3") --[[@as via.vec3]]
         local player_pos = Vector3f.new(pos.x, pos.y, pos.z)
         local range = sdk.to_float(args[4])
@@ -209,14 +232,20 @@ end
 --#region hide_monster_recommend
 function this.hide_monster_recommend_pre(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
 function this.hide_monster_recommend_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if
+        hud_config
+        and (hud.get_hud_option("hide_monster_icon") or hud.get_hud_option("hide_lock_target"))
+    then
         local GUI060000Recommend = util_ref.get_this() --[[@as app.cGUI060000Recommend]]
         util_game.do_something(GUI060000Recommend._RecommendSignParts, function(_, _, value)
             value.IsActive = false

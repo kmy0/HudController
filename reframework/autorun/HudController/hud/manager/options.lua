@@ -82,5 +82,7 @@ function this.clear()
 end
 
 make_override_slider_option({ "hide_scar", "show_scar", "disable_scar" })
+make_override_slider_option({ "hide_monster_icon", "hide_lock_target" })
+make_override_slider_option({ "hide_no_facility_npc", "hide_no_talk_npc" })
 
 return this
