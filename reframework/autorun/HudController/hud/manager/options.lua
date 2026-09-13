@@ -15,16 +15,20 @@ local this = {
     override_fns = {},
 }
 
----@param key string
----@param value boolean
-local function override_scar_option(key, value)
-    if value then
-        local t = { "hide_scar", "show_scar", "disable_scar" }
-        for _, k in pairs(t) do
-            if k ~= key then
-                this.overridden_options[k] = false
+---@param options string[]
+local function make_override_slider_option(options)
+    local function f(key, value)
+        if value then
+            for _, k in pairs(options) do
+                if k ~= key then
+                    this.overridden_options[k] = false
+                end
             end
         end
+    end
+
+    for _, k in pairs(options) do
+        this.override_fns[k] = f
     end
 end
 
@@ -77,8 +81,6 @@ function this.clear()
     this.overridden_options.clear()
 end
 
-this.override_fns["hide_scar"] = override_scar_option
-this.override_fns["show_scar"] = override_scar_option
-this.override_fns["disable_scar"] = override_scar_option
+make_override_slider_option({ "hide_scar", "show_scar", "disable_scar" })
 
 return this
