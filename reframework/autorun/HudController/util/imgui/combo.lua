@@ -16,6 +16,7 @@
 ---@field translate_fn (fun(key: any, value:any): string)?
 ---@field is_disabled_fn (fun(self: Combo): boolean)?
 ---@field getter_fn (fun(self: Combo): any?)?
+---@field swap_fn (fun(self: Combo, key_to_value: table, current_index: integer?, disabled_keys: any[]?): integer?)?
 ---@field disabled_keys any[]?
 
 local util_table = require("HudController.util.misc.table")
@@ -41,7 +42,6 @@ function this:new(key_to_value, optional_args)
         map = {},
         values = {},
     }
-
     if key_to_value then
         this._map(o, key_to_value)
     end
@@ -49,14 +49,18 @@ function this:new(key_to_value, optional_args)
     setmetatable(o, self)
     ---@cast o Combo
 
+    if optional_args.swap_fn then
+        o.swap = optional_args.swap_fn
+    end
+
     for _, key in pairs(optional_args.disabled_keys or {}) do
         o:disable_item(key)
     end
     return o
 end
 
----@overload fun(key_to_value: table, current_index: integer): integer
----@overload fun(key_to_value: table)
+---@overload fun(key_to_value: table<any, any>, current_index: integer): integer
+---@overload fun(key_to_value: table<any, any>)
 ---@param key_to_value table
 ---@param current_index integer?
 ---@param disabled_keys any[]?

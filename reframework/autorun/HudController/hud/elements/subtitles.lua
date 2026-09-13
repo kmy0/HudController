@@ -7,6 +7,8 @@
 ---@field subtitles_cache CircularBuffer<CachedSubtitle>
 ---@field cache_sfx_pause boolean
 ---@field sfx_cache CircularBuffer<CachedSfx>
+---@field game_objects table<string, integer>
+---@field combo_game_object integer
 ---@field hide_subtitles table<string, integer>
 ---@field hide_npc_id table<string, integer>
 ---@field hide_dialogue_type table<string, integer>
@@ -51,6 +53,7 @@
 ---@class (exact) CachedSfx
 ---@field game_object string
 ---@field event_id string
+---@field bnk string
 
 local circular_buffer = require("HudController.util.misc.circular_buffer")
 local data = require("HudController.data.init")
@@ -61,6 +64,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
+local state = require("HudController.gui.state")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -90,6 +94,7 @@ local control_arguments = {
 local this = {
     subtitles_cache = circular_buffer:new(50),
     sfx_cache = circular_buffer:new(200),
+    game_objects = {},
 }
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
@@ -116,6 +121,7 @@ function this:new(args)
     o.cache_sfx = args.cache_sfx
     o.cache_sfx_pause = false
     o.cache_sfx_cooldown = args.cache_sfx_cooldown
+    o.combo_game_object = 1
 
     for _, child in pairs(args.children) do
         o.children[child.name_key] = hud_child:new(child, o, function(sel, hudbase, _, ctrl)
@@ -168,6 +174,8 @@ end
 ---@param val boolean
 function this:set_cache_sfx(val)
     self.cache_sfx = val
+    this.game_objects = {}
+    state.combo.sfx_game_object:swap({})
 end
 
 ---@param msg CachedSubtitle
@@ -232,6 +240,20 @@ end
 ---@param order integer?
 function this:set_mute_sfx(name_key, order)
     self.mute_sfx[name_key] = order
+end
+
+---@param game_object_name string
+function this:add_game_object(game_object_name)
+    if not this.game_objects[game_object_name] then
+        this.game_objects[game_object_name] = util_table.size(this.game_objects)
+        state.combo.sfx_game_object:swap(
+            util_table.transform_items(this.game_objects, function(_, value)
+                return value
+            end, function(_, key)
+                return key
+            end)
+        )
+    end
 end
 
 ---@return boolean

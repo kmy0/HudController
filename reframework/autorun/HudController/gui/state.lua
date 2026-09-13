@@ -41,6 +41,7 @@
 ---@field npc Combo
 ---@field dialogue_type Combo
 ---@field dialogue_actor_type Combo
+---@field sfx_game_object Combo
 
 ---@class (exact) HudBindOpt
 ---@field hud integer
@@ -360,6 +361,16 @@ local this = {
                 return key
             end,
         }),
+        sfx_game_object = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+            swap_fn = function(self, key_to_value, current_index, disabled_keys)
+                ---@diagnostic disable-next-line: no-unknown
+                key_to_value[0] = config.lang:tr("misc.text_disabled")
+                return combo.swap(self, key_to_value, current_index, disabled_keys)
+            end,
+        }),
     },
     bind_condition_options = {},
     set = config_set:new(config),
@@ -531,6 +542,7 @@ function this.init()
     end))
     this.combo.dialogue_type:swap(e.get("app.DialogueType.TYPE").field_to_enum)
     this.combo.dialogue_actor_type:swap(e.get("app.DialogueDef.ACTOR_TYPE").field_to_enum)
+    this.combo.sfx_game_object:swap({})
 
     init_condition_combo()
     this.translate_combo()

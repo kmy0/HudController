@@ -112,6 +112,7 @@ return function(elem, elem_config, config_key)
         ) and is_current_profile
     then
         elem:set_cache_sfx(elem_config.cache_sfx)
+        elem.combo_game_object = 1
     end
 
     imgui.same_line()
@@ -119,32 +120,38 @@ return function(elem, elem_config, config_key)
         elem.sfx_cache:clear()
     end
 
-    imgui.same_line()
-    if
-        imgui.button(
-            elem.cache_sfx_pause and util_gui.tr("hud_element.entry.button_resume", item_config_key)
-                or util_gui.tr("hud_element.entry.button_pause", item_config_key)
-        )
-    then
-        elem.cache_sfx_pause = not elem.cache_sfx_pause
-    end
-
-    imgui.same_line()
-    imgui.set_next_item_width(util_imgui.get_drag_with())
-    item_config_key = config_key .. ".cache_sfx_cooldown"
-    set:drag_int(
-        util_gui.tr("hud_element.entry.drag_sfx_cooldown", item_config_key),
-        item_config_key,
-        0.2,
-        0,
-        30
-    )
-
     if elem_config.cache_sfx then
+        if
+            imgui.button(
+                elem.cache_sfx_pause
+                        and util_gui.tr("hud_element.entry.button_resume", item_config_key)
+                    or util_gui.tr("hud_element.entry.button_pause", item_config_key)
+            )
+        then
+            elem.cache_sfx_pause = not elem.cache_sfx_pause
+        end
+
+        imgui.same_line()
+        imgui.set_next_item_width(util_imgui.get_drag_with())
+        item_config_key = config_key .. ".cache_sfx_cooldown"
+        set:drag_int(
+            util_gui.tr("hud_element.entry.drag_sfx_cooldown", item_config_key),
+            item_config_key,
+            0.1,
+            0,
+            120
+        )
+
+        _, elem.combo_game_object = util_imgui.combo_filter(
+            util_gui.tr("hud_element.entry.combo_listen_to_go"),
+            elem.combo_game_object,
+            state.combo.sfx_game_object
+        )
+
         if
             imgui.begin_table(
                 "subtitles_cached_sfx",
-                5,
+                6,
                 1 << 8 | 1 << 7 | 1 << 10 | 1 << 13 | 1 << 25 --[[@as ImGuiTableFlags]],
                 Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
             )
@@ -155,6 +162,7 @@ return function(elem, elem_config, config_key)
                 config.lang:tr("misc.text_game_object"),
                 "##mute_id",
                 config.lang:tr("misc.text_id"),
+                config.lang:tr("misc.text_sndbnk"),
             }) do
                 imgui.table_setup_column(header)
             end
@@ -186,6 +194,9 @@ return function(elem, elem_config, config_key)
 
                 imgui.table_set_column_index(4)
                 imgui.text(entry.event_id)
+
+                imgui.table_set_column_index(5)
+                imgui.text(entry.bnk)
             end
 
             imgui.end_table()

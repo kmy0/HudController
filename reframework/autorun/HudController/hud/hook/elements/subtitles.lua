@@ -1,13 +1,17 @@
-local this = {}
-
 local ace = require("HudController.data.ace")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
+local state = require("HudController.gui.state")
 local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
+local util_table = require("HudController.util.misc.table")
 local m = util_ref.methods
+
+local this = {}
+---@type table<string, string>
+local key_to_bnk = {}
 
 ---@param req app.cDialogueSubtitleManager.RequestData
 ---@return string type
@@ -39,13 +43,21 @@ local function get_voice_data(param)
     return type, npc_id, msg_id, talker_type
 end
 
+---@param trigger_id integer
+---@param event_id integer
+---@return string
+local function make_sfx_key(trigger_id, event_id)
+    return string.format("%s:%s", util_misc.to_base62(trigger_id), util_misc.to_base62(event_id))
+end
+
 ---@param req soundlib.SoundManager.RequestInfo
 ---@return string game_object_name
 ---@return string event_id
 local function get_sfx_data(req)
     local event_id = req:get_EventId()
     local game_object = req:get_SrcGameObj()
-    return game_object:get_Name(), util_misc.to_base36(event_id)
+    local trigger_id = req:get_TriggerId()
+    return game_object:get_Name(), make_sfx_key(trigger_id, event_id)
 end
 
 function this.hide_subtitles_pre(args)
@@ -99,17 +111,58 @@ function this.log_sfx_pre(args)
         return
     end
 
+    local snd_container = sdk.to_managed_object(args[2]) --[[@as soundlib.SoundContainer]]
     local req = sdk.to_managed_object(args[3]) --[[@as soundlib.SoundManager.RequestInfo]]
-    local name, event_id = get_sfx_data(req)
+    local name, key = get_sfx_data(req)
+    ---@diagnostic disable-next-line: undefined-field
+    local index = subtitles.combo_game_object
 
-    if timer.is_active(event_id) or subtitles.mute_sfx[name] or subtitles.mute_sfx[event_id] then
+    subtitles:add_game_object(name)
+    if index ~= 1 and name ~= state.combo.sfx_game_object:get_value(index) then
         return
     end
 
-    local cached_sfx = { game_object = name, event_id = event_id }
+    if not key_to_bnk[key] then
+        ---@type table<string, table<string, boolean>>
+        local bnks = {}
+        util_game.do_something(
+            snd_container:get_AllTriggerInfoListData(),
+            function(_, _, trigger_info_data)
+                local bnk = trigger_info_data:get_Bank()
+                if not bnk then
+                    return
+                end
+
+                local bnk_path = util_misc.split_string(bnk:get_ResourcePath(), "Sound/Wwise/")[2]
+                util_game.do_something(
+                    trigger_info_data:get_TriggerInfoList(),
+                    function(_, _, trigger_info)
+                        if not trigger_info:get_Valid() then
+                            return
+                        end
+
+                        util_table.set_nested_value(bnks, {
+                            make_sfx_key(trigger_info:get_TriggerId(), trigger_info:get_EventId()),
+                            bnk_path,
+                        }, true)
+                    end
+                )
+            end
+        )
+
+        for key, bnk in pairs(bnks) do
+            key_to_bnk[key] = table.concat(util_table.sort(util_table.keys(bnk)), ", ")
+        end
+    end
+
+    if timer.is_active(key) or subtitles.mute_sfx[name] or subtitles.mute_sfx[key] then
+        return
+    end
+
+    local cached_sfx = { game_object = name, event_id = key, bnk = key_to_bnk[key] }
 
     subtitles:push_back_sfx(cached_sfx)
-    timer.request_one_timer(event_id, subtitles.cache_sfx_cooldown)
+    timer.request_one_timer(key, subtitles.cache_sfx_cooldown)
 end
 
 function this.mute_sfx_pre(args)
@@ -119,9 +172,9 @@ function this.mute_sfx_pre(args)
     end
 
     local req = sdk.to_managed_object(args[3]) --[[@as soundlib.SoundManager.RequestInfo]]
-    local name, event_id = get_sfx_data(req)
+    local name, key = get_sfx_data(req)
 
-    if subtitles.mute_sfx[name] or subtitles.mute_sfx[event_id] then
+    if subtitles.mute_sfx[name] or subtitles.mute_sfx[key] then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end

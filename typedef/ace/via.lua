@@ -15,6 +15,8 @@
 ---@class via.hid.DeviceServiceBase : via.Object
 ---@class via.hid.NativeDeviceBase : via.clr.ManagedObject
 ---@class via.gui.DialogueUserData : via.clr.ManagedObject
+---@class via.sound.SoundUserData : via.UserData
+---@class via.simplewwise.BankResourceHolder : via.ResourceHolder
 
 ---@class via.Size
 ---@field w System.Single
@@ -213,3 +215,6 @@
 
 ---@class via.hid.Mouse : via.hid.DeviceServiceBase
 ---@field get_Device fun(self: via.hid.Mouse): via.hid.MouseDevice
+
+---@class via.ResourceHolder : via.clr.ManagedObject
+---@field get_ResourcePath fun(self: via.ResourceHolder): System.String

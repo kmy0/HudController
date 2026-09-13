@@ -37,6 +37,7 @@ return {
         text_talker_type = "Talker Type",
         text_talker = "Talker",
         text_game_object = "Game Object",
+        text_sndbnk = "Sound Bank",
     },
     debug = {
         name = "Debug",
@@ -365,6 +366,7 @@ return {
             BUTTON_PRESS = "Button Press",
         },
         entry = {
+            combo_listen_to_go = "Listen To Game Object",
             drag_sfx_cooldown = "Duplicate Event Cooldown",
             button_mute_game_object = "Mute Game Object",
             button_mute_id = "Mute Id",
