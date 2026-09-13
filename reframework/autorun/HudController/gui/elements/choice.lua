@@ -168,7 +168,13 @@ end
 function this.draw()
     local config_mod = config.current.mod
 
-    if imgui.begin_table("choice_table", 2, imgui.TableFlags.SizingFixedFit) then
+    if
+        imgui.begin_table(
+            "choice_table",
+            2,
+            imgui.TableFlags.SizingFixedFit | imgui.TableFlags.NoClip --[[@as ImGuiTableFlags]]
+        )
+    then
         util_imgui.begin_disabled(config_mod.canvas.draw)
         draw_hud()
         util_imgui.end_disabled()
