@@ -35,6 +35,7 @@
 ---@field hide_handler_timeout integer
 ---@field profile HudBaseConfigProfileForShow[]
 
+local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud_elements = require("HudController.hud.elements.init")
@@ -48,15 +49,12 @@ local this = {}
 ---@param name string
 ---@return ModProfileConfig
 function this.get_hud_profile_config(key, name)
-    return {
+    ---@type ModProfileConfig
+    local ret = {
         key = key,
         name = name,
         elements = {},
-        options = {
-            DAMAGE_DISPLAY = -1,
-            SKILL_EFFECT = -1,
-            TALISMAN_EFFECT = -1,
-        },
+        options = {},
         mute_gui = false,
         fade_in = 0,
         fade_out = 0,
@@ -91,6 +89,11 @@ function this.get_hud_profile_config(key, name)
             { key = 0, name = "__placeholder_default", protected = true },
         },
     }
+
+    for opt, _ in pairs(config.current.mod.game_options.hud) do
+        ret.options[opt] = -1
+    end
+    return ret
 end
 
 ---@param hud_id app.GUIHudDef.TYPE
@@ -98,13 +101,20 @@ end
 function this.get_config(hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local cls = hud_elements[hud_name]
-
+    ---@type HudBaseConfig
+    local ret
     if not cls then
         cls = hud_elements[mod.enum.hud_type.BASE]
-        return cls.get_config(hud_id, hud_name)
+        ret = cls.get_config(hud_id, hud_name)
     end
 
-    return cls.get_config()
+    ret = cls.get_config()
+
+    for opt, _ in pairs(config.current.mod.game_options.elements[ret.name_key] or {}) do
+        ret.options[opt] = -1
+    end
+
+    return ret
 end
 
 ---@param hud_elem HudBaseConfig

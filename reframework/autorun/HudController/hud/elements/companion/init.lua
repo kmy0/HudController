@@ -8,7 +8,6 @@
 --- }
 
 ---@class (exact) CompanionConfig : HudBaseConfig
----@field options {AUTO_SCALING_FELLOW_FITNESS: integer}
 ---@field children {
 --- player1: CompanionPlayerConfig,
 --- player2: CompanionPlayerConfig,
@@ -105,7 +104,6 @@ function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").COMPANION, "COMPANION") --[[@as CompanionConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.COMPANION
-    base.options.AUTO_SCALING_FELLOW_FITNESS = -1
 
     children.player1 = player.get_config("player1")
     children.player2 = player.get_config("player2")

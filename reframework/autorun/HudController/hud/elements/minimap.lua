@@ -21,10 +21,6 @@
 ---@class (exact) MinimapConfig : HudBaseConfig
 ---@field enabled_classic_minimap boolean
 ---@field default_filter integer?
----@field options {
---- MAP_RADAR_FIXNORTH: integer,
---- MAP_RADAR_PITCH_TYPE: integer,
---- }
 ---@field children {
 --- background: HudChildConfig,
 --- out_frame_icon: HudChildConfig,
@@ -356,8 +352,6 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.MINIMAP
 
     base.enabled_classic_minimap = false
-    base.options.MAP_RADAR_FIXNORTH = -1
-    base.options.MAP_RADAR_PITCH_TYPE = -1
     base.default_filter = -1
 
     children.background = {

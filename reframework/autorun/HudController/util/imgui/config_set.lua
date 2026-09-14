@@ -238,4 +238,94 @@ function this:combo_multi_bits_filter(name, config_key, default_preview, values,
     )
 end
 
+---@param name string
+---@param config_key string
+---@param v_min integer
+---@param v_max integer
+---@param decimal_place integer
+---@param default_value? integer
+---@param default_format? string
+---@return boolean
+function this:slider_float_scaled(
+    name,
+    config_key,
+    v_min,
+    v_max,
+    decimal_place,
+    default_value,
+    default_format
+)
+    local mult = 10 ^ decimal_place
+    local value = self.ref:get(config_key) --[[@as integer]]
+    local slider_min = v_min / mult
+    local slider_max = v_max / mult
+
+    if default_value ~= nil then
+        slider_min = (v_min - 1) / mult
+    end
+
+    ---@type number
+    local slider_value
+    if default_value ~= nil and value == default_value then
+        slider_value = slider_min
+    else
+        slider_value = value / mult
+    end
+
+    local display_format = "%." .. decimal_place .. "f"
+    if default_value ~= nil and value == default_value then
+        display_format = default_format or display_format
+    end
+
+    local changed, new_value =
+        imgui.slider_float(name, slider_value, slider_min, slider_max, display_format)
+    if changed then
+        local int_value = math.floor(new_value * mult + 0.5)
+        if default_value ~= nil and int_value == v_min - 1 then
+            int_value = default_value
+        end
+
+        self.ref:set(config_key, int_value)
+    end
+
+    return changed
+end
+
+---@param name string
+---@param config_key string
+---@param v_min integer
+---@param v_max integer
+---@param default_value? integer
+---@param default_format? string
+---@return boolean
+function this:slider_int_default(name, config_key, v_min, v_max, default_value, default_format)
+    local value = self.ref:get(config_key)
+    local slider_min = v_min
+
+    if default_value ~= nil then
+        slider_min = v_min - 1
+
+        if value == default_value then
+            value = slider_min
+        end
+    end
+
+    local display_format = "%d"
+    if default_value ~= nil and value == slider_min then
+        display_format = default_format or display_format
+    end
+
+    local changed, new_value = imgui.slider_int(name, value, slider_min, v_max, display_format)
+
+    if changed then
+        if default_value ~= nil and new_value == slider_min then
+            new_value = default_value
+        end
+
+        self.ref:set(config_key, new_value)
+    end
+
+    return changed
+end
+
 return this

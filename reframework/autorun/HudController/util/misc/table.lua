@@ -876,4 +876,16 @@ function this.reverse(t)
     return t
 end
 
+---@generic T
+---@param fn fun(index: integer): T
+---@return fun(): T
+function this.iterator(fn)
+    local i = 0
+
+    return function()
+        i = i + 1
+        return fn(i)
+    end
+end
+
 return this

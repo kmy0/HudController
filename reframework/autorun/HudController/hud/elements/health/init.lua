@@ -20,10 +20,6 @@
 --- }
 
 ---@class (exact) HealthConfig : HudBaseConfig
----@field options {
---- AUTO_SCALING_FITNESS: integer,
---- ALERT_EFFECT: integer,
---- }
 ---@field children {
 --- background: HudChildConfig,
 --- frame: HudChildConfig,
@@ -406,8 +402,6 @@ function this.get_config()
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.HEALTH
-    base.options.AUTO_SCALING_FITNESS = -1
-    base.options.ALERT_EFFECT = -1
 
     children.max_fall = max_fall.get_config()
     children.skill_list = skill_list.get_config()

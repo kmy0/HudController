@@ -1,7 +1,5 @@
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
-local factory = require("HudController.hud.factory")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
@@ -14,7 +12,6 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local set = state.set
-local ace_map = data.ace.map
 
 local this = {}
 local drag = drag_util:new()
@@ -322,22 +319,14 @@ local function draw_options()
 
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then
         util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
-        local dummy_hud = factory.get_hud_profile_config(-1, "__dummy")
 
-        local sorted = util_table.sort(
-            util_table.filter_inplace(
-                util_table.keys(config_mod.hud[config_mod.combo.hud].options),
-                function(t, i, _)
-                    return dummy_hud.options[t[i]] ~= nil and ace_map.option[t[i]] ~= nil
-                end
-            )
-        )
-        ---@cast sorted string[]
+        local sorted =
+            util_table.sort(util_table.keys(config_mod.hud[config_mod.combo.hud].options))
         generic.draw_options(
             sorted,
             string.format("mod.hud.int:%s.options", config_mod.combo.hud),
-            function(option_key, option_config_key)
-                hud.apply_option(option_key, config:get(option_config_key))
+            function(option_key, value)
+                hud.apply_option(option_key, value)
             end
         )
     end

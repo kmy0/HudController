@@ -1,6 +1,7 @@
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
 local operations = require("HudController.hud.manager.operations")
@@ -17,29 +18,74 @@ local this = {}
 
 ---@param option_keys string[]
 ---@param config_key string
----@param callback (fun(option_key: string, option_config_key: string))?
+---@param callback fun(option_key: string, value: integer)
 function this.draw_options(option_keys, config_key, callback)
     for i = 1, #option_keys do
         local key = option_keys[i]
         local option_data = ace_map.option[key]
+
+        if not option_data then
+            goto continue
+        end
+
+        local label = string.format("%s##%s", option_data.name_local, option_data.name)
         local option_config_key = string.format("%s.%s", config_key, key)
-        local values = { config.lang:tr("hud.option_disable") }
+        local values = {}
 
         for _, item in ipairs(option_data.items) do
             table.insert(values, item.name_local)
         end
 
         if
-            set:slider_list(
-                option_data.name_local,
-                option_config_key,
-                -1,
-                #option_data.items - 1,
-                values
-            ) and callback
+            option_data.type == e.get("app.Option.TYPE").CHOICE
+            and util_table.empty(option_data.items)
         then
-            callback(key, option_config_key)
+            values = { config.lang:tr("misc.text_off"), config.lang:tr("misc.text_on") }
         end
+
+        if not util_table.empty(values) then
+            table.insert(values, 1, config.lang:tr("hud.option_disable"))
+
+            if set:slider_list(label, option_config_key, -1, #values - 2, values) then
+                callback(key, config:get(option_config_key))
+            end
+        elseif
+            option_data.type == e.get("app.Option.TYPE").VALUE
+            and option_data.min ~= option_data.max
+        then
+            if option_data.decimal_place == 0 then
+                if
+                    set:slider_int_default(
+                        label,
+                        option_config_key,
+                        option_data.min,
+                        option_data.max,
+                        -1,
+                        config.lang:tr("hud.option_disable")
+                    )
+                then
+                    callback(key, config:get(option_config_key))
+                end
+            else
+                if
+                    set:slider_float_scaled(
+                        label,
+                        option_config_key,
+                        option_data.min,
+                        option_data.max,
+                        option_data.decimal_place,
+                        -1,
+                        config.lang:tr("hud.option_disable")
+                    )
+                then
+                    callback(key, config:get(option_config_key))
+                end
+            end
+        else
+            imgui.text_colored(option_data.name_local, mod.enum.colors.bad)
+        end
+
+        ::continue::
     end
 end
 

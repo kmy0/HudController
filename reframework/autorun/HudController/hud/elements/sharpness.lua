@@ -13,7 +13,6 @@
 --- }
 
 ---@class (exact) SharpnessConfig : HudBaseConfig
----@field options {AUTO_SCALING_SHARPNESS: integer}
 ---@field state SharpnessState
 ---@field children {
 --- anim_max: HudChildConfig,
@@ -220,7 +219,6 @@ end
 function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").SHARPNESS, "SHARPNESS") --[[@as SharpnessConfig]]
     local children = base.children
-    base.options.AUTO_SCALING_SHARPNESS = -1
     base.hud_type = mod.enum.hud_type.SHARPNESS
     base.state = mod_enum.sharpness_state.DISABLED
 

@@ -12,7 +12,6 @@
 --- }
 
 ---@class (exact) StaminaConfig : HudBaseConfig
----@field options {AUTO_SCALING_STAMINA: integer}
 ---@field children {
 --- gauge: StaminaGaugeConfig,
 --- background: HudChildConfig,
@@ -249,7 +248,6 @@ end
 function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").STAMINA, "STAMINA") --[[@as StaminaConfig]]
     local children = base.children
-    base.options.AUTO_SCALING_STAMINA = -1
     base.hud_type = mod.enum.hud_type.STAMINA
 
     children.gauge = gauge.get_config()

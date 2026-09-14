@@ -224,47 +224,62 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     local pos = imgui.get_cursor_pos()
     local win_size = imgui.get_window_size()
     local win_pos = imgui.get_window_pos()
+
     local checkmark_padding = string.rep(" ", 10)
     local padding = pos_screen.x - win_pos.x
+
     local disabled = enabled_obj ~= nil and enabled_obj or false
+
     local id = label
     local ret = selected_obj
 
     this.begin_disabled(disabled)
 
     label, id = table.unpack(util_misc.split_string(label, "##"))
+
     label = label .. checkmark_padding
+
     if not id then
         id = label
     end
 
     local text_size = imgui.calc_text_size(label)
+    local scrollbar_width = imgui.get_scroll_max_y() > 0 and 14 or 0
+
     pos.x = pos.x - 1
     imgui.set_cursor_pos(pos)
-    local button_size = { win_size.x - padding * 2, text_size.y + padding * 2 }
+
+    local button_size = {
+        win_size.x - padding * 2 - scrollbar_width,
+        text_size.y + padding * 2,
+    }
+
     local changed = this.dummy_button2("##" .. id, button_size)
 
     if imgui.is_item_hovered() then
-        -- there is 2px padding from somewhere, which is visible when highlight from hover is active
-        -- i gave up on trying to find where its coming from
         local dl = imgui.get_window_draw_list()
         local screen_pos = imgui.get_cursor_screen_pos()
+
         local end_pos = {
             screen_pos.x + button_size[1] - 1,
             screen_pos.y - button_size[2] - 4,
         }
-        dl:add_line(end_pos, { end_pos[1], end_pos[2] + button_size[2] }, 0xff4f4e4d, 3)
+
+        dl:add_line(end_pos, {
+            end_pos[1],
+            end_pos[2] + button_size[2],
+        }, 0xff4f4e4d, 3)
     end
 
     pos.y = pos.y + padding
     pos.x = pos.x + padding
-
     imgui.set_cursor_pos(pos)
+
     imgui.text(label)
 
     if selected_obj then
         this.draw_checkmark(
-            pos_screen.x + win_size.x - padding,
+            pos_screen.x + win_size.x - padding - scrollbar_width,
             pos_screen.y + padding,
             text_size.y - padding,
             disabled and 0xff9d9d9d or nil
@@ -280,6 +295,7 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     end
 
     this.end_disabled()
+
     return changed, ret
 end
 
@@ -580,6 +596,26 @@ function this.option_button(id, options)
                 this.tooltip(opt.tooltip)
             end
         end
+        imgui.end_popup()
+    end
+end
+
+---@param label string
+---@param draw_fn fun()
+function this.button_with_popup(label, draw_fn)
+    local popup_id = "##" .. label .. "_popup"
+    local frame_height = config.lang.font_size + 6.0
+    local pos = imgui.get_cursor_screen_pos()
+
+    if imgui.button(label) then
+        imgui.open_popup(popup_id)
+    end
+
+    imgui.set_next_window_pos({ pos.x, pos.y + frame_height }, 1)
+
+    local popup_flags = 4 | 64
+    if imgui.begin_popup(popup_id, popup_flags) then
+        draw_fn()
         imgui.end_popup()
     end
 end

@@ -42,6 +42,7 @@
 ---@field dialogue_type Combo
 ---@field dialogue_actor_type Combo
 ---@field sfx_game_object Combo
+---@field elem_option Combo
 
 ---@class (exact) HudBindOpt
 ---@field hud integer
@@ -368,6 +369,19 @@ local this = {
                 return combo.swap(self, key_to_value, current_index, disabled_keys)
             end,
         }),
+        elem_option = combo:new(nil, {
+            sort_fn = function(a, b)
+                local enum = e.get("app.GUIHudDef.TYPE")
+                return (enum[a.key] or -1) < (enum[b.key] or -1)
+            end,
+
+            translate_fn = function(key, value)
+                if value == ace_map.hud_tr_flag then
+                    return config.lang:tr("hud_element.name." .. key)
+                end
+                return value
+            end,
+        }),
     },
     bind_condition_options = {},
     set = config_set:new(config),
@@ -540,6 +554,9 @@ function this.init()
     this.combo.dialogue_type:swap(e.get("app.DialogueType.TYPE").field_to_enum)
     this.combo.dialogue_actor_type:swap(e.get("app.DialogueDef.ACTOR_TYPE").field_to_enum)
     this.combo.sfx_game_object:swap({})
+    this.combo.elem_option:swap(
+        util_table.merge({ GLOBAL = ace_map.hud_tr_flag }, ace_map.hudid_name_to_local_name)
+    )
 
     init_condition_combo()
     this.translate_combo()

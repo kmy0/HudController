@@ -155,6 +155,13 @@
 
 ---@class app.user_data.OptionData.Data : app.user_data.OptionData.Base
 ---@field get_Items fun(self: app.user_data.OptionData.Data): System.Array<app.user_data.OptionData.Item>
+---@field get_Category fun(self: app.user_data.OptionData.Data): app.Option.CATEGORY
+---@field get_DecimalPlace fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_MinValue fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_MaxValue fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_ParentOptionID fun(self: app.user_data.OptionData.Data): app.Option.ID
+---@field get_Device fun(self: app.user_data.OptionData.Data): app.Option.DEVICE
+---@field get_Scene fun(self: app.user_data.OptionData.Data): app.Option.SCENE
 
 ---@class app.user_data.OptionData.Base : via.clr.ManagedObject
 ---@field get_MsgTitle fun(self: app.user_data.OptionData.Base): System.Guid
@@ -654,3 +661,8 @@
 
 ---@class app.GameInputManager : ace.GAElementBase
 ---@field setPlayerButtonMask fun(self: app.GameInputManager, mask: app.PlayerDef.ButtonMask.USER)
+
+---@class app.GUI030100.DispData : via.clr.ManagedObject
+---@field setup fun(self: app.GUI030100.DispData, some_bool: System.Boolean)
+---@field get_OptionType fun(self: app.GUI030100.DispData): app.Option.TYPE
+---@field getFlags fun(self: app.GUI030100.DispData): app.GUI030100.DISP_DATA_FLAG

@@ -1,0 +1,36 @@
+---@meta
+
+---@class (exact) Enum.app.Option.TYPE : Enum<app.Option.TYPE>
+---@field DEFAULT app.Option.TYPE
+---@field VALUE app.Option.TYPE
+---@field CHOICE app.Option.TYPE
+---@field TOGGLE app.Option.TYPE
+---@field HEADLINE app.Option.TYPE
+---@field UI app.Option.TYPE
+---@field LANGUAGE_TEXT app.Option.TYPE
+---@field LANGUAGE_VOICE app.Option.TYPE
+---@field SPEC app.Option.TYPE
+---@field RESOLUTION app.Option.TYPE
+---@field DISPLAY app.Option.TYPE
+---@field ["DEFAULT"] app.Option.TYPE
+---@field ["VALUE"] app.Option.TYPE
+---@field ["CHOICE"] app.Option.TYPE
+---@field ["TOGGLE"] app.Option.TYPE
+---@field ["HEADLINE"] app.Option.TYPE
+---@field ["UI"] app.Option.TYPE
+---@field ["LANGUAGE_TEXT"] app.Option.TYPE
+---@field ["LANGUAGE_VOICE"] app.Option.TYPE
+---@field ["SPEC"] app.Option.TYPE
+---@field ["RESOLUTION"] app.Option.TYPE
+---@field ["DISPLAY"] app.Option.TYPE
+---@field [0] "DEFAULT"
+---@field [1] "VALUE"
+---@field [2] "CHOICE"
+---@field [3] "TOGGLE"
+---@field [4] "HEADLINE"
+---@field [5] "UI"
+---@field [6] "LANGUAGE_TEXT"
+---@field [7] "LANGUAGE_VOICE"
+---@field [8] "SPEC"
+---@field [9] "RESOLUTION"
+---@field [10] "DISPLAY"

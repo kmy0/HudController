@@ -189,9 +189,9 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
 
             ---@cast options table<string, integer>
             local sorted = util_table.sort(util_table.keys(options))
-            generic.draw_options(sorted, item_config_key, function(option_key, option_config_key)
+            generic.draw_options(sorted, item_config_key, function(option_key, value)
                 if operations.is_current_profile(elem) then
-                    elem:set_option(option_key, config:get(option_config_key))
+                    elem:set_option(option_key, value)
                 end
             end)
         end

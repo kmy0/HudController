@@ -15,6 +15,11 @@
 ---@field color_fade integer
 ---@field fade_alpha number
 
+---@class (exact) GameOptionsConfig
+---@field hud table<string, boolean>
+---@field elements table<string, table<string, boolean>>
+---@field display_full_path boolean
+
 ---@class (exact) CanvasConfig
 ---@field draw boolean
 ---@field display_name boolean
@@ -70,6 +75,7 @@
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
 ---@field hud ModProfileConfig[]
+---@field game_options GameOptionsConfig
 ---@field bind {
 --- condition: ConditionBindStateConfig,
 --- key: {
@@ -88,6 +94,7 @@
 ---@field combo {
 --- hud: integer,
 --- hud_elem: integer,
+--- user_option: integer,
 --- key_bind: {
 ---     hud: integer,
 ---     option_hud: integer,
@@ -120,6 +127,36 @@ return {
         block_input = false,
         user_scripts = {},
         user_conditions = {},
+        game_options = {
+            hud = {
+                DAMAGE_DISPLAY = true,
+                SKILL_EFFECT = true,
+                TALISMAN_EFFECT = true,
+            },
+            elements = {
+                MINIMAP = {
+                    MAP_RADAR_FIXNORTH = true,
+                    MAP_RADAR_PITCH_TYPE = true,
+                },
+                COMPANION = {
+                    AUTO_SCALING_FELLOW_FITNESS = true,
+                },
+                HEALTH = {
+                    AUTO_SCALING_FITNESS = true,
+                    ALERT_EFFECT = true,
+                },
+                PROGRESS = {
+                    ELAPSED_TIME_DISP = true,
+                },
+                STAMINA = {
+                    AUTO_SCALING_STAMINA = true,
+                },
+                SHARPNESS = {
+                    AUTO_SCALING_SHARPNESS = true,
+                },
+            },
+            display_full_path = true,
+        },
         grid = {
             draw = false,
             color_center = 4278190335,
@@ -170,6 +207,7 @@ return {
         combo = {
             hud = 1,
             hud_elem = 1,
+            user_option = 1,
             key_bind = {
                 hud = 1,
                 option_hud = 1,

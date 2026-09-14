@@ -372,4 +372,18 @@ function this:find_disabled(key)
     end
 end
 
+---@return string[]
+function this:get_values()
+    return util_table.collect(util_table.iterator(function(index)
+        return self.map[index].value
+    end))
+end
+
+---@return any[]
+function this:get_keys()
+    return util_table.collect(util_table.iterator(function(index)
+        return self.map[index].key
+    end))
+end
+
 return this
