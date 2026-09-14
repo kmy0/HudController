@@ -289,9 +289,6 @@ local this = {
             sort_fn = function(a, b)
                 return a.value < b.value
             end,
-            map_fn = function(_, key)
-                return key
-            end,
         }),
         panel_type = combo:new(nil, {
             sort_fn = function(a, b)
@@ -523,10 +520,10 @@ function this.init()
             e.get("app.GUIAccessIconControl.OBJECT_CATEGORY").field_to_enum
         )
     )
-    this.combo.npc_type:swap(e.get("app.GUI020001PanelParams.NPC_TYPE"))
+    this.combo.npc_type:swap(e.get("app.GUI020001PanelParams.NPC_TYPE").field_to_enum)
     this.combo.enemy_type:swap({ "BOSS", "ZAKO", "ANIMAL" })
-    this.combo.panel_type:swap(e.get("app.GUI020001PanelParams.PANEL_TYPE"))
-    this.combo.gossip_type:swap(e.get("app.GUI020001PanelParams.GOSSIP_TYPE"))
+    this.combo.panel_type:swap(e.get("app.GUI020001PanelParams.PANEL_TYPE").field_to_enum)
+    this.combo.gossip_type:swap(e.get("app.GUI020001PanelParams.GOSSIP_TYPE").field_to_enum)
     this.combo.nameplate_type:swap(
         util_table.merge({ ALL = -100 }, e.get("app.cGUIMemberPartsDef.MemberType").field_to_enum)
     )
