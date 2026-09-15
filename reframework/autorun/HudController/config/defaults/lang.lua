@@ -40,6 +40,7 @@ return {
         text_sndbnk = "Sound Bank",
         text_on = "On",
         text_off = "Off",
+        text_seconds_short = "Sec",
     },
     debug = {
         name = "Debug",

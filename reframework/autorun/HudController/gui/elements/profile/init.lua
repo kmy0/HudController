@@ -172,7 +172,8 @@ local function draw_options()
         string.format("mod.hud.int:%s.hide_handler_timeout", config_mod.combo.hud),
         0.1,
         0,
-        30
+        30,
+        "%d " .. config.lang:tr("misc.text_seconds_short")
     )
 
     check_overriden(
@@ -269,7 +270,8 @@ local function draw_options()
         string.format("mod.hud.int:%s.hide_porter_timeout", config_mod.combo.hud),
         0.1,
         0,
-        30
+        30,
+        "%d " .. config.lang:tr("misc.text_seconds_short")
     )
 
     check_overriden(
