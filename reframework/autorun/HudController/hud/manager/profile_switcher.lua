@@ -193,7 +193,7 @@ local function should_fade(new_hud)
         return false
     end
 
-    return this.current_hud.hud.fade_out > 0 or new_hud.hud.fade_in > 0
+    return fade_manager.should_fade(this.current_hud, new_hud)
 end
 
 ---@param fader Fader?
@@ -225,6 +225,8 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
     local requested = this.requested_hud --[[@as ModHud]]
     local fade_opacity = requested.hud.fade_opacity
     local disable_opacity = disable_fade == fade_manager.disable_type.DISABLE_OPACITY
+    local current_fade = fade_manager.get_fade_duration(current, hud_id)
+    local requested_fade = fade_manager.get_fade_duration(requested, hud_id)
     local active_fader = fade_manager.get_fader(hud_id)
     local can_continue = can_continue_fade_in(active_fader, current, requested)
 
@@ -234,61 +236,63 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
                 hud_id,
                 ctrls,
                 fade_manager.get_hud_opacity(requested, hud_id),
-                requested.hud.fade_in,
+                requested_fade.fade_in,
                 {
                     on_finish = function(_)
                         try_add_element(requested.hud, hud_id)
                     end,
+                    synchronized = false,
                 }
             )
         end
 
         ---@type number | {fade_in: number, fade_out: number}
-        local duration = current.hud.fade_out
+        local duration = current_fade.fade_out
         if disable_opacity then
-            duration =
-                { fade_in = requested.hud.fade_in / 2, fade_out = requested.hud.fade_out / 2 }
+            duration = {
+                fade_in = requested_fade.override_fade_in and requested_fade.fade_in
+                    or requested_fade.fade_in / 2,
+                fade_out = current_fade.override_fade_out and current_fade.fade_out
+                    or current_fade.fade_out / 2,
+            }
         end
 
         return fade_manager.make_fader(hud_id, ctrls, 0, duration, {
             on_finish = function(s)
-                duration = requested.hud.fade_in
-                if disable_opacity then
-                    duration = requested.hud.fade_in / 2
+                local fade_in = requested_fade.fade_in
+                if disable_opacity and not requested_fade.override_fade_in then
+                    fade_in = fade_in / 2
                 end
 
                 s.next = fade_manager.make_fader(
                     hud_id,
                     ctrls,
                     fade_manager.get_hud_opacity(requested, hud_id),
-                    duration,
+                    fade_in,
                     {
                         on_start = function(_)
                             try_add_element(requested.hud, hud_id)
                         end,
                         free_value = disable_opacity,
+                        synchronized = false,
                     }
                 )
             end,
             free_value = disable_opacity,
-            -- partial fades have only 1 level, while this fade has 2
-            -- it cannot be synchronized, so it is sped up to finish at the same time
-            synchronized = not (fade_opacity and disable_opacity),
+            synchronized = false,
         })
     end
 
-    return fade_manager.make_fader(
-        hud_id,
-        ctrls,
-        fade_manager.get_hud_opacity(requested, hud_id),
-        { fade_in = requested.hud.fade_in, fade_out = requested.hud.fade_out },
-        {
-            on_start = function(_)
-                try_add_element(requested.hud, hud_id)
-            end,
-            free_value2 = fade_opacity,
-        }
-    )
+    return fade_manager.make_fader(hud_id, ctrls, fade_manager.get_hud_opacity(requested, hud_id), {
+        fade_in = requested_fade.fade_in,
+        fade_out = requested_fade.fade_out,
+    }, {
+        on_start = function(_)
+            try_add_element(requested.hud, hud_id)
+        end,
+        free_value2 = fade_opacity,
+        synchronized = false,
+    })
 end
 
 ---@param no_fade app.GUIHudDef.TYPE[]

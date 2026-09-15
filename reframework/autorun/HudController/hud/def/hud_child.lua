@@ -32,6 +32,9 @@
 ---@field enabled nil
 ---@field default_profile nil
 ---@field profile_key nil
+---@field override_fade_duration nil
+---@field override_fade_in nil
+---@field override_fade_out nil
 
 ---@class (exact) HudChildDefault : HudBaseDefault
 ---@class (excat) HudChildDefaultOverwrite : HudBaseDefaultOverwrite

@@ -4,6 +4,12 @@
 ---@field on_finish fun()?
 ---@field step_mod number
 
+---@class FadeDuration
+---@field fade_in number
+---@field fade_out number
+---@field override_fade_in boolean
+---@field override_fade_out boolean
+
 local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
 local fader_group = require("HudController.hud.fade.fader_group")
@@ -28,6 +34,18 @@ this.disable_type = {
 ---@return integer opacity
 ---@return boolean need_restore
 local function get_opacity(ctrl)
+    --[[
+        FIXME: target opacity comes from the profile, but actual visibility is controlled
+        by the game. an element can be disabled or invisible even when the profile expects
+        it to be visible, which can result in creating a fader that does nothing.
+
+        this is especially noticeable when fade is disabled through element overrides, or
+        when opacity only fade is enabled but there are no elements with modified opacity.
+
+        current visibility cannot be used to reliably skip these faders because there is
+        no way to know whether the game will keep the element hidden or make it visible
+        during the transition.
+    ]]
     if not ctrl:get_ActualVisible() then
         return 0, true
     end
@@ -183,7 +201,12 @@ function this.get_elem_fade_disable(a, b, hud_id)
     local a_elem = get_element_fade_config(a, hud_id)
     local b_elem = get_element_fade_config(b, hud_id)
 
-    if (a_elem and a_elem.disable_fade) or (b_elem and b_elem.disable_fade) then
+    if
+        a.hud.key == b.hud.key
+        and a_elem
+        and b_elem
+        and a_elem.profile_key == b_elem.profile_key
+    then
         return this.disable_type.DISABLE
     end
 
@@ -192,6 +215,48 @@ function this.get_elem_fade_disable(a, b, hud_id)
     end
 
     return this.disable_type.NONE
+end
+
+---@param hud ModHud
+---@param hud_id app.GUIHudDef.TYPE
+---@return FadeDuration
+function this.get_fade_duration(hud, hud_id)
+    local profile = get_element_fade_config(hud, hud_id)
+    local override = profile and profile.override_fade_duration or false
+
+    return {
+        fade_in = override and profile.override_fade_in or hud.hud.fade_in,
+        fade_out = override and profile.override_fade_out or hud.hud.fade_out,
+        override_fade_in = override,
+        override_fade_out = override,
+    }
+end
+
+---@param from ModHud
+---@param to ModHud
+---@return boolean
+function this.should_fade(from, to)
+    local all_disabled_a = from.hud.fade_out == 0
+    for _, elem in pairs(from.hud.elements) do
+        local profile = get_element_fade_config(from, elem.hud_id)
+        if profile.override_fade_duration and profile.override_fade_out > 0 then
+            all_disabled_a = false
+            break
+        end
+    end
+
+    local all_disabled_b = to.hud.fade_in == 0
+    if all_disabled_a then
+        for _, elem in pairs(to.hud.elements) do
+            local profile = get_element_fade_config(to, elem.hud_id)
+            if profile.override_fade_duration and profile.override_fade_in > 0 then
+                all_disabled_b = false
+                break
+            end
+        end
+    end
+
+    return not all_disabled_a or not all_disabled_b
 end
 
 ---@param hud_id app.GUIHudDef.TYPE

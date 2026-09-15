@@ -498,33 +498,43 @@ function this.draw(elem, elem_config, config_key)
         local current_hud = hud.get_current()
         ---@cast current_hud ModProfileConfig
 
-        util_imgui.begin_disabled(
-            not config.current.mod.enable_fade
-                or current_hud.fade_in == 0 and current_hud.fade_out == 0
+        util_imgui.begin_disabled(not config.current.mod.enable_fade)
+        util_imgui.begin_disabled(not current_hud.fade_opacity)
+        local item_config_key = config_key .. ".disable_fade_opacity"
+        set:checkbox(
+            util_gui.tr("hud_element.entry.box_disable_fade_opacity", item_config_key),
+            item_config_key
         )
-        if
-            set:checkbox(
-                util_gui.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
-                config_key .. ".disable_fade"
-            ) and is_current_profile
-        then
-            elem:set_disable_fade(elem_config.disable_fade)
-        end
-        util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade"), true)
-
-        util_imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
-        if
-            set:checkbox(
-                util_gui.tr(
-                    "hud_element.entry.box_disable_fade_opacity",
-                    config_key .. ".disable_fade_opacity"
-                ),
-                config_key .. ".disable_fade_opacity"
-            ) and is_current_profile
-        then
-            elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
-        end
         util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade_opacity"), true)
+        util_imgui.end_disabled()
+
+        item_config_key = config_key .. ".override_fade_duration"
+        set:checkbox(
+            util_gui.tr("hud_element.entry.box_override_fade_duration", item_config_key),
+            item_config_key
+        )
+        util_imgui.begin_disabled(not config:get(item_config_key))
+        item_config_key = config_key .. ".override_fade_in"
+        local item_value = config:get(item_config_key)
+        set:slider_float(
+            util_gui.tr("hud.slider_fade_in", item_config_key),
+            item_config_key,
+            0,
+            10,
+            item_value == 0 and config.lang:tr("misc.text_disabled")
+                or util_gui.seconds_to_minutes_string(item_value, "%.1f")
+        )
+
+        item_config_key = config_key .. ".override_fade_out"
+        item_value = config:get(item_config_key)
+        set:slider_float(
+            util_gui.tr("hud.slider_fade_out", item_config_key),
+            item_config_key,
+            0,
+            10,
+            item_value == 0 and config.lang:tr("misc.text_disabled")
+                or util_gui.seconds_to_minutes_string(item_value, "%.1f")
+        )
         util_imgui.end_disabled()
         util_imgui.end_disabled()
     end
