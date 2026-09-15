@@ -1,4 +1,5 @@
 local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local hook = require("HudController.hud.hook.init")
@@ -12,6 +13,7 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local set = state.set
+local mod_enum = data.mod.enum
 
 local this = {}
 local drag = drag_util:new()
@@ -435,6 +437,12 @@ local function draw_profiles()
         hud.request_update()
     end
     util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
+
+    imgui.same_line()
+    imgui.text_colored(
+        string.format("%s/%s", #profiles - 1, config.max_profile),
+        mod_enum.colors.info
+    )
 
     imgui.separator()
 
