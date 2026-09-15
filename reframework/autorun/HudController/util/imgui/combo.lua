@@ -375,14 +375,20 @@ end
 ---@return string[]
 function this:get_values()
     return util_table.collect(util_table.iterator(function(index)
-        return self.map[index].value
+        local m = self.map[index]
+        if m then
+            return self.map[index].value
+        end
     end))
 end
 
 ---@return any[]
 function this:get_keys()
     return util_table.collect(util_table.iterator(function(index)
-        return self.map[index].key
+        local m = self.map[index]
+        if m then
+            return self.map[index].key
+        end
     end))
 end
 
