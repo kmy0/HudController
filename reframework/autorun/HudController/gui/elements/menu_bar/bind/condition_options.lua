@@ -28,10 +28,38 @@ local function draw_condition_option_menu()
     local conditions = util_table.filter(bind_condition.conditions, function(_, value)
         return value:has_additional_options()
     end)
-    local sorted = util_table.sort(util_table.keys(conditions))
 
+    ---@type table<string, table<string, ConditionBase>>
+    local categories = {}
+    ---@type table<string, ConditionBase>
+    local uncategorized = {}
+
+    for key, cond in pairs(conditions) do
+        local category = cond:get_options_category()
+
+        if category then
+            util_table.set_nested_value(categories, { category, key }, cond)
+        else
+            uncategorized[key] = cond
+        end
+    end
+
+    local sorted_categories = util_table.sort(util_table.keys(categories))
+    for _, category in ipairs(sorted_categories) do
+        util_imgui.separator_text(category)
+
+        local category_conditions = categories[category]
+        local sorted = util_table.sort(util_table.keys(category_conditions))
+
+        for _, key in ipairs(sorted) do
+            category_conditions[key]:draw_additional_options()
+        end
+    end
+
+    local sorted = util_table.sort(util_table.keys(uncategorized))
     for _, key in ipairs(sorted) do
-        local cond = conditions[key]
+        local cond = uncategorized[key]
+
         util_imgui.separator_text(cond:get_display_name())
         cond:draw_additional_options()
     end

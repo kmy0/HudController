@@ -13,6 +13,15 @@ local conditions = {
     village = require("HudController.hud.bind.condition.conditions.village"),
     weapon = require("HudController.hud.bind.condition.conditions.weapon"),
     weapon_type = require("HudController.hud.bind.condition.conditions.weapon_type"),
+    health_changed = require("HudController.hud.bind.condition.conditions.health_changed"),
+    ammo_changed = require("HudController.hud.bind.condition.conditions.ammo_changed"),
+    stamina_changed = require("HudController.hud.bind.condition.conditions.stamina_changed"),
+    sharpness_changed = require("HudController.hud.bind.condition.conditions.sharpness_changed"),
+    sharpness_color = require("HudController.hud.bind.condition.conditions.sharpness_color"),
+    riding = require("HudController.hud.bind.condition.conditions.riding"),
+    minimap_state = require("HudController.hud.bind.condition.conditions.minimap_state"),
+    quest_rank = require("HudController.hud.bind.condition.conditions.quest_rank"),
+    quest_target = require("HudController.hud.bind.condition.conditions.quest_target"),
 }
 
 local this = {

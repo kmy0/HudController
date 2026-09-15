@@ -84,6 +84,11 @@ function this:get_additional_options_table()
     return config:get(self:get_config_key())
 end
 
+---@return string?
+function this:get_options_category()
+    return nil
+end
+
 ---@return string
 function this:get_config_key()
     return string.format("mod.bind.condition.condition_options.%s", self.condition_name)

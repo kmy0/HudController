@@ -47,7 +47,7 @@
 ---@class app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo : via.clr.ManagedObject
 ---@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
----@class app.GUI060010 : app.GUIHudBase
+---@class app.cWeaponGunAmmo : app.cAmmo
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -63,7 +63,14 @@
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
+---@field get_GUIRadarFront fun(self: app.cGUIMapController): app.GUI060010
 ---@field _Flow app.cGUIMapFlowCtrl
+
+---@class app.GUI060010 : app.GUIHudBase
+---@field get_Radar fun(self: app.GUI060010): app.cGUI060000Radar
+
+---@class app.cGUI060000Radar : ace.cGUIPartsBase
+---@field _PerimeterChangerPanel via.gui.Panel
 
 ---@class app.cGUIHudDisplayManager : via.clr.ManagedObject
 ---@field findDisplayControl fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.cGUIHudDisplayControl?
@@ -104,6 +111,11 @@
 ---@class app.MissionManager : ace.GAElementBase
 ---@field get_QuestDirector fun(self: app.MissionManager): app.cQuestDirector
 ---@field isFastTravel fun(self: app.MissionManager): System.Boolean
+---@field get_ActiveQuestData fun(self: app.MissionManager): app.cActiveQuestData
+
+---@class app.cActiveQuestData : via.clr.ManagedObject
+---@field getTargetEmId fun(self: app.cActiveQuestData): System.Array<app.EnemyDef.ID>
+---@field getTargetEmDifficulityRank fun(self: app.cActiveQuestData): System.Array<app.QuestDef.EM_REWARD_RANK>
 
 ---@class app.cQuestDirector : via.clr.ManagedObject
 ---@field QuestReturnSkip fun(self: app.cQuestDirector)
@@ -126,6 +138,31 @@
 ---@field get_IsInTent fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsInLifeArea fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
+---@field get_WeaponHandling fun(self: app.HunterCharacter): app.cHunterWeaponHandlingBase
+---@field get_HunterHealth fun(self: app.HunterCharacter): app.cHunterHealth
+---@field get_HunterStamina fun(self: app.HunterCharacter): app.cHunterStamina
+
+---@class app.cHunterStamina : via.clr.ManagedObject
+---@field get_Stamina fun(self: app.cHunterStamina): System.Single
+
+---@class app.cHunterHealth : ace.cNonCycleTypeObject
+---@field get_HealthMgr fun(self: app.cHunterHealth): app.cHealthManager
+
+---@class app.cHealthManager : via.clr.ManagedObject
+---@field get_Health fun(self: app.cHealthManager): System.Single
+
+---@class app.cHunterWeaponHandlingBase : via.clr.ManagedObject
+---@field get_Kireaji fun(self: app.cHunterWeaponHandlingBase): app.cWeaponKireaji
+
+---@class app.cWeaponKireaji : via.clr.ManagedObject
+---@field get_CurrentType fun(self: app.cWeaponKireaji): app.WeaponDef.KIREAJI_TYPE
+
+---@class app.cHunterWpGunHandling : app.cHunterWeaponHandlingBase
+---@field getCurrentAmmo fun(self: app.cHunterWpGunHandling): app.cWeaponGunAmmo
+---@field get_SelectedShellItem fun(self: app.cHunterWpGunHandling): app.ItemDef.ID
+
+---@class app.cAmmo : via.clr.ManagedObject
+---@field get_LoadedAmmo fun(self: app.cAmmo): System.Int32
 
 ---@class app.mcPorterCommunicator : ace.minicomponent.cOrderedActionBase
 ---@field get_IsRiderWithinRanged fun(self: app.mcPorterCommunicator): System.Boolean

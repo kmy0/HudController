@@ -460,7 +460,7 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
                     end
                     break
                 end
-                tab_left = tab_right + GAP
+                tab_left = tab_right + GAP --[[@as number]]
             end
             s.scroll_x = clamp(s.scroll_x, 0, max_scroll)
         end
