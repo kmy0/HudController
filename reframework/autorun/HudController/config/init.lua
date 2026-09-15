@@ -39,7 +39,7 @@ this.default_config_path = config_path
 this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
 this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
 
-this.max_profile = 19
+this.max_profile = 64
 
 this.gui = config_base:new(
     require("HudController.config.defaults.gui"),
