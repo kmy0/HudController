@@ -30,8 +30,6 @@
 ---@field get_boolean_config_keys fun(self: HudBase?): string[]
 ---@field restore_all_force_invis fun()
 ---@field hide_timer Timer
----@field disable_fade boolean?
----@field disable_fade_opacity boolean?
 ---@field _pos_last_frame Vector3f?
 ---@field _request_pos boolean?
 ---@field _write_children_cache HudChild[]
@@ -59,8 +57,10 @@
 ---@field enabled_color_scale boolean?
 ---@field options table<string, integer>?
 ---@field children table<string, HudChildConfig>?
----@field disable_fade boolean?
 ---@field disable_fade_opacity boolean?
+---@field override_fade_duration boolean
+---@field override_fade_in number
+---@field override_fade_out number
 ---@field profile {[HudProfileKey]: HudBaseConfigProfile}
 ---@field current_profile ElemProfileIndex
 ---@field current_profile_gui ElemProfileIndex
@@ -193,8 +193,6 @@ function this:new(args, parent, optional_args)
         gui_header_children = optional_args.gui_header_children,
         children_sort = optional_args.children_sort,
         hide_timer = timer:new(15, { type = "frame" }),
-        disable_fade = args.disable_fade,
-        disable_fade_opacity = args.disable_fade_opacity,
         _write_children_cache = {},
     }
     setmetatable(o, self)
@@ -356,16 +354,6 @@ function this:set_play_state(play_state)
         self.play_state = play_state
         self:mark_idle("play_state")
     end
-end
-
----@param val boolean
-function this:set_disable_fade(val)
-    self.disable_fade = val
-end
-
----@param val boolean
-function this:set_disable_fade_opacity(val)
-    self.disable_fade_opacity = val
 end
 
 ---@return string
@@ -1033,6 +1021,7 @@ end
 ---@param name_key string
 ---@return HudBaseConfig
 function this.get_config(hud_id, name_key)
+    ---@type HudBaseConfig
     return {
         enabled_offset = false,
         enabled_rot = false,
@@ -1041,6 +1030,9 @@ function this.get_config(hud_id, name_key)
         enabled_segment = false,
         disable_fade = false,
         disable_fade_opacity = false,
+        override_fade_duration = false,
+        override_fade_in = 0.2,
+        override_fade_out = 0.2,
         segment = "HUD",
         hide = false,
         scale = { x = 1, y = 1 },

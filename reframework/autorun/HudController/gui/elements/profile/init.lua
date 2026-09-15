@@ -304,10 +304,9 @@ local function draw_options()
     set:slider_float(
         util_gui.tr("hud.slider_fade_in"),
         item_config_key,
-        0,
+        0.2,
         10,
-        item_value == 0 and config.lang:tr("misc.text_disabled")
-            or util_gui.seconds_to_minutes_string(item_value, "%.1f")
+        util_gui.seconds_to_minutes_string(item_value, "%.1f")
     )
 
     item_config_key = string.format("mod.hud.int:%s.fade_out", config_mod.combo.hud)
@@ -315,10 +314,9 @@ local function draw_options()
     set:slider_float(
         util_gui.tr("hud.slider_fade_out"),
         item_config_key,
-        0,
+        0.2,
         10,
-        item_value == 0 and config.lang:tr("misc.text_disabled")
-            or util_gui.seconds_to_minutes_string(item_value, "%.1f")
+        util_gui.seconds_to_minutes_string(item_value, "%.1f")
     )
 
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then

@@ -183,10 +183,6 @@ function this.get_elem_fade_disable(a, b, hud_id)
     local a_elem = get_element_fade_config(a, hud_id)
     local b_elem = get_element_fade_config(b, hud_id)
 
-    if (a_elem and a_elem.disable_fade) or (b_elem and b_elem.disable_fade) then
-        return this.disable_type.DISABLE
-    end
-
     if (a_elem and a_elem.disable_fade_opacity) or (b_elem and b_elem.disable_fade_opacity) then
         return this.disable_type.DISABLE_OPACITY
     end

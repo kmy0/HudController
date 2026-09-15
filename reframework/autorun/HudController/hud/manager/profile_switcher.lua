@@ -186,16 +186,6 @@ local function should_ignore_request(new_hud)
     return is_same_hud(this.current_hud, new_hud)
 end
 
----@param new_hud ModHud
----@return boolean
-local function should_fade(new_hud)
-    if not config.current.mod.enable_fade or not this.current_hud then
-        return false
-    end
-
-    return this.current_hud.hud.fade_out > 0 or new_hud.hud.fade_in > 0
-end
-
 ---@param fader Fader?
 ---@param current ModHud
 ---@param requested ModHud
@@ -227,7 +217,7 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
     local disable_opacity = disable_fade == fade_manager.disable_type.DISABLE_OPACITY
     local active_fader = fade_manager.get_fader(hud_id)
     local can_continue = can_continue_fade_in(active_fader, current, requested)
-
+    --TODO: fade duration fn
     if not fade_opacity or disable_opacity then
         if can_continue then
             return fade_manager.make_fader(
@@ -239,6 +229,7 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
                     on_finish = function(_)
                         try_add_element(requested.hud, hud_id)
                     end,
+                    synchronized = false,
                 }
             )
         end
@@ -267,13 +258,12 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
                             try_add_element(requested.hud, hud_id)
                         end,
                         free_value = disable_opacity,
+                        synchronized = false,
                     }
                 )
             end,
             free_value = disable_opacity,
-            -- partial fades have only 1 level, while this fade has 2
-            -- it cannot be synchronized, so it is sped up to finish at the same time
-            synchronized = not (fade_opacity and disable_opacity),
+            synchronized = false,
         })
     end
 
@@ -287,6 +277,7 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
                 try_add_element(requested.hud, hud_id)
             end,
             free_value2 = fade_opacity,
+            synchronized = false,
         }
     )
 end
@@ -311,7 +302,7 @@ function this.request_hud(new_hud, force)
     this.notify = not this.current_hud or this.current_hud.hud.key ~= new_hud.hud.key
     this.requested_hud = new_hud
 
-    if not should_fade(new_hud) then
+    if not config.current.mod.enable_fade or not this.current_hud then
         switch_profile()
         finish()
         return
