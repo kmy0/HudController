@@ -1,24 +1,25 @@
----@class ValueCheker
+---@class ValueChecker
 ---@field value any
 ---@field default_value any
 ---@field eval_fn (fun(old_value: any, new_value: any): boolean)?
 
----@class ValueCheker
+---@class ValueChecker
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 
 ---@param default_value any
 ---@param eval_fn (fun(old_value: any, new_value: any): boolean)?
----@return ValueCheker
+---@return ValueChecker
 function this:new(default_value, eval_fn)
     local o = {
         value = default_value,
+        default_value = default_value,
         eval_fn = eval_fn,
     }
 
     setmetatable(o, self)
-    ---@cast o ValueCheker
+    ---@cast o ValueChecker
 
     return o
 end
