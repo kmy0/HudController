@@ -16,6 +16,8 @@
 
 ---@class NotebookState
 ---@field hover {[string]: boolean}
+---@field scroll_x number
+---@field last_tab any
 
 ---@class NotebookColors
 ---@field active integer?
@@ -40,6 +42,7 @@ local this = {
 }
 
 local PAD, GAP, ACTION_GAP = 12, 2, 8
+local SCROLLBAR_W = 18
 local INSET, MAX_W, DISABLED = 3, 160, 0.6
 
 local DEFAULT_COLORS = {
@@ -65,6 +68,8 @@ local function get_state(id)
     if not s then
         s = {
             hover = {},
+            scroll_x = 0,
+            last_tab = nil,
         }
 
         this._state[id] = s
@@ -114,7 +119,7 @@ local function border(list, x, y, w, h, bg, color, vertical)
     list:add_line({ x, y + INSET }, { x + w, y + INSET }, color, 1)
 end
 
----@param list any
+---@param list ImDrawList
 ---@param x number
 ---@param y number
 ---@param w number
@@ -242,6 +247,71 @@ local function hit(id, x, y, w, h)
     return clicked, imgui.is_item_hovered()
 end
 
+---@param list ImDrawList
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+---@param direction "left"|"right"
+---@param ok boolean
+---@param hovered boolean
+---@param colors NotebookColors
+---@param is_disabled boolean
+local function nav_arrow(list, x, y, w, h, direction, ok, hovered, colors, is_disabled)
+    tab(
+        list,
+        x,
+        y,
+        w,
+        h,
+        "",
+        false,
+        true,
+        ok,
+        hovered,
+        nil,
+        nil,
+        nil,
+        nil,
+        colors,
+        is_disabled,
+        false
+    )
+
+    local color = ok and colors.text or util_misc.mul_alpha(colors.text, DISABLED)
+    if is_disabled then
+        color = util_misc.mul_alpha(color, DISABLED)
+    end
+
+    local cx = x + w / 2
+    local cy = y + (INSET + h - 1) / 2
+    local r = config.lang.font_size * 0.40
+
+    if direction == "left" then
+        list:add_triangle_filled(
+            { cx - 0.750 * r, cy },
+            { cx + 0.750 * r, cy - 0.866 * r },
+            { cx + 0.750 * r, cy + 0.866 * r },
+            color
+        )
+    else
+        list:add_triangle_filled(
+            { cx + 0.750 * r, cy },
+            { cx - 0.750 * r, cy + 0.866 * r },
+            { cx - 0.750 * r, cy - 0.866 * r },
+            color
+        )
+    end
+end
+
+---@param value number
+---@param minimum number
+---@param maximum number
+---@return number
+local function clamp(value, minimum, maximum)
+    return math.max(minimum, math.min(value, maximum))
+end
+
 ---@param id string
 ---@param current_tab any
 ---@param tabs NotebookTab[]
@@ -266,6 +336,13 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
     local wp = imgui.get_window_pos()
     local ws = imgui.get_window_size()
     local action_list = actions or {}
+    local initial_cursor_pos = imgui.get_cursor_pos()
+    local cursor_start = imgui.get_cursor_start_pos()
+    local vertical_scrollbar_w = imgui.get_scroll_max_y() > 0 and SCROLLBAR_W or 0
+    local horizontal_available_w = ws.x
+        - initial_cursor_pos.x
+        - cursor_start.x
+        - vertical_scrollbar_w
 
     ---@type table<integer, number>
     local action_widths = {}
@@ -326,13 +403,12 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
             1
         )
     else
+        local action_gap_w = #action_list > 0 and ACTION_GAP or 0
+        local tabs_view_w = math.max(0, horizontal_available_w - actions_w - action_gap_w)
+        local gaps_w = GAP * math.max(#tabs - 1, 0)
+
         if stretch_tabs and #tabs > 0 then
-            local cursor_pos = imgui.get_cursor_pos()
-            local cursor_start = imgui.get_cursor_start_pos()
-            local available_w = ws.x - cursor_pos.x - cursor_start.x
-            local gaps_w = GAP * math.max(#tabs - 1, 0)
-            local action_gap_w = #action_list > 0 and (GAP + ACTION_GAP) or 0
-            local stretch_w = available_w - actions_w - gaps_w - action_gap_w
+            local stretch_w = tabs_view_w - gaps_w
 
             if stretch_w > tabs_w then
                 local extra = (stretch_w - tabs_w) / #tabs --[[@as number]]
@@ -352,6 +428,88 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
 
     local x = pos.x
     local y = pos.y
+    local tabs_clip_min_x = pos.x
+    local tabs_clip_max_x = pos.x
+    local tabs_content_w = tabs_w + GAP * math.max(#tabs - 1, 0) --[[@as number]]
+    local tabs_overflow = false
+    local draw_nav = false
+    local nav_w = h
+
+    if not vertical then
+        local action_gap_w = #action_list > 0 and ACTION_GAP or 0
+        local tabs_view_w = math.max(0, horizontal_available_w - actions_w - action_gap_w)
+
+        tabs_overflow = tabs_content_w > tabs_view_w
+        draw_nav = tabs_overflow and tabs_view_w >= nav_w * 2 + GAP
+        tabs_clip_min_x = pos.x + (draw_nav and nav_w + GAP or 0)
+        tabs_clip_max_x = pos.x + tabs_view_w - (draw_nav and nav_w + GAP or 0)
+
+        local content_view_w = math.max(0, tabs_clip_max_x - tabs_clip_min_x)
+        local max_scroll = math.max(0, tabs_content_w - content_view_w)
+        s.scroll_x = clamp(s.scroll_x or 0, 0, max_scroll)
+
+        if s.last_tab ~= current_tab then
+            local tab_left = 0
+            for i, item in ipairs(tabs) do
+                local tab_right = tab_left + tab_widths[i]
+                if item.key == current_tab then
+                    if tab_left < s.scroll_x then
+                        s.scroll_x = tab_left
+                    elseif tab_right > s.scroll_x + content_view_w then
+                        s.scroll_x = tab_right - content_view_w
+                    end
+                    break
+                end
+                tab_left = tab_right + GAP
+            end
+            s.scroll_x = clamp(s.scroll_x, 0, max_scroll)
+        end
+        s.last_tab = current_tab
+
+        if draw_nav then
+            local left_clicked, left_hovered = hit("nb_scroll_left_" .. id, pos.x, y, nav_w, h)
+            nav_arrow(
+                list,
+                pos.x,
+                y,
+                nav_w,
+                h,
+                "left",
+                s.scroll_x > 0,
+                left_hovered,
+                colors,
+                is_disabled
+            )
+            if not is_disabled and left_clicked then
+                s.scroll_x = clamp(s.scroll_x - content_view_w * 0.75, 0, max_scroll)
+            end
+
+            local right_x = pos.x + tabs_view_w - nav_w
+            local right_clicked, right_hovered = hit("nb_scroll_right_" .. id, right_x, y, nav_w, h)
+            nav_arrow(
+                list,
+                right_x,
+                y,
+                nav_w,
+                h,
+                "right",
+                s.scroll_x < max_scroll,
+                right_hovered,
+                colors,
+                is_disabled
+            )
+            if not is_disabled and right_clicked then
+                s.scroll_x = clamp(s.scroll_x + content_view_w * 0.75, 0, max_scroll)
+            end
+        end
+
+        x = tabs_clip_min_x - s.scroll_x
+        list:push_clip_rect(
+            { tabs_clip_min_x, y },
+            { math.max(tabs_clip_min_x, tabs_clip_max_x), y + h },
+            true
+        )
+    end
 
     for i, item in ipairs(tabs) do
         local key = item.key
@@ -383,7 +541,20 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
 
         local hit_id = vertical and ("nb_vertical_tab_%s_%s"):format(id, key)
             or ("nb_tab_%s_%s"):format(id, key)
-        local clicked, is_hovered = hit(hit_id, x, y, w, h)
+        ---@type boolean, boolean
+        local clicked, is_hovered
+
+        if vertical then
+            clicked, is_hovered = hit(hit_id, x, y, w, h)
+        else
+            local hit_x = math.max(x, tabs_clip_min_x)
+            local hit_right = math.min(x + w, tabs_clip_max_x)
+            if hit_right > hit_x then
+                clicked, is_hovered = hit(hit_id, hit_x, y, hit_right - hit_x, h)
+            else
+                clicked, is_hovered = false, false
+            end
+        end
 
         if not is_disabled and clicked and not active then
             current_tab = key
@@ -399,11 +570,15 @@ function this.draw(id, current_tab, tabs, actions, colors, stretch_tabs, vertica
         end
     end
 
+    if not vertical then
+        list:pop_clip_rect()
+    end
+
     if #action_list > 0 then
         if vertical then
             y = y + ACTION_GAP
         else
-            x = x + ACTION_GAP
+            x = pos.x + horizontal_available_w - actions_w
         end
     end
 
