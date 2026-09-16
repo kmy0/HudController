@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local m = require("HudController.util.ref.methods")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -15,7 +15,7 @@ local set = state.set
 return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
 
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     local item_config_key = config_key .. ".tools_enemy_message_type"
 
     imgui.set_next_item_width(

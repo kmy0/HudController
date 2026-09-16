@@ -36,6 +36,7 @@ local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
+local op = require("HudController.hud.manager.op.init")
 local perf = require("HudController.util.misc.perf")
 local play_object = require("HudController.hud.play_object.init")
 local util_game = require("HudController.util.game.init")
@@ -230,8 +231,8 @@ function this.make_snapshot(keys)
 end
 
 function this.add_all_element_profile()
-    local new_config = hud.operations._new()
-    new_config.name = hud.operations.get_name("All Elements")
+    local new_config = op.hud_profile.new_hud_profile()
+    new_config.name = op.hud_profile.get_name("All Elements")
     new_config.elements = {}
     local key = 1
 
@@ -242,7 +243,7 @@ function this.add_all_element_profile()
         key = key + 1
     end
 
-    hud.operations.new(new_config)
+    op.hud_profile.new(new_config)
 end
 
 function this.perf_test()

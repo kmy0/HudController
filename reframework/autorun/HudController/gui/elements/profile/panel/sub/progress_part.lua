@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@param elem ProgressPartBase
@@ -8,7 +8,7 @@ local util_imgui = require("HudController.util.imgui.init")
 ---@param config_key string
 return function(elem, elem_config, config_key)
     local changed = false
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
 
     util_imgui.begin_disabled(elem_config.enabled_offset == true)
 

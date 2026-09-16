@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -18,7 +18,7 @@ return function(elem, elem_config, config_key)
     -- the map gui object has to actually exist to get names of options
     state.init_combo_map_icon_filter()
 
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     local item_config_key = config_key .. ".default_filter"
     local changed_value = generic.draw_combo(
         nil,

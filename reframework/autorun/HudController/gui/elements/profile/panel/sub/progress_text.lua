@@ -1,4 +1,4 @@
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 
@@ -18,7 +18,7 @@ return function(elem, elem_config, config_key)
             set:checkbox(
                 util_gui.tr("hud_element.entry.box_align_left"),
                 config_key .. ".align_left"
-            ) and operations.is_current_profile(elem)
+            ) and op.hud_elem.is_current_profile(elem)
         then
             elem:set_align_left(elem_config.align_left)
         end

@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -29,7 +29,7 @@ return function(elem, elem_config, config_key)
             -1,
             #mod.map.slider_sharpness_state - 1,
             values
-        ) and operations.is_current_profile(elem)
+        ) and op.hud_elem.is_current_profile(elem)
     then
         elem:set_state(elem_config.state)
     end

@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local draw_control_child = require("HudController.gui.elements.profile.panel.sub.control_child")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@param elem Material
@@ -10,7 +10,7 @@ local util_imgui = require("HudController.util.imgui.init")
 return function(elem, elem_config, config_key)
     draw_control_child(elem, elem_config, config_key)
 
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     for i = 0, 4 do
         local var_key = "var" .. i
         if elem_config["enabled_" .. var_key] ~= nil then

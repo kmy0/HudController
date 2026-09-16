@@ -29,6 +29,7 @@ local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
+local op = require("HudController.hud.manager.op.init")
 
 ---@class Canvas
 local this = { initialized = false }
@@ -40,7 +41,7 @@ local function init()
     local hud_config = hud.get_current()
 
     if not hud_config then
-        hud.operations.new()
+        op.hud_profile.new()
         hud_config = hud.get_current()
     end
 
@@ -87,7 +88,7 @@ function this.draw()
     if this_frame and elem and not this.action and not prev_frame then
         local hudbase = hud.get_element(elem)
         if not hudbase then
-            hud.operations.add_element(e.get("app.GUIHudDef.TYPE")[elem])
+            op.hud_elem.add_element(e.get("app.GUIHudDef.TYPE")[elem])
             hudbase = hud.get_element(elem) --[[@as HudBase]]
         end
 

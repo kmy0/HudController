@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -14,7 +14,7 @@ return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pl_behavior"))
     local item_config_key = config_key .. ".pl_draw_distance"
     local config_value = config:get(item_config_key)
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     if
         set:slider_float(
             util_gui.tr("hud_element.entry.slider_draw_distance", item_config_key),

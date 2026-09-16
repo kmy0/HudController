@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
@@ -106,12 +106,12 @@ local function draw_options_menu()
                 )
             then
                 if all_opts[option.name] then
-                    operations.remove_game_option_elem(
+                    op.hud_game_options.remove_game_option_elem(
                         state.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
                 else
-                    operations.add_game_option_elem(
+                    op.hud_game_options.add_game_option_elem(
                         state.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
@@ -197,7 +197,7 @@ local function draw_options_menu()
 
                 if imgui.button(util_gui.tr("menu.user.options.button_remove", opt.name)) then
                     opts[key] = nil
-                    operations.remove_game_option_elem(elem.key, opt.name)
+                    op.hud_game_options.remove_game_option_elem(elem.key, opt.name)
                 end
 
                 imgui.same_line()

@@ -7,7 +7,7 @@ local util_table = require("HudController.util.misc.table")
 
 local this = {
     manager = require("HudController.hud.manager.init"),
-    operations = require("HudController.hud.manager.operations"),
+    op = require("HudController.hud.manager.op.init"),
     options = require("HudController.hud.manager.options"),
     elements = require("HudController.hud.manager.elements"),
     profile_switcher = require("HudController.hud.manager.profile_switcher"),
@@ -142,7 +142,7 @@ function this.reinit()
     state.translate_combo()
     state.clear_cache()
     this.manager.reinit()
-    this.operations.reload()
+    this.op.hud_profile.reload()
     user.reinit()
     bind_condition.reinit()
 

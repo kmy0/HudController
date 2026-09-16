@@ -4,7 +4,7 @@ local drag_util = require("HudController.gui.drag")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state.init")
 local timer = require("HudController.util.misc.timer")
@@ -365,7 +365,7 @@ local function draw_elements()
 
         imgui.same_line()
 
-        local name = operations.tr_element(elem_config)
+        local name = op.hud_elem.tr_element(elem_config)
 
         if not elem then
             imgui.set_next_item_open(false)
@@ -412,7 +412,7 @@ local function draw_profiles()
     util_imgui.begin_disabled(#profiles >= config.max_profile)
     if imgui.button(util_gui.tr("hud_profile.button_add")) then
         state.input = nil
-        operations.new_elem_profile_for_show(profiles)
+        op.hud_elem_profile.new_elem_profile_for_show(profiles)
     end
     util_imgui.end_disabled()
 
@@ -456,7 +456,10 @@ local function draw_profiles()
 
         if imgui.button(util_gui.tr("hud_profile.button_remove", profile.key)) then
             to_remove = i
-            operations.remove_elem_profile(config_mod.hud[config_mod.combo.hud], profile.key)
+            op.hud_elem_profile.remove_elem_profile(
+                config_mod.hud[config_mod.combo.hud],
+                profile.key
+            )
         end
 
         imgui.same_line()
@@ -488,7 +491,7 @@ local function draw_profiles()
         then
             local changed, _ = state.get_input()
             if changed then
-                operations.rename_elem_profile_for_show(profiles, profile, state.input.buf)
+                op.hud_elem_profile.rename_elem_profile_for_show(profiles, profile, state.input.buf)
                 state.input = nil
 
                 config:save()

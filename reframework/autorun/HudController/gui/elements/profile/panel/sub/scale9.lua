@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -18,7 +18,7 @@ return function(elem, elem_config, config_key)
 
     ---@type string
     local item_config_key
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     if elem_config.enabled_control_point ~= nil then
         item_config_key = config_key .. ".blend"
         local changed_value = generic.draw_combo(

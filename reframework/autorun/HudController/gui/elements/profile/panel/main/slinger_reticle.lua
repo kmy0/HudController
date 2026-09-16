@@ -1,5 +1,5 @@
 local config = require("HudController.config.init")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -16,7 +16,7 @@ return function(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_hide_slinger_empty", item_config_key),
             item_config_key
-        ) and operations.is_current_profile(elem)
+        ) and op.hud_elem.is_current_profile(elem)
     then
         elem.children.slinger:set_hide_slinger_empty(
             elem_config.children.slinger.hide_slinger_empty

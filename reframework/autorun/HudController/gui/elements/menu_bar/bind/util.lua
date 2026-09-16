@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local mod = require("HudController.data.mod")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -67,7 +67,7 @@ function this.get_hud_bind_name(bind)
         profile = bind.profile
     end
 
-    local hud_profile = operations.get_hud_by_key(hud)
+    local hud_profile = op.hud_profile.get_hud_by_key(hud)
     local name = hud_profile.name
 
     if profile ~= 0 then

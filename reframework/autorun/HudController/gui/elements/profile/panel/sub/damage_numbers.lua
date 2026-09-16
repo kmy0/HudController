@@ -1,6 +1,6 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_game = require("HudController.util.game.init")
 local util_gui = require("HudController.gui.util")
@@ -16,7 +16,7 @@ return function(elem, elem_config, config_key)
 
     local item_config_key = config_key .. ".enabled_box"
     local changed = false
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
 
     item_config_key = config_key .. ".enabled_box"
     if

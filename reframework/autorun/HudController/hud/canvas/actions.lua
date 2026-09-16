@@ -15,6 +15,7 @@
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
+local op = require("HudController.hud.manager.op.init")
 local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
@@ -98,7 +99,7 @@ local function undo(action)
     local elem = hud.get_element(action.hudid)
 
     if not elem then
-        hud.operations.add_element(e.get("app.GUIHudDef.TYPE")[action.hudid])
+        op.hud_elem.add_element(e.get("app.GUIHudDef.TYPE")[action.hudid])
         elem = hud.get_element(action.hudid)
     end
 

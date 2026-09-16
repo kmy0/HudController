@@ -1,5 +1,5 @@
 local config = require("HudController.config.init")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -14,7 +14,7 @@ return function(elem, elem_config, config_key)
         config.lang:tr("hud_element.entry.category_shortcut_keyboard_behavior")
     )
     local item_config_key = config_key .. ".no_hide_elements"
-    local is_current_profile = operations.is_current_profile(elem)
+    local is_current_profile = op.hud_elem.is_current_profile(elem)
     if
         set:checkbox(
             util_gui.tr("hud_element.entry.box_no_hide_elements", item_config_key),

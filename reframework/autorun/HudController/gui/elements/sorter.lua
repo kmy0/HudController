@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
-local hud = require("HudController.hud.init")
+local op = require("HudController.hud.manager.op.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -73,7 +73,7 @@ function this.draw()
         imgui.same_line()
 
         if imgui.button(util_gui.tr("sorter.button_apply")) then
-            hud.operations.sort(hud_names)
+            op.hud_profile.sort(hud_names)
             this.close()
             config:save()
         end

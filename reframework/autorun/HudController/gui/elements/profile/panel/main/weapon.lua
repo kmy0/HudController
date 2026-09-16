@@ -1,5 +1,5 @@
 local config = require("HudController.config.init")
-local operations = require("HudController.hud.manager.operations")
+local op = require("HudController.hud.manager.op.init")
 local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -20,7 +20,7 @@ return function(elem, elem_config, config_key)
         set:checkbox(
             util_gui.tr("hud_element.entry.box_weapon_no_focus", item_config_key),
             item_config_key
-        ) and operations.is_current_profile(elem)
+        ) and op.hud_elem.is_current_profile(elem)
     then
         elem:set_no_focus(elem_config.no_focus)
     end

@@ -19,6 +19,8 @@ local data = require("HudController.data.init")
 local mod_bind_manager = require("HudController.hud.bind.key.manager")
 ---@module "HudController.gui.state.init"
 local state = util_misc.lazy_require("HudController.gui.state.init")
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -44,7 +46,7 @@ this.action_type = {
 ---@param bind ModBind
 local function action_hud(bind)
     local config_mod = config.current.mod
-    local hud_config = hud.operations.get_hud_by_key(bind.bound_value.hud --[[@as integer]])
+    local hud_config = op.hud_profile.get_hud_by_key(bind.bound_value.hud --[[@as integer]])
     state.input = nil
 
     hud.force_request_hud_with_profiles(hud_config, { bind.bound_value.profile })

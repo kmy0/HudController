@@ -1,6 +1,7 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
+local op = require("HudController.hud.manager.op.init")
 local popup = require("HudController.util.imgui.popup")
 local sorter = require("HudController.gui.elements.sorter")
 local state = require("HudController.gui.state.init")
@@ -34,7 +35,7 @@ local function draw_hud()
 
     if imgui.button(util_gui.tr("hud.button_new")) then
         state.input = nil
-        hud.operations.new()
+        op.hud_profile.new()
         config_mod.combo.hud = #config_mod.hud
         hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
         config:save()
@@ -57,7 +58,7 @@ local function draw_hud()
                 popup.request({
                     id = "hud_emove",
                     callback = function()
-                        hud.operations.remove(config_mod.hud[config_mod.combo.hud])
+                        op.hud_profile.remove(config_mod.hud[config_mod.combo.hud])
                         if not util_table.empty(config_mod.hud) then
                             hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
                         end
@@ -72,7 +73,7 @@ local function draw_hud()
         {
             name = util_gui.tr("hud.button_export"),
             callback = function()
-                hud.operations.export(config_mod.hud[config_mod.combo.hud])
+                op.hud_profile.export(config_mod.hud[config_mod.combo.hud])
             end,
             tooltip = config.lang:tr("hud.button_export_tooltip"),
             disabled = util_table.empty(config_mod.hud),
@@ -80,7 +81,7 @@ local function draw_hud()
         {
             name = util_gui.tr("hud.button_import"),
             callback = function()
-                hud.operations.import()
+                op.hud_profile.import()
                 config:save()
             end,
             tooltip = config.lang:tr("hud.button_import_tooltip"),
@@ -122,7 +123,7 @@ local function draw_hud()
         local changed, _ = state.get_input()
         imgui.pop_item_width()
         if changed then
-            hud.operations.rename(config_mod.hud[config_mod.combo.hud], state.input.buf)
+            op.hud_profile.rename(config_mod.hud[config_mod.combo.hud], state.input.buf)
             state.input = nil
             config:save()
         end
@@ -142,7 +143,7 @@ local function draw_element()
     imgui.table_set_column_index(1)
 
     if imgui.button(util_gui.tr("hud_element.button_add")) then
-        hud.operations.add_element(
+        op.hud_elem.add_element(
             state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
         )
         config:save()
@@ -156,7 +157,7 @@ local function draw_element()
 
     if imgui.button(util_gui.tr("hud_element.button_sort")) then
         local elements = config_mod.hud[config_mod.combo.hud].elements or {}
-        hud.operations.sort_elements(util_table.values(elements), reverse_sort)
+        op.hud_elem.sort_elements(util_table.values(elements), reverse_sort)
         config:save()
         reverse_sort = not reverse_sort
     end
