@@ -107,7 +107,7 @@ function this.draw()
 
     util_imgui.draw_child_window("hud_child_window", function()
         gui_elements.choice.draw()
-    end, 48, 6)
+    end, 50, 6)
 
     gui_elements.profile.draw()
 
