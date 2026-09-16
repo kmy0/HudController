@@ -153,7 +153,7 @@ end
 local function draw_add_condition(conditions, config_key, combo_condition_key)
     imgui.push_item_width(util_gui.get_item_size())
 
-    local combo = cd.get_cached_combo("condition", config_key, function(_, key, _)
+    local combo = cd.get_profile_combo("condition", config_key, function(_, key, _)
         return util_table.any(conditions, function(_, value)
             return key == value.class
         end)
@@ -233,7 +233,7 @@ local function draw_condition_editor(cond_set, config_key, highlight, path_fn)
 
     local remove = draw_condition_rows(cond_set.conditions, config_key, highlight, path_fn)
     if not util_table.empty(remove) then
-        local combo = cd.get_cached_combo("condition", config_key)
+        local combo = cd.get_profile_combo("condition", config_key)
 
         for _, i in ipairs(remove) do
             config:set(combo_condition_key, combo:enable_item(cond_set.conditions[i].class))

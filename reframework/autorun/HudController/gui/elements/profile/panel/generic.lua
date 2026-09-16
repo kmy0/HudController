@@ -240,7 +240,7 @@ function this.combo_hide(
     combo_key,
     button_label_path
 )
-    local combo = cd.get_cached_combo(
+    local combo = cd.get_profile_combo(
         combo_key or entry_key,
         item_config_key,
         function(item_config_key, key, _)

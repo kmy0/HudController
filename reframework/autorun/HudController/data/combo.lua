@@ -1,4 +1,4 @@
----@class (exact) ComboValues
+---@class (exact) ComboRegistry
 ---@field hud_elem Combo
 ---@field hud Combo
 ---@field item_decide Combo
@@ -37,7 +37,7 @@
 ---@field elem_option Combo
 
 ---@class ComboData
----@field combo ComboValues
+---@field combo ComboRegistry
 ---@field combo_cache table<string, Combo>
 ---@field bind_condition_options table<string, Combo>
 
@@ -332,26 +332,6 @@ local function init_condition_combo()
     end
 end
 
-local function translate_placeholders()
-    ---@param node AceOptionNode
-    local function translate_node(node)
-        node.option.name_local = config.lang:try_replace(node.option.name_local)
-        for _, item in pairs(node.option.items) do
-            item.name_local = config.lang:try_replace(item.name_local)
-        end
-
-        for _, child in pairs(node.children) do
-            translate_node(child)
-        end
-    end
-
-    for _, nodes in pairs(ace_map.game_options) do
-        for _, node in pairs(nodes) do
-            translate_node(node)
-        end
-    end
-end
-
 function this.translate_combo()
     for _, c in
         pairs(this.combo --[==[@as Combo[]]==])
@@ -401,7 +381,7 @@ end
 ---@param key string
 ---@param item_config_key string
 ---@param is_key_disabled (fun(item_config_key: string, key: any, value: string): boolean)?
-function this.get_cached_combo(key, item_config_key, is_key_disabled)
+function this.get_profile_combo(key, item_config_key, is_key_disabled)
     local cache_key = string.format("COMBO|%s|%s", key, item_config_key)
     local ret = this.combo_cache[cache_key]
     if not ret then
@@ -425,30 +405,33 @@ end
 
 ---@return boolean
 function this.init()
-    translate_placeholders()
-
+    -- choice
+    this.combo.hud:swap(config.current.mod.hud)
     this.combo.hud_elem:swap(ace_map.hudid_name_to_local_name)
+    -- config_selector
+    this.combo.config:swap(config.selector.sorted)
+    this.combo.config_backup:swap(config.selector.sorted_backup)
+    -- scale9
     this.combo.control_point:swap(e.get("via.gui.ControlPoint").enum_to_field)
     this.combo.blend:swap(e.get("via.gui.BlendType").enum_to_field)
-
     this.combo.alpha_channel:swap(e.get("via.gui.AlphaChannelType").enum_to_field)
+    -- itembar
     this.combo.item_decide:swap(mod.map.combo_item_decide)
+    -- generic
     this.combo.segment:swap(
         util_table.filter(e.get("app.GUIDefApp.DRAW_SEGMENT").enum_to_field, function(_, value)
             return not value:match("RADAR.-")
         end)
     )
+    -- text
     this.combo.page_alignment:swap(e.get("via.gui.PageAlignment").enum_to_field)
+    -- notice
     this.combo.enemy_msg_type:swap(e.get("app.ChatDef.ENEMY_LOG_TYPE").enum_to_field)
-    this.combo.config:swap(config.selector.sorted)
-    this.combo.config_backup:swap(config.selector.sorted_backup)
     this.combo.log_id:swap(
         util_table.transform_items(e.get("app.ChatDef.LOG_ID").enum_to_field, function(key, _)
             return tostring(key)
         end)
     )
-    this.combo.map_filter:swap(mod.map.combo_map_filter_init)
-    this.combo.hud:swap(config.current.mod.hud)
     this.combo.system_log:swap(
         util_table.merge({ ALL = -100 }, e.get("app.ChatDef.SYSTEM_MSG_TYPE").field_to_enum)
     )
@@ -459,6 +442,9 @@ function this.init()
     )
     this.combo.lobby_log:swap(e.get("app.ChatDef.SEND_TARGET").field_to_enum)
     this.combo.auto_id:swap(e.get("app.Communication.AUTO_ID").field_to_enum)
+    -- minimap
+    this.combo.map_filter:swap(mod.map.combo_map_filter_init)
+    -- name_access
     this.combo.object_category:swap(
         util_table.merge(
             { ALL = -100 },
@@ -469,9 +455,11 @@ function this.init()
     this.combo.enemy_type:swap({ "BOSS", "ZAKO", "ANIMAL" })
     this.combo.panel_type:swap(e.get("app.GUI020001PanelParams.PANEL_TYPE").field_to_enum)
     this.combo.gossip_type:swap(e.get("app.GUI020001PanelParams.GOSSIP_TYPE").field_to_enum)
+    -- name_other
     this.combo.nameplate_type:swap(
         util_table.merge({ ALL = -100 }, e.get("app.cGUIMemberPartsDef.MemberType").field_to_enum)
     )
+    -- subtitles
     this.combo.npc:swap(util_table.collect_any(ace_map.subtitles, function(_, value)
         return tostring(value.npc.id)
     end, function(_, value)
@@ -485,6 +473,7 @@ function this.init()
     this.combo.dialogue_type:swap(e.get("app.DialogueType.TYPE").field_to_enum)
     this.combo.dialogue_actor_type:swap(e.get("app.DialogueDef.ACTOR_TYPE").field_to_enum)
     this.combo.sfx_game_object:swap({})
+    -- game_options
     this.combo.elem_option:swap(
         util_table.merge({ GLOBAL = ace_map.tr_flag }, ace_map.hudid_name_to_local_name)
     )
