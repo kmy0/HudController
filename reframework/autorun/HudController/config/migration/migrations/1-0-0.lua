@@ -110,7 +110,7 @@ end
 ---@param config MainSettings
 function this.fns.binds(config)
     for _, b in pairs(config.mod.bind.key.hud) do
-        b.bound_value = { key = b.bound_value, profile = 0 }
+        b.bound_value = { hud = b.bound_value, profile = 0 }
     end
 end
 
