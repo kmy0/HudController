@@ -48,7 +48,7 @@ function this.get_elem_profile(root, key)
 
     local k = this.get_elem_profile_key(key)
     if not root.profile[k] then
-        local new = factory.get_config(root.hud_type) --[[@as HudBaseConfigProfile]]
+        local new = factory.get_config(root.hud_id) --[[@as HudBaseConfigProfile]]
         new.profile = nil
         new.current_profile = nil
         new.current_profile_gui = nil
