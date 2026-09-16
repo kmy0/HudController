@@ -20,8 +20,6 @@ local util_table = require("HudController.util.misc.table")
 local options = util_misc.lazy_require("HudController.hud.manager.options")
 ---@module "HudController.hud.hook.init"
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
----@module "HudController.hud.manager.op.init"
-local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 local e = require("HudController.util.game.enum")
 local play_object = require("HudController.hud.play_object.init")
 
@@ -89,8 +87,7 @@ function this.request_hud_with_default(new_hud, force)
     local profile = {}
     for _, elem in pairs(new_hud.elements) do
         if elem.current_profile ~= elem.default_profile then
-            profile_to[elem.name_key] =
-                elem.profile[op.hud_elem_profile.get_elem_profile_key(elem.default_profile)]
+            profile_to[elem.name_key] = elem.profile[tostring(elem.default_profile)]
         end
 
         elem.current_profile = elem.default_profile
@@ -136,7 +133,7 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
     local function get_new_profile(element)
         for _, trigger_profiles in ipairs(sorted_profile_bits) do
             for _, profile_id in ipairs(trigger_profiles) do
-                local profile_key = op.hud_elem_profile.get_elem_profile_key(profile_id)
+                local profile_key = tostring(profile_id)
                 local profile_config = element.profile[profile_key]
 
                 if profile_config and profile_config.enabled then
@@ -152,7 +149,7 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
             profile_id = element.default_profile
         end
 
-        local profile_key = op.hud_elem_profile.get_elem_profile_key(profile_id)
+        local profile_key = tostring(profile_id)
         changed_profiles[element.name_key] = element.profile[profile_key]
         active_profiles[element.name_key] = profile_id
         element.current_profile = profile_id

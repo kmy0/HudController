@@ -46,7 +46,7 @@ function this.get_elem_profile(root, key)
         return root --[[@as HudBaseConfigProfile]]
     end
 
-    local k = this.get_elem_profile_key(key)
+    local k = tostring(key)
     if not root.profile[k] then
         local new = factory.get_config(root.hud_id) --[[@as HudBaseConfigProfile]]
         new.profile = nil
@@ -60,12 +60,6 @@ function this.get_elem_profile(root, key)
     end
 
     return root.profile[k]
-end
-
----@param key integer
----@return HudProfileKey
-function this.get_elem_profile_key(key)
-    return tostring(key)
 end
 
 ---@param root HudBaseConfig
@@ -100,7 +94,7 @@ end
 ---@param key integer
 function this.remove_elem_profile(hud_config, key)
     for _, elem in pairs(hud_config.elements) do
-        elem.profile[this.get_elem_profile_key(key)] = nil
+        elem.profile[tostring(key)] = nil
 
         if key == elem.default_profile then
             elem.default_profile = mod_enum.elem_profile.DEFAULT
@@ -172,7 +166,7 @@ function this.import_elem_profile(root)
         return merged_root
     else
         local profiles = root.profile
-        local key = this.get_elem_profile_key(root.current_profile_gui)
+        local key = tostring(root.current_profile_gui)
         profiles[key] = factory.merge_profile(profiles[key], profile) --[[@as HudBaseConfigProfile]]
     end
 
