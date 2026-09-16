@@ -3,7 +3,7 @@ local custom_condition = require("HudController.hud.bind.condition.conditions.cu
 local e = require("HudController.util.game.enum")
 local util_gui = require("HudController.gui.util")
 local util_table = require("HudController.util.misc.table")
-local set = require("HudController.gui.state").set
+local set = require("HudController.gui.state.init").set
 local s = require("HudController.util.ref.singletons")
 
 local this = {}

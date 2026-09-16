@@ -6,7 +6,7 @@ local factory = require("HudController.hud.factory")
 local hud_elements = require("HudController.hud.manager.elements")
 local hud_manager = require("HudController.hud.manager.init")
 local options = require("HudController.hud.manager.options")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 

@@ -1,5 +1,5 @@
 local config = require("HudController.config.init")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")

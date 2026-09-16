@@ -1,7 +1,7 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local operations = require("HudController.hud.manager.operations")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 

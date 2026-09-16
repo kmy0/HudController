@@ -5,7 +5,7 @@
 
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
-local gui_state = require("HudController.gui.state")
+local gui_state = require("HudController.gui.state.init")
 local util_table = require("HudController.util.misc.table")
 local conditions = {
     combat = require("HudController.hud.bind.condition.conditions.combat"),

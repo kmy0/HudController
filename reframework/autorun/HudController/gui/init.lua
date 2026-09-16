@@ -12,7 +12,7 @@ local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
 local popup = require("HudController.util.imgui.popup")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod

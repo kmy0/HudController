@@ -64,7 +64,7 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 

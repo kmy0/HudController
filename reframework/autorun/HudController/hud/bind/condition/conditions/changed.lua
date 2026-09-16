@@ -10,7 +10,7 @@ local base = require("HudController.hud.def.condition_base")
 local frame_counter = require("HudController.util.misc.frame_counter")
 local timer = require("HudController.util.misc.timer")
 local value_checker = require("HudController.util.misc.value_checker")
-local set = require("HudController.gui.state").set
+local set = require("HudController.gui.state.init").set
 local config = require("HudController.config.init")
 local util_imgui = require("HudController.util.imgui.init")
 

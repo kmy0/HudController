@@ -1,7 +1,7 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local user = require("HudController.hud.user.init")
 local util_table = require("HudController.util.misc.table")
 

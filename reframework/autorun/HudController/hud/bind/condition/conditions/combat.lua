@@ -15,7 +15,7 @@ local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
-local set = require("HudController.gui.state").set
+local set = require("HudController.gui.state.init").set
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 

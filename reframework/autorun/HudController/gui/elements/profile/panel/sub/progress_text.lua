@@ -1,5 +1,5 @@
 local operations = require("HudController.hud.manager.operations")
-local state = require("HudController.gui.state")
+local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 
 local draw_progress_part = require("HudController.gui.elements.profile.panel.sub.progress_part")
