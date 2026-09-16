@@ -41,7 +41,6 @@
 ---@field combo_cache table<string, Combo>
 ---@field bind_condition_options table<string, Combo>
 
-local bind_manager = require("HudController.hud.bind.key.init")
 local combo = require("HudController.util.imgui.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
@@ -140,8 +139,9 @@ local this = {
         config = combo:new(),
         config_backup = combo:new(),
         bind_action_type = combo:new(
-            util_table.filter(bind_manager.action_type, function(_, value)
-                return value ~= bind_manager.action_type.NONE
+            ---@diagnostic disable-next-line: no-unknown
+            util_table.filter(mod.enum.action_type, function(_, value)
+                return value ~= mod.enum.action_type.NONE
             end),
             {
                 sort_fn = function(a, b)

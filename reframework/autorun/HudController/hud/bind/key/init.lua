@@ -27,21 +27,6 @@ local mod = data.mod
 ---@class ModBinds
 local this = {}
 
----@enum ModBindManagerType
-this.manager_names = {
-    OPTION_HUD = "option_hud",
-    HUD = "hud",
-    OPTION_MOD = "option_mod",
-}
----@enum BindActionType
-this.action_type = {
-    NONE = "NONE",
-    TOGGLE = "TOGGLE",
-    ENABLE = "ENABLE",
-    DISABLE = "DISABLE",
-    TOGGLE_HOLD = "TOGGLE_HOLD",
-}
-
 ---@param bind ModBind
 local function action_hud(bind)
     local config_mod = config.current.mod
@@ -59,11 +44,11 @@ end
 local function action_option_hud(bind, toggle_hold_value)
     ---@type boolean?
     local new_value
-    if bind.action_type == this.action_type.ENABLE then
+    if bind.action_type == mod.enum.action_type.ENABLE then
         new_value = true
-    elseif bind.action_type == this.action_type.DISABLE then
+    elseif bind.action_type == mod.enum.action_type.DISABLE then
         new_value = false
-    elseif bind.action_type == this.action_type.TOGGLE_HOLD then
+    elseif bind.action_type == mod.enum.action_type.TOGGLE_HOLD then
         if toggle_hold_value == nil then
             local old_value = hud.get_hud_option(bind.bound_value)
             new_value = not old_value
@@ -104,13 +89,13 @@ local function action_option_mod(bind, toggle_hold_value)
 
     ---@type boolean?
     local new_value
-    if bind.action_type == this.action_type.ENABLE then
+    if bind.action_type == mod.enum.action_type.ENABLE then
         new_value = true
-    elseif bind.action_type == this.action_type.DISABLE then
+    elseif bind.action_type == mod.enum.action_type.DISABLE then
         new_value = false
-    elseif bind.action_type == this.action_type.TOGGLE then
+    elseif bind.action_type == mod.enum.action_type.TOGGLE then
         new_value = config_mod[bind.bound_value] --[[@as boolean]]
-    elseif bind.action_type == this.action_type.TOGGLE_HOLD then
+    elseif bind.action_type == mod.enum.action_type.TOGGLE_HOLD then
         if toggle_hold_value == nil then
             local old_value = config_mod[bind.bound_value] --[[@as boolean]]
             new_value = not old_value

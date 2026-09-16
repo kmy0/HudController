@@ -182,12 +182,12 @@ end
 ---@return string | HudBindOpt
 ---@return string
 local function get_selected_option(manager, config_mod)
-    if manager.name == bind_manager.manager_names.HUD then
+    if manager.name == mod.enum.manager_names.HUD then
         local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
         local opt = { hud = hud_profile.key, profile = config_mod.combo.key_bind.elem_profile }
 
         return opt, util_menubar_bind.get_hud_bind_name(opt)
-    elseif manager.name == bind_manager.manager_names.OPTION_HUD then
+    elseif manager.name == mod.enum.manager_names.OPTION_HUD then
         return cd.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
             cd.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
     end
@@ -218,9 +218,9 @@ end
 ---@param bind ModBind
 ---@param config_mod ModSettings
 local function set_bind_target(manager, bind, config_mod)
-    if manager.name == bind_manager.manager_names.HUD then
+    if manager.name == mod.enum.manager_names.HUD then
         bind.bound_value = state.listener.opt
-        bind.action_type = bind_manager.action_type.NONE
+        bind.action_type = mod.enum.action_type.NONE
         return
     end
 
@@ -233,9 +233,9 @@ end
 ---@param bind ModBind
 ---@return string
 local function get_bind_target_name(manager, bind)
-    if manager.name == bind_manager.manager_names.HUD then
+    if manager.name == mod.enum.manager_names.HUD then
         return util_menubar_bind.get_hud_bind_name(bind.bound_value)
-    elseif manager.name == bind_manager.manager_names.OPTION_HUD then
+    elseif manager.name == mod.enum.manager_names.OPTION_HUD then
         return util_menubar_bind.get_option_hud_bind_name(bind.bound_value)
     end
 
@@ -356,9 +356,9 @@ end
 ---@param bind ModBind
 ---@return string
 local function get_registered_bind_target_name(manager, bind)
-    if manager.name == bind_manager.manager_names.HUD then
+    if manager.name == mod.enum.manager_names.HUD then
         return util_menubar_bind.get_hud_bind_name(bind)
-    elseif manager.name == bind_manager.manager_names.OPTION_HUD then
+    elseif manager.name == mod.enum.manager_names.OPTION_HUD then
         return util_menubar_bind.get_option_hud_bind_name(bind)
     end
 

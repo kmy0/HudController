@@ -27,6 +27,8 @@
 ---@field expanded_itembar_control ExpandedItembarControl.*
 ---@field sharpness_state SharpnessState.*
 ---@field quest_end_timer QuestEndTimerSetting.*
+---@field manager_names ModBindManagerType.*
+---@field action_type BindActionType.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -212,6 +214,20 @@ this.enum.quest_end_timer = { ---@class QuestEndTimerSetting.*
     DISABLED = -1,
     SKIP = 0,
     HIDE = 1,
+}
+---@enum ModBindManagerType
+this.enum.manager_names = { ---@class ModBindManagerType.*
+    OPTION_HUD = "option_hud",
+    HUD = "hud",
+    OPTION_MOD = "option_mod",
+}
+---@enum BindActionType
+this.enum.action_type = { ---@class BindActionType.*
+    NONE = "NONE",
+    TOGGLE = "TOGGLE",
+    ENABLE = "ENABLE",
+    DISABLE = "DISABLE",
+    TOGGLE_HOLD = "TOGGLE_HOLD",
 }
 
 ---@return boolean
