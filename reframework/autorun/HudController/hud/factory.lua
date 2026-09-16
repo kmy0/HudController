@@ -120,7 +120,7 @@ end
 ---@param hud_elem HudBaseConfig
 ---@return HudBaseConfig
 function this.merge(hud_elem)
-    local protected = { "hud_type", "name_key", "hud_id", "hud_sub_type", "profile_key" }
+    local protected = { "hud_type", "name_key", "hud_id", "hud_sub_type" }
     local profiles = hud_elem.profile
     hud_elem.profile = nil
 
