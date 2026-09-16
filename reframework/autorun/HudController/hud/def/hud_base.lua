@@ -18,12 +18,12 @@
 ---@field root HudBase
 ---@field children table<string, HudChild>
 ---@field write_nodes table<HudBase, integer>
----@field write_properies table<HudBaseProperty, boolean>
+---@field write_properties table<HudBaseProperty, boolean>
 ---@field options table<string, integer>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
 ---@field gui_ignore boolean? -- if true, do not draw in imgui window
----@field gui_header_children boolean? -- if true, draw chidlren as a header instead of a tree
+---@field gui_header_children boolean? -- if true, draw children as a header instead of a tree
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
@@ -124,7 +124,7 @@
 ---@class (exact) HudBaseOptionalArgs
 ---@field default_overwrite HudBaseDefaultOverwrite?
 ---@field gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@field gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
+---@field gui_header_children boolean? by_default, false - if true, draw children as a header instead of a tree
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 
 ---@alias HudProfileKey string
@@ -176,7 +176,7 @@ function this:new(args, parent, optional_args)
         children = {},
         options = {},
         write_nodes = {},
-        write_properies = {},
+        write_properties = {},
         properties = {
             scale = true,
             offset = true,
@@ -420,21 +420,21 @@ end
 
 ---@param key HudBaseProperty
 function this:mark_write(key)
-    if self.write_properies[key] then
+    if self.write_properties[key] then
         return
     end
 
-    self.write_properies[key] = true
+    self.write_properties[key] = true
     self:_mark_write()
 end
 
 ---@param key HudBaseProperty
 function this:mark_idle(key)
-    if not self.write_properies[key] then
+    if not self.write_properties[key] then
         return
     end
 
-    self.write_properies[key] = nil
+    self.write_properties[key] = nil
     self:_mark_idle()
 end
 
@@ -631,12 +631,12 @@ end
 
 ---@return boolean
 function this:any()
-    return self._request_pos or next(self.write_properies) ~= nil
+    return self._request_pos or next(self.write_properties) ~= nil
 end
 
 ---@return boolean
 function this:any_gui()
-    return next(self.write_properies) ~= nil
+    return next(self.write_properties) ~= nil
 end
 
 ---@return HudBaseChangedProperties

@@ -30,16 +30,16 @@ function this.adjust_pos(x, y)
 end
 
 ---@param text string
----@param seperate boolean?
----@param seperate_text string? by_default (?)
+---@param separate boolean?
+---@param separate_text string? by_default (?)
 ---@param color integer?
-function this.tooltip(text, seperate, seperate_text, color)
+function this.tooltip(text, separate, separate_text, color)
     color = color or 0xff918f8f
 
-    if seperate then
-        seperate_text = seperate_text or "(?)"
+    if separate then
+        separate_text = separate_text or "(?)"
         imgui.same_line()
-        imgui.text_colored(seperate_text, color)
+        imgui.text_colored(separate_text, color)
     end
     if imgui.is_item_hovered() then
         imgui.set_tooltip(text)

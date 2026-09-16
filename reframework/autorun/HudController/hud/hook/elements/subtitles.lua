@@ -89,7 +89,7 @@ function this.hide_subtitles_pre2(args)
         return
     end
 
-    -- this prevents voice interuption if its not muted
+    -- this prevents voice interruption if its not muted
     if subtitles:any_hide() then
         local param = sdk.to_managed_object(args[3]) --[[@as app.DialogueDef.DialogueVoiceParam]]
         local type, npc_id, msg_id, talker_type = get_voice_data(param)
