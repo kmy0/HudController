@@ -4,7 +4,6 @@ local this = {
 }
 
 local ace_misc = require("HudController.util.ace.misc")
-local config = require("HudController.config.init")
 local deprecated = require("HudController.data.deprecated")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
@@ -74,7 +73,7 @@ local function set_additional_hud()
 
         e.get("app.GUIHudDef.TYPE"):add(name, enum)
         ace_map.hudid_to_can_hide[enum] = false
-        ace_map.hudid_name_to_local_name[name] = ace_map.hud_tr_flag
+        ace_map.hudid_name_to_local_name[name] = ace_map.tr_flag
         ace_map.guiid_to_hudid[guiid] = enum
         util_table.insert_nested_value(ace_map.hudid_to_guiid, { enum }, guiid)
     end
@@ -92,7 +91,10 @@ end
 ---@return string
 local function replace_option_placeholder(str)
     for value in str:gmatch("<.->") do
-        str = str:gsub(value, config.lang:tr("menu.user.options.placeholder." .. value))
+        str = str:gsub(
+            value,
+            string.format("<PLACEHOLDER(%s)>", "menu.user.options.placeholder." .. value)
+        )
     end
     return str
 end
@@ -150,7 +152,7 @@ local function get_option_map()
 
             opt.name_local = string.format(
                 "%s: %s",
-                config.lang:tr("menu.user.options.placeholder." .. device_name),
+                string.format("<PLACEHOLDER(%s)>", "menu.user.options.placeholder." .. device_name),
                 opt.name_local
             )
         end

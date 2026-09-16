@@ -46,7 +46,7 @@ end
 ---@param element HudBaseConfig
 function this.tr_element(element)
     local name = ace_map.hudid_name_to_local_name[element.name_key]
-    if name == ace_map.hud_tr_flag then
+    if name == ace_map.tr_flag then
         name = config.lang:tr("hud_element.name." .. element.name_key)
     end
     return name

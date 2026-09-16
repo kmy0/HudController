@@ -18,8 +18,8 @@ local logger = util.misc.logger.g
 
 local init = init_chain:new(
     "MAIN",
-    config.init,
     data.init,
+    config.init,
     util.game.bind.init,
     util.ace.scene_fade.init,
     util.ace.porter.init,

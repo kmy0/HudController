@@ -70,6 +70,26 @@ local function init_condition_combo()
     end
 end
 
+local function translate_placeholders()
+    ---@param node AceOptionNode
+    local function translate_node(node)
+        node.option.name_local = config.lang:try_replace(node.option.name_local)
+        for _, item in pairs(node.option.items) do
+            item.name_local = config.lang:try_replace(item.name_local)
+        end
+
+        for _, child in pairs(node.children) do
+            translate_node(child)
+        end
+    end
+
+    for _, nodes in pairs(ace_map.game_options) do
+        for _, node in pairs(nodes) do
+            translate_node(node)
+        end
+    end
+end
+
 function this.translate_combo()
     for _, c in
         pairs(this.combo --[==[@as Combo[]]==])
@@ -149,6 +169,8 @@ function this.init_combo_map_icon_filter()
 end
 
 function this.init()
+    translate_placeholders()
+
     this.combo.hud_elem:swap(ace_map.hudid_name_to_local_name)
     this.combo.control_point:swap(e.get("via.gui.ControlPoint").enum_to_field)
     this.combo.blend:swap(e.get("via.gui.BlendType").enum_to_field)
@@ -208,7 +230,7 @@ function this.init()
     this.combo.dialogue_actor_type:swap(e.get("app.DialogueDef.ACTOR_TYPE").field_to_enum)
     this.combo.sfx_game_object:swap({})
     this.combo.elem_option:swap(
-        util_table.merge({ GLOBAL = ace_map.hud_tr_flag }, ace_map.hudid_name_to_local_name)
+        util_table.merge({ GLOBAL = ace_map.tr_flag }, ace_map.hudid_name_to_local_name)
     )
 
     init_condition_combo()

@@ -100,4 +100,14 @@ function this:exists(key)
     return type(ret) == "string"
 end
 
+---@param str string
+---@return string
+function this:try_replace(str)
+    local ret = str:gsub("<PLACEHOLDER%((.-)%)>", function(key)
+        return self:tr(key)
+    end)
+
+    return ret
+end
+
 return this

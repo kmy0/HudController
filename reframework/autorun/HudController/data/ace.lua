@@ -10,7 +10,7 @@
 ---@field hudid_to_can_hide table<app.GUIHudDef.TYPE, boolean>
 ---@field additional_hud string[]
 ---@field additional_hud_to_guiid_name table<string, string>
----@field hud_tr_flag string
+---@field tr_flag string
 ---@field additional_hud_index integer
 ---@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
@@ -51,7 +51,7 @@ local this = {
         hudid_name_to_local_name = {},
         weaponid_name_to_local_name = {},
         option = {},
-        hud_tr_flag = "NEED_TR",
+        tr_flag = "PLACEHOLDER",
         additional_hud_index = 1000,
         additional_hud = {
             "SLINGER_RETICLE",

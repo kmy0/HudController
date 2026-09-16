@@ -72,7 +72,7 @@ local this = {
 
         translate_fn = function(key)
             local val = ace_map.hudid_name_to_local_name[key]
-            if val == ace_map.hud_tr_flag then
+            if val == ace_map.tr_flag then
                 return config.lang:tr("hud_element.name." .. key)
             end
             return val
@@ -280,7 +280,7 @@ local this = {
         end,
 
         translate_fn = function(key, value)
-            if value == ace_map.hud_tr_flag then
+            if value == ace_map.tr_flag then
                 return config.lang:tr("hud_element.name." .. key)
             end
             return value
