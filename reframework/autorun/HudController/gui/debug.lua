@@ -4,12 +4,12 @@
 ---@field sub_window_pos table<string, Vector2f>
 ---@field first_frame boolean
 
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
 local hud_debug = require("HudController.hud.debug.init")
 local mod = require("HudController.data.mod")
-local state = require("HudController.gui.state.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -318,7 +318,7 @@ function this.draw()
         local combo_width = util_imgui.get_something_with_any_width(drag_width * 2)
 
         imgui.set_next_item_width(combo_width)
-        set:combo_filter("##combo_elem_cache", "debug.combo_elem_cache", state.combo.elem_cache)
+        set:combo_filter("##combo_elem_cache", "debug.combo_elem_cache", cd.combo.elem_cache)
 
         util_imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
         imgui.set_next_item_width(drag_width)

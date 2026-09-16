@@ -6,13 +6,13 @@ local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local op = require("HudController.hud.manager.op.init")
 local panel = require("HudController.gui.elements.profile.panel.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local timer = require("HudController.util.misc.timer")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
-local set = state.set
 local mod_enum = data.mod.enum
 
 local this = {}

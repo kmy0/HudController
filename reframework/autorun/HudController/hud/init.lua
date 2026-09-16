@@ -1,7 +1,7 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local state = require("HudController.gui.state.init")
 local user = require("HudController.hud.user.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -139,8 +139,8 @@ function this.reinit()
     local config_mod = config.current.mod
 
     config.lang:change()
-    state.translate_combo()
-    state.clear_cache()
+    cd.translate_combo()
+    cd.clear_cache()
     this.manager.reinit()
     this.op.hud_profile.reload()
     user.reinit()

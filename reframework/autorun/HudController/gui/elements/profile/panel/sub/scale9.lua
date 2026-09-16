@@ -1,12 +1,12 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 local draw_control_child = require("HudController.gui.elements.profile.panel.sub.control_child")
-local set = state.set
 
 ---@param elem Scale9
 ---@param elem_config Scale9Config
@@ -31,8 +31,8 @@ return function(elem, elem_config, config_key)
             },
             item_config_key,
             "##" .. item_config_key,
-            state.combo.control_point,
-            state.combo.control_point:get_index(nil, config:get(item_config_key))
+            cd.combo.control_point,
+            cd.combo.control_point:get_index(nil, config:get(item_config_key))
         )
 
         if changed_value then
@@ -58,8 +58,8 @@ return function(elem, elem_config, config_key)
             },
             item_config_key,
             "##" .. item_config_key,
-            state.combo.blend,
-            state.combo.blend:get_index(nil, config:get(item_config_key))
+            cd.combo.blend,
+            cd.combo.blend:get_index(nil, config:get(item_config_key))
         )
 
         if changed_value then
@@ -82,8 +82,8 @@ return function(elem, elem_config, config_key)
             },
             item_config_key,
             "##" .. item_config_key,
-            state.combo.alpha_channel,
-            state.combo.alpha_channel:get_index(nil, config:get(item_config_key))
+            cd.combo.alpha_channel,
+            cd.combo.alpha_channel:get_index(nil, config:get(item_config_key))
         )
 
         if changed_value then

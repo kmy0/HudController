@@ -1,10 +1,10 @@
 local combo = require("HudController.util.imgui.combo")
 local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 local e = require("HudController.util.game.enum")
+local s = require("HudController.util.ref.singletons")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_table = require("HudController.util.misc.table")
-local set = require("HudController.gui.state.init").set
-local s = require("HudController.util.ref.singletons")
 
 local this = {}
 this.__index = this

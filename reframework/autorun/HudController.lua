@@ -1,6 +1,7 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
 local call_queue = require("HudController.hud.call_queue")
 local canvas = require("HudController.hud.canvas.init")
+local combo = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_menu = require("HudController.gui.init")
 local data = require("HudController.data.init")
@@ -28,7 +29,7 @@ local init = init_chain:new(
     user.init,
     hud.manager.init,
     hook.init,
-    config_menu.init,
+    combo.init,
     data.mod.init
 )
 ---@class MethodUtil

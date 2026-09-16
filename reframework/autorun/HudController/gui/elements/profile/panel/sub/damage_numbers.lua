@@ -1,12 +1,10 @@
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_game = require("HudController.util.game.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
-
-local set = state.set
 
 ---@param elem DamageNumbersDamageState
 ---@param elem_config DamageNumbersDamageStateConfig

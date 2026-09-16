@@ -1,13 +1,13 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod
-local set = state.set
 
 ---@param elem Minimap
 ---@param elem_config MinimapConfig
@@ -16,7 +16,7 @@ return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_map"))
 
     -- the map gui object has to actually exist to get names of options
-    state.init_combo_map_icon_filter()
+    cd.init_combo_map_icon_filter()
 
     local is_current_profile = op.hud_elem.is_current_profile(elem)
     local item_config_key = config_key .. ".default_filter"
@@ -24,7 +24,7 @@ return function(elem, elem_config, config_key)
         nil,
         item_config_key,
         util_gui.tr("hud_element.entry.combo_map_filter"),
-        state.combo.map_filter
+        cd.combo.map_filter
     )
 
     if changed_value then

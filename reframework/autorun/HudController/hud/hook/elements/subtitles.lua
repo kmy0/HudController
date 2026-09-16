@@ -1,7 +1,7 @@
 local ace = require("HudController.data.ace")
+local cd = require("HudController.data.combo")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
-local state = require("HudController.gui.state.init")
 local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
@@ -118,7 +118,7 @@ function this.log_sfx_pre(args)
     local index = subtitles.combo_game_object
 
     subtitles:add_game_object(name)
-    if index ~= 1 and name ~= state.combo.sfx_game_object:get_value(index) then
+    if index ~= 1 and name ~= cd.combo.sfx_game_object:get_value(index) then
         return
     end
 

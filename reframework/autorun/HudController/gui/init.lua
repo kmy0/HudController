@@ -6,13 +6,14 @@
 ---@field flags integer
 ---@field condition integer
 
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
 local hook = require("HudController.hud.hook.init")
 local popup = require("HudController.util.imgui.popup")
-local state = require("HudController.gui.state.init")
+local state = require("HudController.gui.state")
 local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod
@@ -45,7 +46,7 @@ function this.draw()
             "%s %s - %s",
             config.name,
             config.commit,
-            state.combo.config:get_value(config.selector.current.combo_file)
+            cd.combo.config:get_value(config.selector.current.combo_file)
         ),
         gui_main.is_opened,
         this.window.flags
@@ -123,12 +124,6 @@ function this.draw()
     imgui.end_window()
 
     hook.hook_hud_options()
-end
-
----@return boolean
-function this.init()
-    state.init()
-    return true
 end
 
 return this

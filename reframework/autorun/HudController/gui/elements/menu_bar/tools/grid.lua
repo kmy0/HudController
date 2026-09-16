@@ -1,11 +1,10 @@
 local data = require("HudController.data.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_ace = require("HudController.util.ace.init")
 local util_gui = require("HudController.gui.util")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 
 local mod = data.mod
-local set = state.set
 
 local this = {}
 

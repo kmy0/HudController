@@ -1,9 +1,9 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
 local hud_elements = require("HudController.hud.manager.elements")
 local hud_manager = require("HudController.hud.manager.init")
-local state = require("HudController.gui.state.init")
 local util_misc = require("HudController.util.misc.init")
 local util_op = require("HudController.hud.manager.op.util")
 local util_table = require("HudController.util.misc.table")
@@ -150,7 +150,7 @@ function this.remove_elem_profile(hud_config, key)
     end
 
     config_mod.combo.key_bind.elem_profile = 0
-    state.clear_cache()
+    cd.clear_cache()
 end
 
 ---@param root HudBaseConfig

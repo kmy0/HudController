@@ -3,9 +3,9 @@
 ---@field pass boolean
 ---@field children ConditionSetPass[]
 
+local cd = require("HudController.data.combo")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
-local gui_state = require("HudController.gui.state.init")
 local util_table = require("HudController.util.misc.table")
 local conditions = {
     combat = require("HudController.hud.bind.condition.conditions.combat"),
@@ -45,7 +45,7 @@ local function eval(conditions)
             return true
         end
 
-        local combo = gui_state.bind_condition_options[o.class]
+        local combo = cd.bind_condition_options[o.class]
         local option_key = combo and combo:get_key(o.combo)
         return cond:update(option_key)
     end)
@@ -74,7 +74,7 @@ local function eval_all_and_store(conditions, cache, parent_key)
                 goto continue_condition
             end
 
-            local combo = gui_state.bind_condition_options[o.class]
+            local combo = cd.bind_condition_options[o.class]
             local option_key = combo and combo:get_key(o.combo)
             local res = cond:update(option_key)
 

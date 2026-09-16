@@ -1,10 +1,10 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 
-local set = state.set
 local this = {}
 
 local function draw_lang_menu()
@@ -18,7 +18,7 @@ local function draw_lang_menu()
         then
             config_lang.file = menu_item
             config.lang:change()
-            state.translate_combo()
+            cd.translate_combo()
             config:save()
         end
     end

@@ -1,10 +1,9 @@
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 
 local draw_progress_part = require("HudController.gui.elements.profile.panel.sub.progress_part")
 local draw_text = require("HudController.gui.elements.profile.panel.sub.text")
-local set = state.set
 
 ---@param elem ProgressPartText
 ---@param elem_config ProgressPartTextConfig

@@ -55,6 +55,7 @@
 ---@field event_id string
 ---@field bnk string
 
+local cd = require("HudController.data.combo")
 local circular_buffer = require("HudController.util.misc.circular_buffer")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
@@ -64,7 +65,6 @@ local hud_child = require("HudController.hud.def.hud_child")
 local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
-local state = require("HudController.gui.state.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -175,7 +175,7 @@ end
 function this:set_cache_sfx(val)
     self.cache_sfx = val
     this.game_objects = {}
-    state.combo.sfx_game_object:swap({})
+    cd.combo.sfx_game_object:swap({})
 end
 
 ---@param msg CachedSubtitle
@@ -246,7 +246,7 @@ end
 function this:add_game_object(game_object_name)
     if not this.game_objects[game_object_name] then
         this.game_objects[game_object_name] = util_table.size(this.game_objects)
-        state.combo.sfx_game_object:swap(
+        cd.combo.sfx_game_object:swap(
             util_table.transform_items(this.game_objects, function(_, value)
                 return value
             end, function(_, key)

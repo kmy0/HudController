@@ -1,9 +1,10 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
 local popup = require("HudController.util.imgui.popup")
-local state = require("HudController.gui.state.init")
+local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -37,7 +38,7 @@ function this.draw()
 
         imgui.push_item_width(util_gui.get_item_size())
         if
-            set:combo_filter(util_gui.tr("selector.combo_config"), "combo_file", state.combo.config)
+            set:combo_filter(util_gui.tr("selector.combo_config"), "combo_file", cd.combo.config)
         then
             config.selector:swap()
             hud.reinit()
@@ -49,12 +50,12 @@ function this.draw()
         if imgui.button(util_gui.tr("selector.button_new")) then
             state.input = nil
             config.selector:new_file()
-            state.combo.config:swap(config.selector.sorted)
+            cd.combo.config:swap(config.selector.sorted)
         end
 
         imgui.same_line()
         if imgui.button(util_gui.tr("selector.button_rename")) then
-            local name = state.combo.config:get_value(config_sel.combo_file)
+            local name = cd.combo.config:get_value(config_sel.combo_file)
             state.input = {
                 buf = name ~= config.selector.default_name and name or "",
                 type = "rename_config",
@@ -71,7 +72,7 @@ function this.draw()
                         id = "config_remove",
                         callback = function()
                             if config.selector:delete_current_file() then
-                                state.combo.config:swap(config.selector.sorted)
+                                cd.combo.config:swap(config.selector.sorted)
                                 hud.reinit()
                             end
                         end,
@@ -94,9 +95,9 @@ function this.draw()
                     if config.selector:try_import() then
                         state.input = nil
                         local new_file = config.selector:new_file()
-                        state.combo.config:swap(config.selector.sorted)
+                        cd.combo.config:swap(config.selector.sorted)
                         config.selector.current.combo_file =
-                            util_table.index(state.combo.config.values, new_file.display_name) --[[@as integer]]
+                            util_table.index(cd.combo.config.values, new_file.display_name) --[[@as integer]]
                         config.selector:import()
                         config.selector:swap()
                         hud.reinit()
@@ -109,7 +110,7 @@ function this.draw()
                 callback = function()
                     state.input = nil
                     config.selector:duplicate_current_file()
-                    state.combo.config:swap(config.selector.sorted)
+                    cd.combo.config:swap(config.selector.sorted)
                 end,
             },
             {
@@ -130,7 +131,7 @@ function this.draw()
             if changed then
                 if state.input ~= config.selector.sorted[config_sel.combo_file] then
                     config.selector:rename_current_file(state.input.buf)
-                    state.combo.config:swap(config.selector.sorted)
+                    cd.combo.config:swap(config.selector.sorted)
                 end
 
                 state.input = nil
@@ -144,18 +145,18 @@ function this.draw()
         set:combo_filter(
             util_gui.tr("selector.combo_backup"),
             "combo_file_backup",
-            state.combo.config_backup
+            cd.combo.config_backup
         )
         imgui.pop_item_width()
 
         imgui.table_set_column_index(1)
-        util_imgui.begin_disabled(state.combo.config_backup:empty())
+        util_imgui.begin_disabled(cd.combo.config_backup:empty())
 
         if imgui.button(util_gui.tr("selector.button_restore")) then
             state.input = nil
             if config.selector:restore_backup() then
-                state.combo.config:swap(config.selector.sorted)
-                state.combo.config_backup:swap(config.selector.sorted_backup)
+                cd.combo.config:swap(config.selector.sorted)
+                cd.combo.config_backup:swap(config.selector.sorted_backup)
             end
         end
         util_imgui.tooltip(config.lang:tr("selector.tooltip_restore"))
@@ -170,7 +171,7 @@ function this.draw()
                 id = "config_remove_backup",
                 callback = function()
                     if config.selector:delete_current_backup() then
-                        state.combo.config_backup:swap(config.selector.sorted_backup)
+                        cd.combo.config_backup:swap(config.selector.sorted_backup)
                     end
                 end,
                 fn = popup.popup_yesno,

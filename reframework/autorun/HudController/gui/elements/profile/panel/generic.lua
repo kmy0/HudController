@@ -1,18 +1,18 @@
 local ace_misc = require("HudController.util.ace.misc")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
-local set = state.set
 
 local this = {}
 
@@ -240,7 +240,7 @@ function this.combo_hide(
     combo_key,
     button_label_path
 )
-    local combo = state.get_cached_combo(
+    local combo = cd.get_cached_combo(
         combo_key or entry_key,
         item_config_key,
         function(item_config_key, key, _)
@@ -480,8 +480,8 @@ function this.draw(elem, elem_config, config_key)
             },
             item_config_key,
             util_gui.tr("hud_element.entry.box_enable_segment"),
-            state.combo.segment,
-            state.combo.segment:get_index(nil, config:get(item_config_key))
+            cd.combo.segment,
+            cd.combo.segment:get_index(nil, config:get(item_config_key))
         )
 
         if changed_value then

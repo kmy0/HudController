@@ -1,14 +1,14 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
-local set = state.set
 
 ---@param elem Itembar
 ---@param elem_config ItembarConfig
@@ -159,7 +159,7 @@ return function(elem, elem_config, config_key)
         nil,
         item_config_key,
         util_gui.tr("hud_element.entry.combo_expanded_itembar_decide_key"),
-        state.combo.item_decide
+        cd.combo.item_decide
     )
 
     if changed_value then

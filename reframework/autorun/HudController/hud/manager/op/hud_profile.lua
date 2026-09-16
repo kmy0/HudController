@@ -1,8 +1,8 @@
 local bind_manager = require("HudController.hud.bind.key.init")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local factory = require("HudController.hud.factory")
 local hud_manager = require("HudController.hud.manager.init")
-local state = require("HudController.gui.state.init")
 local util_op = require("HudController.hud.manager.op.util")
 local util_table = require("HudController.util.misc.table")
 
@@ -47,7 +47,7 @@ function this.sort(ordered_names)
     util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
         value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key) or 1
     end)
-    state.clear_cache()
+    cd.clear_cache()
 end
 
 ---@param hud_config ModProfileConfig
@@ -90,7 +90,7 @@ function this.remove(hud_config)
         value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key) or 1
     end)
 
-    state.clear_cache()
+    cd.clear_cache()
 end
 
 ---@param name string
@@ -108,7 +108,7 @@ function this.rename(hud_config, new_name)
 
     local config_mod = config.current.mod
     hud_config.name = this.get_name(new_name)
-    state.combo.hud:swap(config_mod.hud)
+    cd.combo.hud:swap(config_mod.hud)
 end
 
 function this.import()

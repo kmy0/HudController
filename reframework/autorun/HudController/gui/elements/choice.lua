@@ -1,17 +1,18 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
 local op = require("HudController.hud.manager.op.init")
 local popup = require("HudController.util.imgui.popup")
+local set = require("HudController.gui.set")
 local sorter = require("HudController.gui.elements.sorter")
-local state = require("HudController.gui.state.init")
+local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_mod = require("HudController.util.mod.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
-local set = state.set
 
 local this = {}
 local reverse_sort = false
@@ -25,7 +26,7 @@ local function draw_hud()
     imgui.begin_group()
     util_imgui.begin_disabled(config_mod.enable_condition_binds)
     imgui.push_item_width(util_gui.get_item_size())
-    if set:combo_filter(util_gui.tr("hud.combo"), "mod.combo.hud", state.combo.hud) then
+    if set:combo_filter(util_gui.tr("hud.combo"), "mod.combo.hud", cd.combo.hud) then
         state.input = nil
         hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
     end
@@ -137,14 +138,14 @@ local function draw_element()
     imgui.table_set_column_index(0)
 
     imgui.push_item_width(util_gui.get_item_size())
-    set:combo_filter(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", state.combo.hud_elem)
+    set:combo_filter(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", cd.combo.hud_elem)
     imgui.pop_item_width()
 
     imgui.table_set_column_index(1)
 
     if imgui.button(util_gui.tr("hud_element.button_add")) then
         op.hud_elem.add_element(
-            state.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
+            cd.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
         )
         config:save()
     end

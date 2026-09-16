@@ -1,13 +1,12 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local m = require("HudController.util.ref.methods")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
-
-local set = state.set
 
 ---@param elem Notice
 ---@param elem_config NoticeConfig
@@ -22,12 +21,8 @@ return function(elem, elem_config, config_key)
         util_imgui.get_something_with_button_width(config.lang:tr("hud_element.entry.button_send"))
     )
 
-    local changed_value = generic.draw_combo(
-        nil,
-        item_config_key,
-        "##" .. item_config_key,
-        state.combo.enemy_msg_type
-    )
+    local changed_value =
+        generic.draw_combo(nil, item_config_key, "##" .. item_config_key, cd.combo.enemy_msg_type)
 
     if changed_value then
         config:set(item_config_key, changed_value.key)

@@ -14,8 +14,8 @@ local ace_porter = require("HudController.util.ace.porter")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local s = require("HudController.util.ref.singletons")
+local set = require("HudController.gui.set")
 local timer = require("HudController.util.misc.timer")
-local set = require("HudController.gui.state.init").set
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 

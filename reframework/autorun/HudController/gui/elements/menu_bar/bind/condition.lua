@@ -13,16 +13,16 @@
 ---@field draw_expanded fun()?
 
 local bind_condition = require("HudController.hud.bind.condition.init")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
 local mod = require("HudController.data.mod")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
 
-local set = state.set
 local drag = drag_util:new()
 local elem_drag = drag_util:new()
 
@@ -73,7 +73,7 @@ local function build_condition_tooltip(conditions, config_key)
             str = string.format(
                 "%s - %s",
                 str,
-                state.bind_condition_options[cond.class]:get_value(index)
+                cd.bind_condition_options[cond.class]:get_value(index)
             )
         end
 
@@ -129,7 +129,7 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
                 set:combo_filter(
                     string.format("##cond_opt.%s.%s", config_key, k),
                     string.format("%s.conditions.int:%s.combo", config_key, k),
-                    state.bind_condition_options[cond.class]
+                    cd.bind_condition_options[cond.class]
                 )
                 imgui.pop_item_width()
             else
@@ -153,7 +153,7 @@ end
 local function draw_add_condition(conditions, config_key, combo_condition_key)
     imgui.push_item_width(util_gui.get_item_size())
 
-    local combo = state.get_cached_combo("condition", config_key, function(_, key, _)
+    local combo = cd.get_cached_combo("condition", config_key, function(_, key, _)
         return util_table.any(conditions, function(_, value)
             return key == value.class
         end)
@@ -202,12 +202,12 @@ local function finalize_set_list(items, dragger, remove, duplicate)
         util_table.sort(items, function(a, b)
             return dragger.item_pos[a] < dragger.item_pos[b]
         end)
-        state.clear_cache()
+        cd.clear_cache()
     end
 
     if not util_table.empty(remove) then
         items = remove_sets(items, remove)
-        state.clear_cache()
+        cd.clear_cache()
         config:save()
     end
 
@@ -233,7 +233,7 @@ local function draw_condition_editor(cond_set, config_key, highlight, path_fn)
 
     local remove = draw_condition_rows(cond_set.conditions, config_key, highlight, path_fn)
     if not util_table.empty(remove) then
-        local combo = state.get_cached_combo("condition", config_key)
+        local combo = cd.get_cached_combo("condition", config_key)
 
         for _, i in ipairs(remove) do
             config:set(combo_condition_key, combo:enable_item(cond_set.conditions[i].class))
@@ -497,7 +497,7 @@ local function draw_condition_bind_menu()
                         set:combo_filter(
                             util_gui.tr("menu.bind.condition.combo_profile", i),
                             string.format("%s.combo_profile", config_key),
-                            state.combo.hud
+                            cd.combo.hud
                         )
                     then
                         cond_set.key = config_mod.hud[config:get(

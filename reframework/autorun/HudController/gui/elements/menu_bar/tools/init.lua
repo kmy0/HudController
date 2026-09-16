@@ -1,17 +1,17 @@
 local canvas = require("HudController.gui.elements.menu_bar.tools.canvas")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local grid = require("HudController.gui.elements.menu_bar.tools.grid")
 local gui_debug = require("HudController.gui.debug")
 local gui_selector = require("HudController.gui.elements.selector")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_mod = require("HudController.util.mod.init")
 
 local mod = data.mod
-local set = state.set
 
 local this = {}
 
@@ -27,8 +27,8 @@ local function draw_tools_menu()
         gui_debug.close()
         config.save_global()
         config.selector:reload()
-        state.combo.config:swap(config.selector.sorted)
-        state.combo.config_backup:swap(config.selector.sorted_backup)
+        cd.combo.config:swap(config.selector.sorted)
+        cd.combo.config_backup:swap(config.selector.sorted_backup)
     end
     util_imgui.end_disabled()
 

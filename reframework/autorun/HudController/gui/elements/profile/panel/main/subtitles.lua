@@ -1,13 +1,12 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
-
-local set = state.set
 
 ---
 ---@param elem Subtitles
@@ -136,7 +135,7 @@ return function(elem, elem_config, config_key)
         _, elem.combo_game_object = util_imgui.combo_filter(
             util_gui.tr("hud_element.entry.combo_listen_to_go"),
             elem.combo_game_object,
-            state.combo.sfx_game_object
+            cd.combo.sfx_game_object
         )
 
         generic.table_thing("subtitles_cached_sfx", 6, function()

@@ -1,12 +1,10 @@
 local config = require("HudController.config.init")
 local fade_manager = require("HudController.hud.fade.init")
 local hud = require("HudController.hud.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
-
-local set = state.set
 
 local this = {}
 

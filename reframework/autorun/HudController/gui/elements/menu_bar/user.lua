@@ -1,8 +1,9 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -10,7 +11,6 @@ local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
-local set = state.set
 local ace_map = data.ace.map
 local user_options_popup = {
     active = false,
@@ -81,7 +81,7 @@ local function draw_options_menu()
     imgui.set_next_item_width(
         util_imgui.get_something_with_button_width(util_gui.tr("menu.user.options.button_add"))
     )
-    set:combo_filter("##user_options_combo", "mod.combo.user_option", state.combo.elem_option)
+    set:combo_filter("##user_options_combo", "mod.combo.user_option", cd.combo.elem_option)
     imgui.same_line()
 
     if not imgui.is_popup_open("##" .. util_gui.tr("menu.user.options.button_add") .. "_popup") then
@@ -107,12 +107,12 @@ local function draw_options_menu()
             then
                 if all_opts[option.name] then
                     op.hud_game_options.remove_game_option_elem(
-                        state.combo.elem_option:get_key(config_mod.combo.user_option),
+                        cd.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
                 else
                     op.hud_game_options.add_game_option_elem(
-                        state.combo.elem_option:get_key(config_mod.combo.user_option),
+                        cd.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
                 end
@@ -124,7 +124,7 @@ local function draw_options_menu()
                 util_imgui.tooltip(
                     string.format(
                         config.lang:tr("menu.user.options.tooltip_bound"),
-                        state.combo.elem_option:get_value_by_key(bound_elem)
+                        cd.combo.elem_option:get_value_by_key(bound_elem)
                     )
                 )
             end
@@ -179,7 +179,7 @@ local function draw_options_menu()
         "mod.game_options.display_full_path"
     )
 
-    for _, elem in ipairs(state.combo.elem_option.map) do
+    for _, elem in ipairs(cd.combo.elem_option.map) do
         local opts = elem.key == "GLOBAL" and config_mod.game_options.hud
             or config_mod.game_options.elements[elem.key]
 

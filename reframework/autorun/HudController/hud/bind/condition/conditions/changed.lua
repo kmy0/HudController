@@ -7,12 +7,12 @@
 ---@field duration integer
 
 local base = require("HudController.hud.def.condition_base")
-local frame_counter = require("HudController.util.misc.frame_counter")
-local timer = require("HudController.util.misc.timer")
-local value_checker = require("HudController.util.misc.value_checker")
-local set = require("HudController.gui.state.init").set
 local config = require("HudController.config.init")
+local frame_counter = require("HudController.util.misc.frame_counter")
+local set = require("HudController.gui.set")
+local timer = require("HudController.util.misc.timer")
 local util_imgui = require("HudController.util.imgui.init")
+local value_checker = require("HudController.util.misc.value_checker")
 
 ---@class ChangedCondition
 local this = {}

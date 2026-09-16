@@ -1,4 +1,4 @@
-local state = require("HudController.gui.state.init")
+local cd = require("HudController.data.combo")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
@@ -23,7 +23,7 @@ end
 
 ---@param config_mod ModSettings
 function this.refresh_hud_combo(config_mod)
-    state.combo.hud:swap(config_mod.hud)
+    cd.combo.hud:swap(config_mod.hud)
     config_mod.combo.key_bind.hud = 1
 end
 

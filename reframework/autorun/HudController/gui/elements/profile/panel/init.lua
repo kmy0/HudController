@@ -5,7 +5,7 @@ local hud = require("HudController.hud.init")
 local main_panel = require("HudController.gui.elements.profile.panel.main.init")
 local notebook = require("HudController.util.imgui.notebook")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -13,7 +13,6 @@ local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
 local mod_enum = data.mod.enum
-local set = state.set
 
 local this = {}
 

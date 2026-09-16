@@ -1,7 +1,9 @@
 local bind_manager = require("HudController.hud.bind.key.init")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
+local state = require("HudController.gui.state")
 local util_bind = require("HudController.util.game.bind.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -11,7 +13,6 @@ local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
-local set = state.set
 
 local this = {}
 
@@ -102,7 +103,7 @@ local function draw_bind_target(config_mod)
         draw_bind_table(function()
             imgui.push_item_width(-1)
 
-            if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", state.combo.hud) then
+            if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", cd.combo.hud) then
                 config_mod.combo.key_bind.elem_profile = 0
                 config:save()
             end
@@ -114,14 +115,14 @@ local function draw_bind_target(config_mod)
                 values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
             end
         end, function()
-            config_mod.combo.key_bind.action_type = state.combo.bind_action_type:get_index("ENABLE") --[[@as integer]]
+            config_mod.combo.key_bind.action_type = cd.combo.bind_action_type:get_index("ENABLE") --[[@as integer]]
 
             util_imgui.begin_disabled(true)
 
             draw_bind_combo(
                 "##bind_action_type_combo",
                 "mod.combo.key_bind.action_type",
-                state.combo.bind_action_type
+                cd.combo.bind_action_type
             )
 
             util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
@@ -150,20 +151,20 @@ local function draw_bind_target(config_mod)
         draw_bind_combo(
             "##bind_option_combo",
             "mod.combo.key_bind.option_hud",
-            state.combo.option_bind
+            cd.combo.option_bind
         )
     end, function()
         if bind_type == 2 then
             draw_bind_combo(
                 "##bind_action_type_combo",
                 "mod.combo.key_bind.action_type",
-                state.combo.bind_action_type
+                cd.combo.bind_action_type
             )
         else
             draw_bind_combo(
                 "##bind_option_mod_combo",
                 "mod.combo.key_bind.option_mod",
-                state.combo.option_mod_bind
+                cd.combo.option_mod_bind
             )
         end
 
@@ -187,12 +188,12 @@ local function get_selected_option(manager, config_mod)
 
         return opt, util_menubar_bind.get_hud_bind_name(opt)
     elseif manager.name == bind_manager.manager_names.OPTION_HUD then
-        return state.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
-            state.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
+        return cd.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
+            cd.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
     end
 
-    return state.combo.option_mod_bind:get_key(config_mod.combo.key_bind.option_mod),
-        state.combo.option_mod_bind:get_value(config_mod.combo.key_bind.option_mod)
+    return cd.combo.option_mod_bind:get_key(config_mod.combo.key_bind.option_mod),
+        cd.combo.option_mod_bind:get_value(config_mod.combo.key_bind.option_mod)
 end
 
 ---@param manager ModBindManager
@@ -225,7 +226,7 @@ local function set_bind_target(manager, bind, config_mod)
 
     ---@diagnostic disable-next-line: assign-type-mismatch
     bind.bound_value = state.listener.opt
-    bind.action_type = state.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
+    bind.action_type = cd.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
 end
 
 ---@param manager ModBindManager

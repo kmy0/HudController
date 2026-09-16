@@ -1,12 +1,12 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local state = require("HudController.gui.state.init")
+local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 
 local draw_control_child = require("HudController.gui.elements.profile.panel.sub.control_child")
-local set = state.set
 
 ---@param elem Text
 ---@param elem_config TextConfig
@@ -45,8 +45,8 @@ return function(elem, elem_config, config_key)
             },
             item_config_key,
             util_gui.tr("hud_element.entry.box_enable_page_alignment", item_config_key),
-            state.combo.page_alignment,
-            state.combo.page_alignment:get_index(nil, config:get(item_config_key))
+            cd.combo.page_alignment,
+            cd.combo.page_alignment:get_index(nil, config:get(item_config_key))
         )
 
         if changed_value then

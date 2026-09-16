@@ -17,8 +17,8 @@ local bind_monitor = require("HudController.hud.bind.key.monitor")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local mod_bind_manager = require("HudController.hud.bind.key.manager")
----@module "HudController.gui.state.init"
-local state = util_misc.lazy_require("HudController.gui.state.init")
+---@module "HudController.gui.state"
+local state = util_misc.lazy_require("HudController.gui.state")
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 local util_table = require("HudController.util.misc.table")
