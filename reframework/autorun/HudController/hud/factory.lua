@@ -106,9 +106,9 @@ function this.get_config(hud_id)
     if not cls then
         cls = hud_elements[mod.enum.hud_type.BASE]
         ret = cls.get_config(hud_id, hud_name)
+    else
+        ret = cls.get_config()
     end
-
-    ret = cls.get_config()
 
     for opt, _ in pairs(config.current.mod.game_options.elements[ret.name_key] or {}) do
         ret.options[opt] = -1
