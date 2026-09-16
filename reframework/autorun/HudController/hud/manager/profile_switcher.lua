@@ -34,30 +34,27 @@ local this = {
 local function switch_profile(update_elements)
     update_elements = update_elements == nil or update_elements
 
-    defaults.play_object:with_dump(function()
-        defaults.option:with_dump(function()
-            local hud = this.requested_hud.hud
-            options.clear()
-            hook.hook_options(hud)
-            options.apply_option_many(hud.options)
-            this.current_hud = this.requested_hud
+    local hud = this.requested_hud.hud
+    options.clear()
+    hook.hook_options(hud)
+    options.apply_option_many(hud.options)
+    this.current_hud = this.requested_hud
 
-            if update_elements then
-                elements.update_elements(hud.elements)
-            end
-        end)
-    end)
+    if update_elements then
+        elements.update_elements(hud.elements)
+    end
+
+    defaults.play_object:enable_auto_dump()
+    defaults.option:enable_auto_dump()
+    defaults.play_object:dump_if_keys_changed()
+    defaults.option:dump_if_keys_changed()
 end
 
 local function try_add_element(hud_config, hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local elem = hud_config.elements[hud_name]
     if elem then
-        defaults.play_object:with_dump(function()
-            defaults.option:with_dump(function()
-                elements.add_element(elem)
-            end)
-        end)
+        elements.add_element(elem)
     else
         elements.remove_element(hud_id)
     end
@@ -314,6 +311,8 @@ function this.request_hud(new_hud, force)
 
     this.notify = not this.current_hud or this.current_hud.hud.key ~= new_hud.hud.key
     this.requested_hud = new_hud
+    defaults.play_object:disable_auto_dump()
+    defaults.option:disable_auto_dump()
 
     if not should_fade(new_hud) then
         switch_profile()
