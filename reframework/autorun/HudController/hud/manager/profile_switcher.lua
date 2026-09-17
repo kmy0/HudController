@@ -312,6 +312,7 @@ function this.request_hud(new_hud, force)
     defaults.option:disable_auto_dump()
 
     if not should_fade(new_hud) then
+        fade_manager.abort_active()
         switch_profile()
         finish()
         return
@@ -333,6 +334,7 @@ function this.request_hud(new_hud, force)
     end
 
     if util_table.empty(faders) then
+        fade_manager.abort_active()
         switch_profile()
         finish()
         return

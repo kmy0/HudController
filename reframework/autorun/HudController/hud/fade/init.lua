@@ -88,6 +88,12 @@ function this.abort()
     end
 end
 
+function this.abort_active()
+    if this.is_active() then
+        this.abort()
+    end
+end
+
 ---@param abort boolean?
 function this.clear(abort)
     if abort then
