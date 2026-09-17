@@ -45,7 +45,8 @@ function this.sort(ordered_names)
     util_op.refresh_hud_combo(config_mod)
 
     util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
-        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key) or 1
+        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key --[[@as integer]])
+            or 1
     end)
     cd.clear_cache()
 end
@@ -87,7 +88,8 @@ function this.remove(hud_config)
     )
 
     util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
-        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key) or 1
+        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key --[[@as integer]])
+            or 1
     end)
 
     cd.clear_cache()

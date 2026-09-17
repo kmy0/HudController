@@ -3,10 +3,12 @@
 ---@field pass boolean
 ---@field element_profile ConditionSetPass[]
 ---@field hud_option ConditionSetPass[]
+---@field mod_option ConditionSetPass[]
 
 ---@class (exact) ConditionEvalResult
 ---@field hud {key: integer, profile: integer[]}
 ---@field hud_option table<string, boolean>?
+---@field mod_option table<string, boolean>?
 
 ---@class (exact) ConditionEvalRet : ConditionEvalResult
 ---@field hud {key: integer, profile: integer[]}?
@@ -37,6 +39,7 @@ local conditions = {
 local condition_set_children = {
     "element_profile",
     "hud_option",
+    "mod_option",
 }
 
 local this = {
@@ -91,6 +94,7 @@ local function eval_all_and_store(condition_sets, cache, parent_key)
             pass = true,
             element_profile = {},
             hud_option = {},
+            mod_option = {},
         }
 
         cache[i] = pass
@@ -158,6 +162,7 @@ local function eval_conditions()
             return {
                 hud = { key = hud_conditions.key, profiles = eval_profiles(hud_conditions) },
                 hud_option = eval_options(hud_conditions.hud_option or {}),
+                mod_option = eval_options(hud_conditions.mod_option or {}),
             }
         end
     end
@@ -286,6 +291,7 @@ function this.new_condition_set(key, parent_key)
         parent_key = parent_key,
         element_profile = {},
         hud_option = {},
+        mod_option = {},
     }
 end
 

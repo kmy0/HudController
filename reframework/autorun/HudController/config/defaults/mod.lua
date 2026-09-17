@@ -57,6 +57,7 @@
 ---@field parent_key (integer | string)?
 ---@field element_profile ConditionSetConfig[]
 ---@field hud_option ConditionSetConfig[]
+---@field mod_option ConditionSetConfig[]
 ---@field free_value any?
 
 ---@class (exact) ConditionBindStateConfig

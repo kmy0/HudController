@@ -501,6 +501,8 @@ local function draw_hud_options(i, cond_set)
             cond_set.hud_option,
             bind_condition.new_condition_set(cd.combo.option_bind:get_keys()[1], cond_set.key)
         )
+
+        cond_set.hud_option[#cond_set.hud_option].free_value = false
         config:save()
     end
 
@@ -567,6 +569,86 @@ local function draw_hud_options(i, cond_set)
     imgui.unindent(2)
 end
 
+---@param i integer
+---@param cond_set ConditionSetConfig
+local function draw_mod_options(i, cond_set)
+    imgui.spacing()
+    imgui.indent(2)
+
+    if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition", "mod_options")) then
+        table.insert(
+            cond_set.mod_option,
+            bind_condition.new_condition_set(cd.combo.option_mod_bind:get_keys()[1], cond_set.key)
+        )
+
+        cond_set.mod_option[#cond_set.mod_option].free_value = false
+        config:save()
+    end
+
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_option_condition_set"), true)
+
+    if not util_table.empty(cond_set.mod_option) then
+        imgui.separator()
+    end
+
+    cond_set.mod_option = draw_condition_set_list(
+        cond_set.mod_option,
+        elem_drag,
+        function(j, cond_child)
+            local config_key =
+                string.format("mod.bind.condition.hud.int:%s.mod_option.int:%s", i, j)
+
+            return draw_condition_set({
+                index = j,
+                cond_set = cond_child,
+                config_key = config_key,
+                dragger = elem_drag,
+                collapse_id = string.format("cond_set_collapse.%s.%s", i, j),
+                remove_label = util_gui.tr("menu.bind.condition.button_remove", "mod_option", i, j),
+                duplicate_label = util_gui.tr(
+                    "menu.bind.condition.button_duplicate",
+                    "mod_option",
+                    i,
+                    j
+                ),
+                highlight = config.current.mod.bind.condition.highlight_pass,
+                pass_path = { i, "mod_option", j, "pass" },
+                condition_path_fn = function(k)
+                    return { i, "mod_option", j, "conditions", k }
+                end,
+                draw_selector = function()
+                    local item_config_key = string.format("%s.combo_profile", config_key)
+                    imgui.push_item_width(util_gui.get_item_size())
+                    if
+                        set:combo_filter(
+                            util_gui.tr("menu.bind.condition.combo_mod_option", i, j),
+                            item_config_key,
+                            cd.combo.option_mod_bind
+                        )
+                    then
+                        cond_child.key =
+                            cd.combo.option_mod_bind:get_key(config:get(item_config_key))
+                        config:save()
+                    end
+                    imgui.pop_item_width()
+                end,
+                draw_additional_opt = function()
+                    imgui.separator()
+                    local item_config_key = string.format("%s.combo_profile", config_key)
+                    set:checkbox(
+                        cd.combo.option_mod_bind:get_value(config:get(item_config_key)),
+                        string.format("%s.free_value", config_key)
+                    )
+                end,
+            })
+        end
+    )
+
+    util_imgui.end_disabled()
+    imgui.spacing()
+    imgui.unindent(2)
+end
+
 local function draw_condition_bind_menu()
     local config_mod = config.current.mod
 
@@ -595,6 +677,7 @@ local function draw_condition_bind_menu()
             local config_key = "mod.bind.condition.hud.int:" .. i
             cond_set.element_profile = cond_set.element_profile or {}
             cond_set.hud_option = cond_set.hud_option or {}
+            cond_set.mod_option = cond_set.mod_option or {}
 
             return draw_condition_set({
                 index = i,
@@ -641,6 +724,12 @@ local function draw_condition_bind_menu()
                         util_gui.tr("menu.bind.condition.menubar_hud_options", i),
                         function()
                             draw_hud_options(i, cond_set)
+                        end
+                    )
+                    util_menubar.draw_menu(
+                        util_gui.tr("menu.bind.condition.menubar_mod_options", i),
+                        function()
+                            draw_mod_options(i, cond_set)
                         end
                     )
                 end,

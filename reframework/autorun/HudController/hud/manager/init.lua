@@ -29,14 +29,20 @@ local this = {
     disable_condition_binds = timer:new(0),
     force_update = false,
     condition_options = {},
-}
-
-local condition_option_handlers = {
-    hud_option = {
-        apply = options.overwrite_hud_option,
-        remove = function(key, _)
-            options.clear_overridden(key)
-        end,
+    condition_option_handlers = {
+        hud_option = {
+            apply = options.overwrite_hud_option,
+            remove = function(key, _)
+                options.clear_overridden(key)
+            end,
+        },
+        mod_option = {
+            apply = function(key, value)
+                ---@diagnostic disable-next-line: no-unknown
+                config.current.mod[key] = value
+            end,
+            remove = function() end,
+        },
     },
 }
 
@@ -52,7 +58,7 @@ end
 ---@param request ConditionEvalRet
 ---@param clear boolean?
 local function update_condition_options(request, clear)
-    for name, handler in pairs(condition_option_handlers) do
+    for name, handler in pairs(this.condition_option_handlers) do
         local current = request[name] or {} --[[@as table<string, any>]]
         local previous = this.condition_options[name] or {}
 
