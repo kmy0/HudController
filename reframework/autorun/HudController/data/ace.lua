@@ -19,6 +19,7 @@
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
 ---@field subtitles {[string]: {npc: {id: app.NpcDef.ID, name: string}, text: string }}
 ---@field game_options table<string, AceOptionNode[]>
+---@field notice_child_cls_array string[]
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -96,7 +97,7 @@ local this = {
         hudless_to_hud = {
             UI020002 = "UI020000", -- focus reticle to slinger reticle
         },
-        no_lang_key = { ALL = true },
+        no_lang_key = {},
         guiid_ignore = {
             UI090901 = true, -- barrels score
             UI020902 = true,
@@ -111,6 +112,17 @@ local this = {
             ["401ea0fa-2c9e-4617-9dc8-227d847ec67a"] = 5,
             ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
             ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
+        },
+        notice_child_cls_array = {
+            "app.cGUI020100PanelItem",
+            "app.cGUI020100PanelTutorial",
+            "app.cGUI020100PanelText",
+            "app.cGUI020100PanelSignal",
+            "app.cGUI020100PanelNetwork",
+            "app.cGUI020100PanelEnemy",
+            "app.cGUI020100PanelAnimal",
+            "app.cGUI020100PanelAchieve",
+            "app.GUI020100PanelCommunication",
         },
         auto_id_to_text = {},
         subtitles = {},

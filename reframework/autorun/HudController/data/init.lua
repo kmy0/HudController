@@ -13,6 +13,7 @@ local util_ref = require("HudController.util.ref.init")
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map
@@ -342,6 +343,25 @@ local function get_subtitles_map()
     end)
 end
 
+local function get_no_lang_key()
+    ace_map.no_lang_key = { ALL = true }
+
+    for _, cls_name in pairs(ace_map.notice_child_cls_array) do
+        local cls_short = util_misc.split_string(cls_name, "GUI020100Panel")[2]
+        ace_map.no_lang_key[cls_short] = true
+    end
+
+    for field_name, _ in
+        e.iter_many({
+            "app.GUI020400.SUBTITLES_CATEGORY",
+            "app.GUI020020.State",
+            "app.GUI020020.CRITICAL_STATE",
+        })
+    do
+        ace_map.no_lang_key[field_name] = true
+    end
+end
+
 ---@return boolean
 function this.init()
     if
@@ -422,16 +442,7 @@ function this.init()
     get_option_map()
     get_log_id_text()
     get_subtitles_map()
-
-    for field_name, _ in
-        e.iter_many({
-            "app.GUI020400.SUBTITLES_CATEGORY",
-            "app.GUI020020.State",
-            "app.GUI020020.CRITICAL_STATE",
-        })
-    do
-        ace_map.no_lang_key[field_name] = true
-    end
+    get_no_lang_key()
 
     deprecated.init()
     return true

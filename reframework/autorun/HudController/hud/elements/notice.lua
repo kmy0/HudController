@@ -115,7 +115,7 @@ function this:new(args)
     o.log_id = args.log_id
     o._queued_callbacks = {}
 
-    for _, cls_name in pairs(cls_name_array) do
+    for _, cls_name in pairs(ace_map.notice_child_cls_array) do
         local cls_short = this.get_cls_name_short(cls_name)
         o.children[cls_short] = hud_child:new(
             args.children[cls_short],
