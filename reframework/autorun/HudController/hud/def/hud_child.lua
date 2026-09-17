@@ -87,11 +87,11 @@ function this:new(args, parent, ctrl_getter, optional_args)
             o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, {
                 max_frame = config_debug.slider_frame,
                 jitter = config_debug.slider_jitter,
-                cache_index = optional_args.cache_index,
+                key_index = optional_args.cache_index,
             })
         elseif config_debug.combo_elem_cache == mod.enum.elem_cache.ONCE then
             o._ctrl_getter = cache.memoize(o._ctrl_getter, nil, {
-                cache_index = optional_args.cache_index,
+                key_index = optional_args.cache_index,
             })
         end
     end
