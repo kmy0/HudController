@@ -74,7 +74,7 @@ function this.get_hud_option(key)
         return
     end
 
-    local overridden = this.manager.overridden_options[key]
+    local overridden = this.options.overridden_options[key]
     if overridden ~= nil then
         return overridden
     end

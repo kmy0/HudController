@@ -11,7 +11,7 @@ re.on_frame(function()
         if map_open and hud.get_hud_option("hide_monster_icon") then
             hud.overwrite_hud_option("hide_monster_icon", false)
         elseif not map_open and not hud.get_overridden("hide_monster_icon") then
-            hud.manager.overridden_options["hide_monster_icon"] = nil
+            hud.clear_overridden("hide_monster_icon")
         end
     end
 end)

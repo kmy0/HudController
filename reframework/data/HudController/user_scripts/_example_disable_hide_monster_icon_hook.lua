@@ -33,7 +33,7 @@ m.hook(
             and not hud.get_overridden("hide_monster_icon")
             and util_ref.to_int(args[3]) == e.get("app.GUIID.ID").UI060000
         then
-            hud.manager.overridden_options["hide_monster_icon"] = nil
+            hud.clear_overridden("hide_monster_icon")
         end
     end
 )
