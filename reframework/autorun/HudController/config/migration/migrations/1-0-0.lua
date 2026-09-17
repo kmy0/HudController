@@ -120,7 +120,7 @@ function this.fns.conditions(config)
         b.key = b.hud_key
         b.combo_profile = b.combo_hud
         b.expected_result = 1
-        b.children = {}
+        b.element_profile = {}
     end
 end
 

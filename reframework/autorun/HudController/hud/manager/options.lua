@@ -77,6 +77,11 @@ function this.overwrite_hud_option(key, new_value)
     return this.overridden_options[key]
 end
 
+---@param key string
+function this.clear_overridden(key)
+    this.overridden_options[key] = nil
+end
+
 function this.clear()
     this.overridden_options.clear()
 end

@@ -49,13 +49,15 @@
 ---@class (exact) ConditionBindOptionsBase
 
 ---@class (exact) ConditionSetConfig
----@field key integer
+---@field key integer | string
 ---@field conditions ConditionConfigBase[]
 ---@field combo_profile integer
 ---@field combo_condition integer
 ---@field collapsed boolean
----@field parent_key integer?
----@field children ConditionSetConfig[]
+---@field parent_key (integer | string)?
+---@field element_profile ConditionSetConfig[]
+---@field hud_option ConditionSetConfig[]
+---@field free_value any?
 
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>

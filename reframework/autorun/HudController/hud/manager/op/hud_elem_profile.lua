@@ -132,14 +132,17 @@ function this.remove_elem_profile(hud_config, key)
     end
 
     for _, cond_set in pairs(config_mod.bind.condition.hud) do
-        if cond_set.key == hud_config.key and cond_set.children then
-            for _, cond_child in pairs(cond_set.children) do
+        if cond_set.key == hud_config.key and cond_set.element_profile then
+            for _, cond_child in pairs(cond_set.element_profile) do
                 cond_child.combo_profile = filter_binds(cond_child, "key")
             end
 
-            cond_set.children = util_table.filter_array(cond_set.children, function(_, value)
-                return value.combo_profile ~= 0
-            end)
+            cond_set.element_profile = util_table.filter_array(
+                cond_set.element_profile,
+                function(_, value)
+                    return value.combo_profile ~= 0
+                end
+            )
         end
     end
 

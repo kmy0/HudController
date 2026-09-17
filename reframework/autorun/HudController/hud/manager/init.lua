@@ -3,6 +3,7 @@
 ---@field is_cleared boolean
 ---@field disable_condition_binds Timer
 ---@field force_update boolean
+---@field condition_options table<string, table<string, any>>
 
 local ace_misc = require("HudController.util.ace.misc")
 local bind_condition = require("HudController.hud.bind.condition.init")
@@ -27,6 +28,16 @@ local this = {
     overridden_options = options.overridden_options, --FIXME: DEPRECATED
     disable_condition_binds = timer:new(0),
     force_update = false,
+    condition_options = {},
+}
+
+local condition_option_handlers = {
+    hud_option = {
+        apply = options.overwrite_hud_option,
+        remove = function(key, _)
+            options.clear_overridden(key)
+        end,
+    },
 }
 
 local function verify_elements()
@@ -35,6 +46,29 @@ local function verify_elements()
         config_mod.hud[i] = factory.verify_hud(config_mod.hud[i])
         local hud = config_mod.hud[i]
         hud.elements = factory.verify_elements(hud.elements or {})
+    end
+end
+
+---@param request ConditionEvalRet
+---@param clear boolean?
+local function update_condition_options(request, clear)
+    for name, handler in pairs(condition_option_handlers) do
+        local current = request[name] or {} --[[@as table<string, any>]]
+        local previous = this.condition_options[name] or {}
+
+        if handler.remove then
+            for key, value in pairs(previous) do
+                if clear or current[key] == nil then
+                    handler.remove(key, value)
+                end
+            end
+        end
+
+        for key, value in pairs(current) do
+            handler.apply(key, value)
+        end
+
+        this.condition_options[name] = current
     end
 end
 
@@ -83,6 +117,7 @@ function this.update()
         if not this.is_cleared then
             this.clear()
         end
+
         return
     end
 
@@ -112,6 +147,7 @@ function this.update()
         if config_mod.bind.condition.highlight_pass and config.gui.current.gui.main.is_opened then
             bind_condition.update_conditions_only()
         end
+
         return
     end
 
@@ -120,13 +156,21 @@ function this.update()
         return
     end
 
+    update_condition_options(request)
+
+    if not request.hud then
+        return
+    end
+
     local force_update = this.force_update
     local target = profile_switcher.requested_hud or profile_switcher.current_hud --[[@as ModHud]]
     local target_hud = target.hud
     local target_profile = target.profile
 
-    local requested_hud = request.hud
-    local requested_profile = request.profile
+    local requested_hud = util_table.find_value(config.current.mod.hud, function(_, value)
+        return value.key == request.hud.key
+    end)
+    local requested_profile = request.hud.profile
 
     if requested_hud and requested_profile then
         if
@@ -182,6 +226,7 @@ function this.clear()
     cache.clear_all()
     this.is_cleared = true
     this.force_update = false
+    this.condition_options = {}
 end
 
 function this.init()

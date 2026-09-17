@@ -10,6 +10,7 @@
 ---@field pass_path any[]
 ---@field condition_path_fn fun(k: integer): any[]
 ---@field draw_selector fun()
+---@field draw_additional_opt fun()?
 ---@field draw_expanded fun()?
 
 local bind_condition = require("HudController.hud.bind.condition.init")
@@ -318,6 +319,10 @@ local function draw_condition_set(params)
     imgui.invisible_button("i_button1" .. params.collapse_id, { 0, 0 })
 
     if not cond_set.collapsed then
+        if params.draw_additional_opt then
+            params.draw_additional_opt()
+        end
+
         imgui.separator()
         draw_condition_editor(
             cond_set,
@@ -380,7 +385,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     imgui.spacing()
     imgui.indent(2)
 
-    local bad_key = util_table.find_value(cond_set.children, function(_, value)
+    local bad_key = util_table.find_value(cond_set.element_profile, function(_, value)
         return value.parent_key ~= cond_set.key
     end)
 
@@ -401,7 +406,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
             mod.enum.colors.bad
         )
         if imgui.button(util_gui.tr("menu.bind.condition.button_clear", "element_profiles")) then
-            cond_set.children = {}
+            cond_set.element_profile = {}
             config:save()
         end
     else
@@ -411,26 +416,27 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
             )
         then
             table.insert(
-                cond_set.children,
+                cond_set.element_profile,
                 bind_condition.new_condition_set(elem_profiles[1].key, cond_set.key)
             )
-            cond_set.children[#cond_set.children].combo_profile = 0
+            cond_set.element_profile[#cond_set.element_profile].combo_profile = 0
             config:save()
         end
 
         util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_elem_condition_set"), true)
     end
 
-    if not util_table.empty(cond_set.children) then
+    if not util_table.empty(cond_set.element_profile) then
         imgui.separator()
     end
 
     util_imgui.begin_disabled(bad_key ~= nil)
-    cond_set.children = draw_condition_set_list(
-        cond_set.children,
+    cond_set.element_profile = draw_condition_set_list(
+        cond_set.element_profile,
         elem_drag,
         function(j, cond_child)
-            local config_key = string.format("mod.bind.condition.hud.int:%s.children.int:%s", i, j)
+            local config_key =
+                string.format("mod.bind.condition.hud.int:%s.element_profile.int:%s", i, j)
 
             return draw_condition_set({
                 index = j,
@@ -451,9 +457,9 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
                     j
                 ),
                 highlight = config.current.mod.bind.condition.highlight_pass,
-                pass_path = { i, "children", j, "pass" },
+                pass_path = { i, "element_profile", j, "pass" },
                 condition_path_fn = function(k)
-                    return { i, "children", j, "conditions", k }
+                    return { i, "element_profile", j, "conditions", k }
                 end,
                 draw_selector = function()
                     if
@@ -479,6 +485,83 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     )
 
     util_imgui.end_disabled()
+    util_imgui.end_disabled()
+    imgui.spacing()
+    imgui.unindent(2)
+end
+
+---@param i integer
+---@param cond_set ConditionSetConfig
+local function draw_hud_options(i, cond_set)
+    imgui.spacing()
+    imgui.indent(2)
+
+    if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition", "hud_options")) then
+        table.insert(
+            cond_set.hud_option,
+            bind_condition.new_condition_set(cd.combo.option_bind:get_keys()[1], cond_set.key)
+        )
+        config:save()
+    end
+
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_option_condition_set"), true)
+
+    if not util_table.empty(cond_set.hud_option) then
+        imgui.separator()
+    end
+
+    cond_set.hud_option = draw_condition_set_list(
+        cond_set.hud_option,
+        elem_drag,
+        function(j, cond_child)
+            local config_key =
+                string.format("mod.bind.condition.hud.int:%s.hud_option.int:%s", i, j)
+
+            return draw_condition_set({
+                index = j,
+                cond_set = cond_child,
+                config_key = config_key,
+                dragger = elem_drag,
+                collapse_id = string.format("cond_set_collapse.%s.%s", i, j),
+                remove_label = util_gui.tr("menu.bind.condition.button_remove", "hud_option", i, j),
+                duplicate_label = util_gui.tr(
+                    "menu.bind.condition.button_duplicate",
+                    "hud_option",
+                    i,
+                    j
+                ),
+                highlight = config.current.mod.bind.condition.highlight_pass,
+                pass_path = { i, "hud_option", j, "pass" },
+                condition_path_fn = function(k)
+                    return { i, "hud_option", j, "conditions", k }
+                end,
+                draw_selector = function()
+                    local item_config_key = string.format("%s.combo_profile", config_key)
+                    imgui.push_item_width(util_gui.get_item_size())
+                    if
+                        set:combo_filter(
+                            util_gui.tr("menu.bind.condition.combo_hud_option", i, j),
+                            item_config_key,
+                            cd.combo.option_bind
+                        )
+                    then
+                        cond_child.key = cd.combo.option_bind:get_key(config:get(item_config_key))
+                        config:save()
+                    end
+                    imgui.pop_item_width()
+                end,
+                draw_additional_opt = function()
+                    imgui.separator()
+                    local item_config_key = string.format("%s.combo_profile", config_key)
+                    set:checkbox(
+                        cd.combo.option_bind:get_value(config:get(item_config_key)),
+                        string.format("%s.free_value", config_key)
+                    )
+                end,
+            })
+        end
+    )
+
     util_imgui.end_disabled()
     imgui.spacing()
     imgui.unindent(2)
@@ -510,7 +593,8 @@ local function draw_condition_bind_menu()
         drag,
         function(i, cond_set)
             local config_key = "mod.bind.condition.hud.int:" .. i
-            cond_set.children = cond_set.children or {}
+            cond_set.element_profile = cond_set.element_profile or {}
+            cond_set.hud_option = cond_set.hud_option or {}
 
             return draw_condition_set({
                 index = i,
@@ -551,6 +635,12 @@ local function draw_condition_bind_menu()
                         util_gui.tr("menu.bind.condition.menubar_element_profiles", i),
                         function()
                             draw_element_profiles(i, cond_set, config_mod.hud[cond_set.key].profile)
+                        end
+                    )
+                    util_menubar.draw_menu(
+                        util_gui.tr("menu.bind.condition.menubar_hud_options", i),
+                        function()
+                            draw_hud_options(i, cond_set)
                         end
                     )
                 end,

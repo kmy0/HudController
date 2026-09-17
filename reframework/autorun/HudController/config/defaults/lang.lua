@@ -234,10 +234,13 @@ return {
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
                 tooltip_add_new_condition = "Conditions sets are evaluated from top to bottom",
                 menubar_element_profiles = "Element Profiles",
+                menubar_hud_options = "Hud Options",
                 combo_elem_profile = "Element Profile",
+                combo_hud_option = "Hud Option",
                 button_clear = "Clear",
                 text_trigger_duration = "Trigger Duration",
                 tooltip_wrong_parent_key = "These element profile conditions belong to %s and are currently inactive.\nSwitch back to %s to use them.",
+                tooltip_option_condition_set = "Condition sets are applied from top to bottom",
                 tooltip_elem_condition_set = "Condition sets are applied from top to bottom. Within each passing set, selected profiles are evaluated from right to left.\nThe first enabled profile available for an element is used.",
             },
             condition_option = {
