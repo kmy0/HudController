@@ -148,12 +148,13 @@ end
 ---@param faders table<app.GUIHudDef.TYPE, Fader>
 ---@param on_finish fun()?
 function this.request_fade(faders, on_finish)
-    if this.is_active() then
+    local is_active = this.is_active()
+    if is_active then
         this.step_mod = this.step_mod + 1
     end
 
     this.faders = fader_group:new(faders)
-    if this.is_active() then
+    if is_active then
         this.faders:accelerate(this.step_mod)
     end
 
