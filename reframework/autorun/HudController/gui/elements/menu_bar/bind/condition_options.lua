@@ -14,11 +14,6 @@ local function draw_condition_option_menu()
 
     util_imgui.separator_text(config.lang:tr("menu.bind.condition_option.category_general"))
     set:checkbox(
-        util_gui.tr("menu.bind.condition_option.box_switchback"),
-        "mod.bind.condition.switchback"
-    )
-    util_imgui.tooltip(config.lang:tr("menu.bind.condition_option.tooltip_switchback"), true)
-    set:checkbox(
         util_gui.tr("menu.bind.condition_option.box_highlight_pass"),
         "mod.bind.condition.highlight_pass"
     )

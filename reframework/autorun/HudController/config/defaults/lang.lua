@@ -239,8 +239,6 @@ return {
             condition_option = {
                 name = "Condition Options",
                 category_general = "General",
-                box_switchback = "Switch Back",
-                tooltip_switchback = "Switch back to the previous profile once the condition stops triggering",
                 box_highlight_pass = "Highlight Passing Conditions",
             },
             key = {
@@ -406,7 +404,7 @@ return {
         tooltip_button_export = "Export element json string to clipboard",
     },
     hud_element = {
-        combo = "Hud Element",
+        combo = "Element",
         button_add = "Add",
         button_remove = "Remove",
         button_sort = "Sort",

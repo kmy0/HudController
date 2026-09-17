@@ -59,7 +59,6 @@
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
 ---@field hud ConditionSetConfig[]
----@field switchback boolean
 ---@field highlight_pass boolean
 
 ---@class (exact) ModSettings
@@ -196,7 +195,6 @@ return {
             condition = {
                 condition_options = {},
                 hud = {},
-                switchback = false,
                 highlight_pass = false,
             },
             slider = {

@@ -27,10 +27,6 @@ local conditions = {
 local this = {
     ---@type table<string, ConditionBase>
     conditions = {},
-    ---@type integer?
-    previous_hud_key = nil,
-    ---@type integer[]?
-    previous_profile_keys = nil,
     ---@type ConditionSetPass[]
     passing_sets = {},
 }
@@ -178,34 +174,11 @@ function this.update(current_hud, force)
         new_profiles = res.profiles
     end
 
-    local switchback = bind_conditions.switchback
     local same_as_current = current_hud
         and new_hud_key == current_hud.hud.key
         and util_table.equal(new_profiles or {}, current_hud.profile_bits or {})
+
     if same_as_current and not force then
-        return
-    end
-
-    local restore_hud = switchback and not new_hud_key and this.previous_hud_key
-    local restore_profile = switchback
-        and new_hud_key
-        and new_profiles
-        and util_table.empty(new_profiles)
-        and this.previous_profile_keys
-
-    if restore_hud then
-        new_hud_key = this.previous_hud_key
-        new_profiles = this.previous_profile_keys
-
-        this.previous_hud_key = nil
-        this.previous_profile_keys = nil
-    elseif restore_profile then
-        new_profiles = this.previous_profile_keys
-        this.previous_profile_keys = nil
-    elseif new_hud_key and current_hud then
-        this.previous_hud_key = current_hud.hud.key
-        this.previous_profile_keys = current_hud.profile_bits
-    else
         return
     end
 
@@ -224,8 +197,6 @@ end
 
 function this.reset()
     condition_base.reset_all()
-    this.previous_hud_key = nil
-    this.previous_profile_keys = nil
 end
 
 ---@param key integer
