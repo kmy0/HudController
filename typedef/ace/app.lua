@@ -156,6 +156,7 @@
 
 ---@class app.cWeaponKireaji : via.clr.ManagedObject
 ---@field get_CurrentType fun(self: app.cWeaponKireaji): app.WeaponDef.KIREAJI_TYPE
+---@field get_CurrentValue fun(self: app.cWeaponKireaji): System.Int32
 
 ---@class app.cHunterWpGunHandling : app.cHunterWeaponHandlingBase
 ---@field getCurrentAmmo fun(self: app.cHunterWpGunHandling): app.cWeaponGunAmmo
