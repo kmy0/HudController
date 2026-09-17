@@ -156,7 +156,7 @@ end
 
 ---@param new_name string
 function this:rename_current_file(new_name)
-    if not new_name or new_name == "" or new_name == this.default_name then
+    if not self:is_valid_name(new_name) or new_name == this.default_name then
         return
     end
 
@@ -267,6 +267,7 @@ end
 ---@param display_name string
 ---@return string
 function this:get_file_name(display_name)
+    assert(self:is_valid_name(display_name), "Invalid config filename")
     return display_name .. ".config.json"
 end
 
@@ -296,6 +297,20 @@ function this:get_name(display_name)
     end
 
     return ret
+end
+
+---@param name string
+---@return boolean
+function this:is_valid_name(name)
+    if type(name) ~= "string" or name == "" then
+        return false
+    end
+
+    if not name:match("^[%w _%.%-]+$") then
+        return false
+    end
+
+    return name ~= "." and name ~= ".."
 end
 
 function this:export()
