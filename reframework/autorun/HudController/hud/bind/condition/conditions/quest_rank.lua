@@ -21,7 +21,7 @@ function this:new()
     local o = multi_select.new(
         self,
         "_QUEST_RANK",
-        "menu.bind.condition.condition_quest_rank",
+        config.lang.make_placeholder("menu.bind.condition.condition_quest_rank"),
         values,
         function(a, b)
             return a.key < b.key

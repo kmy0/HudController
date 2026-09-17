@@ -3,6 +3,7 @@
 
 local ace_player = require("HudController.util.ace.player")
 local changed_condition = require("HudController.hud.bind.condition.conditions.changed")
+local config = require("HudController.config.init")
 local value_checker = require("HudController.util.misc.value_checker")
 
 ---@class SharpnessChanged
@@ -15,7 +16,7 @@ function this:new()
     local o = changed_condition.new(
         self,
         "_SHARPNESS_CHANGED",
-        "menu.bind.condition.condition_sharpness_changed"
+        config.lang.make_placeholder("menu.bind.condition.condition_sharpness_changed")
     )
     setmetatable(o, self)
     ---@cast o SharpnessChanged

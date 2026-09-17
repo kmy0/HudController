@@ -33,10 +33,15 @@ local state = {
 
 ---@return CombatCondition
 function this:new()
-    local o = condition_base.new(self, "_COMBAT", "menu.bind.condition.condition_combat_state", {
-        "menu.bind.condition.condition_opt_in_combat",
-        "menu.bind.condition.condition_opt_out_of_combat",
-    })
+    local o = condition_base.new(
+        self,
+        "_COMBAT",
+        config.lang.make_placeholder("menu.bind.condition.condition_combat_state"),
+        {
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_in_combat"),
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_out_of_combat"),
+        }
+    )
     setmetatable(o, self)
     ---@cast o CombatCondition
     o.state = state.OUT_OF_COMBAT

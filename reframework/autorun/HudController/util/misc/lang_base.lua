@@ -100,6 +100,13 @@ function this:exists(key)
     return type(ret) == "string"
 end
 
+---@param key string
+---@return boolean
+function this:exists_default(key)
+    local ret = util_table.get_by_path(self.default, key)
+    return type(ret) == "string"
+end
+
 ---@param str string
 ---@return string
 function this:try_replace(str)
@@ -108,6 +115,23 @@ function this:try_replace(str)
     end)
 
     return ret
+end
+
+---@param key string
+---@return string
+function this.make_placeholder(key)
+    return string.format("<PLACEHOLDER(%s)>", key)
+end
+
+function this:add_key(key, value)
+    if not self:exists(key) then
+        util_table.set_by_path(self.current, key, value)
+    end
+
+    if not self:exists_default(key) then
+        util_table.set_by_path(self.default, key, value)
+        self:try_create_default_file()
+    end
 end
 
 return this

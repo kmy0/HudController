@@ -79,11 +79,7 @@ local this = {
             end,
 
             translate_fn = function(key)
-                local val = ace_map.hudid_name_to_local_name[key]
-                if val == ace_map.tr_flag then
-                    return config.lang:tr("hud_element.name." .. key)
-                end
-                return val
+                return ace_map.hudid_name_to_local_name[key]
             end,
         }),
         hud = combo:new(nil, {
@@ -293,11 +289,8 @@ local this = {
                 return (enum[a.key] or -1) < (enum[b.key] or -1)
             end,
 
-            translate_fn = function(key, value)
-                if value == ace_map.tr_flag then
-                    return config.lang:tr("hud_element.name." .. key)
-                end
-                return value
+            translate_fn = function(_, value)
+                return config.lang:try_replace(value)
             end,
         }),
     },
@@ -312,10 +305,7 @@ local function init_condition_combo()
         if cond.options then
             this.bind_condition_options[cond.condition_name] = combo:new(cond.options, {
                 translate_fn = function(_, value)
-                    if config.lang:exists(value) then
-                        return config.lang:tr(value)
-                    end
-                    return value
+                    return config.lang:try_replace(value)
                 end,
                 sort_fn = function(a, b)
                     return a.key < b.key
@@ -475,7 +465,10 @@ function this.init()
     this.combo.sfx_game_object:swap({})
     -- game_options
     this.combo.elem_option:swap(
-        util_table.merge({ GLOBAL = ace_map.tr_flag }, ace_map.hudid_name_to_local_name)
+        util_table.merge(
+            { GLOBAL = config.lang.make_placeholder("hud_element.name.GLOBAL") },
+            ace_map.hudid_name_to_local_name
+        )
     )
 
     init_condition_combo()

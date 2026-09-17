@@ -1,5 +1,6 @@
 local ace_player = require("HudController.util.ace.player")
 local condition_base = require("HudController.hud.def.condition_base")
+local config = require("HudController.config.init")
 
 ---@class VillageCondition : ConditionBase
 local this = {}
@@ -9,7 +10,11 @@ setmetatable(this, { __index = condition_base })
 
 ---@return VillageCondition
 function this:new()
-    local o = condition_base.new(self, "_VILLAGE", "menu.bind.condition.condition_village")
+    local o = condition_base.new(
+        self,
+        "_VILLAGE",
+        config.lang.make_placeholder("menu.bind.condition.condition_village")
+    )
     setmetatable(o, self)
     ---@cast o VillageCondition
 

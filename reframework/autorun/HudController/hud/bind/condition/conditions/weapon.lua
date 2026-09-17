@@ -3,6 +3,7 @@
 
 local ace_player = require("HudController.util.ace.player")
 local condition_base = require("HudController.hud.def.condition_base")
+local config = require("HudController.config.init")
 local data_ace = require("HudController.data.ace")
 local e = require("HudController.util.game.enum")
 local util_table = require("HudController.util.misc.table")
@@ -30,8 +31,12 @@ function this:new()
         table.insert(sorted_weapons, value.value)
     end)
 
-    local o =
-        condition_base.new(self, "_WEAPON", "menu.bind.condition.condition_weapon", sorted_weapons)
+    local o = condition_base.new(
+        self,
+        "_WEAPON",
+        config.lang.make_placeholder("menu.bind.condition.condition_weapon"),
+        sorted_weapons
+    )
     setmetatable(o, self)
     ---@cast o WeaponCondition
 

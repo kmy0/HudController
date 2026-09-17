@@ -25,9 +25,16 @@ local function translate_ace_option()
     end
 end
 
+local function translate_elements()
+    for k, v in pairs(ace_map.hudid_name_to_local_name) do
+        ace_map.hudid_name_to_local_name[k] = config.lang:try_replace(v)
+    end
+end
+
 ---@return boolean
 function this.init()
     translate_ace_option()
+    translate_elements()
     return true
 end
 

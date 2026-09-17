@@ -1,4 +1,5 @@
 local condition_base = require("HudController.hud.def.condition_base")
+local config = require("HudController.config.init")
 local s = require("HudController.util.ref.singletons")
 local util_table = require("HudController.util.misc.table")
 
@@ -15,11 +16,13 @@ function this:new()
     local o = condition_base.new(
         self,
         "_MINIMAP_STATE",
-        "menu.bind.condition.condition_minimap_state",
+        config.lang.make_placeholder("menu.bind.condition.condition_minimap_state"),
         util_table.collect(util_table.iterator(function(index)
             if minimap_state[index] then
                 return string.format(
-                    "menu.bind.condition.condition_minimap_state_values.%s",
+                    config.lang.make_placeholder(
+                        "menu.bind.condition.condition_minimap_state_values.%s"
+                    ),
                     minimap_state[index]
                 )
             end

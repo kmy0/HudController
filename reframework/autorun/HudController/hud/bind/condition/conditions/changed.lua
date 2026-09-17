@@ -64,7 +64,7 @@ function this:draw_additional_options()
         set:drag_int(
             string.format(
                 "%s %s##%s",
-                config.lang:tr(self.display_name),
+                config.lang:try_replace(self.display_name),
                 config.lang:tr("menu.bind.condition.text_trigger_duration"),
                 self.condition_name
             ),

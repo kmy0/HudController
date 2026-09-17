@@ -14,6 +14,7 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod_enum = data.mod.enum
+local ace_map = data.ace.map
 
 local this = {}
 local drag = drag_util:new()
@@ -365,8 +366,7 @@ local function draw_elements()
 
         imgui.same_line()
 
-        local name = op.hud_elem.tr_element(elem_config)
-
+        local name = ace_map.hudid_name_to_local_name[elem_config.name_key]
         if not elem then
             imgui.set_next_item_open(false)
         end

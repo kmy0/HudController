@@ -4,6 +4,7 @@
 
 local ace_player = require("HudController.util.ace.player")
 local changed_condition = require("HudController.hud.bind.condition.conditions.changed")
+local config = require("HudController.config.init")
 local util_ref = require("HudController.util.ref.init")
 local value_checker = require("HudController.util.misc.value_checker")
 
@@ -14,8 +15,11 @@ setmetatable(this, { __index = changed_condition })
 
 ---@return AmmoChanged
 function this:new()
-    local o =
-        changed_condition.new(self, "_AMMO_CHANGED", "menu.bind.condition.condition_ammo_changed")
+    local o = changed_condition.new(
+        self,
+        "_AMMO_CHANGED",
+        config.lang.make_placeholder("menu.bind.condition.condition_ammo_changed")
+    )
     setmetatable(o, self)
     ---@cast o AmmoChanged
 

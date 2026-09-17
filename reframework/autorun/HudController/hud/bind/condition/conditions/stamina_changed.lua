@@ -3,6 +3,7 @@
 
 local ace_player = require("HudController.util.ace.player")
 local changed_condition = require("HudController.hud.bind.condition.conditions.changed")
+local config = require("HudController.config.init")
 local value_checker = require("HudController.util.misc.value_checker")
 
 ---@class StaminaChanged
@@ -15,7 +16,7 @@ function this:new()
     local o = changed_condition.new(
         self,
         "_STAMINA_CHANGED",
-        "menu.bind.condition.condition_stamina_changed"
+        config.lang.make_placeholder("menu.bind.condition.condition_stamina_changed")
     )
     setmetatable(o, self)
     ---@cast o StaminaChanged

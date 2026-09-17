@@ -105,10 +105,7 @@ function this:save_config()
 end
 
 function this:get_display_name()
-    if config.lang:exists(self.display_name) then
-        return config.lang:tr(self.display_name)
-    end
-    return self.display_name
+    return config.lang:try_replace(self.display_name)
 end
 
 return this

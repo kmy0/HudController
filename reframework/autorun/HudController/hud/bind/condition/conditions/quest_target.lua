@@ -1,5 +1,6 @@
 ---@class QuestTargetCondition : MultiSelectCondition
 
+local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
 local multi_select = require("HudController.hud.bind.condition.conditions.multi_select")
@@ -34,7 +35,7 @@ function this:new()
     local o = multi_select.new(
         self,
         "_QUEST_TARGET",
-        "menu.bind.condition.condition_quest_target",
+        config.lang.make_placeholder("menu.bind.condition.condition_quest_target"),
         values,
         function(a, b)
             return a.value < b.value

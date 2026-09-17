@@ -34,22 +34,15 @@ end
 function this.sort_elements(elements, reverse)
     table.sort(elements, function(a, b)
         if reverse then
-            return this.tr_element(a) < this.tr_element(b)
+            return ace_map.hudid_name_to_local_name[a.name_key]
+                < ace_map.hudid_name_to_local_name[b.name_key]
         end
-        return this.tr_element(a) > this.tr_element(b)
+        return ace_map.hudid_name_to_local_name[a.name_key]
+            > ace_map.hudid_name_to_local_name[b.name_key]
     end)
     for i, elem in ipairs(elements) do
         elem.key = i
     end
-end
-
----@param element HudBaseConfig
-function this.tr_element(element)
-    local name = ace_map.hudid_name_to_local_name[element.name_key]
-    if name == ace_map.tr_flag then
-        name = config.lang:tr("hud_element.name." .. element.name_key)
-    end
-    return name
 end
 
 ---@param elem HudBase

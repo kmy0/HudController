@@ -1,5 +1,6 @@
 local ace_misc = require("HudController.util.ace.misc")
 local condition_base = require("HudController.hud.def.condition_base")
+local config = require("HudController.config.init")
 
 ---@class GameModeCondition : ConditionBase
 local this = {}
@@ -15,10 +16,15 @@ local state = {
 
 ---@return GameModeCondition
 function this:new()
-    local o = condition_base.new(self, "_GAME_MODE", "menu.bind.condition.condition_game_mode", {
-        "menu.bind.condition.condition_opt_singleplayer",
-        "menu.bind.condition.condition_opt_multiplayer",
-    })
+    local o = condition_base.new(
+        self,
+        "_GAME_MODE",
+        config.lang.make_placeholder("menu.bind.condition.condition_game_mode"),
+        {
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_singleplayer"),
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_multiplayer"),
+        }
+    )
     setmetatable(o, self)
     ---@cast o GameModeCondition
 

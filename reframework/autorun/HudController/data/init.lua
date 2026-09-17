@@ -7,6 +7,7 @@ local ace_misc = require("HudController.util.ace.misc")
 local deprecated = require("HudController.data.deprecated")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
+local lang_base = require("HudController.util.misc.lang_base")
 local util_ref = require("HudController.util.ref.init")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")
@@ -73,7 +74,8 @@ local function set_additional_hud()
 
         e.get("app.GUIHudDef.TYPE"):add(name, enum)
         ace_map.hudid_to_can_hide[enum] = false
-        ace_map.hudid_name_to_local_name[name] = ace_map.tr_flag
+        ace_map.hudid_name_to_local_name[name] =
+            lang_base.make_placeholder("hud_element.name." .. name)
         ace_map.guiid_to_hudid[guiid] = enum
         util_table.insert_nested_value(ace_map.hudid_to_guiid, { enum }, guiid)
     end

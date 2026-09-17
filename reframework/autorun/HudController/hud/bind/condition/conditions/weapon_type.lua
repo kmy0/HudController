@@ -1,5 +1,6 @@
 local ace_player = require("HudController.util.ace.player")
 local condition_base = require("HudController.hud.def.condition_base")
+local config = require("HudController.config.init")
 local m = require("HudController.util.ref.methods")
 
 ---@class WeaponTypeCondition : ConditionBase
@@ -19,8 +20,11 @@ function this:new()
     local o = condition_base.new(
         self,
         "_WEAPON_TYPE",
-        "menu.bind.condition.condition_weapon_type",
-        { "menu.bind.condition.condition_opt_melee", "menu.bind.condition.condition_opt_ranged" }
+        config.lang.make_placeholder("menu.bind.condition.condition_weapon_type"),
+        {
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_melee"),
+            config.lang.make_placeholder("menu.bind.condition.condition_opt_ranged"),
+        }
     )
     setmetatable(o, self)
     ---@cast o WeaponTypeCondition
