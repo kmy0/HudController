@@ -122,10 +122,9 @@ function this:set_num_offset_x(num_offset_x)
     end
 end
 
----@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
-function this:_write(ctrl)
+function this:_prepare_offset(ctrl)
     if not ctrl:get_ActualVisible() then
         return false
     end
@@ -150,6 +149,17 @@ function this:_write(ctrl)
                 end
             end
         end
+    end
+
+    return true
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return boolean
+function this:_write(ctrl)
+    if not self:_prepare_offset(ctrl) then
+        return false
     end
 
     return hud_child._write(self, ctrl)
