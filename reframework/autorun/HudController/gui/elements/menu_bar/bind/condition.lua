@@ -118,6 +118,44 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
                 table.insert(cond_remove, k)
             end
 
+            local x_size = 0
+            for _, str in pairs({
+                config.lang:tr("menu.bind.condition.expected_result_values.TRUE"),
+                config.lang:tr("menu.bind.condition.expected_result_values.FALSE"),
+            }) do
+                local size = imgui.calc_text_size(str)
+                x_size = math.max(x_size, size.x + 10) --[[@as number]]
+            end
+
+            imgui.same_line()
+
+            if
+                imgui.button(
+                    util_gui.tr(
+                        "menu.bind.condition.expected_result_values."
+                            .. util_table.reverse_lookup(
+                                mod.enum.expected_result,
+                                cond.expected_result
+                            ),
+                        "hud_condition",
+                        config_key,
+                        k
+                    ),
+                    { x_size, 0 }
+                )
+            then
+                if cond.expected_result == mod.enum.expected_result.TRUE then
+                    cond.expected_result = mod.enum.expected_result.FALSE
+                else
+                    cond.expected_result = mod.enum.expected_result.TRUE
+                end
+
+                config:set(
+                    string.format("%s.conditions.int:%s.expected_result", config_key, k),
+                    cond.expected_result
+                )
+            end
+
             imgui.table_set_column_index(1)
             imgui.text(cond_class:get_display_name())
 

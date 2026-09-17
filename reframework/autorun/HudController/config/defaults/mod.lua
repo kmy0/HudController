@@ -44,6 +44,7 @@
 ---@class (exact) ConditionConfigBase
 ---@field class string
 ---@field combo integer
+---@field expected_result ExpectedResult
 
 ---@class (exact) ConditionBindOptionsBase
 

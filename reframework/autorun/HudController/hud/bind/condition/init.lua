@@ -6,6 +6,7 @@
 local cd = require("HudController.data.combo")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
+local mod = require("HudController.data.mod")
 local util_table = require("HudController.util.misc.table")
 local conditions = {
     combat = require("HudController.hud.bind.condition.conditions.combat"),
@@ -43,7 +44,13 @@ local function eval(conditions)
 
         local combo = cd.bind_condition_options[o.class]
         local option_key = combo and combo:get_key(o.combo)
-        return cond:update(option_key)
+        local res = cond:update(option_key)
+
+        if o.expected_result == mod.enum.expected_result.FALSE then
+            res = not res
+        end
+
+        return res
     end)
 end
 
@@ -73,6 +80,10 @@ local function eval_all_and_store(conditions, cache, parent_key)
             local combo = cd.bind_condition_options[o.class]
             local option_key = combo and combo:get_key(o.combo)
             local res = cond:update(option_key)
+
+            if o.expected_result == mod.enum.expected_result.FALSE then
+                res = not res
+            end
 
             ok = ok and res
             util_table.set_nested_value(cache, { i, "conditions", j }, res)

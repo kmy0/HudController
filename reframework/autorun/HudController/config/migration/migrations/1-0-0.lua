@@ -119,6 +119,7 @@ function this.fns.conditions(config)
     for _, b in pairs(config.mod.bind.condition.hud) do
         b.key = b.hud_key
         b.combo_profile = b.combo_hud
+        b.expected_result = 1
         b.children = {}
     end
 end

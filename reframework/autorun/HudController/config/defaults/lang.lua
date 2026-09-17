@@ -195,6 +195,10 @@ return {
                     WHITE = "White",
                     PURPLE = "Purple",
                 },
+                expected_result_values = {
+                    TRUE = "True",
+                    FALSE = "False",
+                },
                 category_condition_changed = "Condition Changed",
                 text_no_condition = "No conditions...",
                 button_add_new_condition = "Add Condition Set",

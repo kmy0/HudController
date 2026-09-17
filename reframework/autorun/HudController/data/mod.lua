@@ -29,6 +29,7 @@
 ---@field quest_end_timer QuestEndTimerSetting.*
 ---@field manager_names ModBindManagerType.*
 ---@field action_type BindActionType.*
+---@field expected_result ExpectedResult.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -228,6 +229,11 @@ this.enum.action_type = { ---@class BindActionType.*
     ENABLE = "ENABLE",
     DISABLE = "DISABLE",
     TOGGLE_HOLD = "TOGGLE_HOLD",
+}
+---@enum ExpectedResult
+this.enum.expected_result = { ---@class ExpectedResult.*
+    TRUE = 1,
+    FALSE = 2,
 }
 
 ---@return boolean

@@ -49,7 +49,7 @@ end
 
 ---@return ConditionConfigBase
 function this:new_config()
-    return { class = self.condition_name, combo = 1 }
+    return { class = self.condition_name, combo = 1, expected_result = 1 }
 end
 
 -- imgui things drawn at bind > condition to the left of the condition
