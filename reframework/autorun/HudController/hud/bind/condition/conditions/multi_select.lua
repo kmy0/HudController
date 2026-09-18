@@ -47,8 +47,10 @@ end
 
 function this:draw_options()
     local options = self:get_additional_options_table()
+    local x_size = util_imgui.get_max_button_size("+", "-") + 4
+    local item_width = util_imgui.get_available_width() - 16 - x_size
 
-    imgui.push_item_width(util_gui.get_item_size())
+    imgui.push_item_width(item_width)
     set:combo_filter(
         "##" .. self.condition_name .. "Add",
         self:get_config_key_option("combo_add"),
@@ -59,9 +61,7 @@ function this:draw_options()
     imgui.same_line()
 
     util_imgui.begin_disabled(util_table.empty(self.combo_add.values))
-    if
-        imgui.button(util_gui.tr("menu.bind.condition.button_add", self.condition_name .. "ADD"))
-    then
+    if imgui.button("+##" .. self.condition_name, { x_size, 0 }) then
         local key = self.combo_add:get_key(options.combo_add)
 
         options.combo_add = self.combo_add:disable_item(key)
@@ -72,7 +72,7 @@ function this:draw_options()
     end
     util_imgui.end_disabled()
 
-    imgui.push_item_width(util_gui.get_item_size())
+    imgui.push_item_width(item_width)
     set:combo_filter(
         "##" .. self.condition_name .. "Remove",
         self:get_config_key_option("combo_remove"),
@@ -83,11 +83,7 @@ function this:draw_options()
     imgui.same_line()
 
     util_imgui.begin_disabled(util_table.empty(self.combo_remove.values))
-    if
-        imgui.button(
-            util_gui.tr("menu.bind.condition.button_remove", self.condition_name .. "REMOVE")
-        )
-    then
+    if imgui.button("-##" .. self.condition_name, { x_size, 0 }) then
         local key = self.combo_remove:get_key(options.combo_remove)
 
         options.combo_remove = self.combo_remove:disable_item(key)

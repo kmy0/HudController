@@ -57,33 +57,77 @@ function this.tooltip_text(text)
 end
 
 ---@param label string
----@param padding number?
+---@param padding [number, number]?
 ---@param thickness number?
 ---@param color integer?
 function this.separator_text(label, padding, thickness, color)
-    padding = padding or 50
+    local pad_x = padding and padding[1] or 50
+    local pad_y = padding and padding[2] or 0
     thickness = thickness or 3
     color = color or 2106363020
 
+    local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
     local pos = imgui.get_cursor_screen_pos()
+    local window_pos = imgui.get_window_pos()
+    local window_size = imgui.get_window_size()
+    local pos_y = pos.y + label_size.y / 2 + pad_y
+    local label_x = pos.x + pad_x + 15
+
+    draw_list:add_line({ pos.x, pos_y }, { pos.x + pad_x, pos_y }, color, thickness)
+    draw_list:add_text({ label_x, pos.y + pad_y }, 0xffffffff, label)
+    draw_list:add_line(
+        { label_x + label_size.x + 15, pos_y },
+        { window_pos.x + window_size.x, pos_y },
+        color,
+        thickness
+    )
+
+    imgui.invisible_button(uuid.generate(), {
+        window_pos.x + window_size.x - pos.x - 2,
+        label_size.y,
+    })
+end
+
+---@param label string
+---@param item_width number
+---@param padding [number, number]?
+---@param spacing number?
+---@param thickness number?
+---@param color integer?
+function this.separator_text_item(label, item_width, padding, spacing, thickness, color)
+    local pad_x = padding and padding[1] or 50
+    local pad_y = padding and padding[2] or 0
+    spacing = spacing or 15
+    thickness = thickness or 3
+    color = color or 2106363020
+
+    local draw_list = imgui.get_window_draw_list()
+    local label_size = imgui.calc_text_size(label)
+    local pos = imgui.get_cursor_screen_pos()
+    local window_pos = imgui.get_window_pos()
+    local window_size = imgui.get_window_size()
+    window_size.x = window_size.x - (imgui.get_scroll_max_y() > 0 and 14 or 0)
+
+    local line_end = window_pos.x + window_size.x - item_width - spacing
+    local label_x = pos.x + pad_x + spacing
     local pos_y = pos.y + label_size.y / 2
-    local pos_x_start = pos.x
-    local pos_x_end = pos.x + padding
 
-    imgui.draw_list_path_line_to({ pos_x_start, pos_y })
-    imgui.draw_list_path_line_to({ pos_x_end, pos_y })
-    imgui.draw_list_path_stroke(color, false, thickness)
+    draw_list:add_line({ pos.x, pos_y + pad_y }, { pos.x + pad_x, pos_y + pad_y }, color, thickness)
+    draw_list:add_text({ label_x, pos.y + pad_y }, color, label)
+    draw_list:add_line(
+        { label_x + label_size.x + spacing, pos_y + pad_y },
+        { line_end, pos_y + pad_y },
+        color,
+        thickness
+    )
 
-    imgui.invisible_button(uuid.generate(), { pos_x_end - pos.x, 1 })
+    imgui.invisible_button(uuid.generate(), {
+        line_end - pos.x - 2,
+        label_size.y,
+    })
+
     imgui.same_line()
-    imgui.text(label)
-
-    pos_x_start = pos_x_end + label_size.x + 15
-    pos_x_end = imgui.get_window_pos().x + imgui.get_window_size().x
-    imgui.draw_list_path_line_to({ pos_x_start, pos_y })
-    imgui.draw_list_path_line_to({ pos_x_end, pos_y })
-    imgui.draw_list_path_stroke(color, false, thickness)
 end
 
 ---@param color integer
@@ -134,6 +178,29 @@ function this.dummy_button2(label, size_object)
     local ret = imgui.button(label, size_object)
     imgui.pop_style_color(2)
     imgui.pop_style_var(1)
+    return ret
+end
+
+---@param label string
+---@param size_object Vector2f|Vector3f|Vector4f|number[]?
+---@param offset [number, number]?
+---@return boolean
+function this.dummy_button3(label, size_object, offset)
+    if offset then
+        local pos = imgui.get_cursor_pos()
+        pos.x = pos.x + offset[1]
+        pos.y = pos.y + offset[2]
+        imgui.set_cursor_pos(pos)
+    end
+
+    imgui.push_style_color(21, 0x00000000)
+    imgui.push_style_color(22, 0x00000000)
+    imgui.push_style_color(23, 0x00000000)
+    imgui.push_style_var(11, Vector2f.new(0, 0))
+    imgui.push_style_var(14, Vector2f.new(0, 0))
+    local ret = imgui.button(label, size_object)
+    imgui.pop_style_color(3)
+    imgui.pop_style_var(2)
     return ret
 end
 
@@ -618,6 +685,45 @@ function this.button_with_popup(label, draw_fn)
         draw_fn()
         imgui.end_popup()
     end
+end
+
+---@return number
+function this.get_row_width()
+    local start = imgui.get_cursor_start_pos()
+    local size = imgui.get_window_size()
+
+    return size.x - start.x * 2 - 16 - (imgui.get_scroll_max_y() > 0 and 14 or 0)
+end
+
+---@param ... string
+---@return number, number
+function this.get_max_button_size(...)
+    local t = { ... }
+    local x_size = 0
+    local y_size = 0
+    for _, str in pairs(t) do
+        local size = imgui.calc_text_size(str)
+        x_size = math.max(x_size, size.x + 10) --[[@as number]]
+        y_size = math.max(y_size, size.y + 4) --[[@as number]]
+    end
+
+    return x_size, y_size
+end
+
+---@return number
+function this.get_available_width()
+    local window_size = imgui.get_window_size()
+    local cursor_pos = imgui.get_cursor_pos()
+    local cursor_start = imgui.get_cursor_start_pos()
+
+    return window_size.x
+        - cursor_pos.x
+        - cursor_start.x
+        - (imgui.get_scroll_max_y() > 0 and 14 or 0)
+end
+
+function this.get_button_height()
+    return imgui.calc_text_size("A").y + 6
 end
 
 return this

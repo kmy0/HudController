@@ -19,17 +19,10 @@ local this = {}
 ---@param option_key string
 ---@param item_config_key string
 ---@param callback fun(option_key: string, value: integer)?
----@param draw_label boolean?
-function this.draw_option(option_key, item_config_key, callback, draw_label)
+---@param label string?
+function this.draw_option(option_key, item_config_key, callback, label)
     local option_data = ace_map.option[option_key]
-    draw_label = draw_label == nil or draw_label
-    local label = ""
-
-    if draw_label then
-        label = string.format("%s##%s", option_data.name_local, option_data.name)
-    else
-        label = string.format("##%s", option_data.name)
-    end
+    label = label or string.format("%s##%s", option_data.name_local, option_data.name)
 
     local values = {}
     for _, item in ipairs(option_data.items) do
