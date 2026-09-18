@@ -17,6 +17,7 @@ local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local drag_util = require("HudController.gui.drag")
+local generic = require("HudController.gui.elements.profile.panel.generic")
 local mod = require("HudController.data.mod")
 local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
@@ -502,7 +503,7 @@ local function draw_hud_options(i, cond_set)
             bind_condition.new_condition_set(cd.combo.option_bind:get_keys()[1], cond_set.key)
         )
 
-        cond_set.hud_option[#cond_set.hud_option].free_value = false
+        cond_set.hud_option[#cond_set.hud_option].free_value = 1
         config:save()
     end
 
@@ -553,11 +554,111 @@ local function draw_hud_options(i, cond_set)
                     imgui.pop_item_width()
                 end,
                 draw_additional_opt = function()
+                    imgui.same_line()
+                    local pos1 = imgui.get_cursor_start_pos()
+                    local pos2 = imgui.get_cursor_pos()
+                    imgui.new_line()
                     imgui.separator()
+                    imgui.set_next_item_width(pos2.x - pos1.x)
+                    set:combo_filter(
+                        "##hud_option" .. i .. j,
+                        string.format("%s.free_value", config_key),
+                        cd.combo.enable_disable
+                    )
+                end,
+            })
+        end
+    )
+
+    util_imgui.end_disabled()
+    imgui.spacing()
+    imgui.unindent(2)
+end
+
+---@param i integer
+---@param cond_set ConditionSetConfig
+local function draw_game_options(i, cond_set)
+    imgui.spacing()
+    imgui.indent(2)
+
+    if
+        imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition", "game_options"))
+    then
+        table.insert(
+            cond_set.game_option,
+            bind_condition.new_condition_set(cd.combo.option_game_bind:get_keys()[1], cond_set.key)
+        )
+
+        cond_set.game_option[#cond_set.game_option].free_value = -1
+        config:save()
+    end
+
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_option_condition_set"), true)
+
+    if not util_table.empty(cond_set.game_option) then
+        imgui.separator()
+    end
+
+    cond_set.game_option = draw_condition_set_list(
+        cond_set.game_option,
+        elem_drag,
+        function(j, cond_child)
+            local config_key =
+                string.format("mod.bind.condition.hud.int:%s.game_option.int:%s", i, j)
+
+            return draw_condition_set({
+                index = j,
+                cond_set = cond_child,
+                config_key = config_key,
+                dragger = elem_drag,
+                collapse_id = string.format("cond_set_collapse.%s.%s", i, j),
+                remove_label = util_gui.tr(
+                    "menu.bind.condition.button_remove",
+                    "game_option",
+                    i,
+                    j
+                ),
+                duplicate_label = util_gui.tr(
+                    "menu.bind.condition.button_duplicate",
+                    "game_option",
+                    i,
+                    j
+                ),
+                highlight = config.current.mod.bind.condition.highlight_pass,
+                pass_path = { i, "game_option", j, "pass" },
+                condition_path_fn = function(k)
+                    return { i, "game_option", j, "conditions", k }
+                end,
+                draw_selector = function()
                     local item_config_key = string.format("%s.combo_profile", config_key)
-                    set:checkbox(
-                        cd.combo.option_bind:get_value(config:get(item_config_key)),
-                        string.format("%s.free_value", config_key)
+                    imgui.push_item_width(util_gui.get_item_size())
+                    if
+                        set:combo_filter(
+                            util_gui.tr("menu.bind.condition.combo_game_option", i, j),
+                            item_config_key,
+                            cd.combo.option_game_bind
+                        )
+                    then
+                        cond_child.key =
+                            cd.combo.option_game_bind:get_key(config:get(item_config_key))
+                        config:save()
+                    end
+                    imgui.pop_item_width()
+                end,
+                draw_additional_opt = function()
+                    imgui.same_line()
+                    local pos1 = imgui.get_cursor_start_pos()
+                    local pos2 = imgui.get_cursor_pos()
+                    imgui.new_line()
+                    imgui.separator()
+                    imgui.set_next_item_width(pos2.x - pos1.x)
+                    generic.draw_option(
+                        cd.combo.option_game_bind:get_key(
+                            config:get(string.format("%s.combo_profile", config_key))
+                        ),
+                        string.format("%s.free_value", config_key),
+                        nil,
+                        false
                     )
                 end,
             })
@@ -581,7 +682,7 @@ local function draw_mod_options(i, cond_set)
             bind_condition.new_condition_set(cd.combo.option_mod_bind:get_keys()[1], cond_set.key)
         )
 
-        cond_set.mod_option[#cond_set.mod_option].free_value = false
+        cond_set.mod_option[#cond_set.mod_option].free_value = 1
         config:save()
     end
 
@@ -633,11 +734,16 @@ local function draw_mod_options(i, cond_set)
                     imgui.pop_item_width()
                 end,
                 draw_additional_opt = function()
+                    imgui.same_line()
+                    local pos1 = imgui.get_cursor_start_pos()
+                    local pos2 = imgui.get_cursor_pos()
+                    imgui.new_line()
                     imgui.separator()
-                    local item_config_key = string.format("%s.combo_profile", config_key)
-                    set:checkbox(
-                        cd.combo.option_mod_bind:get_value(config:get(item_config_key)),
-                        string.format("%s.free_value", config_key)
+                    imgui.set_next_item_width(pos2.x - pos1.x)
+                    set:combo_filter(
+                        "##mod_option" .. i .. j,
+                        string.format("%s.free_value", config_key),
+                        cd.combo.enable_disable
                     )
                 end,
             })
@@ -678,6 +784,7 @@ local function draw_condition_bind_menu()
             cond_set.element_profile = cond_set.element_profile or {}
             cond_set.hud_option = cond_set.hud_option or {}
             cond_set.mod_option = cond_set.mod_option or {}
+            cond_set.game_option = cond_set.game_option or {}
 
             return draw_condition_set({
                 index = i,
@@ -730,6 +837,12 @@ local function draw_condition_bind_menu()
                         util_gui.tr("menu.bind.condition.menubar_mod_options", i),
                         function()
                             draw_mod_options(i, cond_set)
+                        end
+                    )
+                    util_menubar.draw_menu(
+                        util_gui.tr("menu.bind.condition.menubar_game_options", i),
+                        function()
+                            draw_game_options(i, cond_set)
                         end
                     )
                 end,

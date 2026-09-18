@@ -31,15 +31,23 @@ local this = {
     condition_options = {},
     condition_option_handlers = {
         hud_option = {
-            apply = options.overwrite_hud_option,
-            remove = function(key, _)
-                options.clear_overridden(key)
+            apply = function(key, value)
+                value = value == mod.enum.expected_result.TRUE and true or false
+                options.overwrite_hud_option(key, value)
             end,
+            remove = function(_, _) end,
         },
         mod_option = {
             apply = function(key, value)
+                value = value == mod.enum.expected_result.TRUE and true or false
                 ---@diagnostic disable-next-line: no-unknown
                 config.current.mod[key] = value
+            end,
+            remove = function() end,
+        },
+        game_option = {
+            apply = function(key, value)
+                options.apply_option(key, value)
             end,
             remove = function() end,
         },

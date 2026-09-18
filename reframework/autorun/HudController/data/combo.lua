@@ -35,6 +35,8 @@
 ---@field dialogue_actor_type Combo
 ---@field sfx_game_object Combo
 ---@field elem_option Combo
+---@field option_game_bind Combo
+---@field enable_disable Combo
 
 ---@class ComboData
 ---@field combo ComboRegistry
@@ -293,6 +295,12 @@ local this = {
                 return config.lang:try_replace(value)
             end,
         }),
+        option_game_bind = combo:new(nil, {
+            sort_fn = sort_by_key,
+        }),
+        enable_disable = combo:new(nil, {
+            sort_fn = sort_by_key,
+        }),
     },
 }
 
@@ -336,6 +344,24 @@ end
 
 function this.clear_cache()
     this.combo_cache = {}
+end
+
+function this.init_combo_option_game_bind()
+    ---@type table<string, string>
+    local res = {}
+    local config_game_options = config.current.mod.game_options
+
+    for k, _ in pairs(config_game_options.hud) do
+        res[k] = ace_map.option[k].name_local
+    end
+
+    for _, v in pairs(config_game_options.elements) do
+        for k, _ in pairs(v) do
+            res[k] = ace_map.option[k].name_local
+        end
+    end
+
+    this.combo.option_game_bind:swap(res)
 end
 
 function this.init_combo_map_icon_filter()
@@ -471,6 +497,12 @@ function this.init()
         )
     )
 
+    this.combo.enable_disable:swap({
+        config.lang:tr("misc.text_enable"),
+        config.lang:tr("misc.text_disable"),
+    })
+
+    this.init_combo_option_game_bind()
     init_condition_combo()
     this.translate_combo()
 
