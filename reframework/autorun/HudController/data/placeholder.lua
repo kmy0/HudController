@@ -9,7 +9,12 @@ local function translate_ace_option()
     ---@param node AceOptionNode
     local function translate_node(node)
         node.option.name_local = config.lang:try_replace(node.option.name_local)
+        for k, v in pairs(node.option.name_path) do
+            node.option.name_path[k] = config.lang:try_replace(v)
+        end
+
         for _, item in pairs(node.option.items) do
+            item.name_local = config.lang:try_replace(item.name_local)
             item.name_local = config.lang:try_replace(item.name_local)
         end
 
