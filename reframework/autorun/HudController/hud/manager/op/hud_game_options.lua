@@ -34,6 +34,11 @@ local function set_game_option_elem(elem_name, option_name, value)
             end
         end
     end
+
+    if util_table.empty(config_mod.game_options.elements[elem_name]) then
+        config_mod.game_options.elements[elem_name] = nil
+    end
+end
 end
 
 ---@param elem_name string
