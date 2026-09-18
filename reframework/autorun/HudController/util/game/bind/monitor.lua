@@ -160,7 +160,23 @@ end
 ---@param bind Bind
 ---@return string
 function this:_get_bind_key(bind)
-    return string.format("%s_%s", bind.name, bind.bound_value)
+    local bv = bind.bound_value
+    if type(bv) == "table" then
+        local entries = util_table.entries(bv)
+        util_table.sort(entries, function(a, b)
+            return a.key < b.key
+        end)
+
+        ---@type string[]
+        local res = {}
+        for _, e in ipairs(entries) do
+            table.insert(res, string.format("%s|%s", e.key, e.value))
+        end
+
+        bv = table.concat(res, ":")
+    end
+
+    return string.format("%s_%s", bind.name, bv)
 end
 
 ---@param key_name string | string[]
@@ -360,12 +376,16 @@ function this:_resolve_buffer()
 
             if
                 bind.device == self.key_buffer.device
-                and not m.held.by_key[bind_key]
                 and (
-                    this_frame[bind.name]
-                    or util_table.all(bind.keys, function(o)
-                        return self.key_buffer.keys[o]
-                    end)
+                    (
+                        not m.held.by_key[bind_key]
+                        and (
+                            this_frame[bind.name]
+                            or util_table.all(bind.keys, function(o)
+                                return self.key_buffer.keys[o]
+                            end)
+                        )
+                    ) or m.held.by_key[bind_key] and bind.trigger_repeat
                 )
             then
                 table.insert(m.actions, bind)
@@ -388,6 +408,19 @@ function this:_resolve_buffer()
     self:_clear_buffer()
 end
 
+function this:_resolve_repeat()
+    for _, m in pairs(self.managers) do
+        for _, bind in pairs(m.manager.sorted) do
+            if bind.trigger_repeat then
+                local bind_key = self:_get_bind_key(bind)
+                if m.held.by_key[bind_key] then
+                    table.insert(m.actions, bind)
+                end
+            end
+        end
+    end
+end
+
 function this:monitor()
     if
         self._pause
@@ -406,6 +439,8 @@ function this:monitor()
     if self:is_held() then
         self:_resolve_held_binds()
     end
+
+    self:_resolve_repeat()
 
     if self.key_buffer.frame == self._buffer_max then
         self:_resolve_buffer()

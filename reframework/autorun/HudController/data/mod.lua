@@ -30,6 +30,7 @@
 ---@field manager_names ModBindManagerType.*
 ---@field action_type BindActionType.*
 ---@field expected_result ExpectedResult.*
+---@field trigger_type TriggerType.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -234,6 +235,11 @@ this.enum.action_type = { ---@class BindActionType.*
 this.enum.expected_result = { ---@class ExpectedResult.*
     TRUE = 1,
     FALSE = 2,
+}
+---@enum BindTriggerType
+this.enum.trigger_type = { ---@class TriggerType.*
+    ONCE = "ONCE",
+    REPEAT = "REPEAT",
 }
 
 ---@return boolean

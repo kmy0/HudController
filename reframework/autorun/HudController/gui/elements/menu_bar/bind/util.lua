@@ -44,6 +44,17 @@ end
 
 ---@param bind ModBind
 ---@return string
+function this.get_trigger_name(bind)
+    return string.format(
+        "[%s]",
+        config.lang:tr(
+            "menu.bind.key.trigger_type." .. (bind.trigger_repeat and "REPEAT" or "ONCE")
+        )
+    )
+end
+
+---@param bind ModBind
+---@return string
 function this.get_key_bind_name(bind)
     return string.format("[%s]", bind.name_display)
 end

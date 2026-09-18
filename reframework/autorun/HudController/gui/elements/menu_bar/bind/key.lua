@@ -16,6 +16,33 @@ local mod = data.mod
 
 local this = {}
 
+---@return number
+local function get_width()
+    return config.lang.font_size * (200 / 16) * 3
+        + 6 * 4
+        + util_imgui.get_button_width(config.lang:tr("menu.bind.key.button_add"))
+end
+
+---@return number
+local function get_bind_text_width()
+    return config.lang.font_size * (215 / 16)
+end
+
+local function clear_listener()
+    state.listener = nil
+    bind_manager.monitor:unpause()
+end
+
+---@param opt string | HudBindOpt
+---@param opt_name string
+local function start_listener(opt, opt_name)
+    state.listener = {
+        opt = opt,
+        listener = util_bind.listener:new(),
+        opt_name = opt_name,
+    }
+end
+
 local function draw_bind_type()
     ---@type NotebookTab[]
     local tabs = {
@@ -26,155 +53,8 @@ local function draw_bind_type()
     }
 
     if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
-        state.listener = nil
-        bind_manager.monitor:unpause()
+        clear_listener()
     end
-end
-
----@param combo_id string
----@param config_key string
----@param combo any
-local function draw_bind_combo(combo_id, config_key, combo)
-    imgui.push_item_width(-1)
-    set:combo_filter(combo_id, config_key, combo)
-    imgui.pop_item_width()
-end
-
----@param values HudBaseConfigProfileForShow[]
----@param disabled boolean
-local function draw_elem_profile_combo(values, disabled)
-    imgui.push_item_width(-util_imgui.get_button_width(util_gui.tr("menu.bind.key.button_add")) - 8)
-
-    util_imgui.begin_disabled(disabled)
-
-    set:combo_multi_bits_filter(
-        "##elem_profile_hud_bind",
-        disabled and "" or "mod.combo.key_bind.elem_profile",
-        config.lang:tr("misc.text_none"),
-        values,
-        function(v)
-            return v.key
-        end,
-        function(v)
-            return v.name
-        end
-    )
-
-    if not disabled then
-        util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_element_profile"))
-    end
-
-    util_imgui.end_disabled()
-    imgui.pop_item_width()
-end
-
----@param left_fn fun()
----@param right_fn fun()
-local function draw_bind_table(left_fn, right_fn)
-    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 2))
-
-    if imgui.begin_table("bind_table1", 2, imgui.TableFlags.SizingStretchSame) then
-        imgui.table_next_row()
-
-        imgui.table_set_column_index(0)
-        left_fn()
-
-        imgui.table_set_column_index(1)
-        right_fn()
-
-        imgui.end_table()
-    end
-
-    imgui.pop_style_var(1)
-end
-
----@param config_mod ModSettings
----@return ModBindManager?
----@return string?
-local function draw_bind_target(config_mod)
-    local bind_type = config_mod.bind.slider.key_bind
-    if bind_type == 0 then
-        return
-    end
-
-    if bind_type == 1 then
-        ---@type HudBaseConfigProfileForShow[]
-        local values = {}
-        draw_bind_table(function()
-            imgui.push_item_width(-1)
-
-            if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", cd.combo.hud) then
-                config_mod.combo.key_bind.elem_profile = 0
-                config:save()
-            end
-
-            imgui.pop_item_width()
-
-            local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
-            if hud_profile then
-                values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
-            end
-        end, function()
-            config_mod.combo.key_bind.action_type = cd.combo.bind_action_type:get_index("ENABLE") --[[@as integer]]
-
-            util_imgui.begin_disabled(true)
-
-            draw_bind_combo(
-                "##bind_action_type_combo",
-                "mod.combo.key_bind.action_type",
-                cd.combo.bind_action_type
-            )
-
-            util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
-
-            util_imgui.end_disabled()
-        end)
-
-        draw_elem_profile_combo(values, util_table.empty(values))
-
-        return bind_manager.hud, "mod.bind.key.hud"
-    end
-
-    ---@type ModBindManager
-    local manager
-    ---@type string
-    local config_key
-    if bind_type == 2 then
-        manager = bind_manager.option_hud
-        config_key = "mod.bind.key.option_hud"
-    else
-        manager = bind_manager.option_mod
-        config_key = "mod.bind.key.option_mod"
-    end
-
-    draw_bind_table(function()
-        draw_bind_combo(
-            "##bind_option_combo",
-            "mod.combo.key_bind.option_hud",
-            cd.combo.option_bind
-        )
-    end, function()
-        if bind_type == 2 then
-            draw_bind_combo(
-                "##bind_action_type_combo",
-                "mod.combo.key_bind.action_type",
-                cd.combo.bind_action_type
-            )
-        else
-            draw_bind_combo(
-                "##bind_option_mod_combo",
-                "mod.combo.key_bind.option_mod",
-                cd.combo.option_mod_bind
-            )
-        end
-
-        util_imgui.tooltip(config.lang:tr("menu.bind.key.tooltip_action_type"))
-    end)
-
-    draw_elem_profile_combo({}, true)
-    imgui.same_line()
-
-    return manager, config_key
 end
 
 ---@param manager ModBindManager
@@ -199,19 +79,181 @@ end
 ---@param manager ModBindManager
 ---@param config_mod ModSettings
 local function draw_add_button(manager, config_mod)
-    imgui.same_line()
-
     if not imgui.button(util_gui.tr("menu.bind.key.button_add")) then
         return
     end
 
     local opt, opt_name = get_selected_option(manager, config_mod)
 
-    state.listener = {
-        opt = opt,
-        listener = util_bind.listener:new(),
-        opt_name = opt_name,
-    }
+    start_listener(opt, opt_name)
+end
+
+local function draw_trigger_combo()
+    set:combo_filter(
+        "##bind_trigger_type_combo",
+        "mod.combo.key_bind.trigger_type",
+        cd.combo.bind_trigger_type
+    )
+end
+
+local function draw_action_combo()
+    set:combo_filter(
+        "##bind_action_type_combo",
+        "mod.combo.key_bind.action_type",
+        cd.combo.bind_action_type
+    )
+end
+
+---@param target_fn fun()
+---@param trigger_fn fun()
+---@param action_fn fun()
+---@param manager ModBindManager
+---@param config_mod ModSettings
+local function draw_bind_table(target_fn, trigger_fn, action_fn, manager, config_mod)
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 2))
+
+    local item_width = config.lang.font_size * (200 / 16)
+    if imgui.begin_table("bind_table1", 4) then
+        imgui.table_setup_column(
+            util_gui.tr("menu.bind.key.combo_target"),
+            imgui.ColumnFlags.WidthFixed,
+            item_width
+        )
+        imgui.table_setup_column(
+            util_gui.tr("menu.bind.key.combo_trigger"),
+            imgui.ColumnFlags.WidthFixed,
+            item_width
+        )
+        imgui.table_setup_column(
+            util_gui.tr("menu.bind.key.combo_action"),
+            imgui.ColumnFlags.WidthFixed,
+            item_width
+        )
+        imgui.table_setup_column("##Add", imgui.ColumnFlags.WidthFixed)
+
+        imgui.push_style_color(45, 0x00000000)
+        imgui.push_style_color(25, 0x00000000)
+        imgui.push_style_color(26, 0x00000000)
+
+        imgui.push_style_var(imgui.ImGuiStyleVar.CellPadding, Vector2f.new(2, 2))
+        imgui.table_headers_row()
+        imgui.pop_style_var(1)
+
+        imgui.pop_style_color(3)
+        imgui.table_next_row()
+
+        imgui.table_set_column_index(0)
+        imgui.set_next_item_width(item_width)
+        target_fn()
+
+        imgui.table_set_column_index(1)
+        imgui.set_next_item_width(item_width)
+        trigger_fn()
+
+        imgui.table_set_column_index(2)
+        imgui.set_next_item_width(item_width)
+        action_fn()
+
+        imgui.table_set_column_index(3)
+        draw_add_button(manager, config_mod)
+        imgui.same_line()
+        util_imgui.dummy_button3("##ibutton_bind1", { 4, 0 })
+
+        imgui.end_table()
+    end
+
+    imgui.pop_style_var(1)
+end
+
+---@param combo_key string
+---@param combo Combo
+---@param manager ModBindManager
+---@param config_mod ModSettings
+local function draw_option_bind_table(combo_key, combo, manager, config_mod)
+    draw_bind_table(function()
+        set:combo_filter("##bind_option_combo", combo_key, combo)
+    end, draw_trigger_combo, draw_action_combo, manager, config_mod)
+end
+
+---@param config_mod ModSettings
+---@return ModBindManager?
+---@return string?
+local function draw_bind_target(config_mod)
+    local bind_type = config_mod.bind.slider.key_bind
+    if bind_type == 0 then
+        return
+    end
+
+    if bind_type == 1 then
+        ---@type HudBaseConfigProfileForShow[]
+        local values = {}
+        draw_bind_table(
+            function()
+                if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", cd.combo.hud) then
+                    config_mod.combo.key_bind.elem_profile = 0
+                    config:save()
+                end
+
+                local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
+                if hud_profile then
+                    values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
+                end
+            end,
+            draw_trigger_combo,
+            function()
+                config_mod.combo.key_bind.action_type =
+                    cd.combo.bind_action_type:get_index("ENABLE") --[[@as integer]]
+
+                util_imgui.begin_disabled(true)
+                draw_action_combo()
+                util_imgui.end_disabled()
+            end,
+            bind_manager.hud,
+            config_mod
+        )
+
+        util_imgui.begin_disabled(util_table.empty(values))
+        imgui.set_next_item_width(get_width())
+        set:combo_multi_bits_filter(
+            "##elem_profile_hud_bind",
+            "mod.combo.key_bind.elem_profile",
+            config.lang:tr("misc.text_none"),
+            values,
+            function(v)
+                return v.key
+            end,
+            function(v)
+                return v.name
+            end
+        )
+        util_imgui.end_disabled()
+
+        return bind_manager.hud, "mod.bind.key.hud"
+    elseif bind_type == 2 then
+        draw_option_bind_table(
+            "mod.combo.key_bind.option_hud",
+            cd.combo.option_bind,
+            bind_manager.option_hud,
+            config_mod
+        )
+
+        return bind_manager.option_hud, "mod.bind.key.option_hud"
+    elseif bind_type == 3 then
+        draw_option_bind_table(
+            "mod.combo.key_bind.option_mod",
+            cd.combo.option_bind,
+            bind_manager.option_mod,
+            config_mod
+        )
+
+        return bind_manager.option_mod, "mod.bind.key.option_mod"
+    end
+end
+
+---@param config_mod ModSettings
+---@return boolean
+local function is_repeat_trigger(config_mod)
+    return cd.combo.bind_trigger_type:get_key(config_mod.combo.key_bind.trigger_type) == "REPEAT"
 end
 
 ---@param manager ModBindManager
@@ -221,12 +263,14 @@ local function set_bind_target(manager, bind, config_mod)
     if manager.name == mod.enum.manager_names.HUD then
         bind.bound_value = state.listener.opt
         bind.action_type = mod.enum.action_type.NONE
+        bind.trigger_repeat = is_repeat_trigger(config_mod)
         return
     end
 
     ---@diagnostic disable-next-line: assign-type-mismatch
     bind.bound_value = state.listener.opt
     bind.action_type = cd.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
+    bind.trigger_repeat = is_repeat_trigger(config_mod)
 end
 
 ---@param manager ModBindManager
@@ -270,8 +314,7 @@ local function save_bind(manager, config_key, bind)
     config:set(config_key, manager:get_base_binds())
 
     config:save()
-    state.listener = nil
-    bind_manager.monitor:unpause()
+    clear_listener()
 end
 
 ---@param manager ModBindManager
@@ -328,8 +371,7 @@ local function draw_listener(manager, config_key, config_mod)
     imgui.same_line()
 
     if imgui.button(util_gui.tr("menu.bind.key.button_cancel")) then
-        state.listener = nil
-        bind_manager.monitor:unpause()
+        clear_listener()
     end
 
     imgui.end_table()
@@ -339,10 +381,7 @@ local function draw_listener(manager, config_key, config_mod)
             string.format(
                 "%s %s",
                 config.lang:tr("menu.bind.tooltip_bound"),
-                util_misc.trunc_string2(
-                    state.listener.collision,
-                    config.lang.font_size * (215 / 16)
-                )
+                util_misc.trunc_string2(state.listener.collision, get_bind_text_width())
             ),
             mod.enum.colors.bad
         )
@@ -390,8 +429,13 @@ local function draw_registered_bind(manager, bind, remove)
     imgui.same_line()
     imgui.spacing()
 
-    local truncated = util_misc.trunc_string2(opt_name, config.lang.font_size * (215 / 16))
     imgui.table_set_column_index(2)
+    imgui.text(util_menubar_bind.get_trigger_name(bind))
+    imgui.same_line()
+    imgui.spacing()
+
+    local truncated = util_misc.trunc_string2(opt_name, get_bind_text_width())
+    imgui.table_set_column_index(3)
     imgui.text(truncated)
     imgui.same_line()
     imgui.spacing()
@@ -400,7 +444,7 @@ local function draw_registered_bind(manager, bind, remove)
         util_imgui.tooltip(opt_name)
     end
 
-    imgui.table_set_column_index(3)
+    imgui.table_set_column_index(4)
     imgui.text(util_menubar_bind.get_key_bind_name(bind))
     imgui.same_line()
     imgui.spacing()
@@ -412,11 +456,14 @@ local function draw_registered_binds(manager, config_key)
     local binds = config:get(config_key) --[=[@as ModBind[]]=]
 
     if util_table.empty(binds) then
-        imgui.invisible_button("invbutton" .. config_key, { util_gui.get_item_size() * 1.5, 0 })
+        imgui.invisible_button("invbutton" .. config_key, { get_width(), 0 })
         return
     end
 
-    if not imgui.begin_table("keybind_state", 4) then
+    util_imgui.adjust_pos(0, -2)
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
+    if not imgui.begin_table("keybind_state", 5, 0, Vector2f.new(get_width(), 0)) then
+        imgui.pop_style_var(1)
         return
     end
 
@@ -448,9 +495,10 @@ local function draw_registered_binds(manager, config_key)
     end
 
     imgui.end_table()
+    imgui.pop_style_var(1)
 end
 
-local function draw_all_registed_binds()
+local function draw_all_registered_binds()
     local any = false
 
     if not util_table.empty(bind_manager.hud.binds) then
@@ -473,7 +521,7 @@ local function draw_all_registed_binds()
 
     if not any then
         util_imgui.tooltip_text(config.lang:tr("menu.bind.key.tooltip_no_binds"))
-        imgui.invisible_button("invbutton_all_binds", { util_gui.get_item_size() * 1.5, 0 })
+        imgui.invisible_button("invbutton_all_binds", { get_width(), 0 })
     end
 end
 
@@ -482,8 +530,6 @@ local function draw_key_bind_menu()
     imgui.indent(2)
 
     local config_mod = config.current.mod
-
-    -- draw_buffer(config_mod)
 
     imgui.begin_group()
     draw_bind_type()
@@ -500,15 +546,13 @@ local function draw_key_bind_menu()
     local manager, config_key = draw_bind_target(config_mod)
 
     if manager and config_key then
-        draw_add_button(manager, config_mod)
-
         util_imgui.end_disabled()
 
         draw_listener(manager, config_key, config_mod)
         draw_registered_binds(manager, config_key)
     else
         util_imgui.end_disabled()
-        draw_all_registed_binds()
+        draw_all_registered_binds()
     end
 
     imgui.end_group()
@@ -519,8 +563,7 @@ end
 
 function this.draw()
     if not util_menubar.draw_menu(util_gui.tr("menu.bind.key.name"), draw_key_bind_menu) then
-        state.listener = nil
-        bind_manager.monitor:unpause()
+        clear_listener()
     end
 end
 

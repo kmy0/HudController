@@ -264,6 +264,9 @@ return {
                 slider_buffer = "Buffer",
                 tooltip_buffer = "Time window to detect multi-key combination (e.g. A+B) before triggering single keys",
                 text_default = "Press any key...",
+                combo_target = "Target",
+                combo_trigger = "Trigger",
+                combo_action = "Action",
                 button_add = "Add",
                 button_save = "Save",
                 button_undo = "Undo",
@@ -276,8 +279,10 @@ return {
                     DISABLE = "Disable",
                     TOGGLE_HOLD = "Toggle Hold",
                 },
-                tooltip_action_type = "Bind Action",
-                tooltip_element_profile = "Element Profile",
+                trigger_type = {
+                    ONCE = "Once",
+                    REPEAT = "Repeat",
+                },
                 tooltip_no_binds = "No binds configured",
             },
             key_option = {

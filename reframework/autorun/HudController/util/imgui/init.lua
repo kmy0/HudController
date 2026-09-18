@@ -463,15 +463,21 @@ end
 ---@param label string
 ---@param offset number?
 function this.set_label(label, offset)
+    label = util_misc.split_string(label, "##")[1]
+
+    if label == "" then
+        return
+    end
+
     offset = offset or 0
+
     imgui.same_line()
+
     local pos = imgui.get_cursor_pos()
     pos.x = pos.x - 3 + offset
     imgui.set_cursor_pos(pos)
-    label = util_misc.split_string(label, "##")[1]
-    if label ~= "" then
-        imgui.text(label)
-    end
+
+    imgui.text(label)
 end
 
 ---@return number

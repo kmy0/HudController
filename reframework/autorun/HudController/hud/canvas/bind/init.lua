@@ -39,6 +39,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").L_CLICK },
             bound_value = mod.enum.canvas.POS,
             action_type = "NONE",
+            trigger_repeat = false,
         },
         {
             name = "R_CLICK",
@@ -47,6 +48,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").R_CLICK },
             bound_value = mod.enum.canvas.HIDE,
             action_type = "TOGGLE",
+            trigger_repeat = false,
         },
         {
             name = "L_CTRL",
@@ -55,6 +57,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").L_CTRL },
             bound_value = mod.enum.canvas.SCALE,
             action_type = "NONE",
+            trigger_repeat = false,
         },
         {
             name = "L_ALT",
@@ -63,6 +66,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").L_ALT },
             bound_value = mod.enum.canvas.OPACITY,
             action_type = "NONE",
+            trigger_repeat = false,
         },
         {
             name = "L_SHIFT",
@@ -71,6 +75,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").L_SHIFT },
             bound_value = mod.enum.canvas.ROT,
             action_type = "NONE",
+            trigger_repeat = false,
         },
         {
             name = "BACK_SPACE",
@@ -79,6 +84,7 @@ function this.init()
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").BACK_SPACE },
             bound_value = mod.enum.canvas.UNDO,
             action_type = "TOGGLE",
+            trigger_repeat = false,
         },
     })
 

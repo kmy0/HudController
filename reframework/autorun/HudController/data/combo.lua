@@ -37,6 +37,7 @@
 ---@field elem_option Combo
 ---@field option_game_bind Combo
 ---@field enable_disable Combo
+---@field bind_trigger_type Combo
 
 ---@class ComboData
 ---@field combo ComboRegistry
@@ -300,6 +301,14 @@ local this = {
         }),
         enable_disable = combo:new(nil, {
             sort_fn = sort_by_key,
+        }),
+        bind_trigger_type = combo:new(mod.enum.trigger_type, {
+            sort_fn = function(a, b)
+                return a.key < b.key
+            end,
+            translate_fn = function(key)
+                return config.lang:tr("menu.bind.key.trigger_type." .. key)
+            end,
         }),
     },
 }

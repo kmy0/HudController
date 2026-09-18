@@ -111,6 +111,7 @@ end
 function this.fns.binds(config)
     for _, b in pairs(config.mod.bind.key.hud) do
         b.bound_value = { hud = b.bound_value, profile = 0 }
+        b.trigger_repeat = false
     end
 end
 
@@ -120,7 +121,6 @@ function this.fns.conditions(config)
         b.key = b.hud_key
         b.combo_profile = b.combo_hud
         b.expected_result = 1
-        b.element_profile = {}
     end
 end
 

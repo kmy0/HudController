@@ -104,6 +104,7 @@
 ---     option_hud: integer,
 ---     option_mod: integer,
 ---     action_type: integer,
+---     trigger_type: integer,
 ---     elem_profile: integer,
 ---     },
 --- }
@@ -217,6 +218,7 @@ return {
                 option_mod = 1,
                 action_type = 1,
                 elem_profile = 0,
+                trigger_type = 1,
             },
         },
     },
