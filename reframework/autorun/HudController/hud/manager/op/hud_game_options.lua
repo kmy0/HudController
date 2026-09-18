@@ -51,7 +51,7 @@ local function refresh_combo_option_game_bind()
             local new_index = cd.combo.option_game_bind:get_index(cond_child.key)
             if new_index then
                 cond_child.combo_profile = new_index
-                table.insert(res)
+                table.insert(res, cond_child)
             end
         end
 
