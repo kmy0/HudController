@@ -110,11 +110,13 @@ local function draw_options_menu()
                         cd.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
+                    config:save()
                 else
                     op.hud_game_options.add_game_option_elem(
                         cd.combo.elem_option:get_key(config_mod.combo.user_option),
                         option.name
                     )
+                    config:save()
                 end
             end
             imgui.end_group()
@@ -198,6 +200,7 @@ local function draw_options_menu()
                 if imgui.button(util_gui.tr("menu.user.options.button_remove", opt.name)) then
                     opts[key] = nil
                     op.hud_game_options.remove_game_option_elem(elem.key, opt.name)
+                    config:save()
                 end
 
                 imgui.same_line()
