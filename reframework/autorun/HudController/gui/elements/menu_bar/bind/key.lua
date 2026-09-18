@@ -2,6 +2,7 @@ local bind_manager = require("HudController.hud.bind.key.init")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local generic = require("HudController.gui.elements.profile.panel.generic")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local util_bind = require("HudController.util.game.bind.init")
@@ -33,7 +34,7 @@ local function clear_listener()
     bind_manager.monitor:unpause()
 end
 
----@param opt string | HudBindOpt
+---@param opt string | HudBindOpt | OptionGameOpt
 ---@param opt_name string
 local function start_listener(opt, opt_name)
     state.listener = {
@@ -50,16 +51,19 @@ local function draw_bind_type()
         { label = config.lang:tr("menu.bind.key.hud"), key = 1 },
         { label = config.lang:tr("menu.bind.key.option"), key = 2 },
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
+        { label = config.lang:tr("menu.bind.key.option_game"), key = 4 },
     }
 
     if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
         clear_listener()
+        config.current.mod.combo.key_bind.action_type = 1
+        config:save()
     end
 end
 
 ---@param manager ModBindManager
 ---@param config_mod ModSettings
----@return string | HudBindOpt
+---@return string | HudBindOpt | OptionGameOpt
 ---@return string
 local function get_selected_option(manager, config_mod)
     if manager.name == mod.enum.manager_names.HUD then
@@ -70,6 +74,12 @@ local function get_selected_option(manager, config_mod)
     elseif manager.name == mod.enum.manager_names.OPTION_HUD then
         return cd.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
             cd.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
+    elseif manager.name == mod.enum.manager_names.OPTION_GAME then
+        local opt = {
+            option_key = cd.combo.option_game_bind:get_key(config_mod.combo.key_bind.option_game),
+            value = config_mod.combo.key_bind.option_game_value,
+        }
+        return opt, util_menubar_bind.get_option_game_bind_name(opt)
     end
 
     return cd.combo.option_mod_bind:get_key(config_mod.combo.key_bind.option_mod),
@@ -247,6 +257,37 @@ local function draw_bind_target(config_mod)
         )
 
         return bind_manager.option_mod, "mod.bind.key.option_mod"
+    elseif bind_type == 4 then
+        draw_bind_table(
+            function()
+                if
+                    set:combo_filter(
+                        "##bind_option_game_combo",
+                        "mod.combo.key_bind.option_game",
+                        cd.combo.option_game_bind
+                    )
+                then
+                    config_mod.combo.key_bind.option_game_value = -1
+                    config:save()
+                end
+            end,
+            draw_trigger_combo,
+            function()
+                set:combo_filter(
+                    "##bind_action_type_combo",
+                    "mod.combo.key_bind.action_type",
+                    cd.combo.bind_action_type_option_game
+                )
+            end,
+            bind_manager.option_game,
+            config_mod
+        )
+
+        imgui.set_next_item_width(get_width())
+        local key = cd.combo.option_game_bind:get_key(config:get("mod.combo.key_bind.option_game"))
+        generic.draw_option(key, "mod.combo.key_bind.option_game_value", nil, "##" .. key)
+
+        return bind_manager.option_game, "mod.bind.key.option_game"
     end
 end
 
@@ -261,29 +302,32 @@ end
 ---@param config_mod ModSettings
 local function set_bind_target(manager, bind, config_mod)
     if manager.name == mod.enum.manager_names.HUD then
-        bind.bound_value = state.listener.opt
         bind.action_type = mod.enum.action_type.NONE
-        bind.trigger_repeat = is_repeat_trigger(config_mod)
-        return
+    elseif manager.name == mod.enum.manager_names.OPTION_GAME then
+        bind.action_type =
+            cd.combo.bind_action_type_option_game:get_key(config_mod.combo.key_bind.action_type)
+    else
+        bind.action_type = cd.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
     end
 
     ---@diagnostic disable-next-line: assign-type-mismatch
     bind.bound_value = state.listener.opt
-    bind.action_type = cd.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
     bind.trigger_repeat = is_repeat_trigger(config_mod)
 end
 
 ---@param manager ModBindManager
 ---@param bind ModBind
 ---@return string
-local function get_bind_target_name(manager, bind)
+local function get_bind_name(manager, bind)
     if manager.name == mod.enum.manager_names.HUD then
-        return util_menubar_bind.get_hud_bind_name(bind.bound_value)
+        return util_menubar_bind.get_hud_bind_name(bind)
     elseif manager.name == mod.enum.manager_names.OPTION_HUD then
-        return util_menubar_bind.get_option_hud_bind_name(bind.bound_value)
+        return util_menubar_bind.get_option_hud_bind_name(bind)
+    elseif manager.name == mod.enum.manager_names.OPTION_GAME then
+        return util_menubar_bind.get_option_game_bind_name(bind)
     end
 
-    return util_menubar_bind.get_option_mod_bind_name(bind.bound_value)
+    return util_menubar_bind.get_option_mod_bind_name(bind)
 end
 
 ---@param manager ModBindManager
@@ -303,7 +347,7 @@ local function update_collision(manager, bind, config_mod)
         return
     end
 
-    state.listener.collision = get_bind_target_name(manager, collision)
+    state.listener.collision = get_bind_name(manager, collision)
 end
 
 ---@param manager ModBindManager
@@ -393,22 +437,9 @@ end
 
 ---@param manager ModBindManager
 ---@param bind ModBind
----@return string
-local function get_registered_bind_target_name(manager, bind)
-    if manager.name == mod.enum.manager_names.HUD then
-        return util_menubar_bind.get_hud_bind_name(bind)
-    elseif manager.name == mod.enum.manager_names.OPTION_HUD then
-        return util_menubar_bind.get_option_hud_bind_name(bind)
-    end
-
-    return util_menubar_bind.get_option_mod_bind_name(bind)
-end
-
----@param manager ModBindManager
----@param bind ModBind
 ---@param remove ModBind[]
 local function draw_registered_bind(manager, bind, remove)
-    local opt_name = get_registered_bind_target_name(manager, bind)
+    local opt_name = get_bind_name(manager, bind)
 
     imgui.table_next_row()
     imgui.table_set_column_index(0)
@@ -462,7 +493,14 @@ local function draw_registered_binds(manager, config_key)
 
     util_imgui.adjust_pos(0, -2)
     imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
-    if not imgui.begin_table("keybind_state", 5, 0, Vector2f.new(get_width(), 0)) then
+    if
+        not imgui.begin_table(
+            "keybind_state",
+            5,
+            imgui.TableFlags.NoClip,
+            Vector2f.new(get_width(), 0)
+        )
+    then
         imgui.pop_style_var(1)
         return
     end
@@ -475,7 +513,7 @@ local function draw_registered_binds(manager, config_key)
         local b = binds[i]
         local color = 0
 
-        if state.listener and state.listener.collision == get_bind_target_name(manager, b) then
+        if state.listener and state.listener.collision == get_bind_name(manager, b) then
             color = mod.enum.colors.bad
         end
 
@@ -517,6 +555,12 @@ local function draw_all_registered_binds()
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_mod"))
         draw_registered_binds(bind_manager.option_mod, "mod.bind.key.option_mod")
+    end
+
+    if not util_table.empty(bind_manager.option_game.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.option_game"))
+        draw_registered_binds(bind_manager.option_game, "mod.bind.key.option_game")
     end
 
     if not any then

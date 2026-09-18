@@ -38,6 +38,7 @@
 ---@field option_game_bind Combo
 ---@field enable_disable Combo
 ---@field bind_trigger_type Combo
+---@field bind_action_type_option_game Combo
 
 ---@class ComboData
 ---@field combo ComboRegistry
@@ -143,9 +144,7 @@ local this = {
                 return value ~= mod.enum.action_type.NONE
             end),
             {
-                sort_fn = function(a, b)
-                    return a.key < b.key
-                end,
+                sort_fn = sort_by_key,
                 translate_fn = function(key)
                     return config.lang:tr("menu.bind.key.action_type." .. key)
                 end,
@@ -303,13 +302,24 @@ local this = {
             sort_fn = sort_by_key,
         }),
         bind_trigger_type = combo:new(mod.enum.trigger_type, {
-            sort_fn = function(a, b)
-                return a.key < b.key
-            end,
+            sort_fn = sort_by_key,
             translate_fn = function(key)
                 return config.lang:tr("menu.bind.key.trigger_type." .. key)
             end,
         }),
+        bind_action_type_option_game = combo:new(
+            ---@diagnostic disable-next-line: no-unknown
+            util_table.filter(mod.enum.action_type, function(_, value)
+                return value == mod.enum.action_type.ENABLE
+                    or value == mod.enum.action_type.TOGGLE_HOLD
+            end),
+            {
+                sort_fn = sort_by_key,
+                translate_fn = function(key)
+                    return config.lang:tr("menu.bind.key.action_type." .. key)
+                end,
+            }
+        ),
     },
 }
 

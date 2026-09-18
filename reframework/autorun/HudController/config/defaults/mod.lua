@@ -86,6 +86,7 @@
 ---     hud: BindBase[],
 ---     option_hud: BindBase[],
 ---     option_mod: BindBase[],
+---     option_game: BindBase[],
 ---     buffer: integer,
 ---  },
 --- slider: {
@@ -106,6 +107,8 @@
 ---     action_type: integer,
 ---     trigger_type: integer,
 ---     elem_profile: integer,
+---     option_game: integer,
+---     option_game_value: integer,
 ---     },
 --- }
 ---@field lang ModLanguage
@@ -196,6 +199,7 @@ return {
                 hud = {},
                 option_hud = {},
                 option_mod = {},
+                option_game = {},
                 buffer = 2,
             },
             condition = {
@@ -219,6 +223,8 @@ return {
                 action_type = 1,
                 elem_profile = 0,
                 trigger_type = 1,
+                option_game = 1,
+                option_game_value = -1,
             },
         },
     },

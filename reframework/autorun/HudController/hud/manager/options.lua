@@ -6,8 +6,13 @@ local hud_base = require("HudController.hud.def.hud_base")
 local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.hook.init"
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
+local ace = require("HudController.data.ace")
+local config = require("HudController.config.init")
+local e = require("HudController.util.game.enum")
+local m = require("HudController.util.ref.methods")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
 local table_proxy = require("HudController.util.misc.table_proxy")
+local util_table = require("HudController.util.misc.table")
 
 ---@class OptionManager
 local this = {
@@ -36,6 +41,34 @@ end
 ---@param option_value integer
 function this.apply_option(option_name, option_value)
     hud_base.apply_option(option_name, option_value)
+end
+
+---@param option_name string
+---@return integer
+function this.get_option(option_name)
+    local option = ace.map.option[option_name]
+    return m.getOptionValue(option.id)
+end
+
+---@param option_name string
+---@param option_value integer
+---@return string | integer
+function this.get_option_setting_name(option_name, option_value)
+    local option = ace.map.option[option_name]
+    ---@type string | integer
+    local ret = option_value
+    if ret == -1 then
+        return config.lang:tr("hud.option_disable")
+    elseif not util_table.empty(option.items) then
+        ret = option.items[option_value + 1].name_local
+    elseif option.type == e.get("app.Option.TYPE").CHOICE then
+        ret = option_value == 0 and config.lang:tr("misc.text_off")
+            or config.lang:tr("misc.text_on")
+    elseif option.type == e.get("app.Option.TYPE").VALUE and option.decimal_place ~= 0 then
+        ret = option_value / (10 ^ option.decimal_place) --[[@as number]]
+    end
+
+    return ret
 end
 
 ---@param options table<string, integer>

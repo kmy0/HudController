@@ -1,6 +1,8 @@
+local ace = require("HudController.data.ace")
 local config = require("HudController.config.init")
 local mod = require("HudController.data.mod")
 local op = require("HudController.hud.manager.op.init")
+local options = require("HudController.hud.manager.options")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -63,6 +65,27 @@ end
 ---@return string
 function this.get_option_mod_bind_name(bind)
     return config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value])
+end
+
+---@param bind ModBind | OptionGameOpt
+---@return string
+function this.get_option_game_bind_name(bind)
+    local key = ""
+    ---@type any
+    local value = -1
+    if bind.bound_value then
+        key = bind.bound_value.option_key --[[@as string]]
+        value = bind.bound_value.value --[[@as integer]]
+    else
+        key = bind.option_key
+        value = bind.value
+    end
+
+    return string.format(
+        "%s (%s)",
+        ace.map.option[key].name_local,
+        options.get_option_setting_name(key, value)
+    )
 end
 
 ---@param bind ModBind | HudBindOpt

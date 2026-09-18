@@ -261,6 +261,7 @@ return {
                 all = "All",
                 option = "Hud Option",
                 option_mod = "Mod Option",
+                option_game = "Game Option",
                 slider_buffer = "Buffer",
                 tooltip_buffer = "Time window to detect multi-key combination (e.g. A+B) before triggering single keys",
                 text_default = "Press any key...",

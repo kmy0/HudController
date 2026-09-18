@@ -1,3 +1,4 @@
+local bind_manager = require("HudController.hud.bind.key.init")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local options = require("HudController.hud.manager.options")
@@ -57,6 +58,22 @@ local function refresh_combo_option_game_bind()
 
         cond_set.game_option = res
     end
+
+    config_mod.combo.key_bind.option_game = 1
+    config_mod.combo.key_bind.option_game_value = -1
+
+    ---@type BindBase[]
+    local res = {}
+    for _, bind in ipairs(config_mod.bind.key.option_game) do
+        if cd.combo.option_game_bind:get_index(bind.bound_value.option_key) then
+            table.insert(res, bind)
+        else
+            ---@diagnostic disable-next-line: param-type-mismatch
+            bind_manager.option_game:unregister(bind)
+        end
+    end
+
+    config_mod.bind.key.option_game = res
 end
 
 ---@param elem_name string

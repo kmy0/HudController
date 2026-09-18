@@ -6,8 +6,12 @@
 ---@field hud integer
 ---@field profile integer
 
+---@class (exact) OptionGameOpt
+---@field option_key string
+---@field value integer
+
 ---@class (exact) NewBindListener
----@field opt HudBindOpt | string
+---@field opt HudBindOpt | string | OptionGameOpt
 ---@field opt_name string
 ---@field listener BindListener
 ---@field collision string?
