@@ -8,6 +8,7 @@ local this = {
 
 function this.reinit()
     this.script:reinit()
+    this.option.init()
 end
 
 ---@return boolean

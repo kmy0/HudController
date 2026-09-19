@@ -427,11 +427,6 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
         0xffffffff
     )
 
-    local bad_key = util_table.find_value(cond_set.element_profile, function(_, value)
-        return value.parent_key ~= cond_set.key
-    end)
-
-    util_imgui.begin_disabled(util_table.empty(values) and not bad_key)
     imgui.same_line()
     util_imgui.adjust_pos(3)
     if

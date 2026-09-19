@@ -59,6 +59,7 @@
 ---@field hud_option ConditionSetConfig[]
 ---@field mod_option ConditionSetConfig[]
 ---@field game_option ConditionSetConfig[]
+---@field user_option ConditionSetConfig[]
 ---@field free_value any?
 
 ---@class (exact) ConditionBindStateConfig
@@ -88,6 +89,7 @@
 ---     option_hud: BindBase[],
 ---     option_mod: BindBase[],
 ---     option_game: BindBase[],
+---     option_user: BindBase[],
 ---     buffer: integer,
 ---  },
 --- slider: {
@@ -173,6 +175,7 @@ return {
                 option_hud = {},
                 option_mod = {},
                 option_game = {},
+                option_user = {},
                 buffer = 2,
             },
             condition = {

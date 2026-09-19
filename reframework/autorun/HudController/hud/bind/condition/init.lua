@@ -11,6 +11,7 @@
 ---@field hud_option table<string, integer>?
 ---@field mod_option table<string, integer>?
 ---@field game_option table<string, integer>?
+---@field user_option table<string, any>?
 
 ---@class (exact) ConditionEvalRet : ConditionEvalResult
 ---@field hud {key: integer, profile: integer[]}?
@@ -43,6 +44,7 @@ local condition_set_children = {
     "hud_option",
     "mod_option",
     "game_option",
+    "user_option",
 }
 
 local this = {
@@ -297,6 +299,7 @@ function this.new_condition_set(key, parent_key)
         hud_option = {},
         mod_option = {},
         game_option = {},
+        user_option = {},
     }
 end
 

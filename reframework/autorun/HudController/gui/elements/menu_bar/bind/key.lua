@@ -58,12 +58,23 @@ local function draw_bind_type()
         table.insert(tabs, { label = config.lang:tr("menu.bind.key.option_game"), key = 4 })
     end
 
+    if not cd.combo.option_user_bind:empty() then
+        table.insert(tabs, { label = config.lang:tr("menu.bind.key.option_user"), key = 5 })
+    end
+
     config_mod.bind.slider.key_bind = math.min(config_mod.bind.slider.key_bind, #tabs)
     if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
         clear_listener()
         config_mod.combo.key_bind.action_type = 1
+        config_mod.combo.key_bind.trigger_type = 1
         config_mod.combo.key_bind.target = 1
         config_mod.combo.key_bind.value = 0
+
+        if config:get("mod.bind.slider.key_bind") == 5 then
+            local opt = cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
+            config_mod.combo.key_bind.value = opt.default
+        end
+
         config:save()
     end
 end
@@ -90,6 +101,13 @@ local function get_selected_option(manager, config_mod)
             value = config_mod.combo.key_bind.value,
         }
         return opt, util_menubar_bind.get_option_game_bind_name(opt)
+    elseif manager.name == mod.enum.manager_names.OPTION_USER then
+        local user_opt = cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
+        local opt = {
+            key = user_opt.key,
+            value = config_mod.combo.key_bind.value,
+        }
+        return opt, util_menubar_bind.get_option_user_bind_name(opt)
     end
 
     local opt = {
@@ -314,6 +332,30 @@ local function draw_bind_target(config_mod)
         generic.draw_option(key, "mod.combo.key_bind.value", nil, "##" .. key, false)
 
         return bind_manager.option_game, "mod.bind.key.option_game"
+    elseif bind_type == 5 then
+        draw_bind_table(function()
+            if
+                set:combo_filter(
+                    "##bind_option_user_combo",
+                    "mod.combo.key_bind.target",
+                    cd.combo.option_user_bind
+                )
+            then
+                local opt =
+                    cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
+                config_mod.combo.key_bind.value = opt.default
+                config:save()
+            end
+        end, draw_trigger_combo, draw_action_combo, bind_manager.option_user, config_mod)
+
+        local opt = cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
+        imgui.set_next_item_width(get_width())
+        local changed, value = opt.draw(config_mod.combo.key_bind.value, "mod.combo.key_bind.value")
+        if changed then
+            config:set("mod.combo.key_bind.value", value)
+        end
+
+        return bind_manager.option_user, "mod.bind.key.option_user"
     end
 end
 
@@ -348,6 +390,8 @@ local function get_bind_name(manager, bind)
         return util_menubar_bind.get_option_hud_bind_name(bind)
     elseif manager.name == mod.enum.manager_names.OPTION_GAME then
         return util_menubar_bind.get_option_game_bind_name(bind)
+    elseif manager.name == mod.enum.manager_names.OPTION_USER then
+        return util_menubar_bind.get_option_user_bind_name(bind)
     end
 
     return util_menubar_bind.get_option_mod_bind_name(bind)
@@ -584,6 +628,12 @@ local function draw_all_registered_binds()
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_game"))
         draw_registered_binds(bind_manager.option_game, "mod.bind.key.option_game")
+    end
+
+    if not util_table.empty(bind_manager.option_user.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.option_user"))
+        draw_registered_binds(bind_manager.option_user, "mod.bind.key.option_user")
     end
 
     if not any then

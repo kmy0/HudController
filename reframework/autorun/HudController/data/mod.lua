@@ -223,6 +223,7 @@ this.enum.manager_names = { ---@class ModBindManagerType.*
     HUD = "hud",
     OPTION_MOD = "option_mod",
     OPTION_GAME = "option_game",
+    OPTION_USER = "option_user",
 }
 ---@enum BindActionType
 this.enum.action_type = { ---@class BindActionType.*

@@ -38,6 +38,7 @@
 ---@field option_game_bind Combo
 ---@field enable_disable Combo
 ---@field bind_trigger_type Combo
+---@field option_user_bind Combo
 
 ---@class ComboData
 ---@field combo ComboRegistry
@@ -49,6 +50,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
+local user_option = require("HudController.hud.user.option")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
@@ -306,6 +308,11 @@ local this = {
                 return config.lang:tr("menu.bind.key.trigger_type." .. key)
             end,
         }),
+        option_user_bind = combo:new(nil, {
+            sort_fn = function(a, b)
+                return a.key.sort < b.key.sort
+            end,
+        }),
     },
 }
 
@@ -367,6 +374,10 @@ function this.init_combo_option_game_bind()
     end
 
     this.combo.option_game_bind:swap(res)
+end
+
+function this.init_combo_option_user_bind()
+    this.combo.option_user_bind:swap(user_option.get_combo_values())
 end
 
 function this.init_combo_map_icon_filter()
@@ -501,7 +512,6 @@ function this.init()
             ace_map.hudid_name_to_local_name
         )
     )
-
     this.combo.enable_disable:swap({
         config.lang:tr("misc.text_enable"),
         config.lang:tr("misc.text_disable"),

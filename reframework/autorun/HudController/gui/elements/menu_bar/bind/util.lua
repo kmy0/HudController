@@ -3,6 +3,7 @@ local config = require("HudController.config.init")
 local mod = require("HudController.data.mod")
 local op = require("HudController.hud.manager.op.init")
 local options = require("HudController.hud.manager.options")
+local user_option = require("HudController.hud.user.option")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -92,6 +93,29 @@ function this.get_option_hud_bind_name(bind)
         "%s (%s)",
         config.lang:tr("hud." .. mod.map.options_hud[key]),
         value == 0 and config.lang:tr("misc.text_off") or config.lang:tr("misc.text_on")
+    )
+end
+
+---@param bind ModBind | BindOpt
+---@return string
+function this.get_option_user_bind_name(bind)
+    local key = ""
+    local value = 0
+    if bind.bound_value then
+        key = bind.bound_value.key --[[@as string]]
+        value = bind.bound_value.value --[[@as any]]
+    else
+        key = bind.key
+        value = bind.value
+    end
+
+    local user_opt = user_option.all[key]
+    return string.format(
+        "%s (%s)",
+        user_opt.name,
+        (value == true and config.lang:tr("misc.text_off"))
+            or (value == false and config.lang:tr("misc.text_on"))
+            or value
     )
 end
 

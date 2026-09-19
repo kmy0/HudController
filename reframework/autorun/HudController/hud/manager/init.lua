@@ -18,6 +18,7 @@ local fade_manager = require("HudController.hud.fade.init")
 local options = require("HudController.hud.manager.options")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
 local timer = require("HudController.util.misc.timer")
+local user_option = require("HudController.hud.user.option")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -37,7 +38,8 @@ local this = {
                 options.overwrite_hud_option(key, value)
             end,
             notification = function(key, value)
-                value = value == mod.enum.expected_result.TRUE and true or false
+                value = value == mod.enum.expected_result.TRUE and config.lang:tr("misc.text_on")
+                    or config.lang:tr("misc.text_off")
                 ace_misc.send_message(
                     string.format(
                         "%s %s %s",
@@ -55,7 +57,8 @@ local this = {
                 config.current.mod[key] = value
             end,
             notification = function(key, value)
-                value = value == mod.enum.expected_result.TRUE and true or false
+                value = value == mod.enum.expected_result.TRUE and config.lang:tr("misc.text_on")
+                    or config.lang:tr("misc.text_off")
                 ace_misc.send_message(
                     string.format(
                         "%s %s %s",
@@ -70,7 +73,6 @@ local this = {
             apply = function(key, value)
                 options.apply_option(key, value)
             end,
-
             notification = function(key, value)
                 ace_misc.send_message(
                     string.format(
@@ -78,6 +80,26 @@ local this = {
                         ace.map.option[key].name_local,
                         config.lang:tr("misc.text_changed_notifcation_message"),
                         options.get_option_setting_name(key, value)
+                    )
+                )
+            end,
+        },
+        user_option = {
+            apply = function(key, value)
+                --TODO:
+            end,
+
+            notification = function(key, value)
+                local opt = user_option.all[key]
+                value = (value == true and config.lang:tr("misc.text_on"))
+                    or (value == false and config.lang:tr("misc.text_off"))
+                    or value
+                ace_misc.send_message(
+                    string.format(
+                        "%s %s %s",
+                        opt.label,
+                        config.lang:tr("misc.text_changed_notifcation_message"),
+                        value
                     )
                 )
             end,
