@@ -254,35 +254,33 @@ function this.update()
     local target_hud = target.hud
     local target_profile = target.profile
 
-    local requested_hud = util_table.find_value(config.current.mod.hud, function(_, value)
-        return value.key == request.hud.key
+    local requested_hud = util_table.find_value(config_mod.hud, function(_, hud)
+        return hud.key == request.hud.key
     end)
     local requested_profile = request.hud.profile
 
-    if requested_hud and requested_profile then
+    if requested_hud then
         if
             target_hud.key == requested_hud.key
-            and target_profile == requested_profile
+            and (not requested_profile or target_profile == requested_profile)
             and not force_update
         then
             return
         end
 
-        config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
-            return o.key == requested_hud.key
+        config_mod.combo.hud = util_table.index(config_mod.hud, function(hud)
+            return hud.key == requested_hud.key
         end) --[[@as integer]]
 
-        profile_switcher.request_hud_with_profiles(requested_hud, requested_profile, force_update)
-    elseif requested_hud then
-        if target_hud.key == requested_hud.key and not force_update then
-            return
+        if not requested_profile then
+            profile_switcher.request_hud_with_default(requested_hud, force_update)
+        else
+            profile_switcher.request_hud_with_profiles(
+                requested_hud,
+                requested_profile,
+                force_update
+            )
         end
-
-        config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
-            return o.key == requested_hud.key
-        end) --[[@as integer]]
-
-        profile_switcher.request_hud_with_default(requested_hud, force_update)
     elseif requested_profile then
         if target_profile == requested_profile and not force_update then
             return
