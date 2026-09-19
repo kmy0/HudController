@@ -20,11 +20,21 @@
 ---@field by_key table<string, Bind>
 ---@field by_name table<string, boolean>
 
+---@class (exact) HoldEntry
+---@field bind_key string
+---@field value any
+
+---@class (exact) HoldState
+---@field original any
+---@field stack HoldEntry[]
+
 ---@class (exact) MonitoredManager
 ---@field manager BindManager
 ---@field held BindMap
 ---@field triggered BindMap
 ---@field actions Bind[]
+---@field hold_states table<string, HoldState>
+---@field action_values table<string, any>
 
 local ace_misc = require("HudController.util.ace.misc")
 local util_table = require("HudController.util.misc.table")
@@ -302,6 +312,7 @@ function this:_clear()
     self:_clear_triggers()
     self:_clear_held()
     self:_clear_actions()
+    self:_clear_hold_states()
     self.on_release_callbacks = {}
     self._on_release_callbacks = {}
     self.key_buffer.snapshot = {}
@@ -359,6 +370,7 @@ function this:_resolve_held_binds()
                 table.insert(self._on_release_callbacks, bind.name)
                 m.held.by_key[bind_key] = nil
                 m.held.by_name[bind.name] = nil
+                m.action_values[bind_key] = nil
             end
         end
     end
@@ -419,6 +431,93 @@ function this:_resolve_repeat()
             end
         end
     end
+end
+
+---@protected
+function this:_clear_hold_states()
+    for _, m in pairs(self.managers) do
+        m.hold_states = {}
+    end
+end
+
+---@param manager_name string
+---@param option string
+---@param bind Bind
+---@param value any
+---@param current any
+---@return any
+function this:push_hold(manager_name, option, bind, value, current)
+    local states = self.managers[manager_name].hold_states
+    local state = states[option]
+    local bind_key = self:_get_bind_key(bind)
+
+    if not state then
+        state = {
+            original = current,
+            stack = {},
+        }
+        states[option] = state
+    end
+
+    for _, entry in ipairs(state.stack) do
+        if entry.bind_key == bind_key then
+            return state.stack[#state.stack].value
+        end
+    end
+
+    table.insert(state.stack, {
+        bind_key = bind_key,
+        value = value,
+    })
+
+    return value
+end
+---@param manager_name string
+---@param option string
+---@param bind Bind
+---@return any?
+function this:remove_hold(manager_name, option, bind)
+    local states = self.managers[manager_name].hold_states
+    local state = states[option]
+
+    if not state then
+        return
+    end
+
+    local bind_key = self:_get_bind_key(bind)
+
+    for i = #state.stack, 1, -1 do
+        if state.stack[i].bind_key == bind_key then
+            table.remove(state.stack, i)
+            break
+        end
+    end
+
+    local top = state.stack[#state.stack]
+    if top then
+        return top.value
+    end
+
+    local original = state.original
+    states[option] = nil
+
+    return original
+end
+
+---@param manager_name string
+---@param bind Bind
+---@param value any
+function this:set_action_value(manager_name, bind, value)
+    local m = self.managers[manager_name]
+    m.action_values[self:_get_bind_key(bind)] = value
+end
+
+---@param manager_name string
+---@param bind Bind
+---@return any
+function this:get_action_value(manager_name, bind)
+    local m = self.managers[manager_name]
+    return m.action_values[self:_get_bind_key(bind)]
 end
 
 function this:monitor()

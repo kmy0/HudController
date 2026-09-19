@@ -231,6 +231,8 @@ this.enum.action_type = { ---@class BindActionType.*
     ENABLE = "ENABLE",
     DISABLE = "DISABLE",
     TOGGLE_HOLD = "TOGGLE_HOLD",
+    ENABLE_HOLD = "ENABLE_HOLD",
+    DISABLE_HOLD = "DISABLE_HOLD",
 }
 ---@enum ExpectedResult
 this.enum.expected_result = { ---@class ExpectedResult.*

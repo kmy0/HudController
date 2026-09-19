@@ -279,6 +279,8 @@ return {
                     ENABLE = "Enable",
                     DISABLE = "Disable",
                     TOGGLE_HOLD = "Toggle Hold",
+                    DISABLE_HOLD = "Disable Hold",
+                    ENABLE_HOLD = "Enable Hold",
                 },
                 trigger_type = {
                     ONCE = "Once",

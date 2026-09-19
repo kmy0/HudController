@@ -43,34 +43,53 @@ local function action_hud(bind)
 end
 
 ---@param bind ModBind
----@param toggle_hold_value boolean? internal, dont use
-local function action_option_hud(bind, toggle_hold_value)
-    local is_triggered = this.monitor:is_triggered("option_hud", bind)
-
+local function action_option_hud(bind)
+    local manager_name = "option_hud"
+    local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.ENABLE_HOLD
+        or bind.action_type == mod.enum.action_type.DISABLE_HOLD
+        or bind.action_type == mod.enum.action_type.TOGGLE_HOLD
+    local hud_profile = hud.get_current() --[[@as ModProfileConfig]]
+    local current_value = hud_profile[bind.bound_value] --[[@as boolean]]
     ---@type boolean?
     local new_value
-    if bind.action_type == mod.enum.action_type.ENABLE then
+
+    if
+        bind.action_type == mod.enum.action_type.ENABLE
+        or bind.action_type == mod.enum.action_type.ENABLE_HOLD
+    then
         new_value = true
-    elseif bind.action_type == mod.enum.action_type.DISABLE then
+    elseif
+        bind.action_type == mod.enum.action_type.DISABLE
+        or bind.action_type == mod.enum.action_type.DISABLE_HOLD
+    then
         new_value = false
     elseif
-        bind.action_type == mod.enum.action_type.TOGGLE_HOLD
-        and is_triggered
-        and toggle_hold_value == nil
+        bind.action_type == mod.enum.action_type.TOGGLE
+        or bind.action_type == mod.enum.action_type.TOGGLE_HOLD
     then
-        local old_value = hud.get_hud_option(bind.bound_value)
-        new_value = not old_value
-
-        this.monitor:register_on_release_callback(bind.name, function()
-            action_option_hud(bind, old_value)
-        end)
-    else
-        new_value = toggle_hold_value
+        if is_triggered then
+            new_value = not current_value
+            this.monitor:set_action_value(manager_name, bind, new_value)
+        else
+            new_value = this.monitor:get_action_value(manager_name, bind)
+        end
     end
 
-    if new_value == nil and toggle_hold_value == nil then
-        local hud_profile = hud.get_current() --[[@as ModProfileConfig]]
-        new_value = not hud_profile[bind.bound_value]
+    if new_value == nil then
+        return
+    end
+
+    if is_triggered and is_hold then
+        new_value =
+            this.monitor:push_hold(manager_name, bind.bound_value, bind, new_value, current_value)
+        this.monitor:register_on_release_callback(bind.name, function()
+            local value = this.monitor:remove_hold(manager_name, bind.bound_value, bind)
+
+            if value ~= nil then
+                hud.overwrite_hud_option(bind.bound_value --[[@as string]], value)
+            end
+        end)
     end
 
     local val = hud.overwrite_hud_option(bind.bound_value --[[@as string]], new_value)
@@ -91,73 +110,103 @@ local function action_option_hud(bind, toggle_hold_value)
 end
 
 ---@param bind ModBind
----@param toggle_hold_value boolean? internal, dont use
-local function action_option_mod(bind, toggle_hold_value)
-    local is_triggered = this.monitor:is_triggered("option_mod", bind)
+local function action_option_mod(bind)
+    local manager_name = "option_mod"
+    local is_triggered = this.monitor:is_triggered(manager_name, bind)
     local config_mod = config.current.mod
+
+    local is_hold = bind.action_type == mod.enum.action_type.ENABLE_HOLD
+        or bind.action_type == mod.enum.action_type.DISABLE_HOLD
+        or bind.action_type == mod.enum.action_type.TOGGLE_HOLD
+
+    local current_value = config_mod[bind.bound_value] --[[@as boolean]]
 
     ---@type boolean?
     local new_value
-    if bind.action_type == mod.enum.action_type.ENABLE then
-        new_value = true
-    elseif bind.action_type == mod.enum.action_type.DISABLE then
-        new_value = false
-    elseif bind.action_type == mod.enum.action_type.TOGGLE then
-        new_value = config_mod[bind.bound_value] --[[@as boolean]]
-    elseif
-        bind.action_type == mod.enum.action_type.TOGGLE_HOLD
-        and is_triggered
-        and toggle_hold_value == nil
+
+    if
+        bind.action_type == mod.enum.action_type.ENABLE
+        or bind.action_type == mod.enum.action_type.ENABLE_HOLD
     then
-        local old_value = config_mod[bind.bound_value] --[[@as boolean]]
-        new_value = not old_value
+        new_value = true
+    elseif
+        bind.action_type == mod.enum.action_type.DISABLE
+        or bind.action_type == mod.enum.action_type.DISABLE_HOLD
+    then
+        new_value = false
+    elseif
+        bind.action_type == mod.enum.action_type.TOGGLE
+        or bind.action_type == mod.enum.action_type.TOGGLE_HOLD
+    then
+        if is_triggered then
+            new_value = not current_value
+
+            this.monitor:set_action_value(manager_name, bind, new_value)
+        else
+            new_value = this.monitor:get_action_value(manager_name, bind)
+        end
+    end
+
+    if new_value == nil then
+        return
+    end
+
+    if is_triggered and is_hold then
+        new_value =
+            this.monitor:push_hold(manager_name, bind.bound_value, bind, new_value, current_value)
 
         this.monitor:register_on_release_callback(bind.name, function()
-            action_option_mod(bind, old_value)
+            local value = this.monitor:remove_hold(manager_name, bind.bound_value, bind)
+
+            if value ~= nil then
+                ---@diagnostic disable-next-line: no-unknown
+                config_mod[bind.bound_value] = value
+            end
         end)
-    else
-        new_value = toggle_hold_value
     end
 
     ---@diagnostic disable-next-line: no-unknown
     config_mod[bind.bound_value] = new_value
+
     if config.current.mod.enable_notification and is_triggered then
         ace_misc.send_message(
             string.format(
                 "%s %s %s",
                 config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value]),
                 config.lang:tr("misc.text_changed_notifcation_message"),
-                config_mod[bind.bound_value]
+                new_value
             )
         )
     end
 end
 
 ---@param bind ModBind
----@param toggle_hold_value integer? internal, dont use
-local function action_option_game(bind, toggle_hold_value)
-    local is_triggered = this.monitor:is_triggered("option_game", bind)
-    local new_value = toggle_hold_value or bind.bound_value.value
+local function action_option_game(bind)
+    local manager_name = "option_game"
+    local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local option_key = bind.bound_value.option_key --[[@as string]]
+    local new_value = bind.bound_value.value --[[@as integer]]
+    local is_hold = bind.action_type == mod.enum.action_type.TOGGLE_HOLD
 
-    if
-        bind.action_type == mod.enum.action_type.TOGGLE_HOLD
-        and is_triggered
-        and toggle_hold_value == nil
-    then
-        local old_value = options.get_option(bind.bound_value.option_key)
+    if is_triggered and is_hold then
+        local current_value = options.get_option(option_key)
+        new_value = this.monitor:push_hold(manager_name, option_key, bind, new_value, current_value)
         this.monitor:register_on_release_callback(bind.name, function()
-            action_option_game(bind, old_value)
+            local value = this.monitor:remove_hold(manager_name, option_key, bind)
+            if value ~= nil then
+                options.apply_option(option_key, value)
+            end
         end)
     end
 
-    options.apply_option(bind.bound_value.option_key, new_value)
+    options.apply_option(option_key, new_value)
     if config.current.mod.enable_notification and is_triggered then
         ace_misc.send_message(
             string.format(
                 "%s %s %s",
-                ace.map.option[bind.bound_value.option_key].name_local,
+                ace.map.option[option_key].name_local,
                 config.lang:tr("misc.text_changed_notifcation_message"),
-                options.get_option_setting_name(bind.bound_value.option_key, new_value)
+                options.get_option_setting_name(option_key, new_value)
             )
         )
     end
