@@ -45,17 +45,21 @@ local function start_listener(opt, opt_name)
 end
 
 local function draw_bind_type()
+    local config_mod = config.current.mod
     ---@type NotebookTab[]
     local tabs = {
         { label = config.lang:tr("menu.bind.key.all"), key = 0 },
         { label = config.lang:tr("menu.bind.key.hud"), key = 1 },
         { label = config.lang:tr("menu.bind.key.option"), key = 2 },
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
-        { label = config.lang:tr("menu.bind.key.option_game"), key = 4 },
     }
 
+    if not cd.combo.option_game_bind:empty() then
+        table.insert(tabs, { label = config.lang:tr("menu.bind.key.option_game"), key = 4 })
+    end
+
+    config_mod.bind.slider.key_bind = math.min(config_mod.bind.slider.key_bind, #tabs)
     if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
-        local config_mod = config.current.mod
         clear_listener()
         config_mod.combo.key_bind.action_type = 1
         config_mod.combo.key_bind.target = 1

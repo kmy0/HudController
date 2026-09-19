@@ -410,6 +410,12 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     imgui.spacing()
     imgui.indent(2)
 
+    local bad_key = util_table.find_value(cond_set.element_profile, function(_, value)
+        return value.parent_key ~= cond_set.key
+    end)
+
+    util_imgui.begin_disabled(util_table.empty(values) and not bad_key)
+
     imgui.begin_group()
     util_imgui.dummy_button3("##window_padding_hud3", { get_width(), 1 })
     util_imgui.separator_text_item(
@@ -654,6 +660,7 @@ end
 ---@param i integer
 ---@param cond_set ConditionSetConfig
 local function draw_game_options(i, cond_set)
+    util_imgui.begin_disabled(cd.combo.option_game_bind:empty())
     draw_options(i, cond_set, {
         field = "game_option",
         tr_key = "game_options",
@@ -661,6 +668,7 @@ local function draw_game_options(i, cond_set)
         default_value = 0,
         draw_value = draw_game_option,
     })
+    util_imgui.end_disabled()
 end
 
 ---@param i integer

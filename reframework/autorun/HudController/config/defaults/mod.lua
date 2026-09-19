@@ -134,33 +134,8 @@ return {
         user_conditions = {},
         user_options = {},
         game_options = {
-            hud = {
-                DAMAGE_DISPLAY = true,
-                SKILL_EFFECT = true,
-                TALISMAN_EFFECT = true,
-            },
-            elements = {
-                MINIMAP = {
-                    MAP_RADAR_FIXNORTH = true,
-                    MAP_RADAR_PITCH_TYPE = true,
-                },
-                COMPANION = {
-                    AUTO_SCALING_FELLOW_FITNESS = true,
-                },
-                HEALTH = {
-                    AUTO_SCALING_FITNESS = true,
-                    ALERT_EFFECT = true,
-                },
-                PROGRESS = {
-                    ELAPSED_TIME_DISP = true,
-                },
-                STAMINA = {
-                    AUTO_SCALING_STAMINA = true,
-                },
-                SHARPNESS = {
-                    AUTO_SCALING_SHARPNESS = true,
-                },
-            },
+            hud = {},
+            elements = {},
             display_full_path = true,
         },
         grid = {

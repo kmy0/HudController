@@ -185,7 +185,7 @@ local function draw_options_menu()
         local opts = elem.key == "GLOBAL" and config_mod.game_options.hud
             or config_mod.game_options.elements[elem.key]
 
-        if opts then
+        if opts and not util_table.empty(opts) then
             util_imgui.separator_text(elem.value)
 
             local keys = util_table.keys(opts)
