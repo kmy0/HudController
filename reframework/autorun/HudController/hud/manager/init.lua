@@ -21,6 +21,7 @@ local timer = require("HudController.util.misc.timer")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
+local ace = data.ace
 
 ---@class HudManager
 local this = {
@@ -35,7 +36,17 @@ local this = {
                 value = value == mod.enum.expected_result.TRUE and true or false
                 options.overwrite_hud_option(key, value)
             end,
-            remove = function(_, _) end,
+            notification = function(key, value)
+                value = value == mod.enum.expected_result.TRUE and true or false
+                ace_misc.send_message(
+                    string.format(
+                        "%s %s %s",
+                        config.lang:tr("hud." .. mod.map.options_hud[key]),
+                        config.lang:tr("misc.text_override_notifcation_message"),
+                        value
+                    )
+                )
+            end,
         },
         mod_option = {
             apply = function(key, value)
@@ -43,13 +54,33 @@ local this = {
                 ---@diagnostic disable-next-line: no-unknown
                 config.current.mod[key] = value
             end,
-            remove = function() end,
+            notification = function(key, value)
+                value = value == mod.enum.expected_result.TRUE and true or false
+                ace_misc.send_message(
+                    string.format(
+                        "%s %s %s",
+                        config.lang:tr("menu.config." .. mod.map.options_mod[key]),
+                        config.lang:tr("misc.text_changed_notifcation_message"),
+                        value
+                    )
+                )
+            end,
         },
         game_option = {
             apply = function(key, value)
                 options.apply_option(key, value)
             end,
-            remove = function() end,
+
+            notification = function(key, value)
+                ace_misc.send_message(
+                    string.format(
+                        "%s %s %s",
+                        ace.map.option[key].name_local,
+                        config.lang:tr("misc.text_changed_notifcation_message"),
+                        options.get_option_setting_name(key, value)
+                    )
+                )
+            end,
         },
     },
 }
@@ -64,22 +95,23 @@ local function verify_elements()
 end
 
 ---@param request ConditionEvalRet
----@param clear boolean?
-local function update_condition_options(request, clear)
+local function update_condition_options(request)
+    local config_mod = config.current.mod
+
     for name, handler in pairs(this.condition_option_handlers) do
         local current = request[name] or {} --[[@as table<string, any>]]
         local previous = this.condition_options[name] or {}
 
-        if handler.remove then
-            for key, value in pairs(previous) do
-                if clear or current[key] == nil then
-                    handler.remove(key, value)
-                end
-            end
-        end
-
         for key, value in pairs(current) do
             handler.apply(key, value)
+
+            if
+                config_mod.enable_notification
+                and previous[key] ~= value
+                and handler.notification
+            then
+                handler.notification(key, value)
+            end
         end
 
         this.condition_options[name] = current
@@ -87,7 +119,9 @@ local function update_condition_options(request, clear)
 end
 
 ---@return boolean is_held
-local function update_key_binds(config_mod)
+---@return BindEvalRet
+local function update_key_binds()
+    local config_mod = config.current.mod
     bind_manager.monitor:monitor()
 
     if bind_manager.monitor:is_triggered("hud") and config_mod.disable_condition_binds_timed then
@@ -111,7 +145,60 @@ local function update_key_binds(config_mod)
         this.disable_condition_binds:abort()
     end
 
-    return is_held
+    return is_held, bind_manager.monitor.frame_storage
+end
+
+---@return ConditionEvalRet?
+local function update_requests()
+    local config_mod = config.current.mod
+    local is_held = false
+    ---@type BindEvalRet?
+    local bind_requests
+
+    if config_mod.enable_key_binds then
+        is_held, bind_requests = update_key_binds()
+    end
+
+    if bind_requests and util_table.empty(bind_requests) then
+        bind_requests = nil
+    end
+
+    if
+        not config_mod.enable_condition_binds
+        or this.disable_condition_binds:active()
+        or is_held
+    then
+        if config_mod.bind.condition.highlight_pass and config.gui.current.gui.main.is_opened then
+            bind_condition.update_conditions_only()
+        end
+
+        return bind_requests
+    end
+
+    local cond_requests = bind_condition.update(profile_switcher.current_hud, this.force_update)
+    if not cond_requests then
+        return bind_requests
+    end
+
+    if bind_requests and cond_requests then
+        if bind_requests.hud then
+            if bind_requests.hud.key ~= cond_requests.hud.key then
+                cond_requests.hud = bind_requests.hud
+            elseif bind_requests.hud.profile[1] ~= mod.enum.elem_profile.DEFAULT then
+                table.insert(cond_requests.hud.profile, 1, bind_requests.hud.profile[1])
+            end
+        end
+
+        for opt_manager, _ in pairs(this.condition_option_handlers) do
+            for opt_name, opt_value in
+                pairs(bind_requests[opt_manager] or {} --[[@as table<string, any>]])
+            do
+                util_table.set_nested_value(cond_requests, { opt_manager, opt_name }, opt_value)
+            end
+        end
+    end
+
+    return cond_requests
 end
 
 function this.request_update()
@@ -151,21 +238,7 @@ function this.update()
 
     this.disable_condition_binds:update_args({ timeout = config_mod.disable_condition_binds_time })
 
-    local is_held = config_mod.enable_key_binds and update_key_binds(config_mod)
-
-    if
-        not config_mod.enable_condition_binds
-        or this.disable_condition_binds:active()
-        or is_held
-    then
-        if config_mod.bind.condition.highlight_pass and config.gui.current.gui.main.is_opened then
-            bind_condition.update_conditions_only()
-        end
-
-        return
-    end
-
-    local request = bind_condition.update(profile_switcher.current_hud, this.force_update)
+    local request = update_requests()
     if not request then
         return
     end

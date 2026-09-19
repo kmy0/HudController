@@ -1,4 +1,7 @@
 ---@class ModBindMonitor : BindMonitor
+---@field frame_storage BindEvalRet
+
+---@class (exact) BindEvalRet : ConditionEvalRet
 
 local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.init"

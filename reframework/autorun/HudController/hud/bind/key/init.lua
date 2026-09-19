@@ -13,16 +13,11 @@
 local util_misc = require("HudController.util.misc.init")
 ---@module "HudController.hud.init"
 local hud = util_misc.lazy_require("HudController.hud.init")
-local ace = require("HudController.data.ace")
-local ace_misc = require("HudController.util.ace.misc")
 local bind_monitor = require("HudController.hud.bind.key.monitor")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local mod_bind_manager = require("HudController.hud.bind.key.manager")
 local options = require("HudController.hud.manager.options")
-local state = require("HudController.gui.state")
----@module "HudController.hud.manager.op.init"
-local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -32,14 +27,10 @@ local this = {}
 
 ---@param bind ModBind
 local function action_hud(bind)
-    local config_mod = config.current.mod
-    local hud_config = op.hud_profile.get_hud_by_key(bind.bound_value.hud --[[@as integer]])
-    state.input = nil
-
-    hud.force_request_hud_with_profiles(hud_config, { bind.bound_value.profile })
-    config_mod.combo.hud = util_table.index(config_mod.hud, function(o)
-        return o.key == bind.bound_value.hud
-    end) --[[@as integer]]
+    util_table.set_nested_value(this.monitor.frame_storage, { "hud" }, {
+        key = bind.bound_value.hud --[[@as integer]],
+        profile = { bind.bound_value.profile },
+    })
 end
 
 ---@param bind ModBind
@@ -85,28 +76,21 @@ local function action_option_hud(bind)
             this.monitor:push_hold(manager_name, bind.bound_value, bind, new_value, current_value)
         this.monitor:register_on_release_callback(bind.name, function()
             local value = this.monitor:remove_hold(manager_name, bind.bound_value, bind)
-
             if value ~= nil then
-                hud.overwrite_hud_option(bind.bound_value --[[@as string]], value)
+                util_table.set_nested_value(
+                    this.monitor.frame_storage,
+                    { "hud_option", bind.bound_value },
+                    value and mod.enum.expected_result.TRUE or mod.enum.expected_result.FALSE
+                )
             end
         end)
     end
 
-    local val = hud.overwrite_hud_option(bind.bound_value --[[@as string]], new_value)
-    if val == nil then
-        return
-    end
-
-    if config.current.mod.enable_notification and is_triggered then
-        ace_misc.send_message(
-            string.format(
-                "%s %s %s",
-                config.lang:tr("hud." .. mod.map.options_hud[bind.bound_value]),
-                config.lang:tr("misc.text_override_notifcation_message"),
-                val
-            )
-        )
-    end
+    util_table.set_nested_value(
+        this.monitor.frame_storage,
+        { "hud_option", bind.bound_value },
+        new_value and mod.enum.expected_result.TRUE or mod.enum.expected_result.FALSE
+    )
 end
 
 ---@param bind ModBind
@@ -159,25 +143,20 @@ local function action_option_mod(bind)
             local value = this.monitor:remove_hold(manager_name, bind.bound_value, bind)
 
             if value ~= nil then
-                ---@diagnostic disable-next-line: no-unknown
-                config_mod[bind.bound_value] = value
+                util_table.set_nested_value(
+                    this.monitor.frame_storage,
+                    { "mod_option", bind.bound_value },
+                    value and mod.enum.expected_result.TRUE or mod.enum.expected_result.FALSE
+                )
             end
         end)
     end
 
-    ---@diagnostic disable-next-line: no-unknown
-    config_mod[bind.bound_value] = new_value
-
-    if config.current.mod.enable_notification and is_triggered then
-        ace_misc.send_message(
-            string.format(
-                "%s %s %s",
-                config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value]),
-                config.lang:tr("misc.text_changed_notifcation_message"),
-                new_value
-            )
-        )
-    end
+    util_table.set_nested_value(
+        this.monitor.frame_storage,
+        { "mod_option", bind.bound_value },
+        new_value and mod.enum.expected_result.TRUE or mod.enum.expected_result.FALSE
+    )
 end
 
 ---@param bind ModBind
@@ -194,22 +173,20 @@ local function action_option_game(bind)
         this.monitor:register_on_release_callback(bind.name, function()
             local value = this.monitor:remove_hold(manager_name, option_key, bind)
             if value ~= nil then
-                options.apply_option(option_key, value)
+                util_table.set_nested_value(
+                    this.monitor.frame_storage,
+                    { "game_option", option_key },
+                    value
+                )
             end
         end)
     end
 
-    options.apply_option(option_key, new_value)
-    if config.current.mod.enable_notification and is_triggered then
-        ace_misc.send_message(
-            string.format(
-                "%s %s %s",
-                ace.map.option[option_key].name_local,
-                config.lang:tr("misc.text_changed_notifcation_message"),
-                options.get_option_setting_name(option_key, new_value)
-            )
-        )
-    end
+    util_table.set_nested_value(
+        this.monitor.frame_storage,
+        { "game_option", option_key },
+        new_value
+    )
 end
 
 ---@return boolean

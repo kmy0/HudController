@@ -3,6 +3,7 @@
 ---@field execute_order string[] manager names
 ---@field key_buffer KeyBuffer
 ---@field on_release_callbacks table<string, fun()[]> key_name, cb
+---@field frame_storage table
 ---@field protected _buffer_max integer
 ---@field protected _pause boolean
 ---@field protected _on_release_callbacks string[] key names
@@ -52,6 +53,7 @@ this.__index = this
 function this:new(...)
     local o = {
         managers = {},
+        frame_storage = {},
         _pause = false,
         _buffer_max = 3,
         key_buffer = {
@@ -555,6 +557,8 @@ function this:get_action_value(manager_name, bind)
 end
 
 function this:monitor()
+    self.frame_storage = {}
+
     if
         self._pause
         or util_table.all(self.managers, function(o)
