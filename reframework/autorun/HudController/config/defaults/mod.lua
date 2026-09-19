@@ -99,16 +99,12 @@
 ---@field combo {
 --- hud: integer,
 --- hud_elem: integer,
---- user_option: integer,
+--- game_option: integer,
 --- key_bind: {
----     hud: integer,
----     option_hud: integer,
----     option_mod: integer,
+---     target: integer,
 ---     action_type: integer,
 ---     trigger_type: integer,
----     elem_profile: integer,
----     option_game: integer,
----     option_game_value: integer,
+---     value: integer,
 ---     },
 --- }
 ---@field lang ModLanguage
@@ -215,16 +211,12 @@ return {
         combo = {
             hud = 1,
             hud_elem = 1,
-            user_option = 1,
+            game_option = 1,
             key_bind = {
-                hud = 1,
-                option_hud = 1,
-                option_mod = 1,
+                target = 1,
                 action_type = 1,
-                elem_profile = 0,
                 trigger_type = 1,
-                option_game = 1,
-                option_game_value = -1,
+                value = 1,
             },
         },
     },

@@ -125,9 +125,9 @@ function this.remove_elem_profile(hud_config, key)
     local config_mod = config.current.mod
     for _, bind in pairs(config_mod.bind.key.hud) do
         local bound_value = bind.bound_value
-        ---@cast bound_value HudBindOpt
-        if bound_value.hud == hud_config.key then
-            filter_binds(bound_value, "profile")
+        ---@cast bound_value BindOpt
+        if bound_value.key == hud_config.key then
+            filter_binds(bound_value, "value")
         end
     end
 
@@ -146,7 +146,7 @@ function this.remove_elem_profile(hud_config, key)
         end
     end
 
-    config_mod.combo.key_bind.elem_profile = 0
+    config_mod.combo.key_bind.value = 0
     cd.clear_cache()
 end
 

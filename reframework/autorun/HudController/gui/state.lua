@@ -2,16 +2,12 @@
 ---@field input {buf: string, type: string, key: any?}?
 ---@field listener NewBindListener?
 
----@class (exact) HudBindOpt
----@field hud integer
----@field profile integer
-
----@class (exact) OptionGameOpt
----@field option_key string
----@field value integer
+---@class (exact) BindOpt
+---@field key any
+---@field value any
 
 ---@class (exact) NewBindListener
----@field opt HudBindOpt | string | OptionGameOpt
+---@field opt BindOpt
 ---@field opt_name string
 ---@field listener BindListener
 ---@field collision string?

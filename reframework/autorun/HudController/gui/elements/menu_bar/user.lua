@@ -81,7 +81,7 @@ local function draw_options_menu()
     imgui.set_next_item_width(
         util_imgui.get_something_with_button_width(util_gui.tr("menu.user.options.button_add"))
     )
-    set:combo_filter("##user_options_combo", "mod.combo.user_option", cd.combo.elem_option)
+    set:combo_filter("##user_options_combo", "mod.combo.game_option", cd.combo.elem_option)
     imgui.same_line()
 
     if not imgui.is_popup_open("##" .. util_gui.tr("menu.user.options.button_add") .. "_popup") then
@@ -107,13 +107,13 @@ local function draw_options_menu()
             then
                 if all_opts[option.name] then
                     op.hud_game_options.remove_game_option_elem(
-                        cd.combo.elem_option:get_key(config_mod.combo.user_option),
+                        cd.combo.elem_option:get_key(config_mod.combo.game_option),
                         option.name
                     )
                     config:save()
                 else
                     op.hud_game_options.add_game_option_elem(
-                        cd.combo.elem_option:get_key(config_mod.combo.user_option),
+                        cd.combo.elem_option:get_key(config_mod.combo.game_option),
                         option.name
                     )
                     config:save()

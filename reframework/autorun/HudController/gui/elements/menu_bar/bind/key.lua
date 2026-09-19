@@ -34,7 +34,7 @@ local function clear_listener()
     bind_manager.monitor:unpause()
 end
 
----@param opt string | HudBindOpt | OptionGameOpt
+---@param opt BindOpt
 ---@param opt_name string
 local function start_listener(opt, opt_name)
     state.listener = {
@@ -55,35 +55,44 @@ local function draw_bind_type()
     }
 
     if set:notebook("notebook_binds", "mod.bind.slider.key_bind", tabs, nil, nil, nil, true) then
+        local config_mod = config.current.mod
         clear_listener()
-        config.current.mod.combo.key_bind.action_type = 1
+        config_mod.combo.key_bind.action_type = 1
+        config_mod.combo.key_bind.target = 1
+        config_mod.combo.key_bind.value = 0
         config:save()
     end
 end
 
 ---@param manager ModBindManager
 ---@param config_mod ModSettings
----@return string | HudBindOpt | OptionGameOpt
+---@return BindOpt
 ---@return string
 local function get_selected_option(manager, config_mod)
     if manager.name == mod.enum.manager_names.HUD then
-        local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
-        local opt = { hud = hud_profile.key, profile = config_mod.combo.key_bind.elem_profile }
+        local hud_profile = config_mod.hud[config_mod.combo.key_bind.target]
+        local opt = { key = hud_profile.key, value = config_mod.combo.key_bind.value }
 
         return opt, util_menubar_bind.get_hud_bind_name(opt)
     elseif manager.name == mod.enum.manager_names.OPTION_HUD then
-        return cd.combo.option_bind:get_key(config_mod.combo.key_bind.option_hud),
-            cd.combo.option_bind:get_value(config_mod.combo.key_bind.option_hud)
+        local opt = {
+            key = cd.combo.option_bind:get_key(config_mod.combo.key_bind.target),
+            value = config_mod.combo.key_bind.value,
+        }
+        return opt, util_menubar_bind.get_option_hud_bind_name(opt)
     elseif manager.name == mod.enum.manager_names.OPTION_GAME then
         local opt = {
-            option_key = cd.combo.option_game_bind:get_key(config_mod.combo.key_bind.option_game),
-            value = config_mod.combo.key_bind.option_game_value,
+            key = cd.combo.option_game_bind:get_key(config_mod.combo.key_bind.target),
+            value = config_mod.combo.key_bind.value,
         }
         return opt, util_menubar_bind.get_option_game_bind_name(opt)
     end
 
-    return cd.combo.option_mod_bind:get_key(config_mod.combo.key_bind.option_mod),
-        cd.combo.option_mod_bind:get_value(config_mod.combo.key_bind.option_mod)
+    local opt = {
+        key = cd.combo.option_mod_bind:get_key(config_mod.combo.key_bind.target),
+        value = config_mod.combo.key_bind.value,
+    }
+    return opt, util_menubar_bind.get_option_mod_bind_name(opt)
 end
 
 ---@param manager ModBindManager
@@ -181,8 +190,20 @@ end
 ---@param config_mod ModSettings
 local function draw_option_bind_table(combo_key, combo, manager, config_mod)
     draw_bind_table(function()
-        set:combo_filter("##bind_option_combo", combo_key, combo)
+        if set:combo_filter("##bind_option_combo", combo_key, combo) then
+            config_mod.combo.key_bind.value = 0
+            config:save()
+        end
     end, draw_trigger_combo, draw_action_combo, manager, config_mod)
+
+    imgui.set_next_item_width(get_width())
+    set:slider_list(
+        "##option_bind_list",
+        "mod.combo.key_bind.value",
+        0,
+        1,
+        { config.lang:tr("misc.text_off"), config.lang:tr("misc.text_on") }
+    )
 end
 
 ---@param config_mod ModSettings
@@ -199,12 +220,14 @@ local function draw_bind_target(config_mod)
         local values = {}
         draw_bind_table(
             function()
-                if set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.hud", cd.combo.hud) then
-                    config_mod.combo.key_bind.elem_profile = 0
+                if
+                    set:combo_filter("##bind_hud_combo", "mod.combo.key_bind.target", cd.combo.hud)
+                then
+                    config_mod.combo.key_bind.value = 0
                     config:save()
                 end
 
-                local hud_profile = config_mod.hud[config_mod.combo.key_bind.hud]
+                local hud_profile = config_mod.hud[config_mod.combo.key_bind.target]
                 if hud_profile then
                     values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
                 end
@@ -226,7 +249,7 @@ local function draw_bind_target(config_mod)
         imgui.set_next_item_width(get_width())
         set:combo_multi_bits_filter(
             "##elem_profile_hud_bind",
-            "mod.combo.key_bind.elem_profile",
+            "mod.combo.key_bind.value",
             config.lang:tr("misc.text_none"),
             values,
             function(v)
@@ -241,7 +264,7 @@ local function draw_bind_target(config_mod)
         return bind_manager.hud, "mod.bind.key.hud"
     elseif bind_type == 2 then
         draw_option_bind_table(
-            "mod.combo.key_bind.option_hud",
+            "mod.combo.key_bind.target",
             cd.combo.option_bind,
             bind_manager.option_hud,
             config_mod
@@ -250,7 +273,7 @@ local function draw_bind_target(config_mod)
         return bind_manager.option_hud, "mod.bind.key.option_hud"
     elseif bind_type == 3 then
         draw_option_bind_table(
-            "mod.combo.key_bind.option_mod",
+            "mod.combo.key_bind.target",
             cd.combo.option_mod_bind,
             bind_manager.option_mod,
             config_mod
@@ -263,11 +286,11 @@ local function draw_bind_target(config_mod)
                 if
                     set:combo_filter(
                         "##bind_option_game_combo",
-                        "mod.combo.key_bind.option_game",
+                        "mod.combo.key_bind.target",
                         cd.combo.option_game_bind
                     )
                 then
-                    config_mod.combo.key_bind.option_game_value = -1
+                    config_mod.combo.key_bind.value = 0
                     config:save()
                 end
             end,
@@ -276,7 +299,7 @@ local function draw_bind_target(config_mod)
                 set:combo_filter(
                     "##bind_action_type_combo",
                     "mod.combo.key_bind.action_type",
-                    cd.combo.bind_action_type_option_game
+                    cd.combo.bind_action_type
                 )
             end,
             bind_manager.option_game,
@@ -285,7 +308,7 @@ local function draw_bind_target(config_mod)
 
         imgui.set_next_item_width(get_width())
         local key = cd.combo.option_game_bind:get_key(config:get("mod.combo.key_bind.option_game"))
-        generic.draw_option(key, "mod.combo.key_bind.option_game_value", nil, "##" .. key)
+        generic.draw_option(key, "mod.combo.key_bind.value", nil, "##" .. key)
 
         return bind_manager.option_game, "mod.bind.key.option_game"
     end
@@ -303,9 +326,6 @@ end
 local function set_bind_target(manager, bind, config_mod)
     if manager.name == mod.enum.manager_names.HUD then
         bind.action_type = mod.enum.action_type.NONE
-    elseif manager.name == mod.enum.manager_names.OPTION_GAME then
-        bind.action_type =
-            cd.combo.bind_action_type_option_game:get_key(config_mod.combo.key_bind.action_type)
     else
         bind.action_type = cd.combo.bind_action_type:get_key(config_mod.combo.key_bind.action_type)
     end
@@ -441,9 +461,6 @@ end
 local function draw_registered_bind(manager, bind, remove)
     local opt_name = get_bind_name(manager, bind)
 
-    imgui.table_next_row()
-    imgui.table_set_column_index(0)
-
     if
         imgui.button(
             util_gui.tr("menu.bind.key.button_remove", bind.name, tostring(bind.bound_value))
@@ -516,9 +533,12 @@ local function draw_registered_binds(manager, config_key)
         if state.listener and state.listener.collision == get_bind_name(manager, b) then
             color = mod.enum.colors.bad
         end
+        imgui.table_next_row()
+        imgui.table_set_column_index(0)
 
         imgui.push_style_color(5, color)
         imgui.begin_rect()
+
         draw_registered_bind(manager, b, remove)
         imgui.end_rect(0, 0)
         imgui.pop_style_color(1)

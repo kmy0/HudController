@@ -275,12 +275,8 @@ return {
                 button_cancel = "Cancel",
                 button_clear = "Clear",
                 action_type = {
-                    TOGGLE = "Toggle",
-                    ENABLE = "Enable",
-                    DISABLE = "Disable",
-                    TOGGLE_HOLD = "Toggle Hold",
-                    DISABLE_HOLD = "Disable Hold",
-                    ENABLE_HOLD = "Enable Hold",
+                    SET = "Set",
+                    SET_HOLD = "Set Hold",
                 },
                 trigger_type = {
                     ONCE = "Once",
