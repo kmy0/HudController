@@ -65,6 +65,12 @@ function this.separator_text(label, padding, thickness, color)
     local pad_y = padding and padding[2] or 0
     thickness = thickness or 3
     color = color or 2106363020
+    local color_text = 0xffffffff
+
+    if disabled.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+        color_text = util_misc.mul_alpha(color_text, 0.6)
+    end
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -75,7 +81,7 @@ function this.separator_text(label, padding, thickness, color)
     local label_x = pos.x + pad_x + 15
 
     draw_list:add_line({ pos.x, pos_y }, { pos.x + pad_x, pos_y }, color, thickness)
-    draw_list:add_text({ label_x, pos.y + pad_y }, 0xffffffff, label)
+    draw_list:add_text({ label_x, pos.y + pad_y }, color_text, label)
     draw_list:add_line(
         { label_x + label_size.x + 15, pos_y },
         { window_pos.x + window_size.x, pos_y },
@@ -101,6 +107,10 @@ function this.separator_text_item(label, item_width, padding, spacing, thickness
     spacing = spacing or 15
     thickness = thickness or 3
     color = color or 2106363020
+
+    if disabled.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
