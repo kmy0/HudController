@@ -20,9 +20,11 @@ local this = {}
 ---@param item_config_key string
 ---@param callback fun(option_key: string, value: integer)?
 ---@param label string?
-function this.draw_option(option_key, item_config_key, callback, label)
+---@param add_default boolean?
+function this.draw_option(option_key, item_config_key, callback, label, add_default)
     local option_data = ace_map.option[option_key]
     label = label or string.format("%s##%s", option_data.name_local, option_data.name)
+    add_default = add_default == nil or add_default
 
     local values = {}
     for _, item in ipairs(option_data.items) do
@@ -36,10 +38,23 @@ function this.draw_option(option_key, item_config_key, callback, label)
         values = { config.lang:tr("misc.text_off"), config.lang:tr("misc.text_on") }
     end
 
-    if not util_table.empty(values) then
-        table.insert(values, 1, config.lang:tr("hud.option_disable"))
+    local default_value = add_default and -1 or 0
+    local default_format = add_default and config.lang:tr("hud.option_disable") or nil
 
-        if set:slider_list(label, item_config_key, -1, #values - 2, values) and callback then
+    if not util_table.empty(values) then
+        if add_default then
+            table.insert(values, 1, default_format)
+        end
+
+        if
+            set:slider_list(
+                label,
+                item_config_key,
+                default_value,
+                #values - (add_default and 2 or 1),
+                values
+            ) and callback
+        then
             callback(option_key, config:get(item_config_key))
         end
     elseif
@@ -53,8 +68,8 @@ function this.draw_option(option_key, item_config_key, callback, label)
                     item_config_key,
                     option_data.min,
                     option_data.max,
-                    -1,
-                    config.lang:tr("hud.option_disable")
+                    default_value,
+                    default_format
                 ) and callback
             then
                 callback(option_key, config:get(item_config_key))
@@ -67,8 +82,8 @@ function this.draw_option(option_key, item_config_key, callback, label)
                     option_data.min,
                     option_data.max,
                     option_data.decimal_place,
-                    -1,
-                    config.lang:tr("hud.option_disable")
+                    default_value,
+                    default_format
                 ) and callback
             then
                 callback(option_key, config:get(item_config_key))

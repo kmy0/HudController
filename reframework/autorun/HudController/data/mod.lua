@@ -227,12 +227,8 @@ this.enum.manager_names = { ---@class ModBindManagerType.*
 ---@enum BindActionType
 this.enum.action_type = { ---@class BindActionType.*
     NONE = "NONE",
-    TOGGLE = "TOGGLE",
-    ENABLE = "ENABLE",
-    DISABLE = "DISABLE",
-    TOGGLE_HOLD = "TOGGLE_HOLD",
-    ENABLE_HOLD = "ENABLE_HOLD",
-    DISABLE_HOLD = "DISABLE_HOLD",
+    SET = "SET",
+    SET_HOLD = "SET_HOLD",
 }
 ---@enum ExpectedResult
 this.enum.expected_result = { ---@class ExpectedResult.*

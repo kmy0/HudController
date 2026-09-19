@@ -110,8 +110,24 @@ end
 ---@param config MainSettings
 function this.fns.binds(config)
     for _, b in pairs(config.mod.bind.key.hud) do
-        b.bound_value = { hud = b.bound_value, profile = 0 }
+        b.bound_value = { key = b.bound_value, value = 0 }
         b.trigger_repeat = false
+    end
+
+    for _, t in pairs({ config.mod.bind.key.option_hud, config.mod.bind.key.option_mod }) do
+        for _, b in pairs(t) do
+            b.bound_value = { key = b.bound_value, value = 0 }
+            if b.action_type == "ENABLE" or b.action_type == "TOGGLE" then
+                b.bound_value.value = 1
+                b.action_type = "SET"
+            elseif b.action_type == "TOGGLE_HOLD" then
+                b.bound_value.value = 1
+                b.action_type = "SET_HOLD"
+            elseif b.action_type == "DISABLE" then
+                b.action_type = "SET"
+            end
+            b.trigger_repeat = false
+        end
     end
 end
 

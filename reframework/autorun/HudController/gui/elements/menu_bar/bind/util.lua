@@ -29,16 +29,10 @@ end
 
 ---@param bind ModBind
 ---@return string
-function this.get_option_hud_bind_name(bind)
-    return config.lang:tr("hud." .. mod.map.options_hud[bind.bound_value])
-end
-
----@param bind ModBind
----@return string
 function this.get_action_name(bind)
     local action = bind.action_type
     if action == "NONE" then
-        action = "ENABLE"
+        action = "SET"
     end
 
     return string.format("[%s]", config.lang:tr("menu.bind.key.action_type." .. action))
@@ -61,23 +55,57 @@ function this.get_key_bind_name(bind)
     return string.format("[%s]", bind.name_display)
 end
 
----@param bind ModBind
+---@param bind ModBind | BindOpt
 ---@return string
 function this.get_option_mod_bind_name(bind)
-    return config.lang:tr("menu.config." .. mod.map.options_mod[bind.bound_value])
+    local key = ""
+    local value = 0
+    if bind.bound_value then
+        key = bind.bound_value.key --[[@as string]]
+        value = bind.bound_value.value --[[@as integer]]
+    else
+        key = bind.key
+        value = bind.value
+    end
+
+    return string.format(
+        "%s (%s)",
+        config.lang:tr("menu.config." .. mod.map.options_mod[key]),
+        value == 0 and config.lang:tr("misc.text_off") or config.lang:tr("misc.text_on")
+    )
 end
 
----@param bind ModBind | OptionGameOpt
+---@param bind ModBind | BindOpt
+---@return string
+function this.get_option_hud_bind_name(bind)
+    local key = ""
+    local value = 0
+    if bind.bound_value then
+        key = bind.bound_value.key --[[@as string]]
+        value = bind.bound_value.value --[[@as integer]]
+    else
+        key = bind.key
+        value = bind.value
+    end
+
+    return string.format(
+        "%s (%s)",
+        config.lang:tr("hud." .. mod.map.options_hud[key]),
+        value == 0 and config.lang:tr("misc.text_off") or config.lang:tr("misc.text_on")
+    )
+end
+
+---@param bind ModBind | BindOpt
 ---@return string
 function this.get_option_game_bind_name(bind)
     local key = ""
     ---@type any
-    local value = -1
+    local value = 0
     if bind.bound_value then
-        key = bind.bound_value.option_key --[[@as string]]
+        key = bind.bound_value.key --[[@as string]]
         value = bind.bound_value.value --[[@as integer]]
     else
-        key = bind.option_key
+        key = bind.key
         value = bind.value
     end
 
@@ -88,17 +116,17 @@ function this.get_option_game_bind_name(bind)
     )
 end
 
----@param bind ModBind | HudBindOpt
+---@param bind ModBind | BindOpt
 ---@return string
 function this.get_hud_bind_name(bind)
     local hud = 0
     local profile = 0
     if bind.bound_value then
-        hud = bind.bound_value.hud --[[@as integer]]
-        profile = bind.bound_value.profile --[[@as integer]]
+        hud = bind.bound_value.key --[[@as integer]]
+        profile = bind.bound_value.value --[[@as integer]]
     else
-        hud = bind.hud
-        profile = bind.profile
+        hud = bind.key
+        profile = bind.value
     end
 
     local hud_profile = op.hud_profile.get_hud_by_key(hud)

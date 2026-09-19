@@ -633,7 +633,8 @@ local function draw_game_option(config_key, i, j)
         cd.combo.option_game_bind:get_key(config:get(string.format("%s.combo_profile", config_key))),
         string.format("%s.free_value", config_key),
         nil,
-        string.format("##.%s.%s.%s", config_key, i, j)
+        string.format("##.%s.%s.%s", config_key, i, j),
+        false
     )
     util_imgui.adjust_pos(0, -1)
 end
@@ -657,7 +658,7 @@ local function draw_game_options(i, cond_set)
         field = "game_option",
         tr_key = "game_options",
         combo = cd.combo.option_game_bind,
-        default_value = -1,
+        default_value = 0,
         draw_value = draw_game_option,
     })
 end
