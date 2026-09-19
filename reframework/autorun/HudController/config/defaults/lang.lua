@@ -470,7 +470,7 @@ return {
             category_subtitles_mute = "Mute",
             button_remove_all = "Remove All",
             category_profile_fade = "Profile Fade",
-            category_ingame_settings = "Ingame Settings",
+            category_ingame_settings = "Game Options",
             category_children = "Child Elements",
             category_animation = "Animation Settings",
             category_texture = "Texture Settings",
