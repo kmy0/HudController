@@ -1,6 +1,7 @@
 ---@class CustomCondition : ConditionBase
 
 local condition_base = require("HudController.hud.def.condition_base")
+local frame_cache = require("HudController.util.misc.frame_cache")
 
 ---@class CustomCondition
 local this = {}
@@ -25,13 +26,12 @@ function this:new(name, options)
 end
 
 ---@param name string
----@param update_fn fun(self: CustomCondition): boolean if the function returns true, condition is triggered
+---@param update_fn fun(self: CustomCondition, option_key: any?): boolean if the function returns true, condition is triggered
 ---@param options string[]? combobox selectables
 ---@return CustomCondition
 function this.new_condition(name, update_fn, options)
     local o = this:new(name, options)
-    o.update = update_fn
-
+    o.update = frame_cache.memoize(update_fn, { key_index = 2, key_as_string = true })
     return o
 end
 
