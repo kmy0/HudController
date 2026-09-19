@@ -302,6 +302,10 @@ end
 
 ---@param condition ConditionBase
 function this.register_condition(condition)
+    assert(
+        this.conditions[condition.condition_name] == nil,
+        string.format("Condition %s already exists!", condition.condition_name)
+    )
     this.conditions[condition.condition_name] = condition
     config.current.mod.bind.condition.condition_options[condition.condition_name] =
         util_table.merge(
