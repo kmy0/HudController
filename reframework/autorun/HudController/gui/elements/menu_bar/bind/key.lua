@@ -251,7 +251,7 @@ local function draw_bind_target(config_mod)
     elseif bind_type == 3 then
         draw_option_bind_table(
             "mod.combo.key_bind.option_mod",
-            cd.combo.option_bind,
+            cd.combo.option_mod_bind,
             bind_manager.option_mod,
             config_mod
         )
