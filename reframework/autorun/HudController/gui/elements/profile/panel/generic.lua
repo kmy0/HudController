@@ -378,6 +378,34 @@ function this.child_window_thing_remove(id, size, draw_fn)
     end
 end
 
+---@param user_options table<string, UserOption>
+---@param config_key string
+function this.draw_user_options(user_options, config_key)
+    local grouped = util_table.groupby(user_options, function(_, _, value)
+        return value.group or "_"
+    end)
+
+    local groups = util_table.sort(util_table.keys(grouped))
+
+    for i, g in ipairs(groups) do
+        local keys = util_table.sort(util_table.keys(grouped[g]))
+
+        for _, k in ipairs(keys) do
+            local opt = grouped[g][k][1]
+            local item_config_key = string.format("%s.%s", config_key, opt.name)
+            local changed, value = opt.draw(config:get(item_config_key), item_config_key)
+
+            if changed then
+                config:set(item_config_key, value)
+            end
+        end
+
+        if i ~= #groups then
+            imgui.separator()
+        end
+    end
+end
+
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string

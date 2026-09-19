@@ -606,7 +606,7 @@ end
 ---@generic K, V, R
 ---@param t table<K, V>
 ---@param key_func fun(t: table<K, V>, key: K, value: V): R
----@return {[R]: {[K]: V}}
+---@return {[R]: {[K]: V[]}}
 function this.groupby(t, key_func)
     local ret = {}
     for k, v in pairs(t) do

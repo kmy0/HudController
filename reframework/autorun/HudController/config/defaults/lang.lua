@@ -403,6 +403,7 @@ return {
         tooltip_choice_disabled = "Disabled while Condition Binds are active",
         slider_monster_icons = "Icons",
         slider_hide_npc = "Hide Npc",
+        category_user_options = "User Options",
     },
     hud_profile = {
         header_hud_profile = "Element Profiles",

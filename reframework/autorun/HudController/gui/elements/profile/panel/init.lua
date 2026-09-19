@@ -1,5 +1,6 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local e = require("HudController.util.game.enum")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local hud = require("HudController.hud.init")
 local main_panel = require("HudController.gui.elements.profile.panel.main.init")
@@ -7,6 +8,7 @@ local notebook = require("HudController.util.imgui.notebook")
 local op = require("HudController.hud.manager.op.init")
 local set = require("HudController.gui.set")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub.init")
+local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -193,6 +195,12 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
                     elem:set_option(option_key, value)
                 end
             end)
+        end
+
+        local user_opt = user_option.element[e.get("app.GUIHudDef.TYPE")[elem.hud_id]] or {}
+        if not util_table.empty(user_opt) then
+            util_imgui.separator_text(config.lang:tr("hud.category_user_options"))
+            generic.draw_user_options(user_opt, string.format("%s.user_options", config_key))
         end
 
         main_panel.draw(elem, elem_config, config_key)

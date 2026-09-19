@@ -42,6 +42,17 @@ function this.get_element(element)
     return this.elements.by_hudid[element]
 end
 
+---@param element string | app.GUIHudDef.TYPE
+---@return HudBaseConfig?
+function this.get_element_config(element)
+    local elem = this.get_element(element)
+    if not elem then
+        return
+    end
+
+    return elem:get_current_config()
+end
+
 ---@param gui_id app.GUIID.ID
 ---@return HudBase?
 function this.get_element_by_guiid(gui_id)
@@ -141,9 +152,9 @@ function this.reinit()
     config.lang:change()
     cd.translate_combo()
     cd.clear_cache()
+    user.reinit()
     this.manager.reinit()
     this.op.hud_profile.reload()
-    user.reinit()
     bind_condition.reinit()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]

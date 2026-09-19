@@ -78,6 +78,7 @@
 ---@field block_input boolean
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
+---@field user_options table<string, any>
 ---@field hud ModProfileConfig[]
 ---@field game_options GameOptionsConfig
 ---@field bind {
@@ -131,6 +132,7 @@ return {
         block_input = false,
         user_scripts = {},
         user_conditions = {},
+        user_options = {},
         game_options = {
             hud = {
                 DAMAGE_DISPLAY = true,

@@ -67,6 +67,7 @@
 ---@field default_profile ElemProfileIndex
 ---@field enabled boolean
 ---@field profile_key integer
+---@field user_options table<string, any>
 
 ---@class (exact) HudBaseConfigProfile : HudBaseConfig
 ---@field profile nil
@@ -1052,6 +1053,7 @@ function this.get_config(hud_id, name_key)
         enabled = true,
         default_profile = 0,
         profile_key = 0,
+        user_options = {},
     }
 end
 

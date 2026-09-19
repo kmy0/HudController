@@ -9,6 +9,7 @@ local panel = require("HudController.gui.elements.profile.panel.init")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
 local timer = require("HudController.util.misc.timer")
+local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -333,6 +334,14 @@ local function draw_options()
             function(option_key, value)
                 hud.apply_option(option_key, value)
             end
+        )
+    end
+
+    if not util_table.empty(user_option.hud) then
+        util_imgui.separator_text(config.lang:tr("hud.category_user_options"))
+        generic.draw_user_options(
+            user_option.hud,
+            string.format("mod.hud.int:%s.user_options", config_mod.combo.hud)
         )
     end
 

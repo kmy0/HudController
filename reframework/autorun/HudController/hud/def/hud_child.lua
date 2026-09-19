@@ -35,6 +35,7 @@
 ---@field override_fade_duration nil
 ---@field override_fade_in nil
 ---@field override_fade_out nil
+---@field user_options nil
 
 ---@class (exact) HudChildDefault : HudBaseDefault
 ---@class (excat) HudChildDefaultOverwrite : HudBaseDefaultOverwrite

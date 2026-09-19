@@ -34,11 +34,13 @@
 ---@field hide_porter_timeout integer
 ---@field hide_handler_timeout integer
 ---@field profile HudBaseConfigProfileForShow[]
+---@field user_options table<string, any>
 
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud_elements = require("HudController.hud.elements.init")
+local user_option = require("HudController.hud.user.option")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
@@ -88,7 +90,12 @@ function this.get_hud_profile_config(key, name)
         profile = {
             { key = 0, name = "__placeholder_default", protected = true },
         },
+        user_options = {},
     }
+
+    for k, opt in pairs(user_option.hud) do
+        ret.user_options[k] = opt.default
+    end
 
     for opt, _ in pairs(config.current.mod.game_options.hud) do
         ret.options[opt] = -1
@@ -108,6 +115,10 @@ function this.get_config(hud_id)
         ret = cls.get_config(hud_id, hud_name)
     else
         ret = cls.get_config()
+    end
+
+    for k, opt in pairs(user_option.element[hud_name] or {}) do
+        ret.user_options[k] = opt.default
     end
 
     for opt, _ in pairs(config.current.mod.game_options.elements[ret.name_key] or {}) do
