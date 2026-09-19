@@ -20,6 +20,9 @@
 ---@field by_key table<string, Bind>
 ---@field by_name table<string, boolean>
 
+---@class (exact) OrderedBindMap : BindMap
+---@field ordered Bind[]
+
 ---@class (exact) HoldEntry
 ---@field bind_key string
 ---@field value any
@@ -30,7 +33,7 @@
 
 ---@class (exact) MonitoredManager
 ---@field manager BindManager
----@field held BindMap
+---@field held OrderedBindMap
 ---@field triggered BindMap
 ---@field actions Bind[]
 ---@field hold_states table<string, HoldState>
@@ -82,12 +85,15 @@ function this:add_manager(manager)
         held = {
             by_key = {},
             by_name = {},
+            ordered = {},
         },
         triggered = {
             by_key = {},
             by_name = {},
         },
         actions = {},
+        hold_states = {},
+        action_values = {},
     }
 
     local function on_data_changed(_)
@@ -206,23 +212,23 @@ function this:register_on_release_callback(key_name, callback)
 end
 
 function this:execute_actions()
-    for i = 1, #self.execute_order do
-        local manager_name = self.execute_order[i]
+    for _, manager_name in ipairs(self.execute_order) do
         local actions = self.managers[manager_name].actions
 
-        for j, bind in pairs(actions) do
+        for _, bind in ipairs(actions) do
             bind.action()
-            actions[j] = nil
         end
+
+        self.managers[manager_name].actions = {}
     end
 end
 
 function this:execute_on_release_callbacks()
-    for _, bind_name in pairs(self._on_release_callbacks) do
+    for _, bind_name in ipairs(self._on_release_callbacks) do
         local callbacks = self.on_release_callbacks[bind_name]
 
         if callbacks then
-            for _, cb in pairs(callbacks) do
+            for _, cb in ipairs(callbacks) do
                 cb()
             end
             self.on_release_callbacks[bind_name] = nil
@@ -296,6 +302,7 @@ function this:_clear_held()
     for _, m in pairs(self.managers) do
         m.held.by_key = {}
         m.held.by_name = {}
+        m.held.ordered = {}
     end
 end
 
@@ -356,8 +363,13 @@ end
 
 ---@protected
 function this:_resolve_held_binds()
-    for _, m in pairs(self.managers) do
-        for bind_key, bind in pairs(m.held.by_key) do
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        ---@type {index: integer, bind: Bind}[]
+        local released = {}
+
+        for i, bind in ipairs(m.held.ordered) do
             if
                 bind.device ~= self.key_buffer.device
                 or (
@@ -367,11 +379,27 @@ function this:_resolve_held_binds()
                     end)
                 )
             then
-                table.insert(self._on_release_callbacks, bind.name)
-                m.held.by_key[bind_key] = nil
-                m.held.by_name[bind.name] = nil
-                m.action_values[bind_key] = nil
+                table.insert(released, {
+                    index = i,
+                    bind = bind,
+                })
             end
+        end
+
+        for i = #released, 1, -1 do
+            local entry = released[i]
+            local bind = entry.bind
+            local bind_key = self:_get_bind_key(bind)
+
+            m.held.by_key[bind_key] = nil
+            m.held.by_name[bind.name] = nil
+            m.action_values[bind_key] = nil
+
+            table.remove(m.held.ordered, entry.index)
+        end
+
+        for _, entry in ipairs(released) do
+            table.insert(self._on_release_callbacks, entry.bind.name)
         end
     end
 end
@@ -382,25 +410,32 @@ function this:_resolve_buffer()
     local this_frame = {}
     self.key_buffer.snapshot = util_table.merge(self.key_buffer.snapshot, self.key_buffer.keys)
 
-    for _, m in pairs(self.managers) do
-        for _, bind in pairs(m.manager.sorted) do
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        for _, bind in ipairs(m.manager.sorted) do
             local bind_key = self:_get_bind_key(bind)
+            local is_held = m.held.by_key[bind_key] ~= nil
 
             if
                 bind.device == self.key_buffer.device
                 and (
                     (
-                        not m.held.by_key[bind_key]
+                        not is_held
                         and (
                             this_frame[bind.name]
                             or util_table.all(bind.keys, function(o)
                                 return self.key_buffer.keys[o]
                             end)
                         )
-                    ) or m.held.by_key[bind_key] and bind.trigger_repeat
+                    ) or is_held and bind.trigger_repeat
                 )
             then
                 table.insert(m.actions, bind)
+
+                if not is_held then
+                    table.insert(m.held.ordered, bind)
+                end
 
                 if not this_frame[bind.name] then
                     for _, key in pairs(bind.keys) do
@@ -421,13 +456,12 @@ function this:_resolve_buffer()
 end
 
 function this:_resolve_repeat()
-    for _, m in pairs(self.managers) do
-        for _, bind in pairs(m.manager.sorted) do
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        for _, bind in ipairs(m.held.ordered) do
             if bind.trigger_repeat then
-                local bind_key = self:_get_bind_key(bind)
-                if m.held.by_key[bind_key] then
-                    table.insert(m.actions, bind)
-                end
+                table.insert(m.actions, bind)
             end
         end
     end
