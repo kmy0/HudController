@@ -86,7 +86,7 @@ function this.verify_options()
             end
         end
 
-        for _, elem in pairs(hud.elements) do
+        for _, elem in pairs(hud.elements or {}) do
             local hud_name = e.get("app.GUIHudDef.TYPE")[elem.hud_id]
             for k, _ in pairs(elem.user_options or {}) do
                 if not util_table.get_nested_value(user_option.element, { hud_name, k }) then
