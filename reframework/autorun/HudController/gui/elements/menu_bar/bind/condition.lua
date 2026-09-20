@@ -446,7 +446,6 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     util_imgui.end_disabled()
     imgui.end_group()
     util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_elem_condition_set"))
-    util_imgui.begin_disabled(util_table.empty(values) and not bad_key)
 
     if bad_key then
         local config_mod = config.current.mod
@@ -523,7 +522,6 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
         end
     )
 
-    util_imgui.end_disabled()
     util_imgui.end_disabled()
     imgui.spacing()
     imgui.unindent(2)
@@ -611,7 +609,6 @@ local function draw_options(i, cond_set, params)
         })
     end)
 
-    util_imgui.end_disabled()
     imgui.spacing()
     imgui.unindent(2)
 end
