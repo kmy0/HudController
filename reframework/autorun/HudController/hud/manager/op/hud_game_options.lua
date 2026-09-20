@@ -59,8 +59,8 @@ local function refresh_combo_option_game_bind()
         cond_set.game_option = res
     end
 
-    config_mod.combo.key_bind.option_game = 1
-    config_mod.combo.key_bind.option_game_value = -1
+    config_mod.combo.key_bind.target = 1
+    config_mod.combo.key_bind.value = 0
 
     ---@type BindBase[]
     local res = {}

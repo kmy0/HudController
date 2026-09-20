@@ -150,12 +150,14 @@ function this.reinit()
     local config_mod = config.current.mod
 
     config.lang:change()
-    cd.translate_combo()
-    cd.clear_cache()
+    bind_condition.reinit()
     user.reinit()
     this.manager.reinit()
     this.op.hud_profile.reload()
-    bind_condition.reinit()
+    cd.init_combo_option_game_bind()
+    cd.init_combo_condition()
+    cd.translate_combo()
+    cd.clear_cache()
 
     local new_hud = config_mod.hud[config_mod.combo.hud]
     if new_hud then

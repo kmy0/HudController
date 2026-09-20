@@ -316,7 +316,7 @@ local this = {
     },
 }
 
-local function init_condition_combo()
+function this.init_combo_condition()
     ---@type table<string, string>
     local names = {}
     for _, cond in pairs(bind_condition.conditions) do
@@ -518,7 +518,7 @@ function this.init()
     })
 
     this.init_combo_option_game_bind()
-    init_condition_combo()
+    this.init_combo_condition()
     this.translate_combo()
 
     return true

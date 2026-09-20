@@ -16,6 +16,7 @@
 ---@class (exact) ConditionEvalRet : ConditionEvalResult
 ---@field hud {key: integer, profile: integer[]}?
 
+local _ = require("HudController.hud.bind.condition.conditions.custom")
 local cd = require("HudController.data.combo")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")

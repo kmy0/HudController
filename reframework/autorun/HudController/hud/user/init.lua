@@ -7,6 +7,7 @@ local this = {
 }
 
 function this.reinit()
+    this.condition:reinit()
     this.script:reinit()
     this.option.init()
 end
