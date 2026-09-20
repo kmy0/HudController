@@ -400,7 +400,7 @@ function this.draw_child_window(name, draw_fn, size_y, spacing)
         child_window_sizes[name] = size_y
     end
 
-    imgui.begin_child_window(name, { 0, child_window_sizes[name] }, false, 1 << 3)
+    imgui.begin_child_window(name, { 0, child_window_sizes[name] }, false, 1 << 3 | 1 << 4)
     local pos = imgui.get_cursor_pos()
     draw_fn()
     local size = imgui.get_cursor_pos().y - pos.y - spacing
