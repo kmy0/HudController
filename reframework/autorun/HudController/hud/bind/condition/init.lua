@@ -102,6 +102,7 @@ local function eval_all_and_store(condition_sets, cache, parent_key)
             hud_option = {},
             mod_option = {},
             game_option = {},
+            user_option = {},
         }
 
         cache[i] = pass
@@ -171,6 +172,7 @@ local function eval_conditions()
                 hud_option = eval_options(hud_conditions.hud_option or {}),
                 mod_option = eval_options(hud_conditions.mod_option or {}),
                 game_option = eval_options(hud_conditions.game_option or {}),
+                user_option = eval_options(hud_conditions.user_option or {}),
             }
         end
     end

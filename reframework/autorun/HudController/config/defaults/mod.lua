@@ -107,7 +107,7 @@
 ---     target: integer,
 ---     action_type: integer,
 ---     trigger_type: integer,
----     value: integer,
+---     value: any,
 ---     },
 --- }
 ---@field lang ModLanguage
@@ -196,7 +196,6 @@ return {
                 target = 1,
                 action_type = 1,
                 trigger_type = 1,
-                value = 1,
             },
         },
     },

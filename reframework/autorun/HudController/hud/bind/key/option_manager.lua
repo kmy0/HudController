@@ -22,7 +22,6 @@ end
 ---@return boolean, ModBind?
 function this:is_collision(bind)
     for _, b in pairs(self.binds) do
-        print(b.name, bind.name, b.bound_value.key, bind.bound_value.key)
         ---@diagnostic disable-next-line: param-type-mismatch
         if b.name == bind.name and b.bound_value.key == bind.bound_value.key then
             return true, b

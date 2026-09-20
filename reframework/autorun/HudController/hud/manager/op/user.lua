@@ -11,7 +11,7 @@ function this.verify_conditions()
 
     for key, _ in pairs(config_mod.bind.condition.condition_options) do
         if not bind_condition.conditions[key] then
-            config_mod.bind.condition.condition_options = nil
+            config_mod.bind.condition.condition_options[key] = nil
         end
     end
 
@@ -30,6 +30,7 @@ function this.verify_conditions()
             filter(cond_set.hud_option or {})
             filter(cond_set.mod_option or {})
             filter(cond_set.game_option or {})
+            filter(cond_set.user_option or {})
         end
     end
 
@@ -41,7 +42,7 @@ function this.merge_elem_user_options(elem_config)
     local hud_name = e.get("app.GUIHudDef.TYPE")[elem_config.hud_id]
 
     for k, opt in pairs(user_option.element[hud_name] or {}) do
-        elem_config.user_options[k] = opt.default
+        elem_config.user_options[k] = user_option.get_default(opt)
     end
 
     for opt, _ in pairs(config.current.mod.game_options.elements[elem_config.name_key] or {}) do
@@ -52,7 +53,7 @@ end
 ---@param hud_config ModProfileConfig
 function this.merge_hud_user_options(hud_config)
     for k, opt in pairs(user_option.hud) do
-        hud_config.user_options[k] = opt.default
+        hud_config.user_options[k] = user_option.get_default(opt)
     end
 
     for opt, _ in pairs(config.current.mod.game_options.hud) do
@@ -63,8 +64,8 @@ end
 function this.merge_mod_user_settings()
     local config_mod = config.current.mod
     for k, opt in pairs(user_option.mod) do
-        if not config_mod.user_options[k] then
-            config_mod.user_options[k] = opt.default
+        if config_mod.user_options[k] == nil then
+            config_mod.user_options[k] = user_option.get_default(opt)
         end
     end
 end
@@ -97,12 +98,31 @@ function this.verify_options()
 
     local res = {}
     for _, b in ipairs(config_mod.bind.key.option_user) do
-        if this.all[b.bound_value.key] then
+        if user_option.all[b.bound_value.key] then
             table.insert(res, b)
         end
     end
 
     config_mod.bind.key.option_user = res
+
+    local sorted = util_table.sort(util_table.keys(user_option.get_combo_values()), function(a, b)
+        return a.sort < b.sort
+    end)
+    for _, cond_set in pairs(config_mod.bind.condition.hud) do
+        ---@type ConditionSetConfig[]
+        res = {}
+        for _, cond_child in ipairs(cond_set.user_option or {}) do
+            local new_index = util_table.index(sorted, function(o)
+                return o.key == cond_child.key
+            end)
+            if new_index then
+                cond_child.combo_profile = new_index
+                table.insert(res, cond_child)
+            end
+        end
+
+        cond_set.user_option = res
+    end
 end
 
 return this

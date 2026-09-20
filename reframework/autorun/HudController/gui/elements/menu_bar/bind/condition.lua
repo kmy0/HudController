@@ -19,6 +19,7 @@
 ---@field combo Combo
 ---@field default_value any
 ---@field draw_value fun(config_key: string, i: integer, j: integer)
+---@field draw_selector fun(config_key: string, i: integer, j: integer, cond_child: ConditionSetConfig)?
 
 local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
@@ -27,6 +28,7 @@ local drag_util = require("HudController.gui.drag")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local mod = require("HudController.data.mod")
 local set = require("HudController.gui.set")
+local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
@@ -584,21 +586,25 @@ local function draw_options(i, cond_set, params)
             condition_path_fn = function(k)
                 return { i, params.field, j, "conditions", k }
             end,
-            draw_selector = function()
-                local item_config_key = string.format("%s.combo_profile", config_key)
-                imgui.set_next_item_width(-9)
+            draw_selector = params.draw_selector
+                    and function()
+                        params.draw_selector(config_key, i, j, cond_child)
+                    end
+                or function()
+                    local item_config_key = string.format("%s.combo_profile", config_key)
+                    imgui.set_next_item_width(-9)
 
-                if
-                    set:combo_filter(
-                        string.format("##%s.%s.%s.%s", "combo_profile", params.field, i, j),
-                        item_config_key,
-                        params.combo
-                    )
-                then
-                    cond_child.key = params.combo:get_key(config:get(item_config_key))
-                    config:save()
-                end
-            end,
+                    if
+                        set:combo_filter(
+                            string.format("##%s.%s.%s.%s", "combo_profile", params.field, i, j),
+                            item_config_key,
+                            params.combo
+                        )
+                    then
+                        cond_child.key = params.combo:get_key(config:get(item_config_key))
+                        config:save()
+                    end
+                end,
             draw_additional_opt = function()
                 params.draw_value(config_key, i, j)
             end,
@@ -666,6 +672,56 @@ local function draw_game_options(i, cond_set)
     util_imgui.end_disabled()
 end
 
+---@param config_key string
+---@param i integer
+---@param j integer
+---@diagnostic disable-next-line: unused-local
+local function draw_user_option(config_key, i, j)
+    util_imgui.adjust_pos(0, 1)
+    imgui.set_next_item_width(util_imgui.get_row_width())
+    local opt =
+        cd.combo.option_user_bind:get_key(config:get(string.format("%s.combo_profile", config_key))) --[[@as RegisteredUserOption]]
+
+    local item_config_key = string.format("%s.free_value", config_key)
+    local changed, value = opt.draw(config:get(item_config_key), item_config_key)
+    if changed then
+        config:set(item_config_key, value)
+    end
+
+    util_imgui.adjust_pos(0, -1)
+end
+
+---@param i integer
+---@param cond_set ConditionSetConfig
+local function draw_user_options(i, cond_set)
+    draw_options(i, cond_set, {
+        field = "user_option",
+        tr_key = "user_options",
+        combo = cd.combo.option_user_bind,
+        default_value = user_option.get_default(cd.combo.option_user_bind:get_keys()[1]),
+        draw_value = draw_user_option,
+        draw_selector = function(config_key, i, j, cond_child)
+            local item_config_key = string.format("%s.combo_profile", config_key)
+            imgui.set_next_item_width(-9)
+
+            if
+                set:combo_filter(
+                    string.format("##%s.%s.%s.%s", "combo_profile", "user_option", i, j),
+                    item_config_key,
+                    cd.combo.option_user_bind
+                )
+            then
+                local opt = cd.combo.option_user_bind:get_key(
+                    config:get(string.format("%s.combo_profile", config_key))
+                ) --[[@as RegisteredUserOption]]
+                cond_child.key = opt.key
+                cond_child.free_value = user_option.get_default(opt)
+                config:save()
+            end
+        end,
+    })
+end
+
 ---@param i integer
 ---@param cond_set ConditionSetConfig
 local function draw_mod_options(i, cond_set)
@@ -716,6 +772,7 @@ local function draw_condition_bind_menu()
             cond_set.hud_option = cond_set.hud_option or {}
             cond_set.mod_option = cond_set.mod_option or {}
             cond_set.game_option = cond_set.game_option or {}
+            cond_set.user_option = cond_set.user_option or {}
 
             return draw_condition_set({
                 index = i,
@@ -798,6 +855,15 @@ local function draw_condition_bind_menu()
                                 draw_game_options(i, cond_set)
                             end
                         )
+
+                        if not cd.combo.option_user_bind:empty() then
+                            util_menubar.draw_menu(
+                                util_gui.tr("menu.bind.condition.menubar_user_options", i),
+                                function()
+                                    draw_user_options(i, cond_set)
+                                end
+                            )
+                        end
 
                         imgui.end_table()
                     end

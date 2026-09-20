@@ -723,7 +723,7 @@ function this.index_by_value(t)
     return ret
 end
 
----@param t table
+---@param t any[]
 ---@return string
 function this.repr(t)
     if type(t) == "table" then
@@ -737,6 +737,42 @@ function this.repr(t)
     else
         return tostring(t)
     end
+end
+
+---@param value any
+---@return string
+function this.repr_any(value)
+    local seen = {}
+    local nextId = 0
+
+    local function render(v)
+        local kind = type(v)
+
+        if kind == "string" then
+            return string.format("%q", v)
+        end
+
+        if kind ~= "table" then
+            return tostring(v)
+        end
+
+        if seen[v] then
+            return "<ref:" .. seen[v] .. ">"
+        end
+
+        nextId = nextId + 1
+        seen[v] = nextId
+
+        local parts = {}
+
+        for key, item in pairs(v) do
+            parts[#parts + 1] = "[" .. render(key) .. "] = " .. render(item)
+        end
+
+        return "{" .. table.concat(parts, ", ") .. "}"
+    end
+
+    return render(value)
 end
 
 ---@generic T

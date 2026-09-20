@@ -5,6 +5,7 @@ local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local set = require("HudController.gui.set")
 local state = require("HudController.gui.state")
+local user_option = require("HudController.hud.user.option")
 local util_bind = require("HudController.util.game.bind.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -69,7 +70,7 @@ local function draw_bind_type()
 
         if config:get("mod.bind.slider.key_bind") == 5 then
             local opt = cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
-            config_mod.combo.key_bind.value = opt.default
+            config_mod.combo.key_bind.value = user_option.get_default(opt)
         end
 
         config:save()
@@ -343,7 +344,7 @@ local function draw_bind_target(config_mod)
             then
                 local opt =
                     cd.combo.option_user_bind:get_key(config:get("mod.combo.key_bind.target")) --[[@as RegisteredUserOption]]
-                config_mod.combo.key_bind.value = opt.default
+                config_mod.combo.key_bind.value = user_option.get_default(opt)
                 config:save()
             end
         end, draw_trigger_combo, draw_action_combo, bind_manager.option_user, config_mod)

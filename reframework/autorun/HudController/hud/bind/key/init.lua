@@ -22,6 +22,7 @@ local data = require("HudController.data.init")
 local hud_bind_manager = require("HudController.hud.bind.key.hud_manager")
 local option_bind_manager = require("HudController.hud.bind.key.option_manager")
 local options = require("HudController.hud.manager.options")
+local user_option = require("HudController.hud.user.option")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -126,13 +127,11 @@ local function action_option_user(bind)
     local manager_name = "option_user"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
     local key = bind.bound_value.key --[[@as string]]
-    local new_value = bind.bound_value.value --[[@as integer]]
+    local new_value = bind.bound_value.value --[[@as any]]
     local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
 
     if is_triggered and is_hold then
-        local config_mod = config.current.mod
-        local current_value = config_mod[key] and 1 or 0
-
+        local current_value = user_option.get_current_value(user_option.all[key])
         new_value = this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
         this.monitor:register_on_release_callback(bind.name, function()
             local value = this.monitor:remove_hold(manager_name, key, bind)
@@ -180,7 +179,13 @@ function this.init()
     end
 
     ---@diagnostic disable-next-line: assign-type-mismatch
-    this.monitor = bind_monitor:new(this.option_mod, this.hud, this.option_hud, this.option_game)
+    this.monitor = bind_monitor:new(
+        this.option_mod,
+        this.hud,
+        this.option_hud,
+        this.option_game,
+        this.option_user
+    )
     this.monitor:set_max_buffer_frame(bind_key.buffer)
     return true
 end

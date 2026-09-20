@@ -520,6 +520,7 @@ function this.init()
 
     this.init_combo_option_game_bind()
     this.init_combo_condition()
+    this.init_combo_option_user_bind()
     this.translate_combo()
 
     return true

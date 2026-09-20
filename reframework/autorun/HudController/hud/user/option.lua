@@ -4,6 +4,7 @@
 ---@field default any
 ---@field group string?
 ---@field draw fun(value: any, config_key: string): (boolean, any)?
+---@field format (fun(value: any): string)?
 
 ---@class RegisteredUserOption : UserOption
 ---@field module "hud" | "mod" | "element"
@@ -17,6 +18,7 @@
 ---@field element table<string, table<string, RegisteredUserOption>>
 ---@field all table<string, RegisteredUserOption>
 
+local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -33,21 +35,35 @@ local this = {
 }
 
 ---@param option UserOption
+local function assert_option(option)
+    assert(type(option) == "table", "Option must be a table!")
+    assert(type(option.name) == "string" and option.name ~= "", "Option name is required!")
+    assert(not option.name:find("%."), "Option name cannot contain dots!")
+    assert(type(option.label) == "string" and option.label ~= "", "Option label is required!")
+    assert(option.default ~= nil, "Option default is required!")
+    assert(type(option.draw) == "function", "Option draw function is required!")
+end
+
+---@param option UserOption
 function this.register_mod(option)
+    assert_option(option)
     ---@cast option RegisteredUserOption
     option.module = "mod"
     option.key = this.make_key(option)
     assert(this.mod[option.name] == nil, string.format("Option %s already exists!", option.name))
+    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
     this.mod[option.name] = option
     this.all[option.key] = option
 end
 
 ---@param option UserOption
 function this.register_hud(option)
+    assert_option(option)
     ---@cast option RegisteredUserOption
     option.module = "hud"
     option.key = this.make_key(option)
     assert(this.hud[option.name] == nil, string.format("Option %s already exists!", option.name))
+    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
     this.hud[option.name] = option
     this.all[option.key] = option
 end
@@ -55,6 +71,7 @@ end
 ---@param element_name string
 ---@param option UserOption
 function this.register_element(element_name, option)
+    assert_option(option)
     assert(type(element_name) == "string", string.format("Bad element name: %s", element_name))
     assert(
         e.get("app.GUIHudDef.TYPE")[element_name] ~= nil,
@@ -68,7 +85,8 @@ function this.register_element(element_name, option)
     option.module = "element"
     option.element = element_name
     option.key = this.make_key(option)
-    util_table.set_nested_value(this.element, { element_name, option.key }, option)
+    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
+    util_table.set_nested_value(this.element, { element_name, option.name }, option)
     this.all[option.key] = option
 end
 
@@ -143,14 +161,92 @@ end
 
 ---@param option_name string
 ---@return any
-function this.get_hud_option_value(option_name) end
+function this.get_hud_option_value(option_name)
+    local hud_config = hud.get_current() --[[@as ModProfileConfig]]
+    return hud_config.user_options[option_name]
+end
 
 ---@param option_name string
 ---@return any
-function this.get_mod_option_value(option_name) end
+function this.get_mod_option_value(option_name)
+    return config.current.mod.user_options[option_name]
+end
 
 ---@param registered_option RegisteredUserOption
 ---@return any
-function this.get_current_value(registered_option) end
+function this.get_current_value(registered_option)
+    if registered_option.module == "hud" then
+        return this.get_hud_option_value(registered_option.name)
+    elseif registered_option.module == "element" then
+        return this.get_element_current_profile_option_value(
+            registered_option.element,
+            registered_option.name
+        )
+    end
+
+    return this.get_mod_option_value(registered_option.name)
+end
+
+---@param option_name string
+---@param value any
+function this.set_hud_option_value(option_name, value)
+    local hud_config = hud.get_current() --[[@as ModProfileConfig]]
+    hud_config.user_options[option_name] = util_table.deep_copy(value)
+end
+
+---@param option_name string
+---@param value any
+function this.set_mod_option_value(option_name, value)
+    config.current.mod.user_options[option_name] = util_table.deep_copy(value)
+end
+
+---@param element_name string
+---@param option_name string
+---@param value any
+function this.set_element_current_profile_option_value(element_name, option_name, value)
+    local elem_config = hud.get_element_config(element_name)
+    if not elem_config then
+        return
+    end
+
+    elem_config.user_options[option_name] = util_table.deep_copy(value)
+end
+
+---@param registered_option RegisteredUserOption
+---@param value any
+function this.set_option_value(registered_option, value)
+    if registered_option.module == "hud" then
+        this.set_hud_option_value(registered_option.name, value)
+    elseif registered_option.module == "element" then
+        this.set_element_current_profile_option_value(
+            registered_option.element,
+            registered_option.name,
+            value
+        )
+    elseif registered_option.module == "mod" then
+        this.set_mod_option_value(registered_option.name, value)
+    end
+end
+
+---@param registered_option RegisteredUserOption
+---@return any
+function this.get_default(registered_option)
+    return util_table.deep_copy(registered_option.default)
+end
+
+---@param option RegisteredUserOption
+---@param value any
+---@return string
+function this.format_value(option, value)
+    if option.format then
+        return option.format(value)
+    elseif value == true then
+        return config.lang:tr("misc.text_on")
+    elseif value == false then
+        return config.lang:tr("misc.text_off")
+    end
+
+    return util_table.repr_any(value)
+end
 
 return this

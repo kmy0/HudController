@@ -129,4 +129,16 @@ function this.get_item_size()
     return step * config.lang.font_size
 end
 
+---@param val integer | boolean
+---@return string
+function this.format_boolean(val)
+    if val == 0 or val == false then
+        return config.lang:tr("misc.text_off")
+    elseif val == 1 or val == true then
+        return config.lang:tr("misc.text_on")
+    end
+
+    return tostring(val)
+end
+
 return this

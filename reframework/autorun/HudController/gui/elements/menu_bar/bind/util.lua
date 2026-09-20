@@ -4,6 +4,7 @@ local mod = require("HudController.data.mod")
 local op = require("HudController.hud.manager.op.init")
 local options = require("HudController.hud.manager.options")
 local user_option = require("HudController.hud.user.option")
+local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -72,7 +73,7 @@ function this.get_option_mod_bind_name(bind)
     return string.format(
         "%s (%s)",
         config.lang:tr("menu.config." .. mod.map.options_mod[key]),
-        value == 0 and config.lang:tr("misc.text_off") or config.lang:tr("misc.text_on")
+        util_gui.format_boolean(value)
     )
 end
 
@@ -92,7 +93,7 @@ function this.get_option_hud_bind_name(bind)
     return string.format(
         "%s (%s)",
         config.lang:tr("hud." .. mod.map.options_hud[key]),
-        value == 0 and config.lang:tr("misc.text_off") or config.lang:tr("misc.text_on")
+        util_gui.format_boolean(value)
     )
 end
 
@@ -100,6 +101,7 @@ end
 ---@return string
 function this.get_option_user_bind_name(bind)
     local key = ""
+    ---@type any
     local value = 0
     if bind.bound_value then
         key = bind.bound_value.key --[[@as string]]
@@ -110,13 +112,7 @@ function this.get_option_user_bind_name(bind)
     end
 
     local user_opt = user_option.all[key]
-    return string.format(
-        "%s (%s)",
-        user_opt.name,
-        (value == true and config.lang:tr("misc.text_off"))
-            or (value == false and config.lang:tr("misc.text_on"))
-            or value
-    )
+    return string.format("%s (%s)", user_opt.label, user_option.format_value(user_opt, value))
 end
 
 ---@param bind ModBind | BindOpt
