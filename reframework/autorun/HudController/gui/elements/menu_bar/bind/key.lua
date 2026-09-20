@@ -52,11 +52,8 @@ local function draw_bind_type()
         { label = config.lang:tr("menu.bind.key.hud"), key = 1 },
         { label = config.lang:tr("menu.bind.key.option"), key = 2 },
         { label = config.lang:tr("menu.bind.key.option_mod"), key = 3 },
+        { label = config.lang:tr("menu.bind.key.option_game"), key = 4 },
     }
-
-    if not cd.combo.option_game_bind:empty() then
-        table.insert(tabs, { label = config.lang:tr("menu.bind.key.option_game"), key = 4 })
-    end
 
     if not cd.combo.option_user_bind:empty() then
         table.insert(tabs, { label = config.lang:tr("menu.bind.key.option_user"), key = 5 })
@@ -327,9 +324,12 @@ local function draw_bind_target(config_mod)
             config_mod
         )
 
-        imgui.set_next_item_width(get_width())
-        local key = cd.combo.option_game_bind:get_key(config:get("mod.combo.key_bind.option_game"))
-        generic.draw_option(key, "mod.combo.key_bind.value", nil, "##" .. key, false)
+        if not cd.combo.option_game_bind:empty() then
+            imgui.set_next_item_width(get_width())
+            local key =
+                cd.combo.option_game_bind:get_key(config:get("mod.combo.key_bind.option_game"))
+            generic.draw_option(key, "mod.combo.key_bind.value", nil, "##" .. key, false)
+        end
 
         return bind_manager.option_game, "mod.bind.key.option_game"
     elseif bind_type == 5 then
@@ -655,6 +655,7 @@ local function draw_key_bind_menu()
     util_imgui.begin_disabled(
         state.listener ~= nil
             or config_mod.bind.slider.key_bind == 1 and util_table.empty(config_mod.hud)
+            or config_mod.bind.slider.key_bind == 4 and cd.combo.option_game_bind:empty()
     )
 
     imgui.same_line()
