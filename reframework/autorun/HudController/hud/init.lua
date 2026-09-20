@@ -1,8 +1,4 @@
-local bind_condition = require("HudController.hud.bind.condition.init")
-local cd = require("HudController.data.combo")
-local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local user = require("HudController.hud.user.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {
@@ -144,27 +140,6 @@ end
 
 function this.update()
     this.manager.update()
-end
-
-function this.reinit()
-    local config_mod = config.current.mod
-
-    config.lang:change()
-    bind_condition.reinit()
-    user.reinit()
-    this.manager.reinit()
-    this.op.hud_profile.reload()
-    cd.init_combo_option_game_bind()
-    cd.init_combo_condition()
-    cd.translate_combo()
-    cd.clear_cache()
-
-    local new_hud = config_mod.hud[config_mod.combo.hud]
-    if new_hud then
-        this.request_hud_with_default(new_hud, true)
-    else
-        this.clear()
-    end
 end
 
 return this

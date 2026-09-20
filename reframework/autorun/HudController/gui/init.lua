@@ -6,7 +6,6 @@
 ---@field flags integer
 ---@field condition integer
 
-local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
@@ -43,10 +42,10 @@ function this.draw()
 
     gui_main.is_opened = imgui.begin_window(
         string.format(
-            "%s %s - %s",
+            "%s %s - %s###" .. config.name,
             config.name,
             config.commit,
-            cd.combo.config:get_value(config.selector.current.combo_file)
+            config.selector:get_message()
         ),
         gui_main.is_opened,
         this.window.flags

@@ -2,7 +2,6 @@ local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
-local hud = require("HudController.hud.init")
 local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
 local util_gui = require("HudController.gui.util")
@@ -41,7 +40,6 @@ function this.draw()
             set:combo_filter(util_gui.tr("selector.combo_config"), "combo_file", cd.combo.config)
         then
             config.selector:swap()
-            hud.reinit()
         end
         imgui.pop_item_width()
 
@@ -73,13 +71,14 @@ function this.draw()
                         callback = function()
                             if config.selector:delete_current_file() then
                                 cd.combo.config:swap(config.selector.sorted)
-                                hud.reinit()
                             end
                         end,
                         fn = popup.popup_yesno,
                     })
                 end,
-                disabled = util_table.size(config.selector.files) == 1,
+                disabled = util_table.size(config.selector.files) == 1
+                    or cd.combo.config:get_value(config_sel.combo_file)
+                        == config.selector:get_current_display_name(),
                 tooltip = config.lang:tr("selector.tooltip_remove"),
             },
             {
@@ -100,7 +99,6 @@ function this.draw()
                             util_table.index(cd.combo.config.values, new_file.display_name) --[[@as integer]]
                         config.selector:import()
                         config.selector:swap()
-                        hud.reinit()
                     end
                 end,
                 tooltip = config.lang:tr("selector.tooltip_button_import"),

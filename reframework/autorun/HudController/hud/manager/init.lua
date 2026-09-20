@@ -344,9 +344,4 @@ function this.init()
     return true
 end
 
-function this.reinit()
-    bind_manager.init()
-    verify_elements()
-end
-
 return this

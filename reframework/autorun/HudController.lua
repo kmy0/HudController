@@ -139,5 +139,6 @@ re.on_script_reset(function()
         hud.clear()
         call_queue.clear()
         hud_base.restore_all_force_invis()
+        config.selector:on_reset()
     end
 end)

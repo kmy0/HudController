@@ -318,12 +318,6 @@ function this.register_condition(condition)
         )
 end
 
-function this.reinit()
-    this.conditions = {}
-    this.passing_sets = {}
-    this.init()
-end
-
 ---@return boolean
 function this.init()
     for _, cond in pairs(conditions) do

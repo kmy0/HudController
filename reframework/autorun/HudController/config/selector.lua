@@ -11,6 +11,7 @@
 ---@field sorted_backup string[]
 ---@field default_name string
 ---@field new_name string
+---@field next_file ConfigFile?
 
 ---@class (exact) ConfigFile
 ---@field display_name string
@@ -127,12 +128,46 @@ function this:reload()
 end
 
 function this:swap()
-    self.ref.save_timer:abort()
     local file = self.files[self.sorted[self.current.combo_file]]
-    self.current.file = file.file_name
-    self:_swap_config_path(file.file_name)
-    self.ref:load()
+    if file.file_name ~= self.current.file then
+        self.next_file = file
+    else
+        self.next_file = nil
+    end
+
     self:save_no_timer()
+end
+
+---@return string
+function this:get_message()
+    if not self.next_file then
+        return self:get_current_display_name()
+    end
+
+    return string.format(
+        "%s -> %s (%s)",
+        self:get_current_display_name(),
+        self.next_file.display_name,
+        self.ref.lang:tr("selector.text_wait_reset")
+    )
+end
+
+---@return string
+function this:get_current_display_name()
+    for display_name, file in pairs(self.files) do
+        if file.file_name == self.current.file then
+            return display_name
+        end
+        ---@diagnostic disable-next-line: missing-return
+    end
+end
+
+function this:on_reset()
+    if self.next_file then
+        self.current.file = self.next_file.file_name
+        self.next_file = nil
+        self:save_no_timer()
+    end
 end
 
 ---@return ConfigFile
@@ -179,7 +214,6 @@ function this:rename_current_file(new_name)
 
     self.files[old_key] = nil
     self.files[file.display_name] = file
-    self.current.file = file.file_name
     self.sorted = self:sort_files(self.files)
     self.current.combo_file = util_table.index(self.sorted, function(o)
         return o == file.display_name
@@ -191,11 +225,13 @@ end
 function this:delete_current_file()
     local file = self.files[self.sorted[self.current.combo_file]]
     if not util_misc.file_exists(file.path) or hudcontroller_util.remove(file.path) then
+        if file == self.next_file then
+            self.next_file = nil
+        end
+
         self.files[file.display_name] = nil
         self.sorted = self:sort_files(self.files)
         self.current.combo_file = math.max(self.current.combo_file - 1, 1)
-        self.current.file = self.files[self.sorted[self.current.combo_file]].file_name
-        self:swap()
         self:save_no_timer()
         return true
     end

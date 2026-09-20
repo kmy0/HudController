@@ -6,12 +6,6 @@ local this = {
     option = require("HudController.hud.user.option"),
 }
 
-function this.reinit()
-    this.condition:reinit()
-    this.script:reinit()
-    this.option.init()
-end
-
 ---@return boolean
 function this.init()
     util_misc.with_custom_require(function()
