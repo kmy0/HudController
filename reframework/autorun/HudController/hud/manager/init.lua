@@ -19,7 +19,11 @@ local options = require("HudController.hud.manager.options")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
 local timer = require("HudController.util.misc.timer")
 local user_option = require("HudController.hud.user.option")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
 local mod = data.mod
 local ace = data.ace
@@ -339,8 +343,9 @@ end
 function this.init()
     defaults.play_object:init()
     defaults.option:init()
-    bind_manager.init()
+    op.user.verify_conditions()
     verify_elements()
+    bind_manager.init()
     return true
 end
 
