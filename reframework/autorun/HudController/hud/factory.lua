@@ -36,12 +36,14 @@
 ---@field profile HudBaseConfigProfileForShow[]
 ---@field user_options table<string, any>
 
-local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud_elements = require("HudController.hud.elements.init")
-local user_option = require("HudController.hud.user.option")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
 local mod = data.mod
 
@@ -93,13 +95,7 @@ function this.get_hud_profile_config(key, name)
         user_options = {},
     }
 
-    for k, opt in pairs(user_option.hud) do
-        ret.user_options[k] = opt.default
-    end
-
-    for opt, _ in pairs(config.current.mod.game_options.hud) do
-        ret.options[opt] = -1
-    end
+    op.user.merge_hud_user_options(ret)
     return ret
 end
 
@@ -117,14 +113,7 @@ function this.get_config(hud_id)
         ret = cls.get_config()
     end
 
-    for k, opt in pairs(user_option.element[hud_name] or {}) do
-        ret.user_options[k] = opt.default
-    end
-
-    for opt, _ in pairs(config.current.mod.game_options.elements[ret.name_key] or {}) do
-        ret.options[opt] = -1
-    end
-
+    op.user.merge_elem_user_options(ret)
     return ret
 end
 

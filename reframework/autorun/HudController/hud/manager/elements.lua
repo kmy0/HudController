@@ -5,6 +5,7 @@
 local call_queue = require("HudController.hud.call_queue")
 local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
+
 ---@module "HudController.hud.hook.init"
 local hook = require("HudController.util.misc.init").lazy_require("HudController.hud.hook.init")
 

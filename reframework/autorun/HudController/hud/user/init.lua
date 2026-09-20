@@ -13,7 +13,7 @@ function this.init()
         this.condition:init()
     end)
 
-    return this.option.init()
+    return true
 end
 
 return this

@@ -8,6 +8,7 @@ local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
+
 ---@module "HudController.hud.play_object.init"
 local play_object = util_misc.lazy_require("HudController.hud.play_object.init")
 

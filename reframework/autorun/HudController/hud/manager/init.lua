@@ -13,7 +13,6 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
 local elements = require("HudController.hud.manager.elements")
-local factory = require("HudController.hud.factory")
 local fade_manager = require("HudController.hud.fade.init")
 local options = require("HudController.hud.manager.options")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
@@ -110,15 +109,6 @@ local this = {
         },
     },
 }
-
-local function verify_elements()
-    local config_mod = config.current.mod
-    for i = 1, #config_mod.hud do
-        config_mod.hud[i] = factory.verify_hud(config_mod.hud[i])
-        local hud = config_mod.hud[i]
-        hud.elements = factory.verify_elements(hud.elements or {})
-    end
-end
 
 ---@param request ConditionEvalRet
 local function update_condition_options(request)
@@ -343,8 +333,13 @@ end
 function this.init()
     defaults.play_object:init()
     defaults.option:init()
+
     op.user.verify_conditions()
-    verify_elements()
+    op.user.verify_options()
+
+    op.user.merge_mod_user_settings()
+    op.hud_profile.verify_elements()
+
     bind_manager.init()
     return true
 end

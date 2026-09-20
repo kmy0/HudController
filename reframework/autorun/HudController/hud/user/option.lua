@@ -17,12 +17,12 @@
 ---@field element table<string, table<string, RegisteredUserOption>>
 ---@field all table<string, RegisteredUserOption>
 
-local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
+
 ---@module "HudController.hud.init"
 local hud = util_misc.lazy_require("HudController.hud.init")
-local util_table = require("HudController.util.misc.table")
 
 ---@class UserOptions
 local this = {
@@ -152,28 +152,5 @@ function this.get_mod_option_value(option_name) end
 ---@param registered_option RegisteredUserOption
 ---@return any
 function this.get_current_value(registered_option) end
-
----@return boolean
-function this.init()
-    --TODO: mvoe this to op?
-    local config_mod = config.current.mod
-    for k, opt in pairs(this.mod) do
-        if not config_mod.user_options[k] then
-            config_mod.user_options[k] = opt.default
-        end
-    end
-
-    ---@type BindBase[]
-    local res = {}
-    for _, b in ipairs(config_mod.bind.key.option_user) do
-        if this.all[b.bound_value.key] then
-            table.insert(res, b)
-        end
-    end
-    --TODO: cond filter
-    config_mod.bind.key.option_user = res
-
-    return true
-end
 
 return this

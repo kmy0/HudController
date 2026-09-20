@@ -15,6 +15,7 @@ local fader = require("HudController.hud.fade.fader")
 local fader_group = require("HudController.hud.fade.fader_group")
 local play_object = require("HudController.hud.play_object.init")
 local util_misc = require("HudController.util.misc.init")
+
 ---@module "HudController.hud.manager.elements"
 local elements = util_misc.lazy_require("HudController.hud.manager.elements")
 

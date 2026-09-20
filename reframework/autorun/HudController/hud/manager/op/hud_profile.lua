@@ -145,4 +145,13 @@ function this.get_hud_by_key(key)
     end) --[[@as ModProfileConfig]]
 end
 
+function this.verify_elements()
+    local config_mod = config.current.mod
+    for i = 1, #config_mod.hud do
+        config_mod.hud[i] = factory.verify_hud(config_mod.hud[i])
+        local hud = config_mod.hud[i]
+        hud.elements = factory.verify_elements(hud.elements or {})
+    end
+end
+
 return this

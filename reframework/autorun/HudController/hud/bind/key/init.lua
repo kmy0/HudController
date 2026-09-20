@@ -16,17 +16,17 @@
 
 ---@class (exact) BindEvalRet : ConditionEvalRet
 
-local util_misc = require("HudController.util.misc.init")
----@module "HudController.hud.init"
-local hud = util_misc.lazy_require("HudController.hud.init")
 local bind_monitor = require("HudController.util.game.bind.monitor")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud_bind_manager = require("HudController.hud.bind.key.hud_manager")
 local option_bind_manager = require("HudController.hud.bind.key.option_manager")
 local options = require("HudController.hud.manager.options")
-local user_option = require("HudController.hud.user.option")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.init"
+local hud = util_misc.lazy_require("HudController.hud.init")
 
 local mod = data.mod
 

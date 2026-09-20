@@ -2,9 +2,10 @@ local config = require("HudController.config.init")
 local d = require("HudController.util.imgui.disabled")
 local filter = require("HudController.util.imgui.filter")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
+
 ---@module "HudController.util.imgui.init"
 local util_imgui = util_misc.lazy_require("HudController.util.imgui.init")
-local util_table = require("HudController.util.misc.table")
 
 local this = {}
 

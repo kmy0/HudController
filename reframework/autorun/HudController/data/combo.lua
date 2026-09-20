@@ -54,6 +54,7 @@ local user_option = require("HudController.hud.user.option")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+
 ---@module "HudController.hud.bind.condition.init"
 local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
 

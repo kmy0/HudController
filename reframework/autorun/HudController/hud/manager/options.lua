@@ -2,17 +2,18 @@
 ---@field overridden_options TableProxy<string, boolean>
 ---@field override_fns table<string, fun(key: string, value: boolean)>
 
-local hud_base = require("HudController.hud.def.hud_base")
-local util_misc = require("HudController.util.misc.init")
----@module "HudController.hud.hook.init"
-local hook = util_misc.lazy_require("HudController.hud.hook.init")
 local ace = require("HudController.data.ace")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
+local hud_base = require("HudController.hud.def.hud_base")
 local m = require("HudController.util.ref.methods")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
 local table_proxy = require("HudController.util.misc.table_proxy")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.hook.init"
+local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 ---@class OptionManager
 local this = {
