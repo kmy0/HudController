@@ -318,6 +318,8 @@ function this.register_condition(condition)
 end
 
 function this.reinit()
+    this.conditions = {}
+    this.passing_sets = {}
     this.init()
 end
 
