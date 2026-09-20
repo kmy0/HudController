@@ -632,17 +632,27 @@ function this.slider_list(label, index, v_min, v_max, values)
         draw_list:add_line({ x, pos.y + 2 }, { x, pos.y + height - 4 }, separator_color, 2.0)
     end
 
+    local mouse = imgui.get_mouse()
     for i = 1, count do
-        local value = values[i] or ""
+        local value = tostring(values[i] or "")
         local left = inner_left + segment_width * (i - 1)
         local available = math.max(0, segment_width - padding * 2)
-        local text = this.fit_text(tostring(value), available)
+        local text = this.fit_text(value, available)
         local size = imgui.calc_text_size(text)
 
         draw_list:add_text({
             left + (segment_width - size.x) * 0.5,
             pos.y + (height - size.y) * 0.5,
         }, text_color, text)
+
+        local cursor_over_segment = mouse.x >= left
+            and mouse.x < left + segment_width
+            and mouse.y >= pos.y
+            and mouse.y < pos.y + height
+
+        if text ~= value and cursor_over_segment then
+            imgui.set_tooltip(value)
+        end
     end
 
     return changed, index
