@@ -24,7 +24,7 @@ function this:monitor()
     bind_monitor.monitor(self)
     local ret = self.action
 
-    if self.action_type == "TOGGLE" then
+    if self.action_type == "SET_HOLD" then
         self.action = nil
     end
 

@@ -47,7 +47,7 @@ function this.init()
             device = "KEYBOARD",
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").R_CLICK },
             bound_value = mod.enum.canvas.HIDE,
-            action_type = "TOGGLE",
+            action_type = "SET_HOLD",
             trigger_repeat = false,
         },
         {
@@ -83,7 +83,7 @@ function this.init()
             device = "KEYBOARD",
             keys = { e.get("ace.ACE_MKB_KEY.INDEX").BACK_SPACE },
             bound_value = mod.enum.canvas.UNDO,
-            action_type = "TOGGLE",
+            action_type = "SET_HOLD",
             trigger_repeat = false,
         },
     })
