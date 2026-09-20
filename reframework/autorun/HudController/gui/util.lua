@@ -110,8 +110,7 @@ function this.is_only_thing(elem, elem_config, thing)
 
     local all_bools = elem:get_boolean_config_keys()
     if
-        (elem_config.children and not util_table.empty(elem_config.children))
-        or util_table.any(all_bools, function(_, value)
+        util_table.any(all_bools, function(_, value)
             if value == thing then
                 return false
             end

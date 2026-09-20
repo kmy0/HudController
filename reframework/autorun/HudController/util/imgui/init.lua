@@ -7,6 +7,7 @@ local uuid = require("HudController.util.misc.uuid")
 
 local FRAME_PADDING_X = 4.0
 local ITEM_SPACING_X = 8.0
+local FRAME_PADDING_Y = 3
 
 local this = {
     begin_disabled = disabled.begin_disabled,
@@ -750,6 +751,38 @@ end
 
 function this.get_button_height()
     return imgui.calc_text_size("A").y + 6
+end
+
+function this.fake_tree_node(id, label, draw_children)
+    local draw_list = imgui.get_window_draw_list()
+    local cursor = imgui.get_cursor_screen_pos()
+    local font_size = config.lang.font_size
+
+    local row_height = font_size + FRAME_PADDING_Y * 2
+    local label_size = imgui.calc_text_size(label)
+    local radius = font_size * (2.6 / 16)
+
+    imgui.invisible_button("##fake_tree_" .. id, {
+        font_size + FRAME_PADDING_X * 2 + label_size.x,
+        row_height,
+    })
+
+    local marker_center = {
+        cursor.x + FRAME_PADDING_X + font_size * 0.5,
+        cursor.y + FRAME_PADDING_Y + font_size * 0.5,
+    }
+
+    local label_position = {
+        cursor.x + FRAME_PADDING_X * 2 + font_size,
+        cursor.y + FRAME_PADDING_Y,
+    }
+
+    draw_list:add_circle_filled(marker_center, radius, 0xFFFFFFFF, 12)
+    draw_list:add_text(label_position, 0xFFFFFFFF, label)
+
+    imgui.indent(0)
+    draw_children()
+    imgui.unindent(0)
 end
 
 return this

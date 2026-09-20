@@ -17,6 +17,14 @@ local ace_map = data.ace.map
 local mod_enum = data.mod.enum
 
 local this = {}
+---@enum TreeType
+local tree_type = {
+    NONE = 1,
+    TREE = 2,
+    FAKE = 3,
+}
+---@type fun(elem: HudBase, elem_config: HudBaseConfig, config_key: string, elems: {[string]: HudChildConfig}, tree: TreeType, out_node_positions: Vector2f[]?)
+local draw_panel_child_contents
 
 ---@param elem_config HudBaseConfig
 ---@param config_key string
@@ -142,7 +150,41 @@ end
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
----@param tree boolean?
+local function draw_panel_contents(elem, elem_config, config_key)
+    generic.draw(elem, elem_config, config_key)
+
+    util_imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
+
+    local item_config_key = config_key .. ".options"
+    local options = config:get(item_config_key)
+    if options and not util_table.empty(options) then
+        util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
+
+        ---@cast options table<string, integer>
+        local sorted = util_table.sort(util_table.keys(options))
+        generic.draw_options(sorted, item_config_key, function(option_key, value)
+            if op.hud_elem.is_current_profile(elem) then
+                elem:set_option(option_key, value)
+            end
+        end)
+    end
+
+    local user_opt = user_option.element[e.get("app.GUIHudDef.TYPE")[elem.hud_id]] or {}
+    if not util_table.empty(user_opt) then
+        util_imgui.separator_text(config.lang:tr("hud.category_user_options"))
+        generic.draw_user_options(user_opt, string.format("%s.user_options", config_key))
+    end
+
+    main_panel.draw(elem, elem_config, config_key)
+    sub_panel.draw(elem, elem_config, config_key)
+
+    util_imgui.end_disabled()
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
+---@param tree TreeType?
 ---@param root_elem boolean?
 ---@param indent number?
 local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent)
@@ -154,66 +196,44 @@ local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent
         util_imgui.begin_disabled(false)
     end
 
-    ---@type string
-    local item_config_key
-    tree = tree == nil and true or tree
-    local node = tree
-        and imgui.tree_node_str_id(
-            string.format("%s_%s_tree", config_key, elem.name_key),
-            string.format(
-                "%s%s",
-                elem.hud_id and ace_map.hudid_name_to_local_name[elem.name_key]
-                    or (
-                        ace_map.weaponid_name_to_local_name[elem.name_key]
-                        or (ace_map.no_lang_key[elem.name_key] and elem.name_key)
-                        or util_gui.tr_int("hud_subelement." .. elem.name_key)
-                    ),
-                elem:any_gui() and string.format(" (%s)", config.lang:tr("misc.text_changed")) or ""
-            )
-        )
+    tree = tree == nil and tree_type.TREE or tree
+    local id = string.format("%s_%s_tree", config_key, elem.name_key)
+    local label = string.format(
+        "%s%s",
+        elem.hud_id and ace_map.hudid_name_to_local_name[elem.name_key]
+            or (
+                ace_map.weaponid_name_to_local_name[elem.name_key]
+                or (ace_map.no_lang_key[elem.name_key] and elem.name_key)
+                or util_gui.tr_int("hud_subelement." .. elem.name_key)
+            ),
+        elem:any_gui() and string.format(" (%s)", config.lang:tr("misc.text_changed")) or ""
+    )
 
-    if not tree or node then
+    if tree == tree_type.TREE and imgui.tree_node_str_id(id, label) or tree == tree_type.NONE then
         if indent then
             imgui.indent(indent)
         end
 
-        generic.draw(elem, elem_config, config_key)
-
-        util_imgui.begin_disabled(
-            elem_config.hide ~= nil and elem_config.hide and not elem.hide_write
-        )
-
-        item_config_key = config_key .. ".options"
-        local options = config:get(item_config_key)
-        if options and not util_table.empty(options) then
-            util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))
-
-            ---@cast options table<string, integer>
-            local sorted = util_table.sort(util_table.keys(options))
-            generic.draw_options(sorted, item_config_key, function(option_key, value)
-                if op.hud_elem.is_current_profile(elem) then
-                    elem:set_option(option_key, value)
-                end
-            end)
-        end
-
-        local user_opt = user_option.element[e.get("app.GUIHudDef.TYPE")[elem.hud_id]] or {}
-        if not util_table.empty(user_opt) then
-            util_imgui.separator_text(config.lang:tr("hud.category_user_options"))
-            generic.draw_user_options(user_opt, string.format("%s.user_options", config_key))
-        end
-
-        main_panel.draw(elem, elem_config, config_key)
-        sub_panel.draw(elem, elem_config, config_key)
-
-        util_imgui.end_disabled()
-        if node then
+        draw_panel_contents(elem, elem_config, config_key)
+        if tree == tree_type.TREE then
             imgui.tree_pop()
         end
 
         if indent then
             imgui.unindent(indent)
         end
+    elseif tree == tree_type.FAKE then
+        util_imgui.fake_tree_node(id, label, function()
+            if indent then
+                imgui.indent(indent)
+            end
+
+            draw_panel_contents(elem, elem_config, config_key)
+
+            if indent then
+                imgui.unindent(indent)
+            end
+        end)
     end
 
     util_imgui.end_disabled()
@@ -226,11 +246,17 @@ end
 ---@param node_pos Vector2f?
 local function draw_panel_child(elem, elem_config, children_filtered, config_key, node_pos)
     local elems = util_table.groupby(children_filtered, function(_, name_key, value)
-        if util_gui.is_only_thing(elem.children[name_key], value, value.gui_thing) then
+        local child = elem.children[name_key]
+        if util_gui.is_only_thing(child, value, value.gui_thing) then
+            if child.children and not util_table.empty(child.children) then
+                return "panel_fake"
+            end
+
             return "box"
         end
+
         return "panel"
-    end) --[[@as {box: {[string]: HudChildConfig}?, panel: {[string]: HudChildConfig}}]]
+    end) --[[@as {box: {[string]: HudChildConfig}?, panel: {[string]: HudChildConfig}, panel_fake: {[string]: HudChildConfig}}]]
 
     ---@type Vector2f[]
     local node_positions = {}
@@ -296,42 +322,25 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
     end
 
     if elems.panel then
-        local keys = util_table.sort(util_table.keys(elems.panel))
-        for i = 1, #keys do
-            local key = keys[i]
-            local child = elem.children[key]
+        draw_panel_child_contents(
+            elem,
+            elem_config,
+            config_key,
+            elems.panel,
+            tree_type.TREE,
+            node_pos and node_positions
+        )
+    end
 
-            if child.gui_ignore then
-                goto continue
-            end
-
-            local child_config = elem_config.children[key]
-            local child_config_key = string.format("%s.children.%s", config_key, key)
-            local cursor_pos = imgui.get_cursor_screen_pos()
-            cursor_pos.y = cursor_pos.y + text_size.y / 2 - 5
-
-            draw_panel(child, child_config, child_config_key, nil, nil, indent - 21)
-
-            util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
-
-            local children = util_table.filter_inplace(
-                child_config.children or {},
-                function(t, index, _)
-                    return not t[index].ignore
-                end
-            )
-
-            if not util_table.empty(children) then
-                draw_panel_child(child, child_config, children, child_config_key, cursor_pos)
-            end
-
-            util_imgui.end_disabled()
-
-            if node_pos then
-                table.insert(node_positions, cursor_pos)
-            end
-            ::continue::
-        end
+    if elems.panel_fake then
+        draw_panel_child_contents(
+            elem,
+            elem_config,
+            config_key,
+            elems.panel_fake,
+            tree_type.FAKE,
+            node_pos and node_positions
+        )
     end
 
     if node_pos then
@@ -355,6 +364,54 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
         end
 
         imgui.unindent(indent)
+    end
+end
+
+---@param elem HudBase
+---@param elem_config HudBaseConfig
+---@param config_key string
+---@param elems {[string]: HudChildConfig}
+---@param tree TreeType
+---@param out_node_positions Vector2f[]?
+function draw_panel_child_contents(elem, elem_config, config_key, elems, tree, out_node_positions)
+    local text_size = imgui.calc_text_size("")
+    local indent = config.lang.font_size * (20 / 16)
+
+    local keys = util_table.sort(util_table.keys(elems))
+    for i = 1, #keys do
+        local key = keys[i]
+        local child = elem.children[key]
+
+        if child.gui_ignore then
+            goto continue
+        end
+
+        local child_config = elem_config.children[key]
+        local child_config_key = string.format("%s.children.%s", config_key, key)
+        local cursor_pos = imgui.get_cursor_screen_pos()
+        cursor_pos.y = cursor_pos.y + text_size.y / 2 - 5
+
+        draw_panel(child, child_config, child_config_key, tree, nil, indent - 21)
+
+        util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+
+        local children = util_table.filter_inplace(
+            child_config.children or {},
+            function(t, index, _)
+                return not t[index].ignore
+            end
+        )
+
+        if not util_table.empty(children) then
+            draw_panel_child(child, child_config, children, child_config_key, cursor_pos)
+        end
+
+        util_imgui.end_disabled()
+
+        if out_node_positions then
+            table.insert(out_node_positions, cursor_pos)
+        end
+        ::continue::
     end
 end
 
@@ -389,7 +446,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
                 )
             )
         then
-            draw_panel(child, child_config, child_config_key, false)
+            draw_panel(child, child_config, child_config_key, tree_type.NONE)
 
             util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
 
@@ -416,7 +473,7 @@ end
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
     if not elem.gui_ignore then
-        draw_panel(elem, elem_config, config_key, false, true)
+        draw_panel(elem, elem_config, config_key, tree_type.NONE, true)
     end
 
     util_imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
