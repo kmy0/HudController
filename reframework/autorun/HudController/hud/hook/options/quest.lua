@@ -1,3 +1,4 @@
+local ace_item = require("HudController.util.ace.item")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
@@ -175,6 +176,24 @@ function this.hide_quest_result_post(_)
         skip_seamless and util_ref.is_a(flow, "app.GUIFlowQuestResult.Flow.SeamlessResultList")
     then
         flow:endFlow()
+    end
+end
+
+function this.skip_bowling_result_pre(args)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option("skip_quest_result") then
+        local bowlfac = s.get("app.FacilityManager"):get_Bowling()
+        local bowlup = s.get("app.GameMiniEventManager"):get_Bowling()
+        local reward_rank = bowlup:get_TotalScoreRank()
+        local rewards = bowlfac:getRewardItems(reward_rank)
+
+        util_game.do_something(rewards, function(_, _, value)
+            ace_item.add_item(value:get_ItemId(), value.Num)
+        end)
+
+        local reult_end = sdk.to_managed_object(args[2]) --[[@as app.cBowlingUpdater.cUpdater_ResultEnd]]
+        reult_end:setEndTrue()
+        return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 --#endregion
