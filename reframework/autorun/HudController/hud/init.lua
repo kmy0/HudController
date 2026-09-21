@@ -90,20 +90,20 @@ function this.get_hud_option(key)
 end
 
 ---@param key string
----@param new_value boolean? nil for toggle
----@return boolean? -- changed value
+---@param new_value any
+---@return any? -- changed value
 function this.overwrite_hud_option(key, new_value)
     return this.options.overwrite_hud_option(key, new_value)
 end
 
 ---@param key string
----@return boolean?
+---@return any?
 function this.get_overridden(key)
     return this.options.overridden_options[key]
 end
 
 function this.clear_overridden(key)
-    this.options.overridden_options[key] = nil
+    this.options.clear_overridden(key)
 end
 
 ---@param new_hud ModProfileConfig

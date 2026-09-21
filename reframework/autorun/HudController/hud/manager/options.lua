@@ -80,26 +80,18 @@ function this.apply_option_many(options)
 end
 
 ---@param key string
----@param new_value boolean? nil for toggle
----@return boolean? -- changed value
+---@param new_value any?
+---@return any? -- changed value
 function this.overwrite_hud_option(key, new_value)
     local current_hud = profile_switcher.current_hud
     if not current_hud then
         return
     end
 
-    if new_value == nil then
-        if this.overridden_options[key] ~= nil then
-            this.overridden_options[key] = not this.overridden_options[key]
-        else
-            this.overridden_options[key] = not current_hud[key]
-        end
+    if this.overridden_options[key] ~= new_value then
+        this.overridden_options[key] = new_value
     else
-        if this.overridden_options[key] ~= new_value then
-            this.overridden_options[key] = new_value
-        else
-            return
-        end
+        return
     end
 
     local func = this.override_fns[key]
