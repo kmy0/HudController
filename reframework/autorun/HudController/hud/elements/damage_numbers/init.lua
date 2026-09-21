@@ -243,8 +243,7 @@ function this.get_config()
     local children = base.children
 
     base.hud_type = mod.enum.hud_type.DAMAGE_NUMBERS
-    base.box = { x = 0, y = 0, w = 0, h = 0 }
-    base.enabled_box = false
+    base.box = { enabled = false, x = 0, y = 0, w = 0, h = 0 }
 
     for name, _ in e.iter("app.GUI020020.CRITICAL_STATE") do
         base.children[name] = critical_state.get_config(name)

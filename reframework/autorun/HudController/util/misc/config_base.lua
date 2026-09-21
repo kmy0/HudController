@@ -6,6 +6,7 @@
 ---@field run_save fun() updates all save timers
 ---@field save_global fun() save all configs
 ---@field save_no_timer_global fun() save all configs
+---@field __temp table
 
 ---@class (exact) SettingsBase
 
@@ -29,6 +30,7 @@ function this:new(default_settings, path, save_delay)
         current = util_table.deep_copy(default_settings),
         default = util_table.deep_copy(default_settings),
         path = path,
+        __temp = {},
     }
 
     o.save_timer = timer:new(save_delay or 0.5, {
@@ -46,12 +48,21 @@ end
 ---@param key string
 ---@return any
 function this:get(key)
+    if key:sub(1, 7) == "__temp." then
+        return util_table.get_by_path(self.__temp, key:sub(8))
+    end
+
     return util_table.get_by_path(self.current, key)
 end
 
 ---@param key string
 ---@param value any
 function this:set(key, value)
+    if key:sub(1, 7) == "__temp." then
+        util_table.set_by_path(self.__temp, key:sub(8), value)
+        return
+    end
+
     util_table.set_by_path(self.current, key, value)
     self:save()
 end

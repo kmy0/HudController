@@ -97,7 +97,7 @@ function this.contains_any(t, ...)
     return false
 end
 
----@generic T: table
+---@generic T
 ---@param original T
 ---@return T
 function this.deep_copy(original)
@@ -922,6 +922,17 @@ function this.iterator(fn)
         i = i + 1
         return fn(i)
     end
+end
+
+---@generic K, V
+---@param t {[K]: V}
+---@return {[V]: K}
+function this.reverse_map(t)
+    return this.transform_items(t, function(_, value)
+        return value
+    end, function(_, key)
+        return key
+    end)
 end
 
 return this

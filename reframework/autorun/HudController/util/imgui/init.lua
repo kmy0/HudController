@@ -96,6 +96,28 @@ function this.separator_text(label, padding, thickness, color)
     })
 end
 
+---@param thickness number?
+---@param color integer?
+function this.separator(thickness, color)
+    thickness = thickness or 3
+    color = color or 2106363020
+
+    if disabled.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local draw_list = imgui.get_window_draw_list()
+    local pos = imgui.get_cursor_screen_pos()
+    local window_pos = imgui.get_window_pos()
+    local window_size = imgui.get_window_size()
+
+    draw_list:add_line({ pos.x, pos.y }, { window_pos.x + window_size.x, pos.y }, color, thickness)
+    imgui.invisible_button(uuid.generate(), {
+        window_pos.x + window_size.x - pos.x - 2,
+        thickness,
+    })
+end
+
 ---@param label string
 ---@param item_width number
 ---@param padding [number, number]?
@@ -188,7 +210,6 @@ function this.dummy_button2(label, size_object)
     imgui.push_style_var(11, Vector2f.new(0, 0))
     local ret = imgui.button(label, size_object)
     imgui.pop_style_color(2)
-    imgui.pop_style_var(1)
     return ret
 end
 
@@ -299,13 +320,11 @@ end
 ---@return boolean, boolean?
 function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
     local pos_screen = imgui.get_cursor_screen_pos()
-    local pos = imgui.get_cursor_pos()
     local win_size = imgui.get_window_size()
     local win_pos = imgui.get_window_pos()
 
     local checkmark_padding = string.rep(" ", 10)
     local padding = pos_screen.x - win_pos.x
-
     local disabled = enabled_obj ~= nil and enabled_obj or false
 
     local id = label
@@ -315,49 +334,51 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
 
     label, id = table.unpack(util_misc.split_string(label, "##"))
 
-    label = label .. checkmark_padding
-
     if not id then
         id = label
     end
 
+    label = label .. checkmark_padding
+
     local text_size = imgui.calc_text_size(label)
     local scrollbar_width = imgui.get_scroll_max_y() > 0 and 14 or 0
+    local item_height = text_size.y + padding * 2
 
-    pos.x = pos.x - 1
-    imgui.set_cursor_pos(pos)
+    imgui.set_cursor_screen_pos({
+        win_pos.x,
+        pos_screen.y,
+    })
 
-    local button_size = {
-        win_size.x - padding * 2 - scrollbar_width,
-        text_size.y + padding * 2,
-    }
+    local changed = imgui.invisible_button("##" .. id, {
+        win_size.x - scrollbar_width - 2,
+        item_height,
+    })
 
-    local changed = this.dummy_button2("##" .. id, button_size)
+    local hovered = imgui.is_item_hovered()
+    local active = imgui.is_item_active()
 
-    if imgui.is_item_hovered() then
-        local dl = imgui.get_window_draw_list()
-        local screen_pos = imgui.get_cursor_screen_pos()
+    if hovered or active then
+        local draw_list = imgui.get_window_draw_list()
 
-        local end_pos = {
-            screen_pos.x + button_size[1] - 1,
-            screen_pos.y - button_size[2] - 4,
-        }
-
-        dl:add_line(end_pos, {
-            end_pos[1],
-            end_pos[2] + button_size[2],
-        }, 0xff4f4e4d, 3)
+        draw_list:add_rect_filled({
+            win_pos.x,
+            pos_screen.y,
+        }, {
+            win_pos.x + win_size.x - scrollbar_width,
+            pos_screen.y + item_height,
+        }, active and 0xff4f4e4d or 0xff4f4e4d, 0, 0)
     end
 
-    pos.y = pos.y + padding
-    pos.x = pos.x + padding
-    imgui.set_cursor_pos(pos)
+    imgui.set_cursor_screen_pos({
+        pos_screen.x + padding,
+        pos_screen.y + padding,
+    })
 
     imgui.text(label)
 
     if selected_obj then
         this.draw_checkmark(
-            pos_screen.x + win_size.x - padding - scrollbar_width,
+            win_pos.x + win_size.x - padding - scrollbar_width,
             pos_screen.y + padding,
             text_size.y - padding,
             disabled and 0xff9d9d9d or nil
@@ -472,20 +493,23 @@ function this.get_something_with_any_width(width)
 end
 
 ---@param label string
----@param offset number?
-function this.set_label(label, offset)
+---@param offset_x number?
+---@param offset_y number?
+function this.set_label(label, offset_x, offset_y)
     label = util_misc.split_string(label, "##")[1]
 
     if label == "" then
         return
     end
 
-    offset = offset or 0
+    offset_x = offset_x or 0
+    offset_y = offset_y or 0
 
     imgui.same_line()
 
     local pos = imgui.get_cursor_pos()
-    pos.x = pos.x - 3 + offset
+    pos.x = pos.x - 3 + offset_x
+    pos.y = pos.y + offset_y
     imgui.set_cursor_pos(pos)
 
     imgui.text(label)
@@ -783,6 +807,304 @@ function this.fake_tree_node(id, label, draw_children)
     imgui.indent(0)
     draw_children()
     imgui.unindent(0)
+end
+
+---@param label string
+---@param selected boolean
+---@param size_object? Vector2f|Vector3f|Vector4f|number[]
+---@return boolean
+function this.draw_sel_button(label, selected, size_object)
+    imgui.push_style_var(imgui.ImGuiStyleVar.ButtonTextAlign, Vector2f.new(0, 0.5))
+
+    if selected then
+        imgui.push_style_color(21, 0xff49301f)
+        imgui.push_style_color(22, 0xff5c3b24)
+        imgui.push_style_color(23, 0xff684328)
+    end
+
+    local pos = imgui.get_cursor_screen_pos()
+    local changed = imgui.button(label, size_object)
+    local dl = imgui.get_window_draw_list()
+    local height = imgui.get_cursor_screen_pos().y - pos.y
+
+    if selected then
+        dl:add_rect_filled({ pos.x, pos.y }, { pos.x + 2, pos.y + height - 4 }, 0xffd47b35, 1, 0)
+        imgui.pop_style_color(3)
+    else
+        dl:add_rect_filled({ pos.x, pos.y }, { pos.x + 2, pos.y + height - 4 }, 0xff8a7668, 1, 0)
+    end
+
+    imgui.pop_style_var(1)
+
+    return changed
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_drag_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_drag|" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local cx = pos.x + size * 0.5
+    local cy = pos.y + size * 0.5
+    local radius = size * 0.07
+    local spacing = size * 0.20
+
+    for i = -1, 1 do
+        draw_list:add_circle_filled({ cx, cy + i * spacing }, radius, color, 12)
+    end
+
+    return clicked
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_sort_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_sort|" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local cx = pos.x + size * 0.5
+    local thickness = size * 0.07
+
+    local widths = {
+        size * 0.42,
+        size * 0.30,
+        size * 0.18,
+    }
+
+    local ys = {
+        pos.y + size * 0.31,
+        pos.y + size * 0.50,
+        pos.y + size * 0.69,
+    }
+
+    for i = 1, 3 do
+        local half_width = widths[i] * 0.5
+        local half_thickness = thickness * 0.5
+
+        draw_list:add_rect_filled({
+            cx - half_width,
+            ys[i] - half_thickness,
+        }, {
+            cx + half_width,
+            ys[i] + half_thickness,
+        }, color, 0, 0)
+    end
+
+    return clicked
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_add_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_add|" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local cx = pos.x + size * 0.5
+    local cy = pos.y + size * 0.5
+
+    local half_length = size * 0.22
+    local half_thickness = size * 0.04
+
+    draw_list:path_clear()
+
+    draw_list:path_line_to({ cx - half_thickness, cy - half_length })
+    draw_list:path_line_to({ cx + half_thickness, cy - half_length })
+    draw_list:path_line_to({ cx + half_thickness, cy - half_thickness })
+    draw_list:path_line_to({ cx + half_length, cy - half_thickness })
+    draw_list:path_line_to({ cx + half_length, cy + half_thickness })
+    draw_list:path_line_to({ cx + half_thickness, cy + half_thickness })
+    draw_list:path_line_to({ cx + half_thickness, cy + half_length })
+    draw_list:path_line_to({ cx - half_thickness, cy + half_length })
+    draw_list:path_line_to({ cx - half_thickness, cy + half_thickness })
+    draw_list:path_line_to({ cx - half_length, cy + half_thickness })
+    draw_list:path_line_to({ cx - half_length, cy - half_thickness })
+    draw_list:path_line_to({ cx - half_thickness, cy - half_thickness })
+
+    draw_list:path_fill_concave(color)
+
+    return clicked
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_rename_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_rename|" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local cx = pos.x + size * 0.5
+    local cy = pos.y + size * 0.5
+
+    local half_width = size * 0.20
+    local half_thickness = size * 0.04
+    local height = size * 0.44
+
+    local top = cy - height * 0.5
+    local bar_bottom = top + half_thickness * 2
+    local bottom = cy + height * 0.5
+
+    draw_list:path_clear()
+
+    draw_list:path_line_to({ cx - half_width, top })
+    draw_list:path_line_to({ cx + half_width, top })
+    draw_list:path_line_to({ cx + half_width, bar_bottom })
+    draw_list:path_line_to({ cx + half_thickness, bar_bottom })
+    draw_list:path_line_to({ cx + half_thickness, bottom })
+    draw_list:path_line_to({ cx - half_thickness, bottom })
+    draw_list:path_line_to({ cx - half_thickness, bar_bottom })
+    draw_list:path_line_to({ cx - half_width, bar_bottom })
+
+    draw_list:path_fill_concave(color)
+
+    return clicked
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_remove_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_remove|" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local cx = pos.x + size * 0.5
+    local cy = pos.y + size * 0.5
+
+    local half_length = size * 0.20
+    local thickness = size * 0.08
+
+    local l = half_length
+    local t = thickness
+
+    draw_list:path_clear()
+
+    draw_list:path_line_to({ cx - l, cy - l + t })
+    draw_list:path_line_to({ cx - l + t, cy - l })
+    draw_list:path_line_to({ cx, cy - t })
+    draw_list:path_line_to({ cx + l - t, cy - l })
+    draw_list:path_line_to({ cx + l, cy - l + t })
+    draw_list:path_line_to({ cx + t, cy })
+    draw_list:path_line_to({ cx + l, cy + l - t })
+    draw_list:path_line_to({ cx + l - t, cy + l })
+    draw_list:path_line_to({ cx, cy + t })
+    draw_list:path_line_to({ cx - l + t, cy + l })
+    draw_list:path_line_to({ cx - l, cy + l - t })
+    draw_list:path_line_to({ cx - t, cy })
+
+    draw_list:path_fill_concave(color)
+
+    return clicked
+end
+
+---@param id string
+---@param size number?
+---@return boolean
+function this.draw_duplicate_button(id, size)
+    size = size or config.lang.font_size + 6
+
+    local pos = imgui.get_cursor_screen_pos()
+    local clicked = imgui.button("##button_duplicate" .. id, { size, size })
+
+    local draw_list = imgui.get_window_draw_list()
+    local color = 0xffffffff
+
+    if this.is_disabled() then
+        color = util_misc.mul_alpha(color, 0.6)
+    end
+
+    local thickness = size * 0.06
+    local width = size * 0.34
+    local height = size * 0.34
+    local offset = size * 0.12
+
+    local x1 = pos.x + size * 0.27
+    local y1 = pos.y + size * 0.27
+    local x2 = x1 + width
+    local y2 = y1 + height
+
+    local fx1 = x1 + offset
+    local fy1 = y1 + offset
+    local fx2 = x2 + offset
+    local fy2 = y2 + offset
+
+    -- back page: only visible top and left edges
+    draw_list:add_rect_filled({ x1, y1 }, { x2, y1 + thickness }, color, 0, 0)
+
+    draw_list:add_rect_filled({ x1, y1 + thickness }, { x1 + thickness, y2 }, color, 0, 0)
+
+    -- front page: top
+    draw_list:add_rect_filled({ fx1, fy1 }, { fx2, fy1 + thickness }, color, 0, 0)
+
+    -- front page: bottom
+    draw_list:add_rect_filled({ fx1, fy2 - thickness }, { fx2, fy2 }, color, 0, 0)
+
+    -- front page: left
+    draw_list:add_rect_filled(
+        { fx1, fy1 + thickness },
+        { fx1 + thickness, fy2 - thickness },
+        color,
+        0,
+        0
+    )
+
+    -- front page: right
+    draw_list:add_rect_filled(
+        { fx2 - thickness, fy1 + thickness },
+        { fx2, fy2 - thickness },
+        color,
+        0,
+        0
+    )
+
+    return clicked
 end
 
 return this

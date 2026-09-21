@@ -36,10 +36,17 @@ local function translate_elements()
     end
 end
 
+function this.inject_literals()
+    for key, str in pairs(data.ace.map.literals) do
+        config.lang:add_key("literal." .. key, str)
+    end
+end
+
 ---@return boolean
 function this.init()
     translate_ace_option()
     translate_elements()
+    this.inject_literals()
     return true
 end
 

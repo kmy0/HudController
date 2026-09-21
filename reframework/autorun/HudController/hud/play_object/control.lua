@@ -18,6 +18,10 @@ local all_cache = cache:new()
 ---@param chain string[] | string
 ---@return via.gui.Control?
 function this.get(ctrl, chain)
+    if type(chain) == "table" and util_table.empty(chain) then
+        return ctrl
+    end
+
     if not mod.is_reset then
         local id_array = id_cache:get(ctrl, chain)
         if id_array then

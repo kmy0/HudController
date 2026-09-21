@@ -54,6 +54,17 @@ function this:tr(key)
     end
 
     if not ret then
+        local last = key:match("([^%.]+)$")
+        if last then
+            ret = util_table.get_by_path(self.current, "literal." .. last)
+        end
+
+        if ret then
+            return ret
+        end
+    end
+
+    if not ret then
         ret = string.format("Bad key: %s", key)
     end
 

@@ -1,10 +1,7 @@
-local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
-local generic = require("HudController.gui.elements.profile.panel.generic")
-local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local def = require("HudController.data.option.element.sub.scale9")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 local draw_control_child = require("HudController.gui.elements.profile.panel.sub.control_child")
 
@@ -12,111 +9,13 @@ local draw_control_child = require("HudController.gui.elements.profile.panel.sub
 ---@param elem_config Scale9Config
 ---@param config_key string
 return function(elem, elem_config, config_key)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+
     draw_control_child(elem, elem_config, config_key)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_texture"))
-
-    ---@type string
-    local item_config_key
-    local is_current_profile = op.hud_elem.is_current_profile(elem)
-    if elem_config.enabled_control_point ~= nil then
-        item_config_key = config_key .. ".blend"
-        local changed_value = generic.draw_combo(
-            {
-                config_key = config_key .. ".enabled_control_point",
-                label = util_gui.tr(
-                    "hud_element.entry.box_enable_scale9_control_point",
-                    item_config_key
-                ),
-            },
-            item_config_key,
-            "##" .. item_config_key,
-            cd.combo.control_point,
-            cd.combo.control_point:get_index(nil, config:get(item_config_key))
-        )
-
-        if changed_value then
-            if is_current_profile then
-                elem:set_control_point(
-                    elem_config.enabled_control_point and changed_value.value or nil
-                )
-            end
-
-            config:set(item_config_key, changed_value.value)
-        end
-    end
-
-    if elem_config.enabled_blend ~= nil then
-        item_config_key = config_key .. ".blend"
-        local changed_value = generic.draw_combo(
-            {
-                config_key = config_key .. ".enabled_blend",
-                label = util_gui.tr(
-                    "hud_element.entry.box_enable_scale9_blend_type",
-                    item_config_key
-                ),
-            },
-            item_config_key,
-            "##" .. item_config_key,
-            cd.combo.blend,
-            cd.combo.blend:get_index(nil, config:get(item_config_key))
-        )
-
-        if changed_value then
-            if is_current_profile then
-                elem:set_blend(elem_config.enabled_blend and changed_value.value or nil)
-            end
-            config:set(item_config_key, changed_value.value)
-        end
-    end
-
-    if elem_config.enabled_alpha_channel ~= nil then
-        item_config_key = config_key .. ".alpha_channel"
-        local changed_value = generic.draw_combo(
-            {
-                config_key = config_key .. ".enabled_alpha_channel",
-                label = util_gui.tr(
-                    "hud_element.entry.box_enable_scale9_alpha_channel",
-                    item_config_key
-                ),
-            },
-            item_config_key,
-            "##" .. item_config_key,
-            cd.combo.alpha_channel,
-            cd.combo.alpha_channel:get_index(nil, config:get(item_config_key))
-        )
-
-        if changed_value then
-            if is_current_profile then
-                elem:set_alpha_channel(
-                    elem_config.enabled_alpha_channel and changed_value.value or nil
-                )
-            end
-            config:set(item_config_key, changed_value.value)
-        end
-    end
-
-    if elem_config.enabled_ignore_alpha ~= nil then
-        item_config_key = config_key .. ".enabled_ignore_alpha"
-        local changed = set:checkbox(
-            util_gui.tr("hud_element.entry.box_enable_scale9_ignore_alpha", item_config_key),
-            item_config_key
-        )
-
-        util_imgui.begin_disabled(not elem_config.enabled_ignore_alpha)
-
-        item_config_key = config_key .. ".ignore_alpha"
-        changed = set:checkbox(
-            util_gui.tr("hud_element.entry.box_scale9_ignore_alpha", item_config_key),
-            item_config_key
-        ) or changed
-
-        if changed and is_current_profile then
-            elem:set_ignore_alpha(
-                elem_config.enabled_ignore_alpha and elem_config.ignore_alpha or nil
-            )
-        end
-
-        util_imgui.end_disabled()
-    end
+    util_opt.draw_apply_elem(def.opt.control_point, ctx)
+    util_opt.draw_apply_elem(def.opt.blend, ctx)
+    util_opt.draw_apply_elem(def.opt.alpha_channel, ctx)
+    util_opt.draw_apply_elem(def.opt.ignore_alpha, ctx)
 end

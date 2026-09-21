@@ -12,14 +12,10 @@
 
 ---@class (exact) Scale9Config : CtrlChildConfig
 ---@field hud_sub_type HudSubType
----@field enabled_ignore_alpha boolean?
+---@field control_point EnabledString?
+---@field blend EnabledString?
+---@field alpha_channel EnabledString?
 ---@field ignore_alpha boolean?
----@field enabled_control_point boolean?
----@field control_point string?
----@field enabled_blend boolean?
----@field blend string?
----@field enabled_alpha_channel boolean?
----@field alpha_channel string?
 
 ---@class (exact) Scale9Default : CtrlChildDefault
 ---@field ignore_alpha boolean
@@ -74,70 +70,70 @@ function this:new(args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o Scale9
 
-    if args.enabled_control_point then
+    if args.control_point and args.control_point.enabled then
         o:set_control_point(args.control_point)
     end
 
-    if args.enabled_blend then
+    if args.blend and args.blend.enabled then
         o:set_blend(args.blend)
     end
 
-    if args.enabled_ignore_alpha then
+    if args.ignore_alpha then
         o:set_ignore_alpha(args.ignore_alpha)
     end
 
-    if args.enabled_alpha_channel then
+    if args.alpha_channel and args.alpha_channel.enabled then
         o:set_alpha_channel(args.alpha_channel)
     end
 
     return o
 end
 
----@param alpha_channel string?
+---@param alpha_channel EnabledString?
 function this:set_alpha_channel(alpha_channel)
-    if alpha_channel then
+    if alpha_channel and alpha_channel.enabled then
         self:mark_write("alpha_channel")
-        self.alpha_channel = e.get("via.gui.AlphaChannelType")[alpha_channel]
+        self.alpha_channel = e.get("via.gui.AlphaChannelType")[alpha_channel.value]
     else
         self:reset("alpha_channel")
-        self.color = alpha_channel
+        self.color = nil
         self:mark_idle("alpha_channel")
     end
 end
 
----@param control_point string?
+---@param control_point EnabledString?
 function this:set_control_point(control_point)
-    if control_point then
+    if control_point and control_point.enabled then
         self:mark_write("control_point")
 
-        self.control_point = e.get("via.gui.ControlPoint")[control_point]
+        self.control_point = e.get("via.gui.ControlPoint")[control_point.value]
     else
         self:reset("control_point")
-        self.color = control_point
+        self.color = nil
         self:mark_idle("control_point")
     end
 end
 
----@param blend string?
+---@param blend EnabledString?
 function this:set_blend(blend)
-    if blend then
+    if blend and blend.enabled then
         self:mark_write("blend")
-        self.blend = e.get("via.gui.BlendType")[blend]
+        self.blend = e.get("via.gui.BlendType")[blend.value]
     else
         self:reset("blend")
-        self.color = blend
+        self.color = nil
         self:mark_idle("blend")
     end
 end
 
 ---@param ignore_alpha boolean?
 function this:set_ignore_alpha(ignore_alpha)
-    if ignore_alpha ~= nil then
+    if ignore_alpha then
         self:mark_write("ignore_alpha")
-        self.ignore_alpha = ignore_alpha
+        self.ignore_alpha = true
     else
         self:reset("ignore_alpha")
-        self.ignore_alpha = ignore_alpha
+        self.ignore_alpha = nil
         self:mark_idle("ignore_alpha")
     end
 end
@@ -206,10 +202,10 @@ end
 ---@return string[]
 function this.get_boolean_config_keys(self)
     local t = {
-        "enabled_alpha_channel",
-        "enabled_control_point",
-        "enabled_ignore_alpha",
-        "enabled_blend",
+        "alpha_channel",
+        "control_point",
+        "ignore_alpha",
+        "blend",
     }
 
     if not self then

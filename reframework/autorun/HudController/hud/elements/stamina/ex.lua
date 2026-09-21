@@ -212,7 +212,7 @@ end
 function this:set_hide_pulse(val)
     self.hide_pulse = val
     if self.hide_pulse then
-        self.children.pulse:set_play_state("dummy")
+        self.children.pulse:set_play_state({ enabled = true, value = "dummy" })
     else
         self.children.pulse:set_play_state()
     end
@@ -239,7 +239,7 @@ function this.get_config()
         { name_key = "background", hide = false, hud_sub_type = mod.enum.hud_sub_type.SCALE9 }
     children.bar1.children.glow = { name_key = "glow", hide = false }
     children.bar2.children.glow = { name_key = "glow", hide = false }
-    children.pulse = { name_key = "__pulse", play_state = "" }
+    children.pulse = { name_key = "__pulse", enabled = true, value = "" }
 
     return base
 end

@@ -75,28 +75,26 @@ local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 
-local ace_map = data.ace.map
 local mod = data.mod
 
 ---@class Notice
 local this = {
     message_log_cache = circular_buffer:new(50),
+    cls_name_array = {
+        "app.cGUI020100PanelItem",
+        "app.cGUI020100PanelTutorial",
+        "app.cGUI020100PanelText",
+        "app.cGUI020100PanelSignal",
+        "app.cGUI020100PanelNetwork",
+        "app.cGUI020100PanelEnemy",
+        "app.cGUI020100PanelAnimal",
+        "app.cGUI020100PanelAchieve",
+        "app.GUI020100PanelCommunication",
+    },
 }
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = hud_base })
-
-local cls_name_array = {
-    "app.cGUI020100PanelItem",
-    "app.cGUI020100PanelTutorial",
-    "app.cGUI020100PanelText",
-    "app.cGUI020100PanelSignal",
-    "app.cGUI020100PanelNetwork",
-    "app.cGUI020100PanelEnemy",
-    "app.cGUI020100PanelAnimal",
-    "app.cGUI020100PanelAchieve",
-    "app.GUI020100PanelCommunication",
-}
 
 ---@param args NoticeConfig
 ---@return Notice
@@ -115,7 +113,7 @@ function this:new(args)
     o.log_id = args.log_id
     o._queued_callbacks = {}
 
-    for _, cls_name in pairs(ace_map.notice_child_cls_array) do
+    for _, cls_name in pairs(this.cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
         o.children[cls_short] = hud_child:new(
             args.children[cls_short],
@@ -127,9 +125,6 @@ function this:new(args)
             end,
             { no_cache = true }
         )
-
-        --FIXME: this feels a bit out of place...
-        ace_map.no_lang_key[cls_short] = true
     end
 
     return o
@@ -261,7 +256,7 @@ function this.get_config()
     base.log_id = {}
     base.auto_id = {}
 
-    for _, cls_name in pairs(cls_name_array) do
+    for _, cls_name in pairs(this.cls_name_array) do
         local cls_short = this.get_cls_name_short(cls_name)
         base.children[cls_short] = hud_child.get_config(cls_short)
         base.children[cls_short].hide = nil

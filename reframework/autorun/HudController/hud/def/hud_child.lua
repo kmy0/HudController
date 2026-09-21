@@ -10,17 +10,14 @@
 ---@field protected _getter_cache via.gui.Control[]
 
 ---@class (exact) HudChildConfig : HudBaseConfig
----@field scale {x:number, y:number}?
----@field offset {x:number, y:number}?
----@field rot number?
----@field opacity number?
----@field segment string?
+---@field scale EnabledVec2?
+---@field offset EnabledVec2?
+---@field segment EnabledString?
+---@field rot EnabledNumber?
+---@field opacity EnabledNumber?
 ---@field hide boolean?
----@field enabled_scale boolean?
----@field enabled_offset boolean?
----@field enabled_rot boolean?
----@field enabled_opacity boolean?
----@field enabled_segment boolean?
+---@field play_state EnabledString?
+---@field color_scale EnabledVec3?
 ---@field key nil
 ---@field hud_id nil
 ---@field hud_type nil
@@ -32,9 +29,7 @@
 ---@field enabled nil
 ---@field default_profile nil
 ---@field profile_key nil
----@field override_fade_duration nil
----@field override_fade_in nil
----@field override_fade_out nil
+---@field override_fade nil
 ---@field user_options nil
 
 ---@class (exact) HudChildDefault : HudBaseDefault
@@ -264,17 +259,12 @@ end
 ---@return HudChildConfig
 function this.get_config(name_key)
     return {
-        enabled_offset = false,
-        enabled_rot = false,
-        enabled_scale = false,
-        enabled_opacity = false,
-        enabled_segment = false,
-        segment = "HUD",
+        segment = { enabled = false, value = "HUD" },
         hide = false,
-        scale = { x = 1, y = 1 },
-        offset = { x = 0, y = 0 },
-        rot = 0,
-        opacity = 1,
+        scale = { enabled = false, x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        rot = { enabled = false, value = 0 },
+        opacity = { enabled = false, value = 1 },
         children = {},
         options = {},
         name_key = name_key,

@@ -72,7 +72,7 @@ end
 function this:set_no_focus(no_focus)
     self.no_focus = no_focus
     if no_focus then
-        self.children.no_focus:set_play_state("DEFAULT")
+        self.children.no_focus:set_play_state({ enabled = true, value = "DEFAULT" })
     else
         self.children.no_focus:set_play_state()
     end
@@ -120,7 +120,7 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.WEAPON
     base.no_focus = false
 
-    children.no_focus = { name_key = "__no_focus", enabled_play_state = false, play_state = "" }
+    children.no_focus = { name_key = "__no_focus", { enabled = false, value = "" } }
     children.charge_axe = charge_axe.get_config()
     children.tachi = tachi.get_config()
     children.twin_sword = twin_sword.get_config()

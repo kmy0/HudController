@@ -129,24 +129,18 @@ function this.get_config()
     children.tooltip = hud_child.get_config("tooltip")
     children.group1 = {
         name_key = "group1",
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
-        enabled_scale = false,
-        scale = { x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        scale = { enabled = false, x = 1, y = 1 },
     }
     children.group2 = {
         name_key = "group2",
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
-        enabled_scale = false,
-        scale = { x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        scale = { enabled = false, x = 1, y = 1 },
     }
     children.group3 = {
         name_key = "group3",
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
-        enabled_scale = false,
-        scale = { x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        scale = { enabled = false, x = 1, y = 1 },
     }
     return base
 end

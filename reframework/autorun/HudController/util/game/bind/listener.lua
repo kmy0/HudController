@@ -33,7 +33,6 @@ function this:bind_base_ctor(type)
         name = "",
         name_display = "",
         device = type,
-        bound_value = -1,
         trigger_repeat = false,
     }
 end

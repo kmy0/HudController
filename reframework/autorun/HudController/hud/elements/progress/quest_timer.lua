@@ -86,9 +86,7 @@ function this.get_config()
     local children = base.children
 
     base.name_key = "quest_timer"
-    base.enabled_offset = false
-    base.offset = { x = 0, y = 0 }
-    base.enabled_clock_offset_x = nil
+    base.offset = { enabled = false, x = 0, y = 0 }
     base.clock_offset_x = nil
 
     children.background = { name_key = "background", hide = false }

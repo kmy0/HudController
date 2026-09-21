@@ -13,7 +13,6 @@
 local base = require("HudController.hud.def.condition_base")
 local combo = require("HudController.util.imgui.combo")
 local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 

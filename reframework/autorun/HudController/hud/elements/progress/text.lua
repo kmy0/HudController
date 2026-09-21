@@ -3,9 +3,9 @@
 ---@field ctrl_getter fun(self: ProgressPartText, hudbase: app.GUIHudBase, gui_id: app.GUIID.ID, ctrl: via.gui.Control): via.gui.Control[] | via.gui.Control?
 ---@field ctrl_writer (fun(self: ProgressPartText, ctrl: via.gui.Control): boolean)?
 ---@field get_config fun(): ProgressPartTextConfig
----@field set_offset_x fun(self: ProgressPartText, val: number?)
----@field set_clock_offset_x fun(self: ProgressPartText, val: number?)
----@field set_num_offset_x fun(self: ProgressPartText, val: number?)
+---@field set_offset_x fun(self: ProgressPartText, val: EnabledNumber)
+---@field set_clock_offset_x fun(self: ProgressPartText, val: EnabledNumber)
+---@field set_num_offset_x fun(self: ProgressPartText, val: EnabledNumber)
 ---@field mark_write fun(self: ProgressPartText, key: ProgressPartTextProperty)
 ---@field mark_idle fun(self: ProgressPartText, key: ProgressPartTextProperty)
 
@@ -67,22 +67,22 @@ function this:new(args, parent, ctrl_getter, optional_args)
         o:set_align_left(args.align_left)
     end
 
-    if args.enabled_offset_x then
+    if args.offset_x and args.offset_x.enabled then
         o:set_offset_x(args.offset_x)
     end
 
-    if args.enabled_clock_offset_x then
+    if args.clock_offset_x and args.clock_offset_x.enabled then
         o:set_clock_offset_x(args.clock_offset_x)
     end
 
-    if args.enabled_num_offset_x then
+    if args.num_offset_x and args.num_offset_x.enabled then
         o:set_num_offset_x(args.num_offset_x)
     end
 
     return o
 end
 
----@param align_left boolean
+---@param align_left boolean?
 function this:set_align_left(align_left)
     if align_left then
         self:mark_write("align_left")
@@ -90,7 +90,7 @@ function this:set_align_left(align_left)
         self.page_alignment = e.get("via.gui.PageAlignment").LeftCenter
     else
         self:reset("page_alignment")
-        self.align_left = align_left
+        self.align_left = nil
         self.page_alignment = nil
         self:mark_idle("align_left")
     end

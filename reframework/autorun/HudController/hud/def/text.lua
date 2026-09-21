@@ -13,12 +13,9 @@
 ---@class (exact) TextConfig : CtrlChildConfig
 ---@field hud_sub_type HudSubType
 ---@field hide_glow boolean?
----@field enabled_glow_color boolean?
----@field glow_color integer?
----@field enabled_font_size boolean?
----@field font_size integer?
----@field page_alignment string?
----@field enabled_page_alignment boolean?
+---@field glow_color EnabledInteger?
+---@field font_size EnabledInteger?
+---@field page_alignment EnabledString?
 
 ---@class (exact) TextDefault : CtrlChildDefault
 ---@field hide_glow boolean
@@ -79,28 +76,28 @@ function this:new(args, parent, ctrl_getter, optional_args)
         o:set_hide_glow(args.hide_glow)
     end
 
-    if args.enabled_glow_color then
+    if args.glow_color and args.glow_color.enabled then
         o:set_glow_color(args.glow_color)
     end
 
-    if args.enabled_font_size then
+    if args.font_size and args.font_size.enabled then
         o:set_font_size(args.font_size)
     end
 
-    if args.enabled_page_alignment then
+    if args.page_alignment and args.page_alignment.enabled then
         o:set_page_alignment(args.page_alignment)
     end
     return o
 end
 
----@param page_alignment string?
+---@param page_alignment EnabledString?
 function this:set_page_alignment(page_alignment)
-    if page_alignment then
+    if page_alignment and page_alignment.enabled then
         self:mark_write("page_alignment")
-        self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment]
+        self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment.value]
     else
         self:reset("page_alignment")
-        self.page_alignment = page_alignment
+        self.page_alignment = nil
         self:mark_idle("page_alignment")
     end
 end
@@ -117,29 +114,29 @@ function this:set_hide_glow(hide_glow)
     self.hide_glow = hide_glow
 end
 
----@param color integer?
+---@param color EnabledInteger?
 function this:set_glow_color(color)
-    if color then
+    if color and color.enabled then
         self:mark_write("glow_color")
         self.glow_color = util_ref.value_type("via.Color")
-        self.glow_color.rgba = color
+        self.glow_color.rgba = color.value
     else
         self:reset("glow_color")
-        self.glow_color = color
+        self.glow_color = nil
         self:mark_idle("glow_color")
     end
 end
 
----@param size integer?
+---@param size EnabledInteger?
 function this:set_font_size(size)
-    if size then
+    if size and size.enabled then
         self:mark_write("font_size")
         self.font_size = util_ref.value_type("via.Size")
-        self.font_size.w = size
-        self.font_size.h = size
+        self.font_size.w = size.value
+        self.font_size.h = size.value
     else
         self:reset("font_size")
-        self.font_size = size
+        self.font_size = nil
         self:mark_idle("font_size")
     end
 end
@@ -211,9 +208,9 @@ end
 function this.get_boolean_config_keys(self)
     local t = {
         "hide_glow",
-        "enabled_glow_color",
-        "enabled_font_size",
-        "enabled_page_alignment",
+        "glow_color",
+        "font_size",
+        "page_alignment",
     }
 
     if not self then

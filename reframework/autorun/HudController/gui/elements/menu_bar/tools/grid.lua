@@ -1,10 +1,9 @@
-local data = require("HudController.data.init")
-local set = require("HudController.gui.set")
+local option = require("HudController.data.option.init")
 local util_ace = require("HudController.util.ace.init")
 local util_gui = require("HudController.gui.util")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 
-local mod = data.mod
+local mod_def = option.mod
 
 local this = {}
 
@@ -12,22 +11,15 @@ local function draw_grid_menu()
     imgui.spacing()
     imgui.indent(2)
 
-    if set:checkbox(util_gui.tr("menu.grid.box_draw"), "mod.grid.draw") then
+    if option.draw(mod_def.opt.grid_draw) then
         util_ace.scene_fade.reset()
     end
 
-    set:slider_list(
-        util_gui.tr("menu.grid.combo_ratio"),
-        "mod.grid.combo_grid_ratio",
-        1,
-        #mod.map.slider_grid_ratio,
-        mod.map.slider_grid_ratio
-    )
-    set:color_edit(util_gui.tr("menu.grid.color_center"), "mod.grid.color_center")
-
-    set:color_edit(util_gui.tr("menu.grid.color_grid"), "mod.grid.color_grid")
-    set:color_edit(util_gui.tr("menu.grid.color_fade"), "mod.grid.color_fade")
-    set:slider_float(util_gui.tr("menu.grid.fade_alpha"), "mod.grid.fade_alpha", 0, 1, "%.2f")
+    option.draw(mod_def.opt.grid_ratio)
+    option.draw(mod_def.opt.grid_color_center)
+    option.draw(mod_def.opt.grid_color_grid)
+    option.draw(mod_def.opt.grid_color_fade)
+    option.draw(mod_def.opt.grid_fade_alpha)
 
     imgui.unindent(2)
     imgui.spacing()

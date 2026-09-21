@@ -299,7 +299,7 @@ end
 ---@param no_hide boolean
 function this:set_no_hide_parts(no_hide)
     if no_hide then
-        self.children.no_hide_parts:set_play_state("dummy")
+        self.children.no_hide_parts:set_play_state({ enabled = true, value = "dummy" })
     else
         self.children.no_hide_parts:set_play_state()
     end
@@ -324,8 +324,10 @@ function this.get_config()
     children.mode_icon1 = hud_child.get_config("mode_icon1")
     children.mode_icon2 = hud_child.get_config("mode_icon2")
     children.bow_icon = { name_key = "bow_icon", hide = false }
-    children.no_hide_parts =
-        { name_key = "__no_hide_parts", enabled_play_state = false, play_state = "" }
+    children.no_hide_parts = {
+        name_key = "__no_hide_parts",
+        play_state = { enabled = true, value = "" },
+    }
     children.bow_phials = bow_phials.get_config()
 
     return base

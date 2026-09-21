@@ -59,7 +59,7 @@ end
 
 function this.always_visible_post(_)
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
-    if not shortcut_keyboard or not shortcut_keyboard:is_always_visible() then
+    if not shortcut_keyboard or not shortcut_keyboard.always_visible then
         return
     end
 

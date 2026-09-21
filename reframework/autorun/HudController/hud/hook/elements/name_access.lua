@@ -1,7 +1,6 @@
 local ace_em = require("HudController.util.ace.enemy")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
-local hud = require("HudController.hud.init")
 local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
 
@@ -9,7 +8,7 @@ local this = {}
 
 function this.hide_iteractables_post(_)
     local name_access = common.get_elem_t("NameAccess")
-    if name_access and (not name_access.hide or hud.get_hud_option("hide_monster_icon")) then
+    if name_access and not name_access.hide then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
         local player_pos

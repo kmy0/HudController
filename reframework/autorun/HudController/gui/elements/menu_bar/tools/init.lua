@@ -18,7 +18,10 @@ local this = {}
 local function draw_tools_menu()
     set:menu_item(util_gui.tr("menu.tools.box_block_input"), "mod.block_input")
 
+    --FIXME: some padding from somwhere is fuckin shit up
+    util_imgui.adjust_pos(0, -2)
     imgui.separator()
+    util_imgui.adjust_pos(0, -3)
 
     util_imgui.begin_disabled(util_mod.is_draw_canvas())
     if util_imgui.menu_item(util_gui.tr("selector.name"), nil, nil, true) then
@@ -38,12 +41,16 @@ local function draw_tools_menu()
         config.save_global()
     end
 
+    --FIXME: some padding from somwhere is fuckin shit up
+    util_imgui.adjust_pos(0, -2)
     imgui.separator()
+    util_imgui.adjust_pos(0, -3)
 
     imgui.indent(2)
     grid.draw()
     canvas.draw()
     imgui.unindent(2)
+    imgui.spacing()
 end
 
 function this.draw()

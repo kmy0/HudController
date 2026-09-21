@@ -168,7 +168,7 @@ local function eval_conditions()
     for _, hud_conditions in ipairs(bind_conditions.hud) do
         if eval(hud_conditions.conditions or {}) then
             return {
-                hud = { key = hud_conditions.key, profiles = eval_profiles(hud_conditions) },
+                hud = { key = hud_conditions.key, profile = eval_profiles(hud_conditions) },
                 hud_option = eval_options(hud_conditions.hud_option or {}),
                 mod_option = eval_options(hud_conditions.mod_option or {}),
                 game_option = eval_options(hud_conditions.game_option or {}),

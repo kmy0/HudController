@@ -6,10 +6,12 @@
 ---@field flags integer
 ---@field condition integer
 
+local column = require("HudController.gui.elements.column")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local fade_manager = require("HudController.hud.fade.init")
 local gui_elements = require("HudController.gui.elements.init")
+local gui_key = require("HudController.gui.elements.menu_bar.bind.key.init")
 local hook = require("HudController.hud.hook.init")
 local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
@@ -27,6 +29,8 @@ local this = {
 }
 
 function this.draw()
+    imgui.push_style_var(12, 2)
+
     local gui_main = config.gui.current.gui.main
     local config_mod = config.current.mod
 
@@ -42,7 +46,7 @@ function this.draw()
 
     gui_main.is_opened = imgui.begin_window(
         string.format(
-            "%s %s - %s###" .. config.name,
+            "%s %s   |   %s###" .. config.name,
             config.name,
             config.commit,
             config.selector:get_message()
@@ -63,6 +67,7 @@ function this.draw()
         state.input = nil
         config.save_global()
         imgui.end_window()
+        imgui.pop_style_var(1)
         return
     end
 
@@ -89,6 +94,7 @@ function this.draw()
             imgui.pop_font()
         end
 
+        imgui.pop_style_var(1)
         imgui.end_window()
         return
     end
@@ -105,11 +111,7 @@ function this.draw()
             or (config_mod.enable_fade and fade_manager.is_active())
     )
 
-    util_imgui.draw_child_window("hud_child_window", function()
-        gui_elements.choice.draw()
-    end, 50, 6)
-
-    gui_elements.profile.draw()
+    column.draw()
 
     util_imgui.end_disabled()
     imgui.unindent(3)
@@ -119,10 +121,16 @@ function this.draw()
         imgui.pop_font()
     end
 
+    imgui.pop_style_var(1)
     imgui.spacing()
     imgui.end_window()
 
     hook.hook_hud_options()
+end
+
+---@return boolean
+function this.init()
+    return gui_key.init()
 end
 
 return this

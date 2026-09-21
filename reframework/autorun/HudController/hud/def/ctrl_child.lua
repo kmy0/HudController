@@ -20,21 +20,14 @@
 ---@class (exact) CtrlChildConfig : HudChildConfig
 ---@field name_key string
 ---@field hud_sub_type HudSubType?
----@field scale {x:number, y:number}?
----@field offset {x:number, y:number}?
----@field rot number?
----@field color integer?
----@field size_x number?
----@field size_y number?
+---@field scale EnabledVec2?
+---@field offset EnabledVec2?
+---@field rot EnabledNumber?
+---@field color EnabledInteger?
+---@field size_x EnabledNumber?
+---@field size_y EnabledNumber?
 ---@field opacity nil
 ---@field hide boolean?
----@field enabled_scale boolean?
----@field enabled_offset boolean?
----@field enabled_rot boolean?
----@field enabled_color boolean?
----@field enabled_size_x boolean?
----@field enabled_size_y boolean?
----@field enabled_opacity nil
 
 ---@class (exact) CtrlChildDefault : HudChildDefault
 ---@field scale {x:number, y:number}
@@ -109,66 +102,66 @@ function this:new(args, parent, ctrl_getter, optional_args)
     o.last_known = {}
     o.last_change = {}
 
-    if args.enabled_color then
+    if args.color and args.color.enabled then
         o:set_color(args.color)
     end
 
-    if args.enabled_size_x then
+    if args.size_x and args.size_x.enabled then
         o:set_size_x(args.size_x)
     end
 
-    if args.enabled_size_y then
+    if args.size_y and args.size_y.enabled then
         o:set_size_y(args.size_y)
     end
 
     return o
 end
 
----@param scale {x:number, y:number}?
+---@param scale EnabledVec2?
 function this:set_scale(scale)
-    if scale then
-        self.scale = scale
+    if scale and scale.enabled then
+        self.scale = { x = scale.x, y = scale.y }
         self:mark_write("scale")
     else
         self:reset("scale")
-        self.scale = scale
+        self.scale = nil
         self:mark_idle("scale")
     end
 end
 
----@param size_x number?
+---@param size_x EnabledNumber?
 function this:set_size_x(size_x)
     if size_x then
-        self.size_x = size_x
+        self.size_x = size_x.value
         self:mark_write("size_x")
     else
         self:reset("size_x")
-        self.size_x = size_x
+        self.size_x = nil
         self:mark_idle("size_x")
     end
 end
 
----@param size_y number?
+---@param size_y EnabledNumber?
 function this:set_size_y(size_y)
-    if size_y then
-        self.size_y = size_y
+    if size_y and size_y.enabled then
+        self.size_y = size_y.value
         self:mark_write("size_y")
     else
         self:reset("size_y")
-        self.size_y = size_y
+        self.size_y = nil
         self:mark_idle("size_y")
     end
 end
 
----@param color integer?
+---@param color EnabledInteger?
 function this:set_color(color)
-    if color then
+    if color and color.enabled then
         self:mark_write("color")
         self.color = util_ref.value_type("via.Color")
-        self.color.rgba = color
+        self.color.rgba = color.value
     else
         self:reset("color")
-        self.color = color
+        self.color = nil
         self:mark_idle("color")
     end
 end
@@ -308,9 +301,9 @@ end
 ---@return string[]
 function this.get_boolean_config_keys(self)
     local t = {
-        "enabled_color",
-        "enabled_size_x",
-        "enabled_size_y",
+        "color",
+        "size_x",
+        "size_y",
     }
 
     if not self then

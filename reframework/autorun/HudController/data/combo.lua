@@ -1,44 +1,47 @@
 ---@class (exact) ComboRegistry
----@field hud_elem Combo
----@field hud Combo
----@field item_decide Combo
----@field control_point Combo
----@field blend Combo
----@field alpha_channel Combo
----@field option_bind Combo
----@field option_mod_bind Combo
----@field bind_action_type Combo
----@field segment Combo
----@field page_alignment Combo
----@field enemy_msg_type Combo
----@field config Combo
----@field config_backup Combo
----@field log_id Combo
----@field map_filter Combo
----@field condition Combo
----@field elem_cache Combo
----@field system_log Combo
----@field enemy_log Combo
----@field camp_log Combo
----@field chat_log Combo
----@field lobby_log Combo
----@field auto_id Combo
----@field object_category Combo
----@field npc_type Combo
----@field enemy_type Combo
----@field panel_type Combo
----@field gossip_type Combo
----@field nameplate_type Combo
----@field subtitles Combo
----@field npc Combo
----@field dialogue_type Combo
----@field dialogue_actor_type Combo
----@field sfx_game_object Combo
----@field elem_option Combo
----@field option_game_bind Combo
----@field enable_disable Combo
----@field bind_trigger_type Combo
----@field option_user_bind Combo
+---@field hud_elem Combo<string>
+---@field hud Combo<integer>
+---@field item_decide Combo<string>
+---@field control_point Combo<via.gui.ControlPoint>
+---@field blend Combo<via.gui.BlendType>
+---@field alpha_channel Combo<via.gui.AlphaChannelType>
+---@field option_hud_bind Combo<string>
+---@field option_mod_bind Combo<string>
+---@field bind_action_type Combo<BindActionType>
+---@field segment Combo<app.GUIDefApp.DRAW_SEGMENT>
+---@field page_alignment Combo<via.gui.PageAlignment>
+---@field enemy_msg_type Combo<app.ChatDef.ENEMY_LOG_TYPE>
+---@field config Combo<integer>
+---@field config_backup Combo<integer>
+---@field log_id Combo<app.ChatDef.LOG_ID>
+---@field map_filter Combo<string>
+---@field condition Combo<string>
+---@field elem_cache Combo<string>
+---@field system_log Combo<string>
+---@field enemy_log Combo<string>
+---@field camp_log Combo<string>
+---@field chat_log Combo<string>
+---@field lobby_log Combo<string>
+---@field auto_id Combo<string>
+---@field object_category Combo<string>
+---@field npc_type Combo<string>
+---@field enemy_type Combo<integer>
+---@field panel_type Combo<string>
+---@field gossip_type Combo<string>
+---@field nameplate_type Combo<string>
+---@field subtitles Combo<string>
+---@field npc Combo<string>
+---@field dialogue_type Combo<string>
+---@field dialogue_actor_type Combo<string>
+---@field sfx_game_object Combo<integer>
+---@field elem_option Combo<string>
+---@field option_game_bind Combo<string>
+---@field enable_disable Combo<integer>
+---@field bind_trigger_type Combo<string>
+---@field option_user_bind Combo<RegisteredUserOption>
+---@field hide_npc Combo<HideNpc>
+---@field em_scar Combo<EmScar>
+---@field em_icon Combo<EmIcon>
 
 ---@class ComboData
 ---@field combo ComboRegistry
@@ -57,6 +60,8 @@ local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.bind.condition.init"
 local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
+---@module "HudController.data.option.init"
+local option = util_misc.lazy_require("HudController.data.option.init")
 
 local ace_map = data.ace.map
 local mod = data.mod
@@ -117,16 +122,16 @@ local this = {
         alpha_channel = combo:new(nil, {
             sort_fn = sort_by_key,
         }),
-        option_bind = combo:new(mod.map.options_hud, {
-            sort_fn = sort_by_key,
-            translate_fn = function(key)
-                return config.lang:tr("hud." .. mod.map.options_hud[key])
+        option_hud_bind = combo:new(nil, {
+            sort_fn = sort_by_value,
+            translate_fn = function(key, value)
+                return string.format("%s##%s", config.lang:tr(value), key)
             end,
         }),
-        option_mod_bind = combo:new(mod.map.options_mod, {
-            sort_fn = sort_by_key,
-            translate_fn = function(key)
-                return config.lang:tr("menu.config." .. mod.map.options_mod[key])
+        option_mod_bind = combo:new(nil, {
+            sort_fn = sort_by_value,
+            translate_fn = function(key, value)
+                return string.format("%s##%s", config.lang:tr(value), key)
             end,
         }),
         segment = combo:new(nil, {
@@ -314,6 +319,24 @@ local this = {
                 return a.key.sort < b.key.sort
             end,
         }),
+        hide_npc = combo:new(util_table.reverse_map(mod.enum.hide_npc), {
+            sort_fn = sort_by_key,
+            translate_fn = function(_, value)
+                return config.lang:tr("hud.hide_npc." .. value)
+            end,
+        }),
+        em_scar = combo:new(util_table.reverse_map(mod.enum.em_scar), {
+            sort_fn = sort_by_key,
+            translate_fn = function(_, value)
+                return config.lang:tr("hud.em_scar." .. value)
+            end,
+        }),
+        em_icon = combo:new(util_table.reverse_map(mod.enum.em_icon), {
+            sort_fn = sort_by_key,
+            translate_fn = function(_, value)
+                return config.lang:tr("hud.em_icon." .. value)
+            end,
+        }),
     },
 }
 
@@ -378,7 +401,7 @@ function this.init_combo_option_game_bind()
 end
 
 function this.init_combo_option_user_bind()
-    this.combo.option_user_bind:swap(user_option.get_combo_values())
+    this.combo.option_user_bind:swap(user_option.get_bindable_options())
 end
 
 function this.init_combo_map_icon_filter()
@@ -414,6 +437,7 @@ end
 ---@param key string
 ---@param item_config_key string
 ---@param is_key_disabled (fun(item_config_key: string, key: any, value: string): boolean)?
+---@return Combo<any>
 function this.get_profile_combo(key, item_config_key, is_key_disabled)
     local cache_key = string.format("COMBO|%s|%s", key, item_config_key)
     local ret = this.combo_cache[cache_key]
@@ -485,7 +509,11 @@ function this.init()
         )
     )
     this.combo.npc_type:swap(e.get("app.GUI020001PanelParams.NPC_TYPE").field_to_enum)
-    this.combo.enemy_type:swap({ "BOSS", "ZAKO", "ANIMAL" })
+    this.combo.enemy_type:swap(
+        util_table.transform_items({ "BOSS", "ZAKO", "ANIMAL" }, function(_, value)
+            return value
+        end)
+    )
     this.combo.panel_type:swap(e.get("app.GUI020001PanelParams.PANEL_TYPE").field_to_enum)
     this.combo.gossip_type:swap(e.get("app.GUI020001PanelParams.GOSSIP_TYPE").field_to_enum)
     -- name_other
@@ -517,6 +545,28 @@ function this.init()
         config.lang:tr("misc.text_enable"),
         config.lang:tr("misc.text_disable"),
     })
+    this.combo.option_mod_bind:swap(
+        util_table.transform_items(
+            util_table.filter(option.mod.opt, function(_, value)
+                return value.bindable
+            end),
+            nil,
+            function(value, _)
+                return value.lang_key
+            end
+        )
+    )
+    this.combo.option_hud_bind:swap(
+        util_table.transform_items(
+            util_table.filter(option.hud.opt, function(_, value)
+                return value.bindable
+            end),
+            nil,
+            function(value, _)
+                return value.lang_key
+            end
+        )
+    )
 
     this.init_combo_option_game_bind()
     this.init_combo_condition()

@@ -136,7 +136,7 @@ end
 function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NAME_ACCESSIBLE, "NAME_ACCESSIBLE") --[[@as NameAccessConfig]]
 
-    base.enabled_offset = nil
+    base.offset = nil
     base.hud_type = mod.enum.hud_type.NAME_ACCESS
     base.object_category = {}
     base.gossip_type = {}

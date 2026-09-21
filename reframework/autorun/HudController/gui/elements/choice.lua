@@ -1,4 +1,5 @@
 local cd = require("HudController.data.combo")
+local combo_multi = require("HudController.util.imgui.combo_multi")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
@@ -25,33 +26,33 @@ local function draw_hud()
 
     imgui.begin_group()
     util_imgui.begin_disabled(config_mod.enable_condition_binds)
-    imgui.push_item_width(util_gui.get_item_size())
-    if set:combo_filter(util_gui.tr("hud.combo"), "mod.combo.hud", cd.combo.hud) then
+    imgui.set_next_item_width(-1)
+    if set:combo_filter("##hud_combo", "mod.combo.hud", cd.combo.hud) then
         state.input = nil
         hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
     end
-    imgui.pop_item_width()
 
     imgui.table_set_column_index(1)
 
-    if imgui.button(util_gui.tr("hud.button_new")) then
-        state.input = nil
-        op.hud_profile.new()
-        config_mod.combo.hud = #config_mod.hud
-        hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
-        config:save()
-    end
-
-    imgui.same_line()
-
-    util_imgui.begin_disabled(state.input ~= nil or util_table.empty(config_mod.hud))
-    if imgui.button(util_gui.tr("hud.button_rename")) then
-        state.input = { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
-    end
-    util_imgui.end_disabled()
-
-    imgui.same_line()
     util_imgui.option_button("hud_choice", {
+        {
+            name = util_gui.tr("hud.button_new"),
+            callback = function()
+                state.input = nil
+                op.hud_profile.new()
+                config_mod.combo.hud = #config_mod.hud
+                hud.request_hud_with_default(config_mod.hud[config_mod.combo.hud])
+                config:save()
+            end,
+        },
+        {
+            name = util_gui.tr("hud.button_rename"),
+            callback = function()
+                state.input =
+                    { buf = config_mod.hud[config_mod.combo.hud].name, type = "rename_hud" }
+            end,
+            disabled = state.input ~= nil or util_table.empty(config_mod.hud),
+        },
         {
             name = util_gui.tr("hud.button_remove"),
             callback = function()
@@ -120,9 +121,14 @@ local function draw_hud()
     then
         imgui.table_next_row()
         imgui.table_set_column_index(0)
-        imgui.push_item_width(util_gui.get_item_size())
-        local changed, _ = state.get_input()
-        imgui.pop_item_width()
+        imgui.set_next_item_width(-1)
+        local changed, _ = state.get_input(false)
+
+        imgui.table_set_column_index(1)
+        if imgui.button(util_gui.tr("hud.button_cancel", "input")) then
+            state.input = nil
+        end
+
         if changed then
             op.hud_profile.rename(config_mod.hud[config_mod.combo.hud], state.input.buf)
             state.input = nil
@@ -137,34 +143,56 @@ local function draw_element()
     imgui.table_next_row()
     imgui.table_set_column_index(0)
 
-    imgui.push_item_width(util_gui.get_item_size())
-    set:combo_filter(util_gui.tr("hud_element.combo"), "mod.combo.hud_elem", cd.combo.hud_elem)
-    imgui.pop_item_width()
-
-    imgui.table_set_column_index(1)
-
-    if imgui.button(util_gui.tr("hud_element.button_add")) then
-        op.hud_elem.add_element(
-            cd.combo.hud_elem:get_key(config_mod.combo.hud_elem) --[[@as string]]
-        )
-        config:save()
+    ---@type boolean[]
+    local selected = {}
+    local hud_profile = hud.get_current()
+    if hud_profile then
+        for _, name_key in ipairs(cd.combo.hud_elem:get_keys()) do
+            table.insert(selected, hud_profile.elements[name_key] ~= nil)
+        end
     end
 
-    imgui.same_line()
-    util_imgui.begin_disabled(
-        not config_mod.hud[config_mod.combo.hud]
-            or util_table.empty(config_mod.hud[config_mod.combo.hud].elements or {})
+    imgui.set_next_item_width(-1)
+    local changed, new_selected = combo_multi.combo_multi_filter(
+        "##elem_combo",
+        util_table.deep_copy(selected),
+        config.lang:tr("hud.text_add_elements"),
+        cd.combo.hud_elem.values,
+        true
     )
 
-    if imgui.button(util_gui.tr("hud_element.button_sort")) then
-        local elements = config_mod.hud[config_mod.combo.hud].elements or {}
-        op.hud_elem.sort_elements(util_table.values(elements), reverse_sort)
-        config:save()
-        reverse_sort = not reverse_sort
-    end
-    util_imgui.tooltip(config.lang:tr("hud_element.button_sort_tooltip"))
+    if changed then
+        for i, _ in ipairs(selected) do
+            if new_selected[i] ~= selected[i] then
+                local name_key = cd.combo.hud_elem:get_key(i)
 
-    util_imgui.end_disabled()
+                if new_selected[i] then
+                    op.hud_elem.add_element(name_key)
+                    config_mod.combo.selection = name_key
+                else
+                    op.hud_profile.remove_element(name_key)
+                end
+            end
+        end
+
+        config.save_global()
+    end
+
+    imgui.table_set_column_index(1)
+    util_imgui.option_button("elem_choice", {
+        {
+            name = util_gui.tr("hud_element.button_sort"),
+            callback = function()
+                local elements = config_mod.hud[config_mod.combo.hud].elements or {}
+                op.hud_elem.sort_elements(util_table.values(elements), reverse_sort)
+                config:save()
+                reverse_sort = not reverse_sort
+            end,
+            tooltip = config.lang:tr("hud_element.button_sort_tooltip"),
+            disabled = not config_mod.hud[config_mod.combo.hud]
+                or util_table.empty(config_mod.hud[config_mod.combo.hud].elements or {}),
+        },
+    })
 end
 
 function this.draw()
@@ -174,9 +202,12 @@ function this.draw()
         imgui.begin_table(
             "choice_table",
             2,
-            imgui.TableFlags.SizingFixedFit | imgui.TableFlags.NoClip --[[@as ImGuiTableFlags]]
+            imgui.TableFlags.SizingFixedFit --[[@as ImGuiTableFlags]]
         )
     then
+        imgui.table_setup_column("##combo", imgui.ColumnFlags.WidthStretch)
+        imgui.table_setup_column("##actions", imgui.ColumnFlags.WidthFixed)
+
         util_imgui.begin_disabled(config_mod.canvas.draw)
         draw_hud()
         util_imgui.end_disabled()
@@ -184,7 +215,10 @@ function this.draw()
         util_imgui.begin_disabled(util_table.empty(config_mod.hud))
         draw_element()
         util_imgui.end_disabled()
+
+        imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 2))
         imgui.end_table()
+        imgui.pop_style_var(1)
     end
 end
 

@@ -23,6 +23,7 @@ end
 function this:generic_config(name, config_key, func, ...)
     local changed, value
     changed, value = func(name, self.ref:get(config_key), ...)
+
     if changed then
         self.ref:set(config_key, value)
     end
@@ -198,6 +199,21 @@ function this:combo_multi(name, config_key, default_preview, options)
     return self:generic_config(name, config_key, combo_multi.combo_multi, default_preview, options)
 end
 
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param options string[]
+---@return boolean
+function this:combo_multi_filter(name, config_key, default_preview, options)
+    return self:generic_config(
+        name,
+        config_key,
+        combo_multi.combo_multi_filter,
+        default_preview,
+        options
+    )
+end
+
 ---@generic T
 ---@param name string
 ---@param config_key string
@@ -326,6 +342,42 @@ function this:slider_int_default(name, config_key, v_min, v_max, default_value, 
     end
 
     return changed
+end
+
+---@param name string
+---@param config_key string
+---@param values string[]
+---@param draw_fn fun(value: string): string?
+---@param display_format (fun(value: string): string)?
+---@param width_offset number?
+function this:combo_popup(name, config_key, values, draw_fn, display_format, width_offset)
+    return self:generic_config(
+        name,
+        config_key,
+        combo_multi.combo_popup,
+        values,
+        draw_fn,
+        display_format,
+        width_offset
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param values string[]
+---@param draw_fn fun(query: string, value: string): string?
+---@param display_format (fun(value: string): string)?
+---@param width_offset number?
+function this:combo_popup_filter(name, config_key, values, draw_fn, display_format, width_offset)
+    return self:generic_config(
+        name,
+        config_key,
+        combo_multi.combo_popup_filter,
+        values,
+        draw_fn,
+        display_format,
+        width_offset
+    )
 end
 
 return this

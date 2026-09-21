@@ -17,6 +17,7 @@ local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
 local util_mod = require("HudController.util.mod.init")
 local logger = util.misc.logger.g
+local option = require("HudController.data.option.init")
 
 local init = init_chain:new(
     "MAIN",
@@ -26,12 +27,14 @@ local init = init_chain:new(
     util.game.bind.init,
     util.ace.scene_fade.init,
     util.ace.porter.init,
+    option.init,
     bind_condition.init,
     canvas.init,
     user.init,
     hud.manager.init,
     hook.init,
     combo.init,
+    config_menu.init,
     data.mod.init
 )
 ---@class MethodUtil

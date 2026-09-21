@@ -19,20 +19,18 @@
 ---@field disable_quest_end_outro boolean
 ---@field hide_monster_icon boolean
 ---@field hide_lock_target boolean
----@field hide_no_talk_npc boolean
----@field hide_no_facility_npc boolean
 ---@field monster_ignore_camp boolean
 ---@field hide_small_monsters boolean
----@field disable_scar boolean
 ---@field skip_quest_result boolean
----@field hide_wounds boolean
----@field show_wounds boolean
 ---@field disable_porter_tracking boolean
 ---@field hide_weapon boolean
 ---@field hide_pet boolean
 ---@field hide_aggro boolean
 ---@field hide_porter_timeout integer
 ---@field hide_handler_timeout integer
+---@field monster_icon EmIcon
+---@field monster_wound EmScar
+---@field hide_npc HideNpc
 ---@field profile HudBaseConfigProfileForShow[]
 ---@field user_options table<string, any>
 
@@ -53,47 +51,43 @@ local this = {}
 ---@param name string
 ---@return ModProfileConfig
 function this.get_hud_profile_config(key, name)
-    ---@type ModProfileConfig
     local ret = {
         key = key,
         name = name,
-        elements = {},
-        options = {},
         mute_gui = false,
-        fade_in = 0,
-        fade_out = 0,
-        show_notification = true,
-        fade_opacity = false,
-        disable_scoutflies = false,
-        disable_porter_call = false,
-        hide_porter = false,
-        hide_handler = false,
-        hide_danger = false,
         disable_area_intro = false,
+        hide_danger = false,
+        hide_aggro = false,
+        disable_scoutflies = false,
+        hide_weapon = false,
+        hide_handler = false,
+        hide_handler_timeout = 5,
+        hide_pet = false,
+        hide_small_monsters = false,
+        monster_ignore_camp = false,
         disable_quest_intro = false,
         disable_quest_end_camera = false,
-        hide_monster_icon = false,
-        hide_lock_target = false,
         disable_quest_end_outro = false,
-        hide_no_talk_npc = false,
-        hide_no_facility_npc = false,
-        monster_ignore_camp = false,
-        hide_small_monsters = false,
-        disable_scar = false,
         skip_quest_result = false,
-        hide_wounds = false,
-        show_wounds = false,
-        disable_porter_tracking = false,
-        hide_weapon = false,
-        hide_pet = false,
-        hide_aggro = false,
-        hide_handler_timeout = 5,
+        disable_porter_call = false,
+        hide_porter = false,
         hide_porter_timeout = 3,
+        disable_porter_tracking = false,
+        show_notification = true,
+        hide_npc = mod.enum.hide_npc.DISABLED,
+        monster_wound = mod.enum.em_scar.DISABLED,
+        monster_icon = mod.enum.em_icon.DISABLED,
+        fade_opacity = false,
+        fade_in = 0,
+        fade_out = 0,
+        elements = {},
+        options = {},
         profile = {
             { key = 0, name = "__placeholder_default", protected = true },
         },
         user_options = {},
     }
+    ---@cast ret ModProfileConfig
 
     op.user.merge_hud_user_options(ret)
     return ret
@@ -128,13 +122,15 @@ function this.merge(hud_elem)
         util_table.merge_protected(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
 
     for key, profile in pairs(profiles or {}) do
-        ret.profile[key] = util_table.merge_protected(
+        ---@diagnostic disable-next-line: no-unknown
+        profile[key] = util_table.merge_protected(
             protected,
             true,
             this.get_config(hud_elem.hud_id) --[[@as HudBaseConfigProfile]],
             profile
         )
     end
+    ret.profile = profiles or {}
 
     return ret
 end

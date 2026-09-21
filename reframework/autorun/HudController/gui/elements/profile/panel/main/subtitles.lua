@@ -1,14 +1,15 @@
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
+local def = require("HudController.data.option.element.main.subtitles")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
 local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
+local util_opt = require("HudController.data.option.util")
 local util_table = require("HudController.util.misc.table")
 
----
 ---@param elem Subtitles
 ---@param key string
 ---@param item_config_key string
@@ -35,22 +36,15 @@ end
 ---@param elem_config SubtitlesConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+
     local is_current_profile = op.hud_elem.is_current_profile(elem)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
-
-    local item_config_key = config_key .. ".cache_subtitles"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_cache_subtitles", item_config_key),
-            item_config_key
-        ) and is_current_profile
-    then
-        elem:set_cache_subtitles(elem_config.cache_subtitles)
-    end
+    util_opt.draw_apply_elem(def.opt.cache_subtitles, ctx)
 
     imgui.same_line()
-    if imgui.button(util_gui.tr("hud_element.entry.button_clear", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_clear", "cache_subtitles")) then
         elem.subtitles_cache:clear()
     end
 
@@ -94,28 +88,20 @@ return function(elem, elem_config, config_key)
         end)
     end
 
-    item_config_key = config_key .. ".cache_sfx"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_cache_sfx", item_config_key),
-            item_config_key
-        ) and is_current_profile
-    then
-        elem:set_cache_sfx(elem_config.cache_sfx)
+    if util_opt.draw_apply_elem(def.opt.cache_sfx, ctx) then
         elem.combo_game_object = 1
     end
 
     imgui.same_line()
-    if imgui.button(util_gui.tr("hud_element.entry.button_clear", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_clear", "cache_sfx")) then
         elem.sfx_cache:clear()
     end
 
     if elem_config.cache_sfx then
         if
             imgui.button(
-                elem.cache_sfx_pause
-                        and util_gui.tr("hud_element.entry.button_resume", item_config_key)
-                    or util_gui.tr("hud_element.entry.button_pause", item_config_key)
+                elem.cache_sfx_pause and util_gui.tr("hud_element.entry.button_resume", "cache_sfx")
+                    or util_gui.tr("hud_element.entry.button_pause", "cache_sfx")
             )
         then
             elem.cache_sfx_pause = not elem.cache_sfx_pause
@@ -123,14 +109,7 @@ return function(elem, elem_config, config_key)
 
         imgui.same_line()
         imgui.set_next_item_width(util_imgui.get_drag_with())
-        item_config_key = config_key .. ".cache_sfx_cooldown"
-        set:drag_int(
-            util_gui.tr("hud_element.entry.drag_sfx_cooldown", item_config_key),
-            item_config_key,
-            0.1,
-            0,
-            120
-        )
+        util_opt.draw_apply_elem(def.opt.cache_sfx_cooldown, ctx)
 
         _, elem.combo_game_object = util_imgui.combo_filter(
             util_gui.tr("hud_element.entry.combo_listen_to_go"),
@@ -285,7 +264,7 @@ return function(elem, elem_config, config_key)
         end
     end
 
-    item_config_key = config_key .. ".mute_sfx"
+    local item_config_key = config_key .. ".mute_sfx"
     generic.child_window_thing_remove(
         "entries_subtitles_mute_sfx",
         util_table.size(elem.mute_sfx),
@@ -311,8 +290,8 @@ return function(elem, elem_config, config_key)
 
             for i, map in ipairs(keys) do
                 if
-                    imgui.button(
-                        util_gui.tr("hud_element.entry.button_remove", item_config_key, i, map.key)
+                    util_imgui.draw_remove_button(
+                        string.format("##%s|%s|%s", item_config_key, i, map.key)
                     )
                 then
                     if is_current_profile then

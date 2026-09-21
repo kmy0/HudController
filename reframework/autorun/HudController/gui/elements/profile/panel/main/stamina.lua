@@ -1,21 +1,15 @@
 local config = require("HudController.config.init")
-local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local def = require("HudController.data.option.element.main.stamina")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem Stamina
 ---@param elem_config StaminaConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+    local ex_ctx = util_opt.resolve_elem_ctx(ctx, "children.ex")
+
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_extra_bar_behavior"))
-    local item_config_key = config_key .. ".children.ex.hide_pulse"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_hide_pulse", item_config_key),
-            item_config_key
-        ) and op.hud_elem.is_current_profile(elem)
-    then
-        elem.children.ex:set_hide_pulse(elem_config.children.ex.hide_pulse)
-    end
+    util_opt.draw_apply_elem(def.opt.hide_pulse, ex_ctx)
 end

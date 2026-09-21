@@ -1,8 +1,3 @@
-local this = {
-    ace = require("HudController.data.ace"),
-    mod = require("HudController.data.mod"),
-}
-
 local ace_misc = require("HudController.util.ace.misc")
 local deprecated = require("HudController.data.deprecated")
 local e = require("HudController.util.game.enum")
@@ -15,6 +10,14 @@ local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.elements.notice"
+local notice = util_misc.lazy_require("HudController.hud.elements.notice")
+
+local this = {
+    ace = require("HudController.data.ace"),
+    mod = require("HudController.data.mod"),
+}
 
 local ace_map = this.ace.map
 
@@ -343,12 +346,12 @@ local function get_subtitles_map()
     end)
 end
 
-local function get_no_lang_key()
-    ace_map.no_lang_key = { ALL = true }
+local function get_literals()
+    ace_map.literals = { ALL = "ALL" }
 
-    for _, cls_name in pairs(ace_map.notice_child_cls_array) do
-        local cls_short = util_misc.split_string(cls_name, "GUI020100Panel")[2]
-        ace_map.no_lang_key[cls_short] = true
+    for _, cls_name in pairs(notice.cls_name_array) do
+        local cls_short = notice.get_cls_name_short(cls_name)
+        ace_map.literals[cls_short] = cls_short
     end
 
     for field_name, _ in
@@ -358,7 +361,7 @@ local function get_no_lang_key()
             "app.GUI020020.CRITICAL_STATE",
         })
     do
-        ace_map.no_lang_key[field_name] = true
+        ace_map.literals[field_name] = field_name
     end
 end
 
@@ -442,7 +445,7 @@ function this.init()
     get_option_map()
     get_log_id_text()
     get_subtitles_map()
-    get_no_lang_key()
+    get_literals()
 
     deprecated.init()
     return true

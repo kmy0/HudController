@@ -20,6 +20,7 @@
 ---@field write_nodes table<HudBase, integer>
 ---@field write_properties table<HudBaseProperty, boolean>
 ---@field options table<string, integer>
+---@field overridden_options table<string, any>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
 ---@field gui_ignore boolean? -- if true, do not draw in imgui window
@@ -40,27 +41,18 @@
 ---@field hud_id app.GUIHudDef.TYPE
 ---@field hud_type HudType
 ---@field hud_sub_type HudSubType
----@field scale {x:number, y:number}
----@field offset {x:number, y:number}
----@field segment string
----@field rot number
----@field opacity number
+---@field scale EnabledVec2?
+---@field offset EnabledVec2?
+---@field segment EnabledString?
+---@field rot EnabledNumber?
+---@field opacity EnabledNumber?
 ---@field hide boolean
----@field play_state string?
----@field color_scale {x:number, y:number, z:number}?
----@field enabled_scale boolean
----@field enabled_offset boolean
----@field enabled_rot boolean
----@field enabled_opacity boolean
----@field enabled_segment boolean
----@field enabled_play_state boolean?
----@field enabled_color_scale boolean?
+---@field play_state EnabledString?
+---@field color_scale EnabledVec3?
 ---@field options table<string, integer>?
 ---@field children table<string, HudChildConfig>?
 ---@field disable_fade_opacity boolean?
----@field override_fade_duration boolean
----@field override_fade_in number
----@field override_fade_out number
+---@field override_fade EnabledFadeOverride
 ---@field profile {[HudProfileKey]: HudBaseConfigProfile}
 ---@field current_profile ElemProfileIndex
 ---@field current_profile_gui ElemProfileIndex
@@ -68,6 +60,41 @@
 ---@field enabled boolean
 ---@field profile_key integer
 ---@field user_options table<string, any>
+
+---@class (exact) EnabledVec2
+---@field enabled boolean
+---@field x number
+---@field y number
+
+---@class (exact) EnabledVec3
+---@field enabled boolean
+---@field x number
+---@field y number
+---@field z number
+
+---@class (exact) EnabledBox
+---@field enabled boolean
+---@field x number
+---@field y number
+---@field w number
+---@field h number
+
+---@class (exact) EnabledFadeOverride
+---@field enabled boolean
+---@field fade_in number
+---@field fade_out number
+
+---@class (exact) EnabledNumber
+---@field enabled boolean
+---@field value number
+
+---@class (exact) EnabledInteger
+---@field enabled boolean
+---@field value integer
+
+---@class (exact) EnabledString
+---@field enabled boolean
+---@field value string
 
 ---@class (exact) HudBaseConfigProfile : HudBaseConfig
 ---@field profile nil
@@ -177,6 +204,7 @@ function this:new(args, parent, optional_args)
         parent = parent,
         children = {},
         options = {},
+        overridden_options = {},
         write_nodes = {},
         write_properties = {},
         properties = {
@@ -204,31 +232,31 @@ function this:new(args, parent, optional_args)
     o.root = o:get_root()
 
     o:set_hide(args.hide)
-    if args.enabled_scale then
+    if args.scale and args.scale.enabled then
         o:set_scale(args.scale)
     end
 
-    if args.enabled_offset then
+    if args.offset and args.offset.enabled then
         o:set_offset(args.offset)
     end
 
-    if args.enabled_rot then
+    if args.rot and args.rot.enabled then
         o:set_rot(args.rot)
     end
 
-    if args.enabled_opacity then
+    if args.opacity and args.opacity.enabled then
         o:set_opacity(args.opacity)
     end
 
-    if args.enabled_play_state then
+    if args.play_state and args.play_state.enabled then
         o:set_play_state(args.play_state)
     end
 
-    if args.enabled_color_scale then
+    if args.color_scale and args.color_scale.enabled then
         o:set_color_scale(args.color_scale)
     end
 
-    if args.enabled_segment then
+    if args.segment and args.segment.enabled then
         o:set_segment(args.segment)
     end
 
@@ -258,9 +286,9 @@ function this:set_option(option_name, option_value)
     this.apply_option(option_name, option_value)
 end
 
----@param scale {x:number, y:number, z:number}?
+---@param scale EnabledVec3?
 function this:set_color_scale(scale)
-    if scale then
+    if scale and scale.enabled then
         self.color_scale = util_ref.value_type("via.Float4")
         self.color_scale.x = scale.x
         self.color_scale.y = scale.y
@@ -268,55 +296,55 @@ function this:set_color_scale(scale)
         self:mark_write("color_scale")
     else
         self:reset("color_scale")
-        self.color_scale = scale
+        self.color_scale = nil
         self:mark_idle("color_scale")
     end
 end
 
----@param scale {x:number, y:number}?
+---@param scale EnabledVec2?
 function this:set_scale(scale)
-    if scale then
+    if scale and scale.enabled then
         self.scale = Vector3f.new(scale.x, scale.y, 0)
         self:mark_write("scale")
     else
         self:reset("scale")
-        self.scale = scale
+        self.scale = nil
         self:mark_idle("scale")
     end
 end
 
----@param segment string?
+---@param segment EnabledString?
 function this:set_segment(segment)
-    if segment then
-        self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment]
+    if segment and segment.enabled then
+        self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment.value]
         self:mark_write("segment")
     else
         self:reset("segment")
-        self.segment = segment
+        self.segment = nil
         self:mark_idle("segment")
     end
 end
 
----@param offset {x:number, y:number}?
+---@param offset EnabledVec2?
 function this:set_offset(offset)
-    if offset then
+    if offset and offset.enabled then
         self:mark_write("offset")
         self.offset = Vector3f.new(offset.x, offset.y, 0)
     else
         self:reset("offset")
-        self.offset = offset
+        self.offset = nil
         self:mark_idle("offset")
     end
 end
 
----@param rot number?
+---@param rot EnabledNumber?
 function this:set_rot(rot)
-    if rot then
+    if rot and rot.enabled then
         self:mark_write("rot")
-        self.rot = Vector3f.new(0, 0, rot)
+        self.rot = Vector3f.new(0, 0, rot.value)
     else
         self:reset("rot")
-        self.rot = rot
+        self.rot = nil
         self:mark_idle("rot")
     end
 end
@@ -334,26 +362,26 @@ function this:set_hide(hide)
     self.hide = hide
 end
 
----@param opacity number?
+---@param opacity EnabledNumber?
 function this:set_opacity(opacity)
-    if opacity then
+    if opacity and opacity.enabled then
         self:mark_write("opacity")
-        self.opacity = opacity
+        self.opacity = opacity.value
     else
         self:reset("opacity")
-        self.opacity = opacity
+        self.opacity = nil
         self:mark_idle("opacity")
     end
 end
 
----@param play_state string?
+---@param play_state EnabledString?
 function this:set_play_state(play_state)
-    if play_state then
+    if play_state and play_state.enabled then
         self:mark_write("play_state")
-        self.play_state = play_state
+        self.play_state = play_state.value
     else
         self:reset("play_state")
-        self.play_state = play_state
+        self.play_state = nil
         self:mark_idle("play_state")
     end
 end
@@ -529,7 +557,6 @@ function this:change_visibility(ctrl, visible, hud_display)
             ctrl
             and self.hide_changed
             -- ignore when game is force revealing item bar or ammo bar
-
             and not (
                 (self.name_key == "SLIDER_BULLET" or self.name_key == "SLIDER_ITEM")
                 and ace_player.check_continue_flag(
@@ -962,7 +989,7 @@ function this:get_current_config()
     local current_hud = hud.get_current() --[[@as ModProfileConfig]]
     local keys = { self.name_key }
 
-    local current_element = current_hud.elements[self.name_key]
+    local current_element = current_hud.elements[self.root.name_key]
     if current_element.current_profile ~= mod.enum.elem_profile.DEFAULT then
         keys = util_table.extend(keys, { "profile", tostring(current_element.current_profile) })
     end
@@ -991,13 +1018,13 @@ end
 ---@return string[]
 function this.get_boolean_config_keys(_)
     return {
-        "enabled_scale",
-        "enabled_offset",
-        "enabled_rot",
-        "enabled_opacity",
-        "enabled_play_state",
-        "enabled_segment",
-        -- "enabled_color_scale", -- not exposed
+        "scale",
+        "offset",
+        "rot",
+        "opacity",
+        "play_state",
+        "segment",
+        -- "color_scale", -- not exposed
     }
 end
 
@@ -1025,22 +1052,15 @@ end
 function this.get_config(hud_id, name_key)
     ---@type HudBaseConfig
     return {
-        enabled_offset = false,
-        enabled_rot = false,
-        enabled_scale = false,
-        enabled_opacity = false,
-        enabled_segment = false,
         disable_fade = false,
         disable_fade_opacity = false,
-        override_fade_duration = false,
-        override_fade_in = 0,
-        override_fade_out = 0,
-        segment = "HUD",
+        override_fade = { enabled = false, fade_in = 0, fade_out = 0 },
+        segment = { enabled = false, value = "HUD" },
         hide = false,
-        scale = { x = 1, y = 1 },
-        offset = { x = 0, y = 0 },
-        rot = 0,
-        opacity = 1,
+        scale = { enabled = false, x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        rot = { enabled = false, value = 0 },
+        opacity = { enabled = false, value = 1 },
         children = {},
         options = {},
         hud_id = hud_id,

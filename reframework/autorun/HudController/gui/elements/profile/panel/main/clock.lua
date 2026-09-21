@@ -1,21 +1,14 @@
 local config = require("HudController.config.init")
-local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local def = require("HudController.data.option.element.main.clock")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem Clock
 ---@param elem_config ClockConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_clock_behavior"))
-    local item_config_key = config_key .. ".hide_map_visible"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_hide_map_visible", item_config_key),
-            item_config_key
-        ) and op.hud_elem.is_current_profile(elem)
-    then
-        elem:set_hide_map_visible(elem_config.hide_map_visible)
-    end
+
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+    util_opt.draw_apply_elem(def.opt.hide_map_visible, ctx)
 end

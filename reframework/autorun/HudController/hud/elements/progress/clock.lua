@@ -102,9 +102,9 @@ function this.get_config()
     local children = base.children
 
     children.frame_base =
-        { name_key = "frame_base", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
+        { name_key = "frame_base", hide = false, scale = { enabled = false, x = 1, y = 1 } }
     children.frame_main =
-        { name_key = "frame_main", hide = false, enabled_scale = false, scale = { x = 1, y = 1 } }
+        { name_key = "frame_main", hide = false, scale = { enabled = false, x = 1, y = 1 } }
     children.limit = { name_key = "limit", hide = false }
 
     return base

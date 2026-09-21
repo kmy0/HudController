@@ -2,15 +2,11 @@
 ---@field elem_default table<HudProfileKey, table<app.GUIHudDef.TYPE, ElemState>>
 
 ---@class (exact) ElemState
----@field enabled_scale boolean
----@field enabled_offset boolean
----@field enabled_rot boolean
----@field enabled_opacity boolean
----@field rot number
----@field opacity number
+---@field rot EnabledNumber
+---@field opacity EnabledNumber
 ---@field hide boolean
----@field scale {x:number, y:number}
----@field offset {x:number, y:number}
+---@field scale EnabledVec2
+---@field offset EnabledVec2
 
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
@@ -33,8 +29,8 @@ local function set_offset(action, mouse_pos)
 
         elem_config.offset.x = offset_x
         elem_config.offset.y = offset_y
-        elem_config.enabled_offset = true
-        elem:set_offset({ x = offset_x, y = offset_y })
+        elem_config.offset.enabled = true
+        elem:set_offset(elem_config.offset)
     end
 
     local offset_x, offset_y = util_mod.to_offset(
@@ -60,8 +56,8 @@ local function set_scale(action, mouse_wheel_delta)
     action.value = util_misc.wrap_number(action.value + mouse_wheel_delta, -10, 10)
     elem_config.scale.x = action.value
     elem_config.scale.y = action.value
-    elem_config.enabled_scale = true
-    action.elem:set_scale({ x = action.value, y = action.value })
+    elem_config.scale.enabled = true
+    action.elem:set_scale(elem_config.scale)
 end
 
 ---@param action CanvasActionNumber
@@ -70,9 +66,9 @@ local function set_rot(action, mouse_wheel_delta)
     mouse_wheel_delta = mouse_wheel_delta * 5
     local elem_config = action.elem:get_current_config()
     action.value = util_misc.wrap_number(action.value + mouse_wheel_delta, 0, 360)
-    elem_config.rot = action.value
-    elem_config.enabled_rot = true
-    action.elem:set_rot(action.value)
+    elem_config.rot.value = action.value
+    elem_config.rot.enabled = true
+    action.elem:set_rot(elem_config.rot)
 end
 
 ---@param action CanvasActionNumber
@@ -81,9 +77,9 @@ local function set_opacity(action, mouse_wheel_delta)
     mouse_wheel_delta = mouse_wheel_delta / 10
     local elem_config = action.elem:get_current_config()
     action.value = util_misc.wrap_number(action.value + mouse_wheel_delta, 0, 1)
-    elem_config.opacity = action.value
-    elem_config.enabled_opacity = true
-    action.elem:set_opacity(action.value)
+    elem_config.opacity.value = action.value
+    elem_config.opacity.enabled = true
+    action.elem:set_opacity(elem_config.opacity)
 end
 
 ---@param action CanvasActionBoolean
@@ -109,20 +105,19 @@ local function undo(action)
     local elem_profile_key = elem:get_profile_key()
 
     local save_elem =
-        util_table.get_nested_value(this.elem_default, { elem_profile_key, action.hudid })
+        util_table.get_nested_value(this.elem_default, { elem_profile_key, action.hudid }) --[[@as ElemState]]
 
     util_table.update(elem_config, save_elem)
-    elem:set_rot(elem_config.enabled_rot and save_elem.rot or nil)
-    elem:set_opacity(elem_config.enabled_opacity and save_elem.opacity or nil)
+    elem:set_rot(elem_config.rot)
+    elem:set_opacity(elem_config.opacity)
     elem:set_hide(save_elem.hide)
-    elem:set_scale(save_elem.enabled_scale and save_elem.scale or nil)
-    elem:set_offset(save_elem.enabled_offset and save_elem.offset or nil)
+    elem:set_scale(save_elem.scale)
+    elem:set_offset(save_elem.offset)
 
     if action.hudid == e.get("app.GUIHudDef.TYPE").MINIMAP then
         ---@cast elem Minimap
         local bg = elem.children.background
-        bg:set_offset(save_elem.enabled_offset and save_elem.offset or nil)
-        elem_config.children.background.enabled_offset = save_elem.enabled_offset
+        bg:set_offset(save_elem.offset)
         elem_config.children.background.offset = util_table.deep_copy(save_elem.offset)
     end
 end
@@ -143,15 +138,11 @@ function this.store_elem_state(elem)
     local elem_config = elem:get_current_config()
     local elem_profile_key = elem:get_profile_key()
     util_table.set_nested_value(this.elem_default, { elem_profile_key, elem.hud_id }, {
-        enabled_offset = elem_config.enabled_offset,
-        enabled_rot = elem_config.enabled_rot,
-        enabled_scale = elem_config.enabled_scale,
-        enabled_opacity = elem_config.enabled_opacity,
         hide = elem_config.hide,
         scale = util_table.deep_copy(elem_config.scale),
         offset = util_table.deep_copy(elem_config.offset),
-        rot = elem_config.rot,
-        opacity = elem_config.opacity,
+        rot = util_table.deep_copy(elem_config.rot),
+        opacity = util_table.deep_copy(elem_config.opacity),
     })
 end
 

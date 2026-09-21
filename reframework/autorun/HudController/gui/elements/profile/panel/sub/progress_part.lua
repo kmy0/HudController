@@ -1,76 +1,23 @@
-local config = require("HudController.config.init")
-local generic = require("HudController.gui.elements.profile.panel.generic")
-local op = require("HudController.hud.manager.op.init")
+local def = require("HudController.data.option.element.sub.progress_part")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem ProgressPartBase
 ---@param elem_config ProgressPartBaseConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
-    local changed = false
-    local is_current_profile = op.hud_elem.is_current_profile(elem)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
 
-    util_imgui.begin_disabled(elem_config.enabled_offset == true)
+    util_imgui.begin_disabled((elem_config.offset and elem_config.offset.enabled) or false)
+    util_opt.draw_apply_elem(def.opt.offset_x, ctx)
 
-    if elem_config.enabled_offset_x ~= nil then
-        changed = generic.draw_slider_settings({
-            config_key = config_key .. ".enabled_offset_x",
-        }, {
-            {
-                config_key = config_key .. ".offset_x",
-            },
-        }, 1, -1920, 1920, 1, "%.0f", config.lang:tr(
-            "hud_element.entry.box_enable_offset_x"
-        ))
+    util_imgui.begin_disabled(not elem_config.offset_x or not elem_config.offset_x.enabled)
+    util_opt.draw_apply_elem(def.opt.clock_offset_x, ctx)
+    util_imgui.end_disabled()
 
-        if changed and is_current_profile then
-            elem:set_offset_x(elem_config.enabled_offset_x and elem_config.offset_x or nil)
-        end
-    end
-
-    if elem_config.enabled_clock_offset_x ~= nil then
-        util_imgui.begin_disabled(elem_config.enabled_offset_x == false)
-
-        changed = generic.draw_slider_settings({
-            config_key = config_key .. ".enabled_clock_offset_x",
-        }, {
-            {
-                config_key = config_key .. ".clock_offset_x",
-            },
-        }, 1, -1920, 1920, 1, "%.0f", config.lang:tr(
-            "hud_element.entry.box_enable_clock_offset_x"
-        ))
-
-        if changed and is_current_profile then
-            elem:set_clock_offset_x(
-                elem_config.enabled_clock_offset_x and elem_config.clock_offset_x or nil
-            )
-        end
-
-        util_imgui.end_disabled()
-    end
-
-    if elem_config.enabled_num_offset_x ~= nil then
-        util_imgui.begin_disabled(elem_config.enabled_offset_x == false)
-
-        changed = generic.draw_slider_settings({
-            config_key = config_key .. ".enabled_num_offset_x",
-        }, {
-            {
-                config_key = config_key .. ".num_offset_x",
-            },
-        }, 1, -1929, 1920, 1, "%.0f", config.lang:tr(
-            "hud_element.entry.box_enable_num_offset_x"
-        ))
-
-        if changed and is_current_profile then
-            elem:set_num_offset_x(
-                elem_config.enabled_num_offset_x and elem_config.num_offset_x or nil
-            )
-        end
-
-        util_imgui.end_disabled()
-    end
+    util_imgui.begin_disabled(not elem_config.offset_x or not elem_config.offset_x.enabled)
+    util_opt.draw_apply_elem(def.opt.num_offset_x, ctx)
+    util_imgui.end_disabled()
 
     util_imgui.end_disabled()
 end

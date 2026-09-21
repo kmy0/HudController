@@ -3,6 +3,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local op = require("HudController.hud.manager.op.init")
+local option = require("HudController.data.option.init")
 local set = require("HudController.gui.set")
 local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
@@ -10,6 +11,7 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
 
+local mod_def = option.mod
 local mod = data.mod
 local ace_map = data.ace.map
 local user_options_popup = {
@@ -148,6 +150,7 @@ local function draw_options_menu()
                 return
             end
 
+            imgui.indent(2)
             util_menubar.draw_menu(option.name_local, function()
                 if has_value then
                     draw_option(
@@ -164,6 +167,7 @@ local function draw_options_menu()
                     draw_node(child)
                 end
             end)
+            imgui.unindent(2)
         end
 
         local categories = util_table.sort(util_table.keys(ace_map.game_options))
@@ -176,10 +180,7 @@ local function draw_options_menu()
         end
     end)
 
-    set:checkbox(
-        util_gui.tr("menu.user.options.box_display_full_path"),
-        "mod.game_options.display_full_path"
-    )
+    option.draw(mod_def.opt.game_options_display_full_path)
 
     for _, elem in ipairs(cd.combo.elem_option.map) do
         local opts = elem.key == "GLOBAL" and config_mod.game_options.hud
@@ -197,7 +198,7 @@ local function draw_options_menu()
                     goto continue
                 end
 
-                if imgui.button(util_gui.tr("menu.user.options.button_remove", opt.name)) then
+                if util_imgui.draw_remove_button("##" .. opt.name) then
                     opts[key] = nil
                     op.hud_game_options.remove_game_option_elem(elem.key, opt.name)
                     config:save()

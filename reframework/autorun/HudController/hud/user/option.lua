@@ -1,12 +1,13 @@
----@class UserOption
+---@class UserOption<T>
 ---@field name string
 ---@field label string
----@field default any
+---@field default T
+---@field bindable boolean
 ---@field group string?
----@field draw fun(value: any, config_key: string): (boolean, any)?
----@field format (fun(value: any): string)?
+---@field draw fun(self: UserOption<T>, label: string, config_key: string): boolean
+---@field format fun(self: UserOption<T>, value: T): string
 
----@class RegisteredUserOption : UserOption
+---@class RegisteredUserOption<T> : UserOption<T>
 ---@field module "hud" | "mod" | "element"
 ---@field key string
 ---@field element string?
@@ -16,7 +17,7 @@
 ---@field mod table<string, RegisteredUserOption>
 ---@field hud table<string, RegisteredUserOption>
 ---@field element table<string, table<string, RegisteredUserOption>>
----@field all table<string, RegisteredUserOption>
+---@field bindable table<string, RegisteredUserOption>
 
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
@@ -31,7 +32,7 @@ local this = {
     mod = {},
     hud = {},
     element = {},
-    all = {},
+    bindable = {},
 }
 
 ---@param option UserOption
@@ -41,7 +42,9 @@ local function assert_option(option)
     assert(not option.name:find("%."), "Option name cannot contain dots!")
     assert(type(option.label) == "string" and option.label ~= "", "Option label is required!")
     assert(option.default ~= nil, "Option default is required!")
+    assert(type(option.bindable) == "boolean", "Option bindable property is required!")
     assert(type(option.draw) == "function", "Option draw function is required!")
+    assert(type(option.format) == "function", "Option format function is required!")
 end
 
 ---@param option UserOption
@@ -51,9 +54,9 @@ function this.register_mod(option)
     option.module = "mod"
     option.key = this.make_key(option)
     assert(this.mod[option.name] == nil, string.format("Option %s already exists!", option.name))
-    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
+    assert(this.bindable[option.key] == nil, string.format("Option %s already exists!", option.key))
     this.mod[option.name] = option
-    this.all[option.key] = option
+    this.bindable[option.key] = option
 end
 
 ---@param option UserOption
@@ -63,9 +66,9 @@ function this.register_hud(option)
     option.module = "hud"
     option.key = this.make_key(option)
     assert(this.hud[option.name] == nil, string.format("Option %s already exists!", option.name))
-    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
+    assert(this.bindable[option.key] == nil, string.format("Option %s already exists!", option.key))
     this.hud[option.name] = option
-    this.all[option.key] = option
+    this.bindable[option.key] = option
 end
 
 ---@param element_name string
@@ -85,9 +88,9 @@ function this.register_element(element_name, option)
     option.module = "element"
     option.element = element_name
     option.key = this.make_key(option)
-    assert(this.all[option.key] == nil, string.format("Option %s already exists!", option.key))
+    assert(this.bindable[option.key] == nil, string.format("Option %s already exists!", option.key))
     util_table.set_nested_value(this.element, { element_name, option.name }, option)
-    this.all[option.key] = option
+    this.bindable[option.key] = option
 end
 
 ---@param opt RegisteredUserOption
@@ -127,7 +130,7 @@ function this.get_sorted_options(user_options)
 end
 
 ---@return table<RegisteredUserOption, string>
-function this.get_combo_values()
+function this.get_bindable_options()
     local mod_opt = this.get_sorted_options(this.mod)
     local hud_opt = this.get_sorted_options(this.hud)
     ---@type table<RegisteredUserOption, string>
@@ -137,9 +140,11 @@ function this.get_combo_values()
     for _, options in ipairs({ mod_opt, hud_opt }) do
         for _, group in ipairs(options) do
             for _, opt in ipairs(group) do
-                opt.sort = i
-                i = i + 1 --[[@as number]]
-                ret[opt] = opt.label
+                if opt.bindable then
+                    opt.sort = i
+                    i = i + 1 --[[@as number]]
+                    ret[opt] = opt.label
+                end
             end
         end
     end
@@ -149,9 +154,11 @@ function this.get_combo_values()
         local sorted = this.get_sorted_options(this.element[elem])
         for _, group in ipairs(sorted) do
             for _, opt in ipairs(group) do
-                opt.sort = i
-                i = i + 1 --[[@as number]]
-                ret[opt] = opt.label
+                if opt.bindable then
+                    opt.sort = i
+                    i = i + 1 --[[@as number]]
+                    ret[opt] = opt.label
+                end
             end
         end
     end
@@ -258,15 +265,7 @@ end
 ---@param value any
 ---@return string
 function this.format_value(option, value)
-    if option.format then
-        return option.format(value)
-    elseif value == true then
-        return config.lang:tr("misc.text_on")
-    elseif value == false then
-        return config.lang:tr("misc.text_off")
-    end
-
-    return util_table.repr_any(value)
+    return option:format(value)
 end
 
 return this

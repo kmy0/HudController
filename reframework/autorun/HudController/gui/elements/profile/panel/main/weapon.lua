@@ -1,25 +1,14 @@
 local config = require("HudController.config.init")
-local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local def = require("HudController.data.option.element.main.weapon")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
----@param elem HudBase
----@param elem_config HudBaseConfig
+---@param elem Weapon
+---@param elem_config WeaponConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_weapon_behavior"))
-
-    ---@cast elem Weapon
-    ---@cast elem_config WeaponConfig
-
-    local item_config_key = config_key .. ".no_focus"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_weapon_no_focus", item_config_key),
-            item_config_key
-        ) and op.hud_elem.is_current_profile(elem)
-    then
-        elem:set_no_focus(elem_config.no_focus)
-    end
+    util_opt.draw_apply_elem(def.opt.no_focus, ctx)
 end

@@ -1,33 +1,18 @@
 local config = require("HudController.config.init")
-local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local def = require("HudController.data.option.element.main.radial")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem Radial
 ---@param elem_config RadialConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+    local pallet_ctx = util_opt.resolve_elem_ctx(ctx, "children.pallet") --[[@as  ElementOptionContext<RadialPallet, RadialPalletConfig>]]
+
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_radial_behavior"))
-    local item_config_key = config_key .. ".expanded"
-    local is_current_profile = op.hud_elem.is_current_profile(elem)
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
-            item_config_key
-        ) and is_current_profile
-    then
-        elem:set_expanded(elem_config.expanded)
-    end
+    util_opt.draw_apply_elem(def.opt.expanded, ctx)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_pallet_behavior"))
-    item_config_key = config_key .. ".children.pallet.expanded"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_always_expanded", item_config_key),
-            item_config_key
-        ) and is_current_profile
-    then
-        elem.children.pallet:set_expanded(elem_config.children.pallet.expanded)
-    end
+    util_opt.draw_apply_elem(def.opt.pallet_expanded, pallet_ctx)
 end

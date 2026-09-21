@@ -361,7 +361,7 @@ function this.write_all_elements()
     local current_hud = hud.elements.by_hudid
 
     local function write_offset(hudbase)
-        hudbase:set_offset({ x = 999, y = 999 })
+        hudbase:set_offset({ enabled = true, x = 999, y = 999 })
         ---@diagnostic disable-next-line: no-unknown
         for _, child in pairs(hudbase.children) do
             ---@diagnostic disable-next-line: invisible

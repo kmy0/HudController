@@ -1,3 +1,4 @@
+local ace = require("HudController.data.ace")
 local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -38,6 +39,16 @@ function this.tr_int(key)
     end
 
     return msg
+end
+
+---@param hud_id app.GUIHudDef.TYPE?
+---@param name_key string
+function this.tr_elem_name(hud_id, name_key)
+    return hud_id and ace.map.hudid_name_to_local_name[name_key]
+        or (
+            ace.map.weaponid_name_to_local_name[name_key]
+            or this.tr_int("hud_subelement." .. name_key)
+        )
 end
 
 ---@param n string | number

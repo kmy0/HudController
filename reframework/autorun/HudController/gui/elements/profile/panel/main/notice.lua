@@ -1,12 +1,14 @@
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
+local def = require("HudController.data.option.element.main.notice")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local m = require("HudController.util.ref.methods")
 local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
+local option_gui = require("HudController.gui.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem Notice
 ---@param elem_config NoticeConfig
@@ -14,6 +16,7 @@ local util_misc = require("HudController.util.misc.init")
 return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_tools"))
 
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
     local is_current_profile = op.hud_elem.is_current_profile(elem)
     local item_config_key = config_key .. ".tools_enemy_message_type"
 
@@ -21,8 +24,12 @@ return function(elem, elem_config, config_key)
         util_imgui.get_something_with_button_width(config.lang:tr("hud_element.entry.button_send"))
     )
 
-    local changed_value =
-        generic.draw_combo(nil, item_config_key, "##" .. item_config_key, cd.combo.enemy_msg_type)
+    local changed_value = option_gui.draw_combo(
+        nil,
+        item_config_key,
+        "##" .. item_config_key,
+        cd.combo.enemy_msg_type
+    )
 
     if changed_value then
         config:set(item_config_key, changed_value.key)
@@ -35,19 +42,10 @@ return function(elem, elem_config, config_key)
     end
 
     util_imgui.set_label(config.lang:tr("hud_element.entry.combo_tool_enemy"), -1)
-
-    item_config_key = config_key .. ".cache_msg"
-    if
-        set:checkbox(
-            util_gui.tr("hud_element.entry.box_cache_messages", item_config_key),
-            item_config_key
-        ) and is_current_profile
-    then
-        elem:set_cache_msg(elem_config.cache_msg)
-    end
+    util_opt.draw_apply_elem(def.opt.cache_msg, ctx)
 
     imgui.same_line()
-    if imgui.button(util_gui.tr("hud_element.entry.button_clear", item_config_key)) then
+    if imgui.button(util_gui.tr("hud_element.entry.button_clear", "cache_msg")) then
         elem.message_log_cache:clear()
     end
 

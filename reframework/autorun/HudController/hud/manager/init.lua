@@ -11,6 +11,7 @@ local bind_manager = require("HudController.hud.bind.key.init")
 local cache = require("HudController.util.misc.cache")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local def = require("HudController.data.option.init")
 local defaults = require("HudController.hud.defaults.init")
 local elements = require("HudController.hud.manager.elements")
 local fade_manager = require("HudController.hud.fade.init")
@@ -38,14 +39,14 @@ local this = {
     condition_option_handlers = {
         hud_option = {
             apply = function(key, value)
-                value = value == mod.enum.expected_result.TRUE and true or false
                 options.overwrite_hud_option(key, value)
             end,
             notification = function(key, value)
+                local opt = def.hud.opt[key]
                 ace_misc.send_message(
                     string.format(
                         "%s %s %s",
-                        config.lang:tr("hud." .. mod.map.options_hud[key]),
+                        config.lang:tr(opt.lang_key),
                         config.lang:tr("misc.text_override_notifcation_message"),
                         util_gui.format_boolean(value)
                     )
@@ -54,17 +55,17 @@ local this = {
         },
         mod_option = {
             apply = function(key, value)
-                value = value == mod.enum.expected_result.TRUE and true or false
-                ---@diagnostic disable-next-line: no-unknown
-                config.current.mod[key] = value
+                local opt = def.mod.opt[key]
+                config:set(opt.config_key, value)
             end,
             notification = function(key, value)
+                local opt = def.mod.opt[key]
                 ace_misc.send_message(
                     string.format(
                         "%s %s %s",
-                        config.lang:tr("menu.config." .. mod.map.options_mod[key]),
+                        config.lang:tr(opt.lang_key),
                         config.lang:tr("misc.text_changed_notifcation_message"),
-                        util_gui.format_boolean(value)
+                        opt:format(value)
                     )
                 )
             end,
@@ -86,12 +87,11 @@ local this = {
         },
         user_option = {
             apply = function(key, value)
-                local opt = user_option.all[key]
+                local opt = user_option.bindable[key]
                 user_option.set_option_value(opt, value)
             end,
-
             notification = function(key, value)
-                local opt = user_option.all[key]
+                local opt = user_option.bindable[key]
                 ace_misc.send_message(
                     string.format(
                         "%s %s %s",
@@ -100,6 +100,33 @@ local this = {
                         user_option.format_value(opt, value)
                     )
                 )
+            end,
+        },
+        elem_option = {
+            apply = function(key, value)
+                local ctx = elements.get_element_ctx(value.ctx_path)
+                if ctx then
+                    local opt = def.elem.get_opt(key)
+                    opt:apply(ctx, value.value)
+                    ctx.elem.overridden_options[opt.key] = util_table.deep_copy(value.value)
+                end
+            end,
+            notification = function(key, value)
+                local ctx = elements.get_element_ctx(value.ctx_path)
+                if ctx then
+                    local opt = def.elem.get_opt(key)
+                    ace_misc.send_message(
+                        string.format(
+                            "%s %s %s",
+                            table.concat(
+                                util_table.slice(opt.name_path, #opt.name_path - 1, #opt.name_path),
+                                " > "
+                            ),
+                            config.lang:tr("misc.text_changed_notifcation_message"),
+                            opt:format(value.value)
+                        )
+                    )
+                end
             end,
         },
     },
@@ -118,8 +145,8 @@ local function update_condition_options(request)
 
             if
                 config_mod.enable_notification
-                and previous[key] ~= value
                 and handler.notification
+                and not util_table.equal(previous[key], value)
             then
                 handler.notification(key, value)
             end

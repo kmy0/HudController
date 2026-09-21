@@ -1,5 +1,5 @@
 ---@class OptionManager
----@field overridden_options TableProxy<string, boolean>
+---@field overridden_options TableProxy<string, any>
 ---@field override_fns table<string, fun(key: string, value: boolean)>
 
 local ace = require("HudController.data.ace")
@@ -20,23 +20,6 @@ local this = {
     overridden_options = table_proxy.new(),
     override_fns = {},
 }
-
----@param options string[]
-local function make_override_slider_option(options)
-    local function f(key, value)
-        if value then
-            for _, k in pairs(options) do
-                if k ~= key then
-                    this.overridden_options[k] = false
-                end
-            end
-        end
-    end
-
-    for _, k in pairs(options) do
-        this.override_fns[k] = f
-    end
-end
 
 ---@param option_name string
 ---@param option_value integer
@@ -111,9 +94,5 @@ end
 function this.clear()
     this.overridden_options.clear()
 end
-
-make_override_slider_option({ "hide_scar", "show_scar", "disable_scar" })
-make_override_slider_option({ "hide_monster_icon", "hide_lock_target" })
-make_override_slider_option({ "hide_no_facility_npc", "hide_no_talk_npc" })
 
 return this

@@ -272,7 +272,7 @@ function this:new(args, parent)
 
     o.children.keys = hud_child:new(args.children.keys, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.keys)
-    end, { no_cache = true })
+    end)
     o.children.text = ctrl_child:new(args.children.text, o, function(_, _, _, ctrl)
         return play_object.iter_args(ctrl, control_arguments.text)
     end)
@@ -500,8 +500,8 @@ end
 function this:set_appear_open(appear_open)
     if appear_open then
         self:set_play_states(appear_open_states)
-        self.children.color_scale:set_color_scale({ x = 1, y = 1, z = 1 })
-        self.children.text_pnl:set_play_state("HIDDEN")
+        self.children.color_scale:set_color_scale({ enabled = true, x = 1, y = 1, z = 1 })
+        self.children.text_pnl:set_play_state({ enabled = true, value = "HIDDEN" })
     else
         self:reset_play_states(appear_open_states)
         self.children.color_scale:set_color_scale()
@@ -811,16 +811,21 @@ function this.get_config()
     children.text = { name_key = "text", hide = false }
     children.background = { name_key = "background", hide = false }
     children.right_stick_key = { name_key = "__right_stick_key", hide = false }
-    children.icon_state = { name_key = "__icon_state", play_state = "" }
-    children.text_num = { name_key = "__text_num", play_state = "" }
-    children.text_pnl = { name_key = "__text_pnl", play_state = "" }
-    children.cursor_state = { name_key = "__cursor_state", play_state = "", hide = false }
-    children.color_scale = { name_key = "__color_scale", color_scale = { x = 1, y = 1, z = 1 } }
+    children.icon_state =
+        { name_key = "__icon_state", play_state = { enabled = false, value = "" } }
+    children.text_num = { name_key = "__text_num", play_state = { enabled = false, value = "" } }
+    children.text_pnl = { name_key = "__text_pnl", play_state = { enabled = false, value = "" } }
+    children.cursor_state =
+        { name_key = "__cursor_state", play_state = { enabled = false, value = "" }, hide = false }
+    children.color_scale =
+        { name_key = "__color_scale", color_scale = { enabled = false, x = 1, y = 1, z = 1 } }
     children.icon_color_scale =
-        { name_key = "__icon_color_scale", color_scale = { x = 1, y = 1, z = 1 } }
-    children.keys_state = { name_key = "__keys_state", play_state = "" }
-    children.ref_icon = { name_key = "__ref_icon", play_state = "" }
-    children.appear_open = { name_key = "__appear_open", play_state = "" }
+        { name_key = "__icon_color_scale", color_scale = { enabled = false, x = 1, y = 1, z = 1 } }
+    children.keys_state =
+        { name_key = "__keys_state", play_state = { enabled = false, value = "" } }
+    children.ref_icon = { name_key = "__ref_icon", play_state = { enabled = false, value = "" } }
+    children.appear_open =
+        { name_key = "__appear_open", play_state = { enabled = false, value = "" } }
 
     return base
 end

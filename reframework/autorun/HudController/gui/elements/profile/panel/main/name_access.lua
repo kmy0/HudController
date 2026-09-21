@@ -1,29 +1,19 @@
 local config = require("HudController.config.init")
+local def = require("HudController.data.option.element.main.name_access")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local op = require("HudController.hud.manager.op.init")
-local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 
 ---@param elem NameAccess
 ---@param elem_config NameAccessConfig
 ---@param config_key string
 return function(elem, elem_config, config_key)
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_npc_behavior"))
-    local item_config_key = config_key .. ".npc_draw_distance"
-    local config_value = config:get(item_config_key)
     local is_current_profile = op.hud_elem.is_current_profile(elem)
-    if
-        set:slider_float(
-            util_gui.tr("hud_element.entry.slider_draw_distance"),
-            item_config_key,
-            0,
-            50,
-            (config_value == 0 and config.lang:tr("hud.option_disable")) or "%.1f"
-        ) and is_current_profile
-    then
-        elem:set_npc_draw_distance(elem_config.npc_draw_distance)
-    end
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
+
+    util_opt.draw_apply_elem(def.opt.npc_draw_distance, ctx)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
     generic.combo_hide(
@@ -68,7 +58,6 @@ return function(elem, elem_config, config_key)
         config.lang:tr("hud_element.entry.combo_gossip_type"),
         "gossip_type",
         elem.set_gossip_type,
-
         is_current_profile
     )
 end

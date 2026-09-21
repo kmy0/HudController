@@ -391,13 +391,13 @@ function this.get_config()
         name_key = "center",
         hide = false,
     }
-    children.pallet_state = { name_key = "__pallet_state", play_state = "" }
+    children.pallet_state =
+        { name_key = "__pallet_state", play_state = { enabled = false, value = "" } }
 
     children.text = {
         name_key = "text",
         hide = false,
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
+        offset = { enabled = false, x = 0, y = 0 },
         children = {},
     }
 
@@ -405,8 +405,7 @@ function this.get_config()
         children.text.children["text" .. i] = {
             name_key = "text" .. i,
             hide = false,
-            enabled_offset = false,
-            offset = { x = 0, y = 0 },
+            offset = { enabled = false, x = 0, y = 0 },
         }
     end
 

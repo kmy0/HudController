@@ -11,7 +11,6 @@
 ---@field additional_hud string[]
 ---@field additional_hud_to_guiid_name table<string, string>
 ---@field additional_hud_index integer
----@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
@@ -19,7 +18,7 @@
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
 ---@field subtitles {[string]: {npc: {id: app.NpcDef.ID, name: string}, text: string }}
 ---@field game_options table<string, AceOptionNode[]>
----@field notice_child_cls_array string[]
+---@field literals table<string, string>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -113,20 +112,10 @@ local this = {
             ["c15bd652-ea60-4614-a026-a3298013719a"] = 6,
             ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
         },
-        notice_child_cls_array = {
-            "app.cGUI020100PanelItem",
-            "app.cGUI020100PanelTutorial",
-            "app.cGUI020100PanelText",
-            "app.cGUI020100PanelSignal",
-            "app.cGUI020100PanelNetwork",
-            "app.cGUI020100PanelEnemy",
-            "app.cGUI020100PanelAnimal",
-            "app.cGUI020100PanelAchieve",
-            "app.GUI020100PanelCommunication",
-        },
         auto_id_to_text = {},
         subtitles = {},
         game_options = {},
+        literals = {},
     },
 }
 

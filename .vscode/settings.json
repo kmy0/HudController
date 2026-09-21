@@ -23,5 +23,6 @@
     "Lua.workspace.ignoreDir": [
         ".vscode",
         "reframework/data/*"
-    ]
+    ],
+    "Lua.diagnostics.workspaceDelay": -1
 }

@@ -193,8 +193,8 @@ function this.get_hud_opacity(mod_hud, hud_id)
     if elem then
         if elem.hide then
             return 0
-        elseif elem.enabled_opacity then
-            return elem.opacity
+        elseif elem.opacity and elem.opacity.enabled then
+            return elem.opacity.value
         end
     end
 
@@ -230,11 +230,11 @@ end
 ---@return FadeDuration
 function this.get_fade_duration(hud, hud_id)
     local profile = get_element_fade_config(hud, hud_id)
-    local override = profile and profile.override_fade_duration or false
+    local override = profile and profile.override_fade.enabled or false
 
     return {
-        fade_in = override and profile.override_fade_in or hud.hud.fade_in,
-        fade_out = override and profile.override_fade_out or hud.hud.fade_out,
+        fade_in = override and profile.override_fade.fade_in or hud.hud.fade_in,
+        fade_out = override and profile.override_fade.fade_out or hud.hud.fade_out,
         override_fade_in = override,
         override_fade_out = override,
     }
@@ -247,7 +247,7 @@ function this.should_fade(from, to)
     local all_disabled_a = from.hud.fade_out == 0
     for _, elem in pairs(from.hud.elements) do
         local profile = get_element_fade_config(from, elem.hud_id)
-        if profile.override_fade_duration and profile.override_fade_out > 0 then
+        if profile.override_fade.enabled and profile.override_fade.fade_out > 0 then
             all_disabled_a = false
             break
         end
@@ -257,7 +257,7 @@ function this.should_fade(from, to)
     if all_disabled_a then
         for _, elem in pairs(to.hud.elements) do
             local profile = get_element_fade_config(to, elem.hud_id)
-            if profile.override_fade_duration and profile.override_fade_in > 0 then
+            if profile.override_fade.enabled and profile.override_fade.fade_in > 0 then
                 all_disabled_b = false
                 break
             end

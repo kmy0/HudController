@@ -37,7 +37,7 @@
 ---@field held OrderedBindMap
 ---@field triggered BindMap
 ---@field actions Bind[]
----@field hold_states table<string, HoldState>
+---@field hold_states table<string | integer, HoldState>
 ---@field action_values table<string, any>
 
 local ace_misc = require("HudController.util.ace.misc")
@@ -178,23 +178,29 @@ end
 ---@param bind Bind
 ---@return string
 function this:_get_bind_key(bind)
-    local bv = bind.bound_value
-    if type(bv) == "table" then
-        local entries = util_table.entries(bv)
+    ---@param value any
+    ---@return string
+    local function serialize(value)
+        if type(value) ~= "table" then
+            return tostring(value)
+        end
+
+        local entries = util_table.entries(value)
         util_table.sort(entries, function(a, b)
-            return a.key < b.key
+            return tostring(a.key) < tostring(b.key)
         end)
 
         ---@type string[]
         local res = {}
+
         for _, e in ipairs(entries) do
-            table.insert(res, string.format("%s|%s", e.key, e.value))
+            table.insert(res, string.format("%s|%s", e.key, serialize(e.value)))
         end
 
-        bv = table.concat(res, ":")
+        return string.format("{%s}", table.concat(res, ":"))
     end
 
-    return string.format("%s_%s", bind.name, bv)
+    return string.format("%s_%s", bind.name, serialize(bind.bound_value))
 end
 
 ---@param key_name string | string[]
@@ -477,7 +483,7 @@ function this:_clear_hold_states()
 end
 
 ---@param manager_name string
----@param option string
+---@param option string | integer
 ---@param bind Bind
 ---@param value any
 ---@param current any
@@ -509,7 +515,7 @@ function this:push_hold(manager_name, option, bind, value, current)
     return value
 end
 ---@param manager_name string
----@param option string
+---@param option string | integer
 ---@param bind Bind
 ---@return any?
 function this:remove_hold(manager_name, option, bind)

@@ -24,7 +24,6 @@ end
 ---@param config_mod ModSettings
 function this.refresh_hud_combo(config_mod)
     cd.combo.hud:swap(config_mod.hud)
-    config_mod.combo.key_bind.hud = 1
 end
 
 ---@param items HudBaseConfigProfileForShow[]|ModProfileConfig[]

@@ -49,6 +49,7 @@ local function refresh_combo_option_game_bind()
         ---@type ConditionSetConfig[]
         local res = {}
         for _, cond_child in ipairs(cond_set.game_option or {}) do
+            ---@diagnostic disable-next-line: param-type-mismatch
             local new_index = cd.combo.option_game_bind:get_index(cond_child.key)
             if new_index then
                 cond_child.combo_profile = new_index
@@ -58,9 +59,6 @@ local function refresh_combo_option_game_bind()
 
         cond_set.game_option = res
     end
-
-    config_mod.combo.key_bind.target = 1
-    config_mod.combo.key_bind.value = 0
 
     ---@type BindBase[]
     local res = {}

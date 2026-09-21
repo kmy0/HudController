@@ -74,6 +74,7 @@ local function get_anchors()
             end
         elseif hudname == "SHORTCUT_KEYBOARD" then
             root = util_mod.get_root_window2(guiids[1])
+            ---@diagnostic disable-next-line: param-type-mismatch
             root = play_object.control.get(root, {
                 "PNL_All",
             })

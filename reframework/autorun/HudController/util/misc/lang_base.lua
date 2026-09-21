@@ -2,6 +2,7 @@
 ---@field files table<string, LangFile>
 ---@field sorted string[]
 ---@field font integer?
+---@field font_header integer?
 ---@field default_file_name string
 ---@field default LangFile
 ---@field current LangFile
@@ -77,6 +78,11 @@ function this:change(lang_file, font_size)
     self.font = imgui.load_font(
         font.name or self.default_font_file,
         font_size or font.size or self.default_font_size,
+        { 0x1, 0xFFFF, 0 }
+    )
+    self.font_header = imgui.load_font(
+        font.name or self.default_font_file,
+        (font_size or font.size or self.default_font_size) + 4,
         { 0x1, 0xFFFF, 0 }
     )
     self.current = lang_file

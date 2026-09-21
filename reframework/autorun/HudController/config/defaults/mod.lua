@@ -76,6 +76,8 @@
 ---@field disable_condition_binds_timed boolean
 ---@field disable_condition_binds_held boolean
 ---@field disable_condition_binds_time number
+---@field hide_disabled_element_profiles boolean
+---@field display_active_element_profile_name boolean
 ---@field block_input boolean
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
@@ -90,12 +92,10 @@
 ---     option_mod: BindBase[],
 ---     option_game: BindBase[],
 ---     option_user: BindBase[],
+---     option_elem: BindBase[],
 ---     buffer: integer,
+---     key_type_selection: integer,
 ---  },
---- slider: {
----     weapon_bind: integer,
----     key_bind: integer,
----     },
 --- },
 ---@field grid GridConfig
 ---@field canvas CanvasConfig
@@ -103,12 +103,7 @@
 --- hud: integer,
 --- hud_elem: integer,
 --- game_option: integer,
---- key_bind: {
----     target: integer,
----     action_type: integer,
----     trigger_type: integer,
----     value: any,
----     },
+--- selection: string,
 --- }
 ---@field lang ModLanguage
 
@@ -131,6 +126,8 @@ return {
         disable_condition_binds_held = false,
         disable_condition_binds_timed = false,
         disable_condition_binds_time = 30,
+        hide_disabled_element_profiles = false,
+        display_active_element_profile_name = false,
         block_input = false,
         user_scripts = {},
         user_conditions = {},
@@ -176,27 +173,21 @@ return {
                 option_mod = {},
                 option_game = {},
                 option_user = {},
+                option_elem = {},
                 buffer = 2,
+                key_type_selection = 1,
             },
             condition = {
                 condition_options = {},
                 hud = {},
                 highlight_pass = false,
             },
-            slider = {
-                key_bind = 1,
-            },
         },
         hud = {},
         combo = {
             hud = 1,
-            hud_elem = 1,
             game_option = 1,
-            key_bind = {
-                target = 1,
-                action_type = 1,
-                trigger_type = 1,
-            },
+            selection = "NONE",
         },
     },
 }

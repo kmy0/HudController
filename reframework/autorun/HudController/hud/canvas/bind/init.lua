@@ -16,6 +16,7 @@ local function action(bind)
         return
     end
 
+    ---@diagnostic disable-next-line: assign-type-mismatch
     this.monitor.action = bind.bound_value
     this.monitor.action_type = bind.action_type
     this.monitor:register_on_release_callback(bind.name, function()

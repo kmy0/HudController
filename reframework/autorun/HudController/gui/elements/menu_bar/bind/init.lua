@@ -1,6 +1,6 @@
 local condition = require("HudController.gui.elements.menu_bar.bind.condition")
 local condition_options = require("HudController.gui.elements.menu_bar.bind.condition_options")
-local key = require("HudController.gui.elements.menu_bar.bind.key")
+local key = require("HudController.gui.elements.menu_bar.bind.key.init")
 local key_options = require("HudController.gui.elements.menu_bar.bind.key_options")
 local util_gui = require("HudController.gui.util")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")

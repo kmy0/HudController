@@ -6,6 +6,7 @@ local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
+local mod = require("HudController.data.mod")
 local s = require("HudController.util.ref.singletons")
 local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
@@ -96,11 +97,12 @@ function this.hide_handler_post(_)
     handler.hidden = false
 end
 
-function this.hide_no_talk_npc_pre(args)
+function this.hide_npc_pre(args)
     local hud_config = common.get_hud()
     if hud_config then
-        local no_talk = hud.get_hud_option("hide_no_talk_npc")
-        local no_facility = hud.get_hud_option("hide_no_facility_npc")
+        local hide_npc = hud.get_hud_option("hide_npc")
+        local no_talk = hide_npc == mod.enum.hide_npc.NO_TALK
+        local no_facility = hide_npc == mod.enum.hide_npc.NO_FACILITY
 
         if not no_talk and not no_facility then
             return

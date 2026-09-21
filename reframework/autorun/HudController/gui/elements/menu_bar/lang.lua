@@ -1,9 +1,12 @@
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
-local set = require("HudController.gui.set")
+local option = require("HudController.data.option.init")
+local placeholder = require("HudController.data.placeholder")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
+
+local mod_def = option.mod
 
 local this = {}
 
@@ -19,18 +22,27 @@ local function draw_lang_menu()
             config_lang.file = menu_item
             config.lang:change()
             cd.translate_combo()
+            option.elem.make_tree()
+            placeholder.inject_literals()
             config:save()
         end
     end
 
+    --FIXME: some padding from somwhere is fuckin shit up
+    util_imgui.adjust_pos(0, -2)
     imgui.separator()
+    util_imgui.adjust_pos(0, -3)
 
-    set:menu_item(util_gui.tr("menu.language.fallback"), "mod.lang.fallback")
+    option.draw_menu(mod_def.opt.lang_fallback)
     util_imgui.tooltip(config.lang:tr("menu.language.fallback_tooltip"))
 
+    imgui.indent(2)
     util_menubar.draw_menu(util_gui.tr("menu.language.font_size.name"), function()
+        imgui.indent(2)
+
+        imgui.spacing()
         imgui.push_style_var(14, Vector2f.new(0, 0))
-        if set:slider_int("##font_size_slider", "mod.lang.font_size", 8, 48) then
+        if option.draw(mod_def.opt.lang_font_size, { label = false }) then
             config_lang.font_size = math.min(math.max(config_lang.font_size, 8), 48)
         end
 
@@ -40,7 +52,13 @@ local function draw_lang_menu()
             config.lang:change(nil, config_lang.font_size)
         end
         imgui.pop_style_var(2)
+        imgui.unindent(2)
+        imgui.spacing()
+        imgui.spacing()
     end)
+
+    imgui.unindent(2)
+    imgui.spacing()
 end
 
 function this.draw()

@@ -7,8 +7,6 @@
 ---@field is_title_request boolean
 
 ---@class (exact) ModMap
----@field options_hud table<string, string>
----@field options_mod table<string, string>
 ---@field slider_grid_ratio string[]
 ---@field slider_expanded_itembar_control string[]
 ---@field slider_sharpness_state string[]
@@ -31,6 +29,9 @@
 ---@field action_type BindActionType.*
 ---@field expected_result ExpectedResult.*
 ---@field trigger_type TriggerType.*
+---@field hide_npc HideNpc.*
+---@field em_scar EmScar.*
+---@field em_icon EmIcon.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -42,40 +43,6 @@ local this = {
     ---@diagnostic disable-next-line: missing-fields
     enum = {},
     map = {
-        options_hud = {
-            mute_gui = "box_mute_gui",
-            disable_scoutflies = "box_disable_scoutflies",
-            disable_porter_call = "box_disable_porter_call",
-            hide_porter = "box_hide_porter",
-            hide_handler = "box_hide_handler",
-            hide_danger = "box_hide_danger",
-            disable_area_intro = "box_disable_area_intro",
-            disable_quest_intro = "box_disable_quest_intro",
-            disable_quest_end_camera = "box_disable_quest_end_camera",
-            hide_monster_icon = "box_hide_monster_icon",
-            disable_quest_end_outro = "box_disable_quest_end_outro",
-            hide_lock_target = "box_hide_lock_target",
-            hide_no_talk_npc = "box_hide_no_talk_npc",
-            hide_no_facility_npc = "box_hide_no_facility_npc",
-            monster_ignore_camp = "box_monster_ignore_camp",
-            hide_small_monsters = "box_hide_small_monsters",
-            disable_scar = "box_disable_scar",
-            skip_quest_result = "box_skip_quest_result",
-            hide_scar = "box_hide_scar",
-            show_scar = "box_show_scar",
-            disable_porter_tracking = "box_disable_porter_tracking",
-            hide_weapon = "box_hide_weapon",
-            hide_pet = "box_hide_pet",
-            hide_aggro = "box_hide_aggro",
-        },
-        options_mod = {
-            enable_fade = "enable_fade",
-            enable_notification = "enable_notification",
-            enable_key_binds = "enable_key_binds",
-            disable_condition_binds_timed = "disable_condition_binds_timed",
-            disable_condition_binds_held = "disable_condition_binds_held",
-            enable_condition_binds = "enable_condition_binds",
-        },
         slider_grid_ratio = {
             "1",
             "2",
@@ -240,6 +207,25 @@ this.enum.expected_result = { ---@class ExpectedResult.*
 this.enum.trigger_type = { ---@class TriggerType.*
     ONCE = "ONCE",
     REPEAT = "REPEAT",
+}
+---@enum HideNpc
+this.enum.hide_npc = { ---@class HideNpc.*
+    DISABLED = 1,
+    NO_FACILITY = 2,
+    NO_TALK = 3,
+}
+---@enum EmScar
+this.enum.em_scar = { ---@class EmScar.*
+    DISABLED = 1,
+    HIDE = 2,
+    SHOW = 3,
+    DISABLE = 4,
+}
+---@enum EmIcon
+this.enum.em_icon = { ---@class EmIcon.*
+    DISABLED = 1,
+    HIDE_ICON = 2,
+    HIDE_ICON_TARGET = 3,
 }
 
 ---@return boolean

@@ -1,7 +1,6 @@
 ---@class (exact) Itembar : HudBase
 ---@field get_config fun(): ItembarConfig
 ---@field start_expanded boolean
----@field mantle_always_visible boolean
 ---@field GUI020006 app.GUI020006
 ---@field children {
 --- mantle: ItembarMantle,

@@ -62,6 +62,31 @@ function this.get_elem_profile(root, key)
     return root.profile[k]
 end
 
+---@param key integer
+---@return string
+function this.get_profile_name(key)
+    local config_mod = config.current.mod
+    for _, p in pairs(config_mod.hud[config_mod.combo.hud].profile) do
+        if p.key == key then
+            return p.name == "__placeholder_default"
+                    and config.lang:tr("hud_profile.text_default_profile")
+                or p.name
+        end
+        ---@diagnostic disable-next-line: missing-return
+    end
+end
+
+---@param root HudBaseConfig
+---@param key integer
+---@return HudBaseConfigProfile?
+function this.get_elem_profile_no_create(root, key)
+    if key == mod_enum.elem_profile.DEFAULT then
+        return root --[[@as HudBaseConfigProfile]]
+    end
+
+    return root.profile[tostring(key)]
+end
+
 ---@param root HudBaseConfig
 function this.apply_elem_profile(root)
     local current_profile = this.get_elem_profile(root, root.current_profile)
@@ -125,7 +150,6 @@ function this.remove_elem_profile(hud_config, key)
     local config_mod = config.current.mod
     for _, bind in pairs(config_mod.bind.key.hud) do
         local bound_value = bind.bound_value
-        ---@cast bound_value BindOpt
         if bound_value.key == hud_config.key then
             filter_binds(bound_value, "value")
         end
@@ -146,7 +170,6 @@ function this.remove_elem_profile(hud_config, key)
         end
     end
 
-    config_mod.combo.key_bind.value = 0
     cd.clear_cache()
 end
 

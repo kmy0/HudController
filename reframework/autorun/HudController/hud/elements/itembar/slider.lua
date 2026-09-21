@@ -455,10 +455,14 @@ function this.get_config()
     children.icon_frame = { name_key = "icon_frame", hide = false }
     children.cursor = { name_key = "cursor", hide = false }
     children.slider_part = { name_key = "slider_part", hide = false }
-    children.slider_state = { name_key = "__slider_state", play_state = "" }
-    children.slider_animation = { name_key = "__slider_animation", play_state = "" }
-    children.mantle_state = { name_key = "__mantle_state", play_state = "" }
-    children.cursor_state = { name_key = "__cursor_state", play_state = "" }
+    children.slider_state =
+        { name_key = "__slider_state", play_state = { enabled = false, value = "" } }
+    children.slider_animation =
+        { name_key = "__slider_animation", play_state = { enabled = false, value = "" } }
+    children.mantle_state =
+        { name_key = "__mantle_state", play_state = { enabled = false, value = "" } }
+    children.cursor_state =
+        { name_key = "__cursor_state", play_state = { enabled = false, value = "" } }
 
     return base
 end

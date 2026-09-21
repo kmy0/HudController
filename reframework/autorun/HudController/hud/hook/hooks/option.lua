@@ -138,8 +138,8 @@ function this.option_hooks.hide_handler()
     m.hook("app.NpcManager.update()", nil, options.npc.hide_handler_post)
 end
 
-function this.option_hooks.hide_no_talk_npc()
-    m.hook("app.NpcCharacter.doLateUpdateEnd()", options.npc.hide_no_talk_npc_pre)
+function this.option_hooks.hide_npc()
+    m.hook("app.NpcCharacter.doLateUpdateEnd()", options.npc.hide_npc_pre)
 end
 
 function this.option_hooks.hide_pet()

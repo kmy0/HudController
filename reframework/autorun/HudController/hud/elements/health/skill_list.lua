@@ -90,7 +90,7 @@ function this.get_config()
     children.icon = {
         name_key = "icon",
         enabled_rot = false,
-        rot = 0,
+        rot = { enabled = false, value = 0 },
     }
     children.timer = {
         name_key = "timer",

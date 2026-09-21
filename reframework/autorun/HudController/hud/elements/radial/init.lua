@@ -272,8 +272,7 @@ function this.get_config()
     children.text = {
         name_key = "text",
         hide = false,
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
+        offset = { enabled = false, x = 0, y = 0 },
     }
     children.center = {
         name_key = "center",
@@ -287,7 +286,8 @@ function this.get_config()
         name_key = "select_base",
         hide = false,
     }
-    children.radial_state = { name_key = "__radial_state", play_state = "" }
+    children.radial_state =
+        { name_key = "__radial_state", play_state = { enabled = false, value = "" } }
     children.craft = hud_child.get_config("craft")
     children.pallet = pallet.get_config()
 

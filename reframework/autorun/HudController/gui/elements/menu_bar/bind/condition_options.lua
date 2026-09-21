@@ -1,10 +1,12 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
-local set = require("HudController.gui.set")
+local option = require("HudController.data.option.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
+
+local mod_def = option.mod
 
 local this = {}
 
@@ -13,10 +15,7 @@ local function draw_condition_option_menu()
     imgui.indent(2)
 
     util_imgui.separator_text(config.lang:tr("menu.bind.condition_option.category_general"))
-    set:checkbox(
-        util_gui.tr("menu.bind.condition_option.box_highlight_pass"),
-        "mod.bind.condition.highlight_pass"
-    )
+    option.draw(mod_def.opt.condition_highlight_pass)
 
     local conditions = util_table.filter(bind_condition.conditions, function(_, value)
         return value:has_additional_options()

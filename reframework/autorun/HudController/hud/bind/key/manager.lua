@@ -1,5 +1,6 @@
 ---@class ModBindManager : BindManager
 ---@field action fun(bind: ModBind)
+---@field get_base_binds fun(self: ModBindManager): ModBind[]
 
 local bind_manager = require("HudController.util.game.bind.manager")
 local util_table = require("HudController.util.misc.table")

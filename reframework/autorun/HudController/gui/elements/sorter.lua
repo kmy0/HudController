@@ -57,7 +57,7 @@ function this.draw()
     imgui.indent(2)
 
     util_imgui.draw_child_window("hud_profile_sort_child_window", function()
-        if imgui.button(util_gui.tr("sorter.button_sort")) then
+        if util_imgui.draw_sort_button("hud_profiles_sorter") then
             if reverse_sort then
                 table.sort(hud_names, function(a, b)
                     return a > b

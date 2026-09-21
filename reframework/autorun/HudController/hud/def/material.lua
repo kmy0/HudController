@@ -29,19 +29,16 @@
 
 ---@class (exact) MaterialConfig : CtrlChildConfig
 ---@field hud_sub_type HudSubType
----@field enabled_var0 boolean?
----@field enabled_var1 boolean?
----@field enabled_var2 boolean?
----@field enabled_var3 boolean?
----@field enabled_var4 boolean?
----@field var0 MaterialVarFloat?
----@field var1 MaterialVarFloat?
----@field var2 MaterialVarFloat?
----@field var3 MaterialVarFloat?
----@field var4 MaterialVarFloat?
+---@field var0 EnabledMaterialVarFloat?
+---@field var1 EnabledMaterialVarFloat?
+---@field var2 EnabledMaterialVarFloat?
+---@field var3 EnabledMaterialVarFloat?
+---@field var4 EnabledMaterialVarFloat?
 
----@class (exact) MaterialVarFloat
+---@class (exact) EnabledMaterialVarFloat
+---@field enabled boolean
 ---@field name_key string
+---@field key string
 ---@field value number
 
 ---@class (exact) MaterialDefault : CtrlChildDefault
@@ -95,40 +92,39 @@ function this:new(args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o Material
 
-    if args.enabled_var0 then
-        o:set_var(args.var0.value, "var0")
+    if args.var0 and args.var0.enabled then
+        o:set_var(args.var0)
     end
 
-    if args.enabled_var1 then
-        o:set_var(args.var1.value, "var1")
+    if args.var1 and args.var1.enabled then
+        o:set_var(args.var1)
     end
 
-    if args.enabled_var2 then
-        o:set_var(args.var2.value, "var2")
+    if args.var2 and args.var2.enabled then
+        o:set_var(args.var2)
     end
 
-    if args.enabled_var3 then
-        o:set_var(args.var3.value, "var3")
+    if args.var3 and args.var3.enabled then
+        o:set_var(args.var3)
     end
 
-    if args.enabled_var4 then
-        o:set_var(args.var4.value, "var4")
+    if args.var4 and args.var4.enabled then
+        o:set_var(args.var4)
     end
 
     return o
 end
 
----@param val number?
----@param key MaterialProperty
-function this:set_var(val, key)
-    if val then
-        self:mark_write(key)
+---@param val EnabledMaterialVarFloat
+function this:set_var(val)
+    if val.enabled then
+        self:mark_write(val.key)
     else
-        self:reset(key)
-        self:mark_idle(key)
+        self:reset(val.key)
+        self:mark_idle(val.key)
     end
     ---@diagnostic disable-next-line: no-unknown
-    self[key] = val
+    self[val.key] = val.value
 end
 
 ---@param obj via.gui.Material
@@ -226,11 +222,11 @@ end
 ---@return string[]
 function this.get_boolean_config_keys(self)
     local t = {
-        "enabled_var0",
-        "enabled_var1",
-        "enabled_var2",
-        "enabled_var3",
-        "enabled_var4",
+        "var0",
+        "var1",
+        "var2",
+        "var3",
+        "var4",
     }
 
     if not self then

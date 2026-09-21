@@ -1,23 +1,21 @@
----@class (exact) Combo
+---@class (exact) Combo<K, V, R>
 ---@field values string[]
----@field map ComboMap[]
----@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
----@field map_fn (fun(value: any, key: any): string)?
----@field _translate_fn (fun(key: any, value:any): string)?
+---@field map {key: K, value: string}[]
+---@field sort_fn (fun(a: {key: K, value: string}, b: {key: K, value: string}): boolean)?
+---@field map_fn (fun(value: V, key: K): string)?
+---@field _translate_fn (fun(key: K, value: string): string)?
 ---@field _is_disabled_fn (fun(self: Combo): boolean)?
----@field _getter_fn (fun(self: Combo): any?)?
----@field disabled ComboMap[]
+---@field _getter_fn (fun(self: Combo): R?)?
+---@field disabled {key: K, value: string}[]
 
----@alias ComboMap {key: any, value: string}
-
----@class (exact) ComboOptionalArgs
----@field sort_fn (fun(a: ComboMap, b: ComboMap): boolean)?
----@field map_fn (fun(value: any, key: any): string)?
----@field translate_fn (fun(key: any, value:any): string)?
+---@class (exact) ComboOptionalArgs<K, V, R>
+---@field sort_fn (fun(a: {key: K, value: string}, b: {key: K, value: string}): boolean)?
+---@field map_fn (fun(value: V, key: K): string)?
+---@field translate_fn (fun(key: K, value: string): string)?
 ---@field is_disabled_fn (fun(self: Combo): boolean)?
----@field getter_fn (fun(self: Combo): any?)?
----@field swap_fn (fun(self: Combo, key_to_value: table, current_index: integer?, disabled_keys: any[]?): integer?)?
----@field disabled_keys any[]?
+---@field getter_fn (fun(self: Combo<K, V, R>): R?)?
+---@field swap_fn (fun(self: Combo, key_to_value: table<K, V>, current_index: integer?, disabled_keys: K[]?): integer?)?
+---@field disabled_keys K[]?
 
 local util_table = require("HudController.util.misc.table")
 
@@ -26,8 +24,8 @@ local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 
----@param key_to_value table?
----@param optional_args ComboOptionalArgs?
+---@param key_to_value table<K, V>?
+---@param optional_args ComboOptionalArgs<K ,V, R>?
 ---@return Combo
 function this:new(key_to_value, optional_args)
     optional_args = optional_args or {}
@@ -163,11 +161,12 @@ function this:is_disabled()
 end
 
 ---@param index integer
----@return any
+---@return K
 function this:get_key(index)
     local ret = self.map[index]
     if ret then
         return ret.key
+        ---@diagnostic disable-next-line: missing-return
     end
 end
 
@@ -177,23 +176,26 @@ function this:get_value(index)
     return self.map[index].value
 end
 
----@return any
+---@return R
 function this:get()
     if self._getter_fn then
+        ---@diagnostic disable-next-line: return-type-mismatch
         return self:_getter_fn()
+        ---@diagnostic disable-next-line: missing-return
     end
 end
 
----@param key any?
+---@param key K?
 ---@param value string?
----@return ComboMap
+---@return {key: K, value: string}
 function this:get_disabled(key, value)
+    ---@diagnostic disable-next-line: return-type-mismatch
     return util_table.find_value(self.disabled, function(_, item)
         return key == item.key or value == item.value
-    end) --[[@as ComboMap]]
+    end)
 end
 
----@param key any?
+---@param key K?
 ---@param value string?
 ---@return integer
 function this:disable_item(key, value)
@@ -213,7 +215,7 @@ function this:disable_item(key, value)
     return 1
 end
 
----@param key any?
+---@param key K?
 ---@param value string?
 ---@return integer
 function this:enable_item(key, value)
@@ -248,6 +250,7 @@ end
 
 function this:enable_all_items()
     for _, v in pairs(util_table.values(self.disabled)) do
+        ---@diagnostic disable-next-line: param-type-mismatch
         self:enable_item(v.key)
     end
 end
@@ -258,21 +261,21 @@ function this:disable_all_items()
     end
 end
 
----@param keys any[]
+---@param keys K[]
 function this:disable_items(keys)
     for _, key in pairs(keys) do
         self:disable_item(key)
     end
 end
 
----@param keys any[]
+---@param keys K[]
 function this:enable_items(keys)
     for _, key in pairs(keys) do
         self:enable_item(key)
     end
 end
 
----@param key any?
+---@param key K?
 ---@param value string?
 ---@return integer?
 function this:get_index(key, value)
@@ -289,16 +292,17 @@ function this:get_index(key, value)
     end
 end
 
+---@return integer
 function this:size()
     return #self.values
 end
 
+---@return boolean
 function this:empty()
     return util_table.empty(self.values)
 end
 
----@protected
----@param key_to_value table
+---@param key_to_value table<K, V>
 function this:_map(key_to_value)
     self.values = {}
     self.map = {}
@@ -323,9 +327,9 @@ function this:_map(key_to_value)
 end
 
 ---@param query string
----@return ComboMap[]
+---@return {key: K, value: string}[]
 function this:filter_by_key(query)
-    ---@type ComboMap[]
+    ---@type {key: K, value: string}[]
     local ret = {}
     query = query:lower()
     for _, m in ipairs(self.map) do
@@ -339,9 +343,9 @@ function this:filter_by_key(query)
 end
 
 ---@param query string
----@return ComboMap[]
+---@return {key: K, value: string}[]
 function this:filter_by_value(query)
-    ---@type ComboMap[]
+    ---@type {key: K, value: string}[]
     local ret = {}
     query = query:lower()
     for _, m in ipairs(self.map) do
@@ -354,14 +358,14 @@ function this:filter_by_value(query)
     return ret
 end
 
----@param key any
+---@param key K
 ---@return string
 function this:get_value_by_key(key)
     local index = self:get_index(key) --[[@as integer]]
     return self:get_value(index)
 end
 
----@param key any
+---@param key K
 ---@return string
 function this:find_disabled(key)
     for _, map in pairs(self.disabled) do
@@ -382,7 +386,7 @@ function this:get_values()
     end))
 end
 
----@return any[]
+---@return K[]
 function this:get_keys()
     return util_table.collect(util_table.iterator(function(index)
         local m = self.map[index]

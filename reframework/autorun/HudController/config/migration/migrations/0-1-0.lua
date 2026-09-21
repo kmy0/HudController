@@ -43,6 +43,7 @@ function this.fns.keybinds(config)
     for _, bind in
         pairs(config.mod.bind.key.option_hud--[==[@as ModBind[]]==])
     do
+        ---@diagnostic disable-next-line: assign-type-mismatch
         bind.action_type = "TOGGLE"
         bind.bound_value = bind.key
     end

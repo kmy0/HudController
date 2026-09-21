@@ -98,16 +98,19 @@ function this.verify_options()
 
     local res = {}
     for _, b in ipairs(config_mod.bind.key.option_user) do
-        if user_option.all[b.bound_value.key] then
+        if user_option.bindable[b.bound_value.key] then
             table.insert(res, b)
         end
     end
 
     config_mod.bind.key.option_user = res
 
-    local sorted = util_table.sort(util_table.keys(user_option.get_combo_values()), function(a, b)
-        return a.sort < b.sort
-    end)
+    local sorted = util_table.sort(
+        util_table.keys(user_option.get_bindable_options()),
+        function(a, b)
+            return a.sort < b.sort
+        end
+    )
     for _, cond_set in pairs(config_mod.bind.condition.hud) do
         ---@type ConditionSetConfig[]
         res = {}

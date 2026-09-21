@@ -19,12 +19,14 @@ local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.hook.elements.init")
 local hooks = require("HudController.hud.hook.hooks.init")
 local hud = require("HudController.hud.init")
+local hud_def = require("HudController.data.option.hud")
 local m = require("HudController.util.ref.methods")
 local misc = require("HudController.hud.hook.misc")
+local mod_def = require("HudController.data.option.mod")
+local option = require("HudController.data.option.init")
 local util_ref = require("HudController.util.ref.init")
 
 local ace_map = data.ace.map
-local mod_map = data.mod.map
 
 ---@class ModHook
 local this = {
@@ -118,9 +120,11 @@ end
 
 ---@param profile_config  ModProfileConfig
 function this.hook_options(profile_config)
-    for k, _ in pairs(mod_map.options_hud) do
-        if profile_config[k] then
-            this.hook_option(k)
+    for key, opt in pairs(hud_def.opt) do
+        if
+            option.is_active(opt --[[@as OptionDef]], profile_config[key])
+        then
+            this.hook_option(key)
         end
     end
 end
@@ -131,7 +135,8 @@ function this.hook_options_mod()
             goto continue
         end
 
-        if config:get(k) then
+        local opt = mod_def.opt[k] --[[@as OptionDef]]
+        if option.is_active(opt, config:get(option.get_config_key(mod_def.opt[k]))) then
             hook_fn(fn)
             this.is_option_mod_hooked[k] = true
         end
@@ -210,30 +215,26 @@ function this.init()
     this.option["hide_porter"] =
         { this.option_hooks.hide_porter, this.option_hooks.disable_porter_call }
     this.option["disable_porter_tracking"] = this.option_hooks.disable_porter_tracking
-    this.option["hide_monster_icon"] = this.option_hooks.hide_monster_icon
-    this.option["hide_lock_target"] = this.option_hooks.hide_monster_icon
+    this.option["monster_icon"] = this.option_hooks.hide_monster_icon
     this.option["hide_small_monsters"] = this.option_hooks.hide_small_monsters
     this.option["monster_ignore_camp"] = this.option_hooks.monster_ignore_camp
     this.option["hide_handler"] = this.option_hooks.hide_handler
-    this.option["hide_no_talk_npc"] = this.option_hooks.hide_no_talk_npc
-    this.option["hide_no_facility_npc"] = this.option_hooks.hide_no_talk_npc
+    this.option["hide_npc"] = this.option_hooks.hide_npc
     this.option["hide_pet"] = this.option_hooks.hide_pet
     this.option["disable_quest_intro"] = this.option_hooks.disable_quest_intro
     this.option["disable_quest_end_outro"] =
         { this.option_hooks.disable_quest_intro, this.option_hooks.disable_quest_end_outro }
     this.option["disable_quest_end_camera"] = this.option_hooks.disable_quest_end_camera
     this.option["skip_quest_result"] = this.option_hooks.skip_quest_result
-    this.option["disable_scar"] = this.option_hooks.scar
-    this.option["show_scar"] = this.option_hooks.scar
-    this.option["hide_scar"] = this.option_hooks.scar
+    this.option["monster_wound"] = this.option_hooks.scar
     this.option["hide_danger"] = this.option_hooks.hide_danger
     this.option["hide_weapon"] = this.option_hooks.hide_weapon
     this.option["mute_gui"] = this.option_hooks.mute_gui
     this.option["disable_area_intro"] = this.option_hooks.disable_area_intro
     this.option["hide_aggro"] = this.option_hooks.hide_aggro
     --
-    this.option_mod["mod.block_input"] = this.option_mod_hooks.block_input
-    this.option_mod["mod.canvas.draw"] = this.option_mod_hooks.draw_canvas
+    this.option_mod["block_input"] = this.option_mod_hooks.block_input
+    this.option_mod["canvas_draw"] = this.option_mod_hooks.draw_canvas
     return true
 end
 

@@ -6,6 +6,9 @@ local hud_manager = require("HudController.hud.manager.init")
 local util_op = require("HudController.hud.manager.op.util")
 local util_table = require("HudController.util.misc.table")
 
+---@module "HudController.hud.init"
+local hud = require("HudController.util.misc.init").lazy_require("HudController.hud.init")
+
 local this = {}
 
 ---@protected
@@ -152,6 +155,15 @@ function this.verify_elements()
         local hud = config_mod.hud[i]
         hud.elements = factory.verify_elements(hud.elements or {})
     end
+end
+
+function this.remove_element(name_key)
+    local config_mod = config.current.mod
+    local current_hud = config_mod.hud[config_mod.combo.hud]
+    current_hud.elements[name_key] = nil
+
+    cd.clear_cache()
+    hud.update_elements(current_hud.elements)
 end
 
 return this

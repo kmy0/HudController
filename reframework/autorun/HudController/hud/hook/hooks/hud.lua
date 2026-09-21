@@ -264,7 +264,7 @@ function this.hud_hooks.itembar()
                 elements.itembar.refresh_all_slider_post
             )
         end),
-        ["SLIDER_ITEM.children.slider.move_next "] = make_hud_options_hook(function()
+        ["SLIDER_ITEM.children.slider.move_next"] = make_hud_options_hook(function()
             m.hook(
                 "app.ItemUtil.useItem(app.ItemDef.ID, System.Int16, System.Boolean)",
                 elements.itembar.move_next_item_pre
@@ -488,18 +488,20 @@ end
 
 function this.hud_hooks.minimap()
     this.hud_option_hooks["MINIMAP"] = {
-        ["MINIMAP.enabled_classic_minimap"] = make_hud_options_hook(function()
-            m.hook(
-                "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
-                util_ref.capture_this,
-                elements.minimap.classic_minimap_param_update_post
-            )
-            m.hook(
-                "app.cGUI060000Radar.getRadarSizeType(app.cPlayerManageInfo)",
-                elements.minimap.classic_minimap_no_resize_pre
-            )
-        end),
-        ["MINIMAP.classic_minimap.scale_icon"] = make_hud_options_hook(function()
+        ["MINIMAP.children.classic_minimap.enabled_classic_minimap"] = make_hud_options_hook(
+            function()
+                m.hook(
+                    "app.cGUIMapCameraController.updateCameraParam_Radar(System.Single)",
+                    util_ref.capture_this,
+                    elements.minimap.classic_minimap_param_update_post
+                )
+                m.hook(
+                    "app.cGUI060000Radar.getRadarSizeType(app.cPlayerManageInfo)",
+                    elements.minimap.classic_minimap_no_resize_pre
+                )
+            end
+        ),
+        ["MINIMAP.children.classic_minimap.scale_icon"] = make_hud_options_hook(function()
             m.hook(
                 "app.cGUIMapIconModelSize.updateIconSizeParam()",
                 util_ref.capture_this,

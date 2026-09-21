@@ -3,8 +3,10 @@
 ---@field by_guiid table<app.GUIID.ID, HudBase>
 
 local call_queue = require("HudController.hud.call_queue")
+local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
+local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.hook.init"
 local hook = require("HudController.util.misc.init").lazy_require("HudController.hud.hook.init")
@@ -17,6 +19,33 @@ local this = {
     by_hudid = {},
     by_guiid = {},
 }
+
+---@param path OptionCtxPath
+---@return ElementOptionContext<HudBase, HudBaseConfig>?
+function this.get_element_ctx(path)
+    local hudbase = this.by_hudid[path.hud_id]
+    if not hudbase then
+        return
+    end
+
+    local config_key =
+        string.format("mod.hud.int:%s.elements.%s", config.current.mod.combo.hud, hudbase.name_key)
+    local root_config = hudbase:get_root_config()
+    if root_config.current_profile ~= mod_enum.elem_profile.DEFAULT then
+        root_config = hudbase:get_current_config()
+        config_key =
+            string.format("%s.profile.%s.%s", config_key, root_config.current_profile, path.path)
+    end
+
+    local ctx = hudbase
+    local ctx_config = root_config
+    if path.path ~= "" then
+        ctx = util_table.get_by_path(hudbase, path.path) --[[@as HudBase]]
+        ctx_config = util_table.get_by_path(root_config, path.path)
+    end
+
+    return { elem = ctx, elem_config = ctx_config, config_key = config_key }
+end
 
 ---@param element HudBaseConfig
 function this.get_element_profile(element)

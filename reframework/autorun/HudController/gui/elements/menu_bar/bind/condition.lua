@@ -16,7 +16,7 @@
 ---@class ConditionOptionDrawParams
 ---@field field string
 ---@field tr_key string
----@field combo Combo
+---@field combo Combo<any>
 ---@field default_value any
 ---@field draw_value fun(config_key: string, i: integer, j: integer)
 ---@field draw_selector fun(config_key: string, i: integer, j: integer, cond_child: ConditionSetConfig)?
@@ -649,7 +649,7 @@ local function draw_hud_options(i, cond_set)
     draw_options(i, cond_set, {
         field = "hud_option",
         tr_key = "hud_options",
-        combo = cd.combo.option_bind,
+        combo = cd.combo.option_hud_bind,
         default_value = 1,
         draw_value = draw_enable_disable,
     })
