@@ -138,7 +138,7 @@ function this.get_combo_values()
         for _, group in ipairs(options) do
             for _, opt in ipairs(group) do
                 opt.sort = i
-                i = i + 1
+                i = i + 1 --[[@as number]]
                 ret[opt] = opt.label
             end
         end
@@ -150,7 +150,7 @@ function this.get_combo_values()
         for _, group in ipairs(sorted) do
             for _, opt in ipairs(group) do
                 opt.sort = i
-                i = i + 1
+                i = i + 1 --[[@as number]]
                 ret[opt] = opt.label
             end
         end
