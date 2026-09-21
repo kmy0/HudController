@@ -162,7 +162,11 @@ end
 ---@param option_name string
 ---@return any
 function this.get_hud_option_value(option_name)
-    local hud_config = hud.get_current() --[[@as ModProfileConfig]]
+    local hud_config = hud.get_current()
+    if not hud_config then
+        return
+    end
+
     return hud_config.user_options[option_name]
 end
 
@@ -190,7 +194,11 @@ end
 ---@param option_name string
 ---@param value any
 function this.set_hud_option_value(option_name, value)
-    local hud_config = hud.get_current() --[[@as ModProfileConfig]]
+    local hud_config = hud.get_current()
+    if not hud_config then
+        return
+    end
+
     hud_config.user_options[option_name] = util_table.deep_copy(value)
 end
 
