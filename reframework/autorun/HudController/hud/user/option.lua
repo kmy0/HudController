@@ -144,6 +144,18 @@ function this.get_combo_values()
         end
     end
 
+    local elems = util_table.sort(util_table.keys(this.element))
+    for _, elem in ipairs(elems) do
+        local sorted = this.get_sorted_options(this.element[elem])
+        for _, group in ipairs(sorted) do
+            for _, opt in ipairs(group) do
+                opt.sort = i
+                i = i + 1
+                ret[opt] = opt.label
+            end
+        end
+    end
+
     return ret
 end
 
