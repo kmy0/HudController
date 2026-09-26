@@ -1,7 +1,7 @@
 local cd = require("HudController.data.combo")
+local combo_multi = require("HudController.util.imgui.combo_multi")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local e = require("HudController.util.game.enum")
 local op = require("HudController.hud.manager.op.init")
 local option = require("HudController.data.option.init")
 local set = require("HudController.gui.set")
@@ -9,6 +9,7 @@ local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod_def = option.mod
@@ -80,105 +81,106 @@ local function draw_options_menu()
         end
     end
 
-    imgui.set_next_item_width(
-        util_imgui.get_something_with_button_width(util_gui.tr("menu.user.options.button_add"))
-    )
+    local width = util_imgui.get_available_width() / 2 - 6
+    width = math.max(width, imgui.calc_item_width() * 1.5 / 2 - 6)
+    imgui.set_next_item_width(width)
     set:combo_filter("##user_options_combo", "mod.combo.game_option", cd.combo.elem_option)
     imgui.same_line()
 
-    if not imgui.is_popup_open("##" .. util_gui.tr("menu.user.options.button_add") .. "_popup") then
+    local id = "##game_options_combo"
+    if imgui.is_popup_open("##" .. id .. "_custom_filter_popup") then
         user_options_popup.active = false
     end
 
-    util_imgui.button_with_popup(util_gui.tr("menu.user.options.button_add"), function()
+    imgui.set_next_item_width(width)
+    combo_multi.combo_custom_filter(id, nil, function(min, max, _)
+        local width = max.x - min.x
+        local height = max.y - min.y
+
+        if width <= 0 or height <= 0 then
+            return
+        end
+
+        local left = min.x + 1
+        local right = max.x - 1
+        local text_y = min.y + (height - config.lang.font_size) * 0.5
+
+        local draw_list = imgui.get_window_draw_list()
+        local text_col = 0xffffffff
+
+        draw_list:push_clip_rect({ left, min.y }, { right, max.y }, true)
+        draw_list:add_text(
+            { left, text_y },
+            text_col,
+            config.lang:tr("menu.user.options.combo_game_options")
+        )
+
+        if util_imgui.is_disabled() then
+            text_col = util_misc.mul_alpha(text_col, 0.6)
+        end
+
+        draw_list:pop_clip_rect()
+    end, function(query, _)
+        ace_map.tree_game_options:filter(query)
+
         if not user_options_popup.active then
             user_options_popup.active = true
             user_options_popup.opts = util_table.deep_copy(all_opts)
         end
 
-        ---@param option AceOption
-        ---@param label string
-        local function draw_option(option, label)
-            imgui.begin_group()
-            if
-                util_imgui.menu_item(
-                    label,
-                    all_opts[option.name] ~= nil,
-                    user_options_popup.opts[option.name] ~= nil
-                )
-            then
-                if all_opts[option.name] then
-                    op.hud_game_options.remove_game_option_elem(
-                        cd.combo.elem_option:get_key(config_mod.combo.game_option),
-                        option.name
-                    )
-                    config:save()
-                else
-                    op.hud_game_options.add_game_option_elem(
-                        cd.combo.elem_option:get_key(config_mod.combo.game_option),
-                        option.name
-                    )
-                    config:save()
-                end
-            end
-            imgui.end_group()
-
-            local bound_elem = all_opts[option.name]
-            if bound_elem then
-                util_imgui.tooltip(
-                    string.format(
-                        config.lang:tr("menu.user.options.tooltip_bound"),
-                        cd.combo.elem_option:get_value_by_key(bound_elem)
-                    )
-                )
-            end
-        end
-
-        ---@param node AceOptionNode
+        ---@param node TreeNode<AceOptionNode, nil>
         local function draw_node(node)
-            local option = node.option
-            local has_children = not util_table.empty(node.children)
-            local has_value = not util_table.empty(node.option.items)
-                or option.type == e.get("app.Option.TYPE").CHOICE
-                or option.type == e.get("app.Option.TYPE").VALUE
-
-            if not has_children then
-                if has_value then
-                    draw_option(option, option.name_local)
+            if not util_table.empty(node.children) then
+                imgui.indent(2)
+                util_menubar.draw_menu(node.value.name, function()
+                    for _, branch in ipairs(node.children) do
+                        draw_node(branch)
+                    end
+                end)
+                imgui.unindent(2)
+            else
+                imgui.begin_group()
+                if
+                    util_imgui.menu_item(
+                        node.value.name,
+                        all_opts[node.value.id_str] ~= nil,
+                        user_options_popup.opts[node.value.id_str] ~= nil
+                    )
+                then
+                    if all_opts[node.value.id_str] then
+                        op.hud_game_options.remove_game_option_elem(
+                            cd.combo.elem_option:get_key(config_mod.combo.game_option),
+                            node.value.id_str
+                        )
+                        config:save()
+                    else
+                        op.hud_game_options.add_game_option_elem(
+                            cd.combo.elem_option:get_key(config_mod.combo.game_option),
+                            node.value.id_str
+                        )
+                        config:save()
+                    end
                 end
+                imgui.end_group()
 
-                return
-            end
-
-            imgui.indent(2)
-            util_menubar.draw_menu(option.name_local, function()
-                if has_value then
-                    draw_option(
-                        option,
+                local bound_elem = all_opts[node.value.id_str]
+                if bound_elem then
+                    util_imgui.tooltip(
                         string.format(
-                            "%s %s",
-                            option.name_local,
-                            config.lang:tr("menu.user.options.text_toggle")
+                            config.lang:tr("menu.user.options.tooltip_bound"),
+                            cd.combo.elem_option:get_value_by_key(bound_elem)
                         )
                     )
                 end
-
-                for _, child in ipairs(node.children) do
-                    draw_node(child)
-                end
-            end)
-            imgui.unindent(2)
+            end
         end
 
-        local categories = util_table.sort(util_table.keys(ace_map.game_options))
-        for _, category in ipairs(categories) do
-            util_menubar.draw_menu(category, function()
-                for _, node in ipairs(ace_map.game_options[category]) do
-                    draw_node(node)
-                end
-            end)
+        for _, root in ipairs(ace_map.tree_game_options.nodes) do
+            draw_node(root)
         end
-    end)
+
+        return false, nil
+    end, false)
 
     option.draw(mod_def.opt.game_options_display_full_path)
 
@@ -235,7 +237,6 @@ local function draw_user_menu()
     util_menubar.draw_menu(util_gui.tr("menu.user.options.name"), function()
         draw_options_menu()
     end)
-    util_imgui.tooltip(config.lang:tr("menu.user.tooltip_options"))
 
     imgui.unindent(2)
     imgui.spacing()

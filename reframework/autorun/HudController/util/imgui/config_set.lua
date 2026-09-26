@@ -2,7 +2,6 @@
 ---@field ref ConfigBase
 
 local combo_multi = require("HudController.util.imgui.combo_multi")
-local notebook = require("HudController.util.imgui.notebook")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class ImguiConfigSet
@@ -148,27 +147,6 @@ function this:drag_float(name, config_key, v_speed, v_min, v_max, display_format
         v_min,
         v_max,
         display_format
-    )
-end
-
----@param id string
----@param config_key string
----@param tabs NotebookTab[]
----@param actions NotebookActionButton[]?
----@param colors NotebookColors?
----@param stretch_tabs boolean?
----@param vertical boolean?
----@return boolean
-function this:notebook(id, config_key, tabs, actions, colors, stretch_tabs, vertical)
-    return self:generic_config(
-        id,
-        config_key,
-        notebook.draw,
-        tabs,
-        actions,
-        colors,
-        stretch_tabs,
-        vertical
     )
 end
 

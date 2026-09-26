@@ -7,6 +7,7 @@ local util_ref = require("HudController.util.ref.init")
 ---@class MethodUtil
 local m = require("HudController.util.ref.methods")
 local s = require("HudController.util.ref.singletons")
+local tree = require("HudController.util.imgui.tree")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -105,6 +106,142 @@ local function replace_option_placeholder(str)
     return str
 end
 
+local function get_option_tree()
+    ---@type table<string, AceOptionNode>
+    local branches = {}
+    for name, option in pairs(ace_map.option) do
+        branches[name] = {
+            name = option.name_local,
+            name_path = {},
+            id_str = option.name,
+            children = {},
+        }
+    end
+
+    ---@type AceOptionNode[]
+    local roots = {}
+    ---@type table<string, AceOptionNode>
+    local category_roots = {}
+
+    for name, option in pairs(ace_map.option) do
+        local branch = branches[name]
+        local parent = branches[option.parent]
+        local parent_option = option.parent and ace_map.option[option.parent]
+
+        if parent and parent_option and parent_option.category == option.category then
+            table.insert(parent.children, branch)
+        else
+            local category = e.get("app.Option.CATEGORY")[option.category]
+            local root = category_roots[category]
+
+            if not root then
+                root = {
+                    name = category,
+                    id_str = category,
+                    name_path = {},
+                    children = {},
+                }
+
+                category_roots[category] = root
+                table.insert(roots, root)
+            end
+
+            table.insert(root.children, branch)
+        end
+    end
+
+    ---@param branches_to_prune AceOptionNode[]
+    local function prune_branches(branches_to_prune)
+        for i = #branches_to_prune, 1, -1 do
+            local branch = branches_to_prune[i]
+            local option = ace_map.option[branch.id_str]
+
+            prune_branches(branch.children)
+
+            if
+                (
+                    option.type == e.get("app.Option.TYPE").HEADLINE
+                    or option.type == e.get("app.Option.TYPE").UI
+                )
+                and util_table.empty(branch.children)
+                and util_table.empty(option.items)
+            then
+                table.remove(branches_to_prune, i)
+            end
+        end
+    end
+
+    ---@param branches AceOptionNode[]
+    ---@param parent_path string[]
+    local function set_namepaths(branches, parent_path)
+        for _, branch in ipairs(branches) do
+            local option = ace_map.option[branch.id_str]
+
+            local name_path = {}
+            for _, part in ipairs(parent_path) do
+                table.insert(name_path, part)
+            end
+
+            table.insert(name_path, branch.name)
+
+            branch.name_path = name_path
+            option.name_path = name_path
+
+            set_namepaths(branch.children, name_path)
+        end
+    end
+
+    ---@param branches AceOptionNode[]
+    local function add_option_entries(branches)
+        for _, branch in ipairs(branches) do
+            local option = ace_map.option[branch.id_str]
+
+            add_option_entries(branch.children)
+
+            if
+                not util_table.empty(branch.children)
+                and (
+                    not util_table.empty(option.items)
+                    or option.type == e.get("app.Option.TYPE").CHOICE
+                    or option.type == e.get("app.Option.TYPE").VALUE
+                )
+            then
+                table.insert(branch.children, 1, {
+                    name = string.format(
+                        "%s %s",
+                        option.name_local,
+                        lang_base.make_placeholder("menu.user.options.text_toggle")
+                    ),
+                    id_str = option.name,
+                    name_path = branch.name_path,
+                    children = {},
+                })
+            end
+        end
+    end
+
+    for i = #roots, 1, -1 do
+        local root = roots[i]
+
+        prune_branches(root.children)
+
+        if #root.children == 0 then
+            table.remove(roots, i)
+        else
+            set_namepaths(root.children, { root.name })
+            add_option_entries(root.children)
+        end
+    end
+
+    ace_map.tree_game_options = tree:new(roots, function(node)
+        return node.children
+    end, {
+        filter_fn = function(node)
+            return node.name
+        end,
+    })
+end
+
 local function get_option_map()
     local lang = game_lang.get_language()
     local ignore_type = {
@@ -185,93 +322,6 @@ local function get_option_map()
 
         ace_map.option[name] = opt
         ::continue::
-    end
-
-    ---@type table<string, AceOptionNode>
-    local nodes = {}
-    for name, option in pairs(ace_map.option) do
-        nodes[name] = {
-            option = option,
-            children = {},
-        }
-    end
-
-    for _, node in pairs(nodes) do
-        local option = node.option
-        local parent = nodes[option.parent]
-
-        if parent and parent.option.category == option.category then
-            table.insert(parent.children, node)
-        else
-            local category = e.get("app.Option.CATEGORY")[option.category]
-
-            ace_map.game_options[category] = ace_map.game_options[category] or {}
-
-            table.insert(ace_map.game_options[category], node)
-        end
-    end
-
-    ---@param nodes_to_prune AceOptionNode[]
-    local function prune_nodes(nodes_to_prune)
-        for i = #nodes_to_prune, 1, -1 do
-            local node = nodes_to_prune[i]
-
-            prune_nodes(node.children)
-
-            if
-                (
-                    node.option.type == e.get("app.Option.TYPE").HEADLINE
-                    or node.option.type == e.get("app.Option.TYPE").UI
-                )
-                and (util_table.empty(node.children) and util_table.empty(node.option.items))
-            then
-                table.remove(nodes_to_prune, i)
-            end
-        end
-    end
-
-    ---@param nodes AceOptionNode[]
-    ---@param parent_path string[]
-    local function set_namepaths(nodes, parent_path)
-        for _, node in ipairs(nodes) do
-            local option = node.option
-            option.name_path = {}
-
-            for _, part in ipairs(parent_path) do
-                table.insert(option.name_path, part)
-            end
-
-            local child_path = {}
-            for _, part in ipairs(parent_path) do
-                table.insert(child_path, part)
-            end
-
-            table.insert(child_path, option.name_local)
-            set_namepaths(node.children, child_path)
-            table.insert(option.name_path, option.name_local)
-        end
-    end
-
-    ---@param nodes_to_sort AceOptionNode[]
-    local function sort_nodes(nodes_to_sort)
-        table.sort(nodes_to_sort, function(a, b)
-            return a.option.name_local < b.option.name_local
-        end)
-
-        for _, node in ipairs(nodes_to_sort) do
-            sort_nodes(node.children)
-        end
-    end
-
-    for category, roots in pairs(ace_map.game_options) do
-        prune_nodes(roots)
-
-        if #roots == 0 then
-            ace_map.game_options[category] = nil
-        else
-            sort_nodes(roots)
-            set_namepaths(roots, { category })
-        end
     end
 end
 
@@ -443,6 +493,7 @@ function this.init()
     set_additional_hud()
     get_weapon_map()
     get_option_map()
+    get_option_tree()
     get_log_id_text()
     get_subtitles_map()
     get_literals()

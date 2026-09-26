@@ -17,8 +17,8 @@
 ---@field auto_id_to_text table<app.Communication.AUTO_ID, string>
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
 ---@field subtitles {[string]: {npc: {id: app.NpcDef.ID, name: string}, text: string }}
----@field game_options table<string, AceOptionNode[]>
 ---@field literals table<string, string>
+---@field tree_game_options Tree<AceOptionNode, nil>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
@@ -38,7 +38,9 @@
 ---@field max number
 
 ---@class (exact) AceOptionNode
----@field option AceOption
+---@field name string
+---@field id_str string
+---@field name_path string[]
 ---@field children AceOptionNode[]
 
 ---@class AceData
@@ -114,8 +116,8 @@ local this = {
         },
         auto_id_to_text = {},
         subtitles = {},
-        game_options = {},
         literals = {},
+        tree_game_options = {},
     },
 }
 

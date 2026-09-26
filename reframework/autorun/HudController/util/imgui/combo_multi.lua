@@ -673,8 +673,10 @@ end
 ---@param value T
 ---@param draw_preview fun(min: Vector2f, max: Vector2f, value: T)
 ---@param draw_popup fun(query: string, value: T): boolean, T
+---@param static_height boolean?
 ---@return boolean, T
-function this.combo_custom_filter(label, value, draw_preview, draw_popup)
+function this.combo_custom_filter(label, value, draw_preview, draw_popup, static_height)
+    static_height = static_height == nil or static_height
     local combo_id = label
     local popup_id = "##" .. label .. "_custom_filter_popup"
     local clicked, pos, width, frame_height = draw_custom_combo(label, popup_id, function(min, max)
@@ -696,7 +698,7 @@ function this.combo_custom_filter(label, value, draw_preview, draw_popup)
     end
 
     imgui.set_next_window_pos({ pos.x, pos.y + frame_height }, 1)
-    imgui.set_next_window_size({ width, get_max_popup_height() }, 1)
+    imgui.set_next_window_size({ width, static_height and get_max_popup_height() or 0 }, 1)
 
     local changed = false
     local popup_open = false

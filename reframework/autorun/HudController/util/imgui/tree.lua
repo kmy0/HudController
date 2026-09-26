@@ -13,6 +13,7 @@
 ---@field filter_leaf_fn (fun(leaf: L): string)?
 
 ---@class (exact) TreeOptionalArgs<B, L>
+---@field leaves_fn (fun(node: B): L[])?
 ---@field filter_fn (fun(node: B): string)?
 ---@field filter_leaf_fn (fun(leaf: L): string)?
 
@@ -24,10 +25,9 @@ this.__index = this
 ---@generic B, L
 ---@param source B[]
 ---@param children_fn fun(node: B): B[]
----@param leaves_fn fun(node: B): L[]
 ---@param optional_args TreeOptionalArgs<B, L>?
 ---@return Tree<B, L>
-function this:new(source, children_fn, leaves_fn, optional_args)
+function this:new(source, children_fn, optional_args)
     optional_args = optional_args or {}
 
     local o = {
@@ -35,7 +35,9 @@ function this:new(source, children_fn, leaves_fn, optional_args)
         source = source,
         query = "",
         children_fn = children_fn,
-        leaves_fn = leaves_fn,
+        leaves_fn = optional_args.leaves_fn or function()
+            return {}
+        end,
         filter_fn = optional_args.filter_fn,
         filter_leaf_fn = optional_args.filter_leaf_fn,
     }

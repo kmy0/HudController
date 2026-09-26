@@ -31,9 +31,7 @@ local tab_type = {
 
 ---@return number
 local function get_width()
-    return config.lang.font_size * (200 / 16) * 3
-        + 6 * 4
-        + util_imgui.get_button_width(config.lang:tr("menu.bind.key.button_add"))
+    return config.lang.font_size * (200 / 16) * 3 + 6 * 4 + config.lang.font_size + 6
 end
 
 local function restore_indexes()
@@ -125,9 +123,8 @@ local function draw_listener(manager)
     imgui.separator()
 end
 
----@return BindKeyType
-local function draw_buttons()
-    local config_mod = config.current.mod
+---@return {label: string, key: BindKeyType}[], number
+local function get_buttons()
     local buttons = {
         { label = config.lang:tr("menu.bind.key.all"), key = tab_type.ALL },
         { label = config.lang:tr("menu.bind.key.hud"), key = tab_type.HUD },
@@ -144,17 +141,26 @@ local function draw_buttons()
         )
     end
 
+    local max_width = 0
+    for _, b in ipairs(buttons) do
+        max_width = math.max(max_width, imgui.calc_text_size(b.label).x)
+    end
+
+    max_width = max_width + config.lang.font_size * 3
+    return buttons, max_width
+end
+
+---@param buttons { label: string, key: BindKeyType }[]
+---@param max_width number
+---@return BindKeyType
+local function draw_buttons(buttons, max_width)
+    local config_mod = config.current.mod
+
     config_mod.bind.key.key_type_selection =
         math.min(config_mod.bind.key.key_type_selection, #buttons)
 
-    local max_width = 0
-    for _, b in pairs(buttons) do
-        local text_size = imgui.calc_text_size(b.label)
-        max_width = math.max(max_width, text_size.x) --[[@as number]]
-    end
-    max_width = max_width + config.lang.font_size * 3
-
     local changed = false
+
     for _, b in ipairs(buttons) do
         if
             util_imgui.draw_sel_button(
@@ -188,16 +194,35 @@ local function draw_registered_binds(manager)
     util_imgui.adjust_pos(0, -2)
     imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
 
+    local binds = manager.manager:get_base_binds()
+    local widths = {
+        config.lang.font_size * 2,
+        0,
+        0,
+        0,
+    }
+
+    for i = 1, #binds do
+        local bind = binds[i]
+
+        widths[2] = math.max(widths[2], imgui.calc_text_size(util_key.get_action_name(bind)).x)
+        widths[3] = math.max(widths[3], imgui.calc_text_size(util_key.get_trigger_name(bind)).x)
+        widths[4] = math.max(widths[4], imgui.calc_text_size(util_key.get_key_bind_name(bind)).x)
+    end
+
+    local padding = config.lang.font_size
+    widths[2] = widths[2] + padding
+    widths[3] = widths[3] + padding
+    widths[4] = widths[4] + padding
+
     if
         imgui.begin_table("keybind_state", 5, imgui.TableFlags.NoClip, Vector2f.new(get_width(), 0))
     then
-        imgui.table_setup_column("##0", imgui.ColumnFlags.WidthFixed)
-        imgui.table_setup_column("##1", imgui.ColumnFlags.WidthFixed)
-        imgui.table_setup_column("##2", imgui.ColumnFlags.WidthFixed)
-        imgui.table_setup_column("##3", imgui.ColumnFlags.WidthFixed)
+        imgui.table_setup_column("##0", imgui.ColumnFlags.WidthFixed, widths[1])
+        imgui.table_setup_column("##1", imgui.ColumnFlags.WidthFixed, widths[2])
+        imgui.table_setup_column("##2", imgui.ColumnFlags.WidthFixed, widths[3])
+        imgui.table_setup_column("##3", imgui.ColumnFlags.WidthFixed, widths[4])
         imgui.table_setup_column("##4", imgui.ColumnFlags.WidthStretch)
-
-        local binds = manager.manager:get_base_binds()
 
         imgui.separator()
 
@@ -370,7 +395,7 @@ local function draw_bind_option_table(manager)
 
         imgui.table_set_column_index(3)
 
-        if imgui.button(util_gui.tr("menu.bind.key.button_add")) then
+        if util_imgui.draw_add_button("key_bind_add") then
             start_listener()
         end
 
@@ -392,19 +417,15 @@ local function draw_key_bind_menu()
     imgui.spacing()
     imgui.indent(2)
 
-    if
-        imgui.begin_table(
-            "bind_key_main_table",
-            2,
-            imgui.TableFlags.BordersInnerV | imgui.TableFlags.SizingStretchProp --[[@as ImGuiTableFlags]]
-        )
-    then
-        imgui.table_setup_column("##buttons")
-        imgui.table_setup_column("##content")
+    local buttons, button_width = get_buttons()
+
+    if imgui.begin_table("bind_key_main_table", 2, imgui.TableFlags.BordersInnerV) then
+        imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed, button_width)
+        imgui.table_setup_column("##content", imgui.ColumnFlags.WidthStretch)
 
         imgui.table_next_row()
         imgui.table_set_column_index(0)
-        local selected = draw_buttons()
+        local selected = draw_buttons(buttons, button_width)
         local manager = this.managers[selected]
 
         imgui.table_set_column_index(1)

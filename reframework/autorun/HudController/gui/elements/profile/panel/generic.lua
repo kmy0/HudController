@@ -30,6 +30,13 @@ function this.draw_option(option_key, item_config_key, callback, label, add_defa
     label = label or string.format("%s##%s", option_data.name_local, option_data.name)
     add_default = add_default == nil or add_default
 
+    local name, id = table.unpack(util_misc.split_string(label, "##"))
+    if name == "" then
+        id = label
+    end
+
+    label = "##" .. id
+
     local values = {}
     for _, item in ipairs(option_data.items) do
         table.insert(values, item.name_local)
@@ -96,6 +103,11 @@ function this.draw_option(option_key, item_config_key, callback, label, add_defa
         end
     else
         imgui.text_colored(option_data.name_local, mod.enum.colors.bad)
+    end
+
+    if name ~= "" then
+        util_imgui.set_label(name, -1)
+        util_imgui.tooltip(table.concat(option_data.name_path, " > "))
     end
 
     return changed

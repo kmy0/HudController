@@ -330,11 +330,10 @@ return {
                     ["<PLATMSG MsgGUI030100_04_44_01>"] = "Off",
                 },
                 text_toggle = "(Toggle)",
-                button_add = "Add Option",
+                combo_game_options = "Add Options...",
                 box_display_full_path = "Display Full Path",
                 tooltip_bound = "Bound to %s",
             },
-            tooltip_options = "",
         },
         tools = {
             name = "Tools",

@@ -390,9 +390,10 @@ function this.make_tree()
     end)
     this.tree = tree:new(bind_tree, function(node)
         return node.children
-    end, function(node)
-        return node.opt
     end, {
+        leaves_fn = function(node)
+            return node.opt
+        end,
         filter_fn = function(node)
             return node.name
         end,

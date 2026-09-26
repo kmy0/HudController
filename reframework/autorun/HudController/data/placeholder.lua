@@ -6,28 +6,45 @@ local ace_map = data.ace.map
 local this = {}
 
 local function translate_ace_option()
-    ---@param node AceOptionNode
-    local function translate_node(node)
-        node.option.name_local = config.lang:try_replace(node.option.name_local)
-        for k, v in pairs(node.option.name_path) do
-            node.option.name_path[k] = config.lang:try_replace(v)
-        end
+    for _, opt in pairs(ace_map.option) do
+        opt.name_local = config.lang:try_replace(opt.name_local)
 
-        for _, item in pairs(node.option.items) do
-            item.name_local = config.lang:try_replace(item.name_local)
+        for _, item in pairs(opt.items) do
             item.name_local = config.lang:try_replace(item.name_local)
         end
 
-        for _, child in pairs(node.children) do
-            translate_node(child)
+        for i, name in ipairs(opt.name_path) do
+            opt.name_path[i] = config.lang:try_replace(name)
         end
     end
 
-    for _, nodes in pairs(ace_map.game_options) do
-        for _, node in pairs(nodes) do
-            translate_node(node)
+    local function translate_branch(branch)
+        branch.name = config.lang:try_replace(branch.name)
+        branch.name = config.lang:try_replace(branch.name)
+
+        ---@diagnostic disable-next-line: no-unknown
+        for _, child in pairs(branch.children) do
+            translate_branch(child)
         end
+
+        for i, name in ipairs(branch.name_path) do
+            branch.name_path[i] = config.lang:try_replace(name)
+        end
+
+        table.sort(branch.children, function(a, b)
+            return a.name < b.name
+        end)
     end
+
+    for _, branch in pairs(ace_map.tree_game_options.source) do
+        translate_branch(branch)
+    end
+
+    table.sort(ace_map.tree_game_options.source, function(a, b)
+        return a.name < b.name
+    end)
+
+    ace_map.tree_game_options:swap(ace_map.tree_game_options.source)
 end
 
 local function translate_elements()

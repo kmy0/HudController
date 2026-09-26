@@ -92,28 +92,39 @@ function this.draw(pos, width)
     local height = config.lang.font_size + 6.0
     local padding = 4
     local caret_margin = 2
+
     local box_right = pos.x + width
     local box_bottom = pos.y + height
+
     local label_size = imgui.calc_text_size(search_label)
     local text_y = pos.y + (height - font_height) / 2
+
     local label_pos = Vector2f.new(pos.x + padding, text_y)
     local input_start_x = label_pos.x + label_size.x
     local input_right_x = box_right - padding - caret_margin
     local input_width = math.max(input_right_x - input_start_x, 0)
+
     local cursor_offset = imgui.calc_text_size(buf:sub(1, cursor)).x
     local scroll_x = math.max(cursor_offset - input_width, 0)
     local caret_x = input_start_x + cursor_offset - scroll_x
 
+    draw_list:push_clip_rect({ pos.x, pos.y }, { box_right, box_bottom }, true)
     draw_list:add_rect_filled(pos, { box_right, box_bottom }, FILTER_BG, 0, 0)
     draw_list:add_rect_filled({ pos.x, pos.y }, { input_start_x, box_bottom }, LABEL_BG, 0, 0)
     draw_list:add_text(label_pos, TEXT_COLOR, search_label)
-    draw_list:push_clip_rect(
-        { input_start_x, pos.y },
-        { input_right_x + caret_margin, box_bottom },
-        true
-    )
-    draw_list:add_text({ input_start_x - scroll_x, text_y }, TEXT_COLOR, buf)
-    draw_list:add_line({ caret_x, pos.y + 4 }, { caret_x, box_bottom - 4 }, TEXT_COLOR, 1)
+
+    if input_width > 0 then
+        draw_list:push_clip_rect(
+            { input_start_x, pos.y },
+            { input_right_x + caret_margin, box_bottom },
+            true
+        )
+
+        draw_list:add_text({ input_start_x - scroll_x, text_y }, TEXT_COLOR, buf)
+        draw_list:add_line({ caret_x, pos.y + 4 }, { caret_x, box_bottom - 4 }, TEXT_COLOR, 1)
+        draw_list:pop_clip_rect()
+    end
+
     draw_list:pop_clip_rect()
 end
 

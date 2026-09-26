@@ -120,12 +120,21 @@ function this.draw()
             },
         })
 
+        imgui.table_set_column_index(2)
+        imgui.text(config.lang:tr("selector.combo_config"))
+
         if state.input and state.input.type == "rename_config" then
             imgui.table_next_row()
             imgui.table_set_column_index(0)
             imgui.push_item_width(util_gui.get_item_size())
-            local changed, _ = state.get_input()
+            local changed, _ = state.get_input(false)
             imgui.pop_item_width()
+
+            imgui.table_set_column_index(2)
+            if imgui.button(util_gui.tr("hud.button_cancel", "input")) then
+                state.input = nil
+            end
+
             if changed then
                 if state.input ~= config.selector.sorted[config_sel.combo_file] then
                     config.selector:rename_current_file(state.input.buf)
@@ -135,9 +144,6 @@ function this.draw()
                 state.input = nil
             end
         end
-
-        imgui.table_set_column_index(2)
-        imgui.text(config.lang:tr("selector.combo_config"))
 
         imgui.table_next_row()
         imgui.table_set_column_index(0)

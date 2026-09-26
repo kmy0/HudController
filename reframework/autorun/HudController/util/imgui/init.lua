@@ -675,7 +675,7 @@ function this.slider_list(label, index, v_min, v_max, values)
             and mouse.y >= pos.y
             and mouse.y < pos.y + height
 
-        if text ~= value and cursor_over_segment then
+        if imgui.is_item_hovered() and text ~= value and cursor_over_segment then
             imgui.set_tooltip(value)
         end
     end
