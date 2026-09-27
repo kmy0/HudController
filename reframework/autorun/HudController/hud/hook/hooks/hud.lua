@@ -1,6 +1,6 @@
----@class HudHooks
----@field hud_hooks table<string, fun(...)>
----@field hud_option_hooks table<string, table<string, {condition: (fun(config_path: string): boolean), fn: fun()}>>
+---@class HudOptionHook
+---@field condition fun(config_path: string): boolean
+---@field fn fun()
 
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
@@ -14,11 +14,10 @@ local mod_enum = require("HudController.data.mod").enum
 
 local ace_map = data.ace.map
 
----@class HudHooks
-local this = {
-    hud_hooks = {},
-    hud_option_hooks = {},
-}
+---@class HudHooksFns : { [string]: fun() }
+local hud_hooks = {}
+---@class HudOptionHooksFns : { [string]: { [string]: HudOptionHook } }
+local hud_option_hooks = {}
 
 local function make_hud_options_hook(fn, condition)
     condition = condition
@@ -32,7 +31,7 @@ local function make_hud_options_hook(fn, condition)
     }
 end
 
-function this.hud_hooks.target_reticle()
+function hud_hooks.target_reticle()
     m.hook(
         "app.GUI020021.guiUpdate()",
         util_ref.capture_this,
@@ -40,7 +39,7 @@ function this.hud_hooks.target_reticle()
     )
 end
 
-function this.hud_hooks.menu_button_guide()
+function hud_hooks.menu_button_guide()
     m.hook(
         "app.GUI000008.guiLateUpdate()",
         util_ref.capture_this,
@@ -48,7 +47,7 @@ function this.hud_hooks.menu_button_guide()
     )
 end
 
-function this.hud_hooks.damage_numbers()
+function hud_hooks.damage_numbers()
     m.hook(
         "app.GUI020020.requestDamage(via.vec3, System.Single, app.GUI020020.State, app.TARGET_ACCESS_KEY.CATEGORY, "
             .. "app.GUI020020.DAMAGE_TYPE, app.GUI020020.CRITICAL_STATE, System.Boolean, "
@@ -62,10 +61,9 @@ function this.hud_hooks.damage_numbers()
     )
 end
 
-function this.hud_hooks.subtitles()
+function hud_hooks.subtitles()
     m.hook("app.cDialogueSubtitleManager.updateDisp()", elements.update.update_subtitles_pre)
-
-    this.hud_option_hooks["SUBTITLES"] = {
+    hud_option_hooks["SUBTITLES"] = {
         ["SUBTITLES._hide_subtitles"] = make_hud_options_hook(function()
             m.hook(
                 "app.cDialogueSubtitleManager.dispText(app.cDialogueSubtitleManager.RequestData, System.Int32)",
@@ -125,7 +123,7 @@ function this.hud_hooks.subtitles()
     }
 end
 
-function this.hud_hooks.training_room_hud()
+function hud_hooks.training_room_hud()
     m.hook(
         "app.GUI600100.guiUpdate()",
         util_ref.capture_this,
@@ -133,14 +131,14 @@ function this.hud_hooks.training_room_hud()
     )
 end
 
-function this.hud_hooks.name_access()
+function hud_hooks.name_access()
     m.hook(
         "app.GUI020001PanelBase.onLateUpdate()",
         util_ref.capture_this,
         elements.update.update_name_access_icons_post
     )
 
-    this.hud_option_hooks["NAME_ACCESSIBLE"] = {
+    hud_option_hooks["NAME_ACCESSIBLE"] = {
         ["NAME_ACCESSIBLE._hide_interactables"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUIAccessIconControl.lateUpdate()",
@@ -168,7 +166,7 @@ function this.hud_hooks.name_access()
     }
 end
 
-function this.hud_hooks.barrel_bowling_score()
+function hud_hooks.barrel_bowling_score()
     m.hook(
         "app.GUI090901.guiHudVisibleUpdate()",
         util_ref.capture_this,
@@ -176,7 +174,7 @@ function this.hud_hooks.barrel_bowling_score()
     )
 end
 
-function this.hud_hooks.chat_log()
+function hud_hooks.chat_log()
     m.hook(
         "app.GUI020101.guiLateUpdate()",
         util_ref.capture_this,
@@ -190,8 +188,8 @@ function this.hud_hooks.chat_log()
     m.hook("app.GUI020101.guiAwake()", elements.chat_log.clear_cache_pre)
 end
 
-function this.hud_hooks.radial()
-    this.hud_option_hooks["SHORTCUT_GAMEPAD"] = {
+function hud_hooks.radial()
+    hud_option_hooks["SHORTCUT_GAMEPAD"] = {
         ["SHORTCUT_GAMEPAD.hide"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUI020008.checkOpen()",
@@ -208,8 +206,8 @@ function this.hud_hooks.radial()
     }
 end
 
-function this.hud_hooks.itembar()
-    this.hud_option_hooks["SLIDER_ITEM"] = {
+function hud_hooks.itembar()
+    hud_option_hooks["SLIDER_ITEM"] = {
         ["SLIDER_ITEM.start_expanded"] = make_hud_options_hook(function()
             m.hook("app.GUI020006.controlSliderOpen()", elements.itembar.open_expanded_itembar_pre)
             m.hook(
@@ -286,8 +284,8 @@ function this.hud_hooks.itembar()
     }
 end
 
-function this.hud_hooks.ammo()
-    this.hud_option_hooks["SLIDER_BULLET"] = {
+function hud_hooks.ammo()
+    hud_option_hooks["SLIDER_BULLET"] = {
         ["SLIDER_BULLET.no_hide_parts"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUI020007.controlSliderStatus()",
@@ -301,10 +299,10 @@ function this.hud_hooks.ammo()
     }
 end
 
-function this.hud_hooks.name_other()
+function hud_hooks.name_other()
     m.hook("app.GUI020016.guiHudUpdate()", elements.name_other.name_other_update_player_pos_pre)
 
-    this.hud_option_hooks["NAME_OTHER"] = {
+    hud_option_hooks["NAME_OTHER"] = {
         ["NAME_OTHER._hide_nameplete"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUI020016PartsBase.checkIsVisible()",
@@ -324,8 +322,8 @@ function this.hud_hooks.name_other()
     }
 end
 
-function this.hud_hooks.control()
-    this.hud_option_hooks["CONTROL"] = {
+function hud_hooks.control()
+    hud_option_hooks["CONTROL"] = {
         ["CONTROL._hide_nameplete"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUI020014.changeViewTypeState(System.Boolean)",
@@ -348,8 +346,8 @@ function this.hud_hooks.control()
     }
 end
 
-function this.hud_hooks.progress()
-    this.hud_option_hooks["PROGRESS"] = {
+function hud_hooks.progress()
+    hud_option_hooks["PROGRESS"] = {
         ["PROGRESS._cache_reset"] = make_hud_options_hook(function()
             m.hook(
                 "app.MissionManager.unLoadMissionData(app.MissionIDList.ID)",
@@ -378,8 +376,8 @@ function this.hud_hooks.progress()
     }
 end
 
-function this.hud_hooks.notice()
-    this.hud_option_hooks["NOTICE"] = {
+function hud_hooks.notice()
+    hud_option_hooks["NOTICE"] = {
         ["NOTICE.cache_msg"] = make_hud_options_hook(function()
             m.hook(
                 "app.GUI020100.dispPanel(app.cGUI020100PanelBase)",
@@ -428,8 +426,8 @@ function this.hud_hooks.notice()
     }
 end
 
-function this.hud_hooks.shortcut_keyboard()
-    this.hud_option_hooks["SHORTCUT_KEYBOARD"] = {
+function hud_hooks.shortcut_keyboard()
+    hud_option_hooks["SHORTCUT_KEYBOARD"] = {
         ["SHORTCUT_KEYBOARD.no_hide_elements"] = make_hud_options_hook(function()
             m.hook("app.cGUIMapFlowCtrl.update()", elements.shortcut_keyboard.reveal_minimap_pre)
             m.hook(
@@ -486,8 +484,8 @@ function this.hud_hooks.shortcut_keyboard()
     }
 end
 
-function this.hud_hooks.minimap()
-    this.hud_option_hooks["MINIMAP"] = {
+function hud_hooks.minimap()
+    hud_option_hooks["MINIMAP"] = {
         ["MINIMAP.children.classic_minimap.enabled_classic_minimap"] = make_hud_options_hook(
             function()
                 m.hook(
@@ -511,14 +509,14 @@ function this.hud_hooks.minimap()
     }
 end
 
-function this.hud_hooks.quest_end_timer()
+function hud_hooks.quest_end_timer()
     m.hook(
         "app.GUI020202.guiVisibleUpdate()",
         util_ref.capture_this,
         elements.update.update_quest_end_timer_post
     )
 
-    this.hud_option_hooks["QUEST_END_TIMER"] = {
+    hud_option_hooks["QUEST_END_TIMER"] = {
         ["QUEST_END_TIMER._skip_quest_end_timer"] = make_hud_options_hook(function()
             m.hook(
                 "app.cQuestSuccessFreePlayTime.enter()",
@@ -565,7 +563,7 @@ function this.hud_hooks.quest_end_timer()
     }
 end
 
-function this.hud_hooks.button_press()
+function hud_hooks.button_press()
     common.mute_gui_element(function(args)
         local guiid = util_ref.to_short(args[3])
         if e.get("app.GUIID.ID")[guiid] == ace_map.additional_hud_to_guiid_name["BUTTON_PRESS"] then
@@ -577,4 +575,7 @@ function this.hud_hooks.button_press()
     end)
 end
 
-return this
+return {
+    hud_hooks = hud_hooks,
+    hud_option_hooks = hud_option_hooks,
+}

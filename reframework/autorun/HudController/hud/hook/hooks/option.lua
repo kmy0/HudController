@@ -1,7 +1,3 @@
----@class OptionHooks
----@field option_hooks table<string, fun()>
----@field option_mod_hooks table<string, fun()>
-
 local common = require("HudController.hud.hook.common")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
@@ -9,13 +5,12 @@ local options = require("HudController.hud.hook.options.init")
 local options_mod = require("HudController.hud.hook.options_mod")
 local util_ref = require("HudController.util.ref.init")
 
----@class OptionHooks
-local this = {
-    option_hooks = {},
-    option_mod_hooks = {},
-}
+---@class OptionHooksFns : { [string]: fun() }
+local option_hooks = {}
+---@class OptionModHooksFns : { [string]: fun() }
+local option_mod_hooks = {}
 
-function this.option_hooks.disable_scoutflies()
+function option_hooks.disable_scoutflies()
     m.hook(
         "app.cInteractGuideInsectController.isEnable()",
         nil,
@@ -42,7 +37,7 @@ function this.option_hooks.disable_scoutflies()
     )
 end
 
-function this.option_hooks.disable_porter_call()
+function option_hooks.disable_porter_call()
     m.hook(
         "app.PlayerCommonSubAction.cCallPorter.doEnter()",
         options.porter.disable_porter_call_cmd_pre,
@@ -60,18 +55,18 @@ function this.option_hooks.disable_porter_call()
     )
 end
 
-function this.option_hooks.hide_porter()
+function option_hooks.hide_porter()
     m.hook("app.PorterManager.update()", nil, options.porter.hide_porter_post)
 end
 
-function this.option_hooks.disable_porter_tracking()
+function option_hooks.disable_porter_tracking()
     m.hook(
         "app.mcPorterNavigationController.startNavigation(app.TARGET_ACCESS_KEY, System.Boolean)",
         options.porter.disable_porter_nav_pre
     )
 end
 
-function this.option_hooks.hide_monster_icon()
+function option_hooks.hide_monster_icon()
     m.hook(
         "app.cGUI060000OutFrameTarget.updateDrawIcon()",
         util_ref.capture_this,
@@ -118,11 +113,11 @@ function this.option_hooks.hide_monster_icon()
     )
 end
 
-function this.option_hooks.hide_small_monsters()
+function option_hooks.hide_small_monsters()
     m.hook("app.GUIMapBeaconManager.update()", options.em.hide_small_monsters_pre)
 end
 
-function this.option_hooks.monster_ignore_camp()
+function option_hooks.monster_ignore_camp()
     m.hook(
         "app.cEmReactableGmInterface_Camp.get_AcceptableAIStates()",
         options.em.stop_camp_target_pre
@@ -134,19 +129,19 @@ function this.option_hooks.monster_ignore_camp()
     )
 end
 
-function this.option_hooks.hide_handler()
+function option_hooks.hide_handler()
     m.hook("app.NpcManager.update()", nil, options.npc.hide_handler_post)
 end
 
-function this.option_hooks.hide_npc()
+function option_hooks.hide_npc()
     m.hook("app.NpcCharacter.doLateUpdateEnd()", options.npc.hide_npc_pre)
 end
 
-function this.option_hooks.hide_pet()
+function option_hooks.hide_pet()
     m.hook("app.OtomoManager.update()", options.npc.hide_pet_pre)
 end
 
-function this.option_hooks.disable_quest_intro()
+function option_hooks.disable_quest_intro()
     m.hook(
         "app.GUI020201.onOpen()",
         util_ref.capture_this,
@@ -154,7 +149,7 @@ function this.option_hooks.disable_quest_intro()
     )
 end
 
-function this.option_hooks.disable_quest_end_outro()
+function option_hooks.disable_quest_end_outro()
     m.hook(
         "app.PlayerManager.evQuestFlowChanged(app.cQuestFlowPartsBase)",
         options.quest.skip_quest_end_animation_pre
@@ -166,7 +161,7 @@ function this.option_hooks.disable_quest_end_outro()
     m.hook("app.cQuestDirector.update()", util_ref.capture_this, options.quest.stop_hide_gui_post)
 end
 
-function this.option_hooks.disable_quest_end_camera()
+function option_hooks.disable_quest_end_camera()
     m.hook(
         "app.cQuestDirector.canPlayHuntCompleteCamera()",
         nil,
@@ -174,7 +169,7 @@ function this.option_hooks.disable_quest_end_camera()
     )
 end
 
-function this.option_hooks.skip_quest_result()
+function option_hooks.skip_quest_result()
     m.hook(
         "app.GUIFlowQuestResult.cContext.setup(app.cGUIQuestResultInfo.MODE, System.Boolean, System.Boolean, System.Boolean, System.Boolean, System.Boolean)",
         util_ref.capture_this,
@@ -193,7 +188,7 @@ function this.option_hooks.skip_quest_result()
     m.hook("app.cBowlingUpdater.cUpdater_ResultEnd.onInit", options.quest.skip_bowling_result_pre)
 end
 
-function this.option_hooks.scar()
+function option_hooks.scar()
     m.hook(
         "app.EnemyScar.requestScarStamp(app.cEmModuleScar.cScarParts.STATE)",
         options.scar.disable_scar_stamp_pre
@@ -213,7 +208,7 @@ function this.option_hooks.scar()
     )
 end
 
-function this.option_hooks.hide_danger()
+function option_hooks.hide_danger()
     m.hook(
         "app.AttackAreaResult.getDangerousDetectedDataList()",
         nil,
@@ -221,7 +216,7 @@ function this.option_hooks.hide_danger()
     )
 end
 
-function this.option_hooks.hide_weapon()
+function option_hooks.hide_weapon()
     m.hook(
         "app.cMasterPlayerControllerEntity.entityUpdate()",
         options.player.hide_weapon_pre,
@@ -229,7 +224,7 @@ function this.option_hooks.hide_weapon()
     )
 end
 
-function this.option_hooks.mute_gui()
+function option_hooks.mute_gui()
     common.mute_gui_element(function(_)
         local hud_config = common.get_hud()
         if not hud_config then
@@ -240,21 +235,21 @@ function this.option_hooks.mute_gui()
     end)
 end
 
-function this.option_hooks.disable_area_intro()
+function option_hooks.disable_area_intro()
     m.hook(
         "app.GUI020206.requestBase(System.Guid, System.Guid, app.FieldDef.STAGE, app.FieldDef.LIFE_AREA, System.Boolean)",
         options.misc.disable_area_intro_pre
     )
 end
 
-function this.option_hooks.hide_aggro()
+function option_hooks.hide_aggro()
     m.hook(
         "app.mcReceivedEnemyStatePool.push(app.game_message.cEmChangeState)",
         options.player.hide_aggro_pre
     )
 end
 
-function this.option_mod_hooks.block_input()
+function option_mod_hooks.block_input()
     m.hook("app.GUIManager.lateUpdateApp()", nil, options_mod.block_input_all_post)
     m.hook(
         "app.GUI020006PartsSlider.callbackOther(ace.GUIDef.BUTTON_SLOT, via.gui.Control, via.gui.SelectItem, System.UInt32)",
@@ -262,8 +257,11 @@ function this.option_mod_hooks.block_input()
     )
 end
 
-function this.option_mod_hooks.draw_canvas()
+function option_mod_hooks.draw_canvas()
     m.hook("app.GUIManager.isMouseCursorAvailable()", nil, options_mod.draw_canvas_cursor_post)
 end
 
-return this
+return {
+    option_hooks = option_hooks,
+    option_mod_hooks = option_mod_hooks,
+}

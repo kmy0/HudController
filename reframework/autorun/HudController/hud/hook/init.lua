@@ -4,10 +4,10 @@
 ---@field is_option_mod_hooked table<string, boolean>
 ---@field is_hud_option_hooked table<string, boolean>
 ---@field is_fun_hooked table<fun(), true>
----@field hud_hooks table<string, fun(...)>
----@field hud_option_hooks table<string, table<string, {condition: (fun(config_path: string): boolean), fn: fun()}>>
----@field option_hooks table<string, fun()>
----@field option_mod_hooks table<string, fun()>
+---@field hud_hooks HudHooksFns
+---@field hud_option_hooks HudOptionHooksFns
+---@field option_hooks OptionHooksFns
+---@field option_mod_hooks OptionModHooksFns
 ---@field hud table<string, fun()|fun()[]>
 ---@field option table<string, fun()|fun()[]>
 ---@field option_mod table<string, fun()|fun()[]>
