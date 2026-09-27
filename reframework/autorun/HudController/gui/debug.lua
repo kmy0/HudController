@@ -224,7 +224,7 @@ local function draw_panel_tree(panel, key)
             panel.tree = false
         end
     else
-        imgui.text("   •   " .. name)
+        util_imgui.fake_tree_node(key .. name, name)
         draw_option_window(panel, key)
     end
 

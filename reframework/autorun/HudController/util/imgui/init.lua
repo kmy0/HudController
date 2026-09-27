@@ -751,10 +751,14 @@ function this.get_available_width()
         - (imgui.get_scroll_max_y() > 0 and 14 or 0)
 end
 
+---@return number
 function this.get_button_height()
     return imgui.calc_text_size("A").y + 6
 end
 
+---@param id string
+---@param label string
+---@param draw_children fun()?
 function this.fake_tree_node(id, label, draw_children)
     local draw_list = imgui.get_window_draw_list()
     local cursor = imgui.get_cursor_screen_pos()
@@ -782,9 +786,11 @@ function this.fake_tree_node(id, label, draw_children)
     draw_list:add_circle_filled(marker_center, radius, 0xFFFFFFFF, 12)
     draw_list:add_text(label_position, 0xFFFFFFFF, label)
 
-    imgui.indent(0)
-    draw_children()
-    imgui.unindent(0)
+    if draw_children then
+        imgui.indent(0)
+        draw_children()
+        imgui.unindent(0)
+    end
 end
 
 ---@param label string
