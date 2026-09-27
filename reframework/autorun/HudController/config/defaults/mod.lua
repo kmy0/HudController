@@ -73,7 +73,6 @@
 ---@field enable_notification boolean
 ---@field enable_key_binds boolean
 ---@field enable_condition_binds boolean
----@field disable_condition_binds_timed boolean
 ---@field disable_condition_binds_held boolean
 ---@field disable_condition_binds_time number
 ---@field hide_disabled_element_profiles boolean
@@ -124,8 +123,7 @@ return {
         enable_key_binds = true,
         enable_condition_binds = false,
         disable_condition_binds_held = false,
-        disable_condition_binds_timed = false,
-        disable_condition_binds_time = 30,
+        disable_condition_binds_time = 0,
         hide_disabled_element_profiles = false,
         display_active_element_profile_name = false,
         block_input = false,

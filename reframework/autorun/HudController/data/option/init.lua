@@ -52,7 +52,7 @@ end
 ---@param opt OptionDef<any>
 ---@param ... any config key args
 ---@return boolean
-function this.draw_menu(opt, ...)
+function this.draw_menu_item(opt, ...)
     return util_opt.menu_item(opt, this.get_config_key(opt, ...))
 end
 

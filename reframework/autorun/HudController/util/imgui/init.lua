@@ -1107,4 +1107,20 @@ function this.draw_duplicate_button(id, size)
     return clicked
 end
 
+---@param draw_fn fun()
+function this.even_popup_border(draw_fn)
+    --FIXME: XDD
+    this.spacer(0, 4)
+    this.spacer(4, 0)
+    imgui.push_style_var(14, Vector2f.new(2, 0))
+    imgui.same_line()
+    imgui.pop_style_var(1)
+    draw_fn()
+    imgui.push_style_var(14, Vector2f.new(2, 0))
+    imgui.same_line()
+    imgui.pop_style_var(1)
+    imgui.new_line()
+    this.spacer(0)
+end
+
 return this

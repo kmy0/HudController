@@ -162,7 +162,7 @@ local function update_key_binds()
     local config_mod = config.current.mod
     bind_manager.monitor:monitor()
 
-    if bind_manager.monitor:is_triggered("hud") and config_mod.disable_condition_binds_timed then
+    if bind_manager.monitor:is_triggered("hud") and config_mod.disable_condition_binds_time > 0 then
         if config_mod.disable_condition_binds_held then
             bind_manager.monitor:register_on_release_callback(
                 bind_manager.monitor:get_held_key_names("hud"),
@@ -178,8 +178,8 @@ local function update_key_binds()
     local is_held = config_mod.enable_condition_binds
         and config_mod.disable_condition_binds_held
         and bind_manager.monitor:is_held("hud")
-
-    if not config_mod.disable_condition_binds_timed and not is_held then
+    print(config_mod.disable_condition_binds_time)
+    if config_mod.disable_condition_binds_time == 0 and not is_held then
         this.disable_condition_binds:abort()
     end
 

@@ -507,4 +507,11 @@ function this.fns.hud_config(config)
     end
 end
 
+---@param config MainSettings
+function this.fns.mod_options(config)
+    if not config.mod.disable_condition_binds_timed then
+        config.mod.disable_condition_binds_time = 0
+    end
+end
+
 return this

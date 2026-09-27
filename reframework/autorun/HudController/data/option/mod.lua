@@ -56,22 +56,15 @@ local this = {
             draw = util_opt.checkbox,
             format = util_opt.format_checkbox,
         },
-        ---@type OptionDef<boolean>
-        disable_condition_binds_timed = {
-            config_key = "mod.disable_condition_binds_timed",
-            lang_key = "menu.config.disable_condition_binds_timed",
-            bindable = true,
-            draw = util_opt.checkbox,
-            format = util_opt.format_checkbox,
-        },
         ---@type OptionDef<integer>
         disable_condition_binds_time = {
             config_key = "mod.disable_condition_binds_time",
             lang_key = "menu.config.disable_condition_binds_time",
             bindable = true,
-            draw = util_opt.slider_int(1, 300),
+            draw = util_opt.slider_int(0, 300),
             format = function(_, value)
-                return util_gui.seconds_to_minutes_string(value, "%.0f")
+                return value == 0 and config.lang:tr("misc.text_disabled")
+                    or util_gui.seconds_to_minutes_string(value, "%.0f")
             end,
         },
         ---@type OptionDef<boolean>
