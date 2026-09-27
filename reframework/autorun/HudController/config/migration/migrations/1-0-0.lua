@@ -151,6 +151,17 @@ end
 
 ---@param config MainSettings
 function this.fns.binds(config)
+    local to_remove =
+        { "skip_quest_end_timer", "skip_quest_result", "mute_gossip", "hide_subtitles" }
+    local res = {}
+    for _, b in pairs(config.mod.bind.key.hud) do
+        if not util_table.contains_any(to_remove, b.bound_value) then
+            table.insert(res, b)
+        end
+    end
+
+    config.mod.bind.key.hud = res
+
     for _, b in pairs(config.mod.bind.key.hud) do
         b.bound_value = {
             key = b.bound_value,
