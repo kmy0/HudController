@@ -31,7 +31,6 @@ return {
         text_id = "ID",
         text_none = "None",
         text_screen_pos = "Screen Position",
-        text_search = "Search",
         text_ellipsis = "...",
         text_talker_type = "Talker Type",
         text_talker = "Talker",
