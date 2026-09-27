@@ -1,5 +1,6 @@
 ---@class FrameCache : Cache
 ---@field protected _map_frame table<any, integer>
+---@field protected _frame_key table
 ---@field max_frame integer
 ---@field jitter integer
 
@@ -9,13 +10,12 @@
 
 local cache = require("HudController.util.misc.cache")
 local frame_counter = require("HudController.util.misc.frame_counter")
-local hash = require("HudController.util.misc.hash")
 
 ---@class FrameCache
 local this = {}
----@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = cache })
+this._frame_key = {}
 
 ---@param max_frame integer? by default, 0
 ---@param jitter integer? by default, 0
@@ -24,31 +24,70 @@ function this:new(max_frame, jitter)
     local o = cache.new(self)
     setmetatable(o, self)
     ---@cast o FrameCache
+
     o.max_frame = max_frame or 0
     o.jitter = jitter or 0
     o._map_frame = {}
+
     return o
+end
+
+---@return integer
+function this:_expiry()
+    return frame_counter.frame + self.max_frame + math.random(0, self.jitter)
 end
 
 ---@param key any
 ---@param value any
 function this:set(key, value)
     self._map[key] = value
-    self._map_frame[key] = frame_counter.frame + self.max_frame + math.random(0, self.jitter)
+    self._map_frame[key] = self:_expiry()
 end
 
 ---@param key any
 ---@return any
 function this:get(key)
-    local max_frame = self._map_frame[key]
-    if max_frame then
-        if frame_counter.frame <= max_frame then
-            return self._map[key]
-        else
-            self._map[key] = nil
-            self._map_frame[key] = nil
-        end
+    local expiry = self._map_frame[key]
+
+    if expiry == nil then
+        return nil
     end
+
+    if frame_counter.frame <= expiry then
+        return self._map[key]
+    end
+
+    self._map[key] = nil
+    self._map_frame[key] = nil
+end
+
+---@param node table
+---@return any
+function this:_get_hashed_value(node)
+    ---@diagnostic disable-next-line: no-unknown
+    local expiry = node[self._frame_key]
+
+    if expiry == nil then
+        return nil
+    end
+
+    if frame_counter.frame <= expiry then
+        return node[self._value_key]
+    end
+
+    ---@diagnostic disable-next-line: no-unknown
+    node[self._value_key] = nil
+    ---@diagnostic disable-next-line: no-unknown
+    node[self._frame_key] = nil
+end
+
+---@param node table
+---@param value any
+function this:_set_hashed_value(node, value)
+    ---@diagnostic disable-next-line: no-unknown
+    node[self._value_key] = value
+    ---@diagnostic disable-next-line: no-unknown
+    node[self._frame_key] = self:_expiry()
 end
 
 function this:clear()
@@ -61,38 +100,33 @@ end
 ---@param optional_args FrameCacheMemoizeOptionalArgs?
 ---@return T
 function this.memoize(func, optional_args)
-    optional_args = optional_args or {}
-    local frame_cache = this:new(optional_args.max_frame, optional_args.jitter)
+    local opts = optional_args or {}
+    local frame_cache = this:new(opts.max_frame, opts.jitter)
+
+    local key_index = opts.key_index or 1
+    local key_as_string = opts.key_as_string
+    local key_fn = opts.key_fn
 
     local wrapped = {
         clear = function()
             frame_cache:clear()
         end,
     }
+
     setmetatable(wrapped, {
         __call = function(_, ...)
             ---@type any
             local key
-            if optional_args.do_hash then
-                ---@type any[]
-                local args
-                if not optional_args.key_index then
-                    args = { ... }
-                else
-                    args = { select(optional_args.key_index, ...) }
-                end
 
-                key = hash.hash_args(optional_args.deep_hash_table, table.unpack(args))
+            if key_fn then
+                key = key_fn(...)
+            elseif select("#", ...) > 0 then
+                key = select(key_index, ...)
             else
-                if select("#", ...) > 0 then
-                    ---@diagnostic disable-next-line: no-unknown
-                    key = select(optional_args.key_index or 1, ...)
-                else
-                    key = 1
-                end
+                key = 1
             end
 
-            if optional_args.key_as_string then
+            if key_as_string then
                 key = tostring(key)
             end
 
@@ -105,6 +139,7 @@ function this.memoize(func, optional_args)
             ---@diagnostic disable-next-line: no-unknown
             local ret = func(...)
             frame_cache:set(key, ret)
+
             return ret
         end,
     })

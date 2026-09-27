@@ -86,7 +86,7 @@ function this:new(args, parent, ctrl_getter, optional_args)
                 key_index = optional_args.cache_index,
             })
         elseif config_debug.combo_elem_cache == mod.enum.elem_cache.ONCE then
-            o._ctrl_getter = cache.memoize(o._ctrl_getter, nil, {
+            o._ctrl_getter = cache.memoize(o._ctrl_getter, {
                 key_index = optional_args.cache_index,
             })
         end

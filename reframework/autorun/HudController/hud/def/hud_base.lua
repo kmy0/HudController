@@ -228,7 +228,7 @@ function this:new(args, parent, optional_args)
     setmetatable(o, self)
     ---@cast o HudBase
 
-    o._get_component = cache.memoize(o._get_component, nil, { key_index = 2 })
+    o._get_component = cache.memoize(o._get_component, { key_index = 2 })
     o.root = o:get_root()
 
     o:set_hide(args.hide)
@@ -557,6 +557,7 @@ function this:change_visibility(ctrl, visible, hud_display)
             ctrl
             and self.hide_changed
             -- ignore when game is force revealing item bar or ammo bar
+
             and not (
                 (self.name_key == "SLIDER_BULLET" or self.name_key == "SLIDER_ITEM")
                 and ace_player.check_continue_flag(

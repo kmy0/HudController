@@ -129,13 +129,17 @@ function this.is_in_tent()
     return master_player:get_IsInTent()
 end
 
-this.get_master_char = cache.memoize(this.get_master_char, function(cached_value)
-    ---@cast cached_value app.HunterCharacter
-    return cached_value:get_Valid()
-end)
-this.get_char = cache.memoize(this.get_char, function(cached_value)
-    ---@cast cached_value app.HunterCharacter
-    return cached_value:get_Valid()
-end)
+this.get_master_char = cache.memoize(this.get_master_char, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.HunterCharacter
+        return cached_value:get_Valid()
+    end,
+})
+this.get_char = cache.memoize(this.get_char, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.HunterCharacter
+        return cached_value:get_Valid()
+    end,
+})
 
 return this

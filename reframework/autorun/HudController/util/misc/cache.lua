@@ -1,22 +1,22 @@
 ---@class Cache
 ---@field protected _map table<any, any>
 ---@field protected _clearable boolean
+---@field protected _nil_key table
+---@field protected _value_key table
 
 ---@class (exact) CacheMemoizeOptionalArgs
----@field do_hash boolean?
----@field deep_hash_table boolean?
 ---@field key_index integer?
 ---@field key_as_string boolean?
-
-local hash = require("HudController.util.misc.hash")
+---@field predicate (fun(cached_value: any, key: any?): boolean)?
+---@field key_fn (fun(...): any)?
 
 ---@class Cache
 local this = {}
----@diagnostic disable-next-line: inject-field
 this.__index = this
 ---@type Cache[]
----@diagnostic disable-next-line: inject-field
 this._instances = setmetatable({}, { __mode = "v" })
+this._nil_key = {}
+this._value_key = {}
 
 ---@return Cache
 function this:new()
@@ -24,8 +24,10 @@ function this:new()
         _map = {},
         _clearable = true,
     }
+
     setmetatable(o, self)
     ---@cast o Cache
+
     table.insert(this._instances, o)
     return o
 end
@@ -33,7 +35,6 @@ end
 ---@param key any
 ---@param value any
 function this:set(key, value)
-    ---@diagnostic disable-next-line: no-unknown
     self._map[key] = value
 end
 
@@ -43,12 +44,64 @@ function this:get(key)
     return self._map[key]
 end
 
----@param deep_hash_table boolean?
+---@param node table
+---@return any
+function this:_get_hashed_value(node)
+    return node[self._value_key]
+end
+
+---@param node table
+---@param value any
+function this:_set_hashed_value(node, value)
+    ---@diagnostic disable-next-line: no-unknown
+    node[self._value_key] = value
+end
+
 ---@param ... any
----@return any, string
-function this:get_hashed(deep_hash_table, ...)
-    local key = hash.hash_args(deep_hash_table, ...)
-    return self:get(key), key
+---@return any
+function this:get_hashed(...)
+    local node = self._map
+
+    for i = 1, select("#", ...) do
+        local key = select(i, ...)
+
+        if key == nil then
+            key = self._nil_key
+        end
+
+        node = node[key]
+
+        if node == nil then
+            return nil
+        end
+    end
+
+    return self:_get_hashed_value(node)
+end
+
+---@param value any
+---@param ... any
+function this:set_hashed(value, ...)
+    local node = self._map
+
+    for i = 1, select("#", ...) do
+        local key = select(i, ...)
+
+        if key == nil then
+            key = self._nil_key
+        end
+
+        local next_node = node[key]
+
+        if next_node == nil then
+            next_node = {}
+            node[key] = next_node
+        end
+
+        node = next_node
+    end
+
+    self:_set_hashed_value(node, value)
 end
 
 function this:clear()
@@ -57,54 +110,50 @@ end
 
 ---@generic T: fun(...): any
 ---@param func T
----@param predicate (fun(cached_value: any, key: any?): boolean)?
 ---@param optional_args CacheMemoizeOptionalArgs?
 ---@return T
-function this.memoize(func, predicate, optional_args)
+function this.memoize(func, optional_args)
     local cache = this:new()
-    optional_args = optional_args or {}
+    local opts = optional_args or {}
+
+    local key_index = opts.key_index or 1
+    local key_as_string = opts.key_as_string
+    local predicate = opts.predicate
+    local key_fn = opts.key_fn
 
     local wrapped = {
         clear = function()
             cache:clear()
         end,
     }
+
     setmetatable(wrapped, {
         __call = function(_, ...)
             ---@type any
             local key
-            if optional_args.do_hash then
-                ---@type any[]
-                local args
-                if not optional_args.key_index then
-                    args = { ... }
-                else
-                    args = { select(optional_args.key_index, ...) }
-                end
 
-                key = hash.hash_args(optional_args.deep_hash_table, table.unpack(args))
+            if key_fn then
+                key = key_fn(...)
+            elseif select("#", ...) > 0 then
+                key = select(key_index, ...)
             else
-                if select("#", ...) > 0 then
-                    ---@diagnostic disable-next-line: no-unknown
-                    key = select(optional_args.key_index or 1, ...)
-                else
-                    key = 1
-                end
+                key = 1
             end
 
-            if optional_args.key_as_string then
+            if key_as_string then
                 key = tostring(key)
             end
 
-            local cached = cache:get(key)
-
-            if cached ~= nil and (not predicate or (predicate and predicate(cached, key))) then
+            ---@diagnostic disable-next-line: invisible
+            local cached = cache._map[key]
+            if cached ~= nil and (not predicate or predicate(cached, key)) then
                 return cached
             end
 
             ---@diagnostic disable-next-line: no-unknown
             local ret = func(...)
-            cache:set(key, ret)
+            ---@diagnostic disable-next-line: invisible
+            cache._map[key] = ret
 
             return ret
         end,
@@ -114,9 +163,9 @@ function this.memoize(func, predicate, optional_args)
 end
 
 function this.clear_all()
-    for _, o in pairs(this._instances) do
-        if o._clearable then
-            o:clear()
+    for _, cache in pairs(this._instances) do
+        if cache._clearable then
+            cache:clear()
         end
     end
 end

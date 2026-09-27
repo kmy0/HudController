@@ -182,13 +182,17 @@ function this.init()
     return true
 end
 
-this.get_master_char = cache.memoize(this.get_master_char, function(cached_value)
-    ---@cast cached_value app.PorterCharacter
-    return cached_value:get_Valid()
-end)
-this.get_porter = cache.memoize(this.get_porter, function(cached_value)
-    ---@cast cached_value app.PorterCharacter
-    return cached_value:get_Valid()
-end)
+this.get_master_char = cache.memoize(this.get_master_char, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.PorterCharacter
+        return cached_value:get_Valid()
+    end,
+})
+this.get_porter = cache.memoize(this.get_porter, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.PorterCharacter
+        return cached_value:get_Valid()
+    end,
+})
 
 return this

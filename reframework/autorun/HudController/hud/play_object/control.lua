@@ -68,7 +68,7 @@ function this.all(ctrl, chain, target, lowercase)
     ---@type via.gui.Control[]
     local ret = {}
     ---@type string[]?, string
-    local cached, key = all_cache:get_hashed(false, ctrl, chain, target, lowercase)
+    local cached = all_cache:get_hashed(ctrl, chain, target, lowercase)
 
     if cached then
         for _, name in pairs(cached) do
@@ -95,7 +95,7 @@ function this.all(ctrl, chain, target, lowercase)
             end
         end)
 
-        all_cache:set(key, names)
+        all_cache:set_hashed(names, ctrl, chain, target, lowercase)
     end
 
     if not util_table.empty(ret) then
