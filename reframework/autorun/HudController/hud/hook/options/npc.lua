@@ -12,6 +12,7 @@ local timer = require("HudController.util.misc.timer")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+local hud_def = require("HudController.data.option.hud").opt
 
 local this = {}
 local handler = {
@@ -44,7 +45,7 @@ end
 
 function this.hide_handler_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_handler") then
+    if hud_config and hud.get_hud_option(hud_def.hide_handler) then
         local handler_id_fixed = m.getHandlerNpcIDFixed(true)
         local handler_id = e.to_enum("app.NpcDef.ID", handler_id_fixed)
 
@@ -100,7 +101,7 @@ end
 function this.hide_npc_pre(args)
     local hud_config = common.get_hud()
     if hud_config then
-        local hide_npc = hud.get_hud_option("hide_npc")
+        local hide_npc = hud.get_hud_option(hud_def.hide_npc)
         local no_talk = hide_npc == mod.enum.hide_npc.NO_TALK
         local no_facility = hide_npc == mod.enum.hide_npc.NO_FACILITY
 
@@ -124,7 +125,7 @@ end
 
 function this.hide_pet_pre(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_pet") then
+    if hud_config and hud.get_hud_option(hud_def.hide_pet) then
         util_misc.try(function()
             local pets = get_pets()
             if pets then

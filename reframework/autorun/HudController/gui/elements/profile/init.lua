@@ -59,72 +59,72 @@ local function draw_entry(id, name, draw)
     end
 end
 
----@param key string
-local function draw_option(key)
-    local opt = hud_def.opt[key] --[[@as OptionDef]]
-    check_overriden(option.draw(opt, nil, config.current.mod.combo.hud), key, opt)
+---@param opt OptionDef
+local function draw_option(opt)
+    check_overriden(option.draw(opt, nil, config.current.mod.combo.hud), opt.key, opt)
 end
 
 local function draw_options()
     imgui.begin_child_window("hud_elements_child_window_options", { -1, -1 }, false)
 
     local config_mod = config.current.mod
+    local opt = hud_def.opt
 
     util_imgui.separator_text(config.lang:tr("hud.category_general"))
-    draw_option("mute_gui")
-    draw_option("disable_area_intro")
+    draw_option(opt.mute_gui)
+    draw_option(opt.disable_area_intro)
 
     util_imgui.separator_text(config.lang:tr("hud.category_player"))
-    draw_option("hide_danger")
+    draw_option(opt.hide_danger)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_danger"), true)
-    draw_option("hide_aggro")
-    draw_option("disable_scoutflies")
-    draw_option("hide_weapon")
+    draw_option(opt.hide_aggro)
+    draw_option(opt.disable_scoutflies)
+    draw_option(opt.hide_weapon)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_weapon"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_npc"))
-    draw_option("hide_handler")
+    draw_option(opt.hide_handler)
     imgui.same_line()
     imgui.set_next_item_width(util_imgui.get_drag_with())
-    draw_option("hide_handler_timeout")
-    draw_option("hide_pet")
+    draw_option(opt.hide_handler_timeout)
+    draw_option(opt.hide_pet)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_pet"), true)
-    draw_option("hide_npc")
+    draw_option(opt.hide_npc)
 
     util_imgui.separator_text(config.lang:tr("hud.category_monster"))
-    draw_option("monster_wound")
-    draw_option("monster_icon")
+    draw_option(opt.monster_wound)
+    draw_option(opt.monster_icon)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_hide_monster_icon"), true)
 
-    draw_option("hide_small_monsters")
-    draw_option("monster_ignore_camp")
+    draw_option(opt.hide_small_monsters)
+    draw_option(opt.monster_ignore_camp)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_monster_ignore_camp"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_quest"))
-    draw_option("disable_quest_intro")
-    draw_option("disable_quest_end_camera")
-    draw_option("disable_quest_end_outro")
-    draw_option("skip_quest_result")
+    draw_option(opt.disable_quest_intro)
+    draw_option(opt.disable_quest_end_camera)
+    draw_option(opt.disable_quest_end_outro)
+    draw_option(opt.skip_quest_result)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_skip_quest_result"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_porter"))
-    draw_option("disable_porter_call")
-    draw_option("hide_porter")
+    draw_option(opt.disable_porter_call)
+    draw_option(opt.hide_porter)
     imgui.same_line()
     imgui.set_next_item_width(util_imgui.get_drag_with())
-    draw_option("hide_porter_timeout")
-    draw_option("disable_porter_tracking")
+    draw_option(opt.hide_porter_timeout)
+    draw_option(opt.disable_porter_tracking)
 
     util_imgui.separator_text(config.lang:tr("hud.category_profile"))
-    draw_option("show_notification")
+    draw_option(opt.show_notification)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_show_notification"), true)
 
     util_imgui.separator_text(config.lang:tr("hud.category_fade"))
     util_imgui.tooltip(config.lang:tr("hud.tooltip_category_fade"))
-    draw_option("fade_opacity")
+    draw_option(opt.fade_opacity)
     util_imgui.tooltip(config.lang:tr("hud.tooltip_fade_opacity"), true)
-    draw_option("fade_in")
-    draw_option("fade_out")
+    draw_option(opt.fade_in)
+    draw_option(opt.fade_out)
 
     if not util_table.empty(config_mod.hud[config_mod.combo.hud].options) then
         util_imgui.separator_text(config.lang:tr("hud_element.entry.category_ingame_settings"))

@@ -1,5 +1,6 @@
 local common = require("HudController.hud.hook.common")
 local hud = require("HudController.hud.init")
+local hud_def = require("HudController.data.option.hud").opt
 local m = require("HudController.util.ref.methods")
 local options = require("HudController.hud.hook.options.init")
 local options_mod = require("HudController.hud.hook.options_mod")
@@ -231,7 +232,7 @@ function option_hooks.mute_gui()
             return false
         end
 
-        return hud.get_hud_option("mute_gui") or false
+        return hud.get_hud_option(hud_def.mute_gui) or false
     end)
 end
 

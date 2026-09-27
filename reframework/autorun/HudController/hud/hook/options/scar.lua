@@ -3,13 +3,14 @@ local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local mod = require("HudController.data.mod")
 local util_ref = require("HudController.util.ref.init")
+local hud_def = require("HudController.data.option.hud").opt
 
 local this = {}
 
 function this.disable_scar_stamp_pre(args)
     local hud_config = common.get_hud()
     if hud_config then
-        local em_scar = hud.get_hud_option("monster_wound")
+        local em_scar = hud.get_hud_option(hud_def.monster_wound)
 
         if em_scar == mod.enum.em_scar.DISABLE or em_scar == mod.enum.em_scar.HIDE then
             local state = sdk.to_int64(args[3]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
@@ -23,7 +24,7 @@ end
 function this.disable_scar_activate_pre(args)
     local hud_config = common.get_hud()
     if hud_config then
-        local em_scar = hud.get_hud_option("monster_wound")
+        local em_scar = hud.get_hud_option(hud_def.monster_wound)
 
         if em_scar == mod.enum.em_scar.DISABLE then
             local state = sdk.to_int64(args[6]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
@@ -41,7 +42,7 @@ end
 function this.disable_scar_state_pre(args)
     local hud_config = common.get_hud()
     if hud_config then
-        local em_scar = hud.get_hud_option("monster_wound")
+        local em_scar = hud.get_hud_option(hud_def.monster_wound)
 
         if em_scar == mod.enum.em_scar.DISABLE then
             local state = sdk.to_int64(args[4]) --[[@as app.cEmModuleScar.cScarParts.STATE]]
@@ -59,7 +60,7 @@ end
 function this.scar_state_post(_)
     local hud_config = common.get_hud()
     if hud_config then
-        local em_scar = hud.get_hud_option("monster_wound")
+        local em_scar = hud.get_hud_option(hud_def.monster_wound)
         if em_scar == mod.enum.em_scar.DISABLE then
             return
         end

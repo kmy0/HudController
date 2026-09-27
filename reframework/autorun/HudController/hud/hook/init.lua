@@ -225,31 +225,33 @@ function this.init()
     this.hud["QUEST_END_TIMER"] = this.hud_hooks.quest_end_timer
     this.hud["BUTTON_PRESS"] = this.hud_hooks.button_press
     --
-    this.option["disable_scoutflies"] = this.option_hooks.disable_scoutflies
-    this.option["disable_porter_call"] = this.option_hooks.disable_porter_call
-    this.option["hide_porter"] =
+    this.option[hud_def.opt.disable_scoutflies.key] = this.option_hooks.disable_scoutflies
+    this.option[hud_def.opt.disable_porter_call.key] = this.option_hooks.disable_porter_call
+    this.option[hud_def.opt.hide_porter.key] =
         { this.option_hooks.hide_porter, this.option_hooks.disable_porter_call }
-    this.option["disable_porter_tracking"] = this.option_hooks.disable_porter_tracking
-    this.option["monster_icon"] = this.option_hooks.hide_monster_icon
-    this.option["hide_small_monsters"] = this.option_hooks.hide_small_monsters
-    this.option["monster_ignore_camp"] = this.option_hooks.monster_ignore_camp
-    this.option["hide_handler"] = this.option_hooks.hide_handler
-    this.option["hide_npc"] = this.option_hooks.hide_npc
-    this.option["hide_pet"] = this.option_hooks.hide_pet
-    this.option["disable_quest_intro"] = this.option_hooks.disable_quest_intro
-    this.option["disable_quest_end_outro"] =
+    this.option[hud_def.opt.disable_porter_tracking.key] = this.option_hooks.disable_porter_tracking
+    this.option[hud_def.opt.monster_icon.key] = this.option_hooks.hide_monster_icon
+    this.option[hud_def.opt.hide_small_monsters.key] = this.option_hooks.hide_small_monsters
+    this.option[hud_def.opt.monster_ignore_camp.key] = this.option_hooks.monster_ignore_camp
+    this.option[hud_def.opt.hide_handler.key] = this.option_hooks.hide_handler
+    this.option[hud_def.opt.hide_npc.key] = this.option_hooks.hide_npc
+    this.option[hud_def.opt.hide_pet.key] = this.option_hooks.hide_pet
+    this.option[hud_def.opt.disable_quest_intro.key] = this.option_hooks.disable_quest_intro
+    this.option[hud_def.opt.disable_quest_end_outro.key] =
         { this.option_hooks.disable_quest_intro, this.option_hooks.disable_quest_end_outro }
-    this.option["disable_quest_end_camera"] = this.option_hooks.disable_quest_end_camera
-    this.option["skip_quest_result"] = this.option_hooks.skip_quest_result
-    this.option["monster_wound"] = this.option_hooks.scar
-    this.option["hide_danger"] = this.option_hooks.hide_danger
-    this.option["hide_weapon"] = this.option_hooks.hide_weapon
-    this.option["mute_gui"] = this.option_hooks.mute_gui
-    this.option["disable_area_intro"] = this.option_hooks.disable_area_intro
-    this.option["hide_aggro"] = this.option_hooks.hide_aggro
+    this.option[hud_def.opt.disable_quest_end_camera.key] =
+        this.option_hooks.disable_quest_end_camera
+    this.option[hud_def.opt.skip_quest_result.key] = this.option_hooks.skip_quest_result
+    this.option[hud_def.opt.monster_wound.key] = this.option_hooks.scar
+    this.option[hud_def.opt.hide_danger.key] = this.option_hooks.hide_danger
+    this.option[hud_def.opt.hide_weapon.key] = this.option_hooks.hide_weapon
+    this.option[hud_def.opt.mute_gui.key] = this.option_hooks.mute_gui
+    this.option[hud_def.opt.disable_area_intro.key] = this.option_hooks.disable_area_intro
+    this.option[hud_def.opt.hide_aggro.key] = this.option_hooks.hide_aggro
     --
-    this.option_mod["block_input"] = this.option_mod_hooks.block_input
-    this.option_mod["canvas_draw"] = this.option_mod_hooks.draw_canvas
+
+    this.option_mod[mod_def.opt.block_input.key] = this.option_mod_hooks.block_input
+    this.option_mod[mod_def.opt.canvas_draw.key] = this.option_mod_hooks.draw_canvas
     return true
 end
 

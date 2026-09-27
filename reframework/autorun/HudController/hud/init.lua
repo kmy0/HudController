@@ -74,11 +74,17 @@ function this.get_current(strict)
     return this.profile_switcher.current_hud.hud
 end
 
----@return boolean?
+---@generic T
+---@param key string | OptionDef<T>
+---@return T?
 function this.get_hud_option(key)
     local current_hud = this.get_current()
     if not current_hud then
         return
+    end
+
+    if type(key) ~= "string" then
+        key = key.key
     end
 
     local overridden = this.options.overridden_options[key]
