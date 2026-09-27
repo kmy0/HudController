@@ -590,6 +590,7 @@ return {
             tooltip_disable_fade_opacity = "Fade this element out completely before switching profiles, then fade it back in. Overrides opacity-only fading",
             tooltip_keyboard_shortcut_only_one_row = "One Row Mode only",
             box_override_fade_duration = "Override Fade Duration",
+            tooltip_copy_mute_sfx = "Copy ID to clipboard",
         },
     },
     hud_subelement = {

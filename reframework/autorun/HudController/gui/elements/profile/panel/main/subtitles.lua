@@ -302,6 +302,13 @@ return function(elem, elem_config, config_key)
                 end
 
                 imgui.same_line()
+
+                if util_imgui.draw_duplicate_button("mute_sfx|" .. i) then
+                    imgui.set_clipboard(map.key)
+                end
+                util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_copy_mute_sfx"))
+
+                imgui.same_line()
                 imgui.text(map.key)
             end
         end
