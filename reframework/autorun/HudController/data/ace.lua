@@ -1,7 +1,10 @@
----@class (exact) AceData
+---@class AceData
 ---@field map AceMap
 
----@class (exact) AceMap
+---@class AdditionalHudToGUIIDName : {[string]: string}
+---@class AddtionalHud : string[]
+
+---@class AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
 ---@field guiid_to_hudid table<app.GUIID.ID, app.GUIHudDef.TYPE>
 ---@field hudid_name_to_local_name table<string, string>
@@ -9,7 +12,7 @@
 ---@field option table<string, AceOption>
 ---@field hudid_to_can_hide table<app.GUIHudDef.TYPE, boolean>
 ---@field additional_hud string[]
----@field additional_hud_to_guiid_name table<string, string>
+---@field additional_hud_to_guiid_name AdditionalHudToGUIIDName
 ---@field additional_hud_index integer
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
@@ -53,6 +56,7 @@ local this = {
         weaponid_name_to_local_name = {},
         option = {},
         additional_hud_index = 1000,
+        ---@class AddtionalHud
         additional_hud = {
             "SLINGER_RETICLE",
             "GUN_RETICLE",
@@ -73,6 +77,7 @@ local this = {
             "QUEST_END_TIMER",
             "BUTTON_PRESS",
         },
+        ---@class AdditionalHudToGUIIDName
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
             GUN_RETICLE = "UI020019",
