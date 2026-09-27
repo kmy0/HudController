@@ -2,9 +2,9 @@ local color = require("HudController.util.imgui.color")
 local combo_filter = require("HudController.util.imgui.combo_filter")
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
+local id = require("HudController.util.imgui.id")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
-local uuid = require("HudController.util.misc.uuid")
 
 local FRAME_PADDING_X = 4.0
 local ITEM_SPACING_X = 8.0
@@ -86,7 +86,7 @@ function this.separator_text(label, padding, thickness, col)
         thickness
     )
 
-    imgui.invisible_button(uuid.generate(), {
+    imgui.invisible_button(id.get(), {
         window_pos.x + window_size.x - pos.x - 2,
         label_size.y,
     })
@@ -104,7 +104,7 @@ function this.separator(thickness, col)
     local window_size = imgui.get_window_size()
 
     draw_list:add_line({ pos.x, pos.y }, { window_pos.x + window_size.x, pos.y }, col, thickness)
-    imgui.invisible_button(uuid.generate(), {
+    imgui.invisible_button(id.get(), {
         window_pos.x + window_size.x - pos.x - 2,
         thickness,
     })
@@ -143,7 +143,7 @@ function this.separator_text_item(label, item_width, padding, spacing, thickness
         thickness
     )
 
-    imgui.invisible_button(uuid.generate(), {
+    imgui.invisible_button(id.get(), {
         line_end - pos.x - 2,
         label_size.y,
     })
@@ -174,7 +174,7 @@ function this.spacer(x, y)
     x = x or 0
     y = y or 0
     imgui.push_style_var(14, Vector2f.new(x, y))
-    imgui.invisible_button(uuid.generate())
+    imgui.invisible_button(id.get())
     imgui.pop_style_var(1)
 end
 
