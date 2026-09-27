@@ -11,6 +11,8 @@ local util_ref = require("HudController.util.ref.init")
 
 ---@module "HudController.hud.play_object.init"
 local play_object = util_misc.lazy_require("HudController.hud.play_object.init")
+---@module "HudController.hud.hook.init"
+local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 local this = {}
 
@@ -149,6 +151,15 @@ end
 function this.is_draw_canvas()
     local config_mod = config.current.mod
     return config_mod.canvas.draw and config_mod.enabled and mod.is_ok()
+end
+
+function this.block_input()
+    mod.is_block_input = true
+    hook.hook_option_mod("block_input")
+end
+
+function this.release_input()
+    mod.is_block_input = false
 end
 
 this.get_root_window = cache.memoize(this.get_root_window)

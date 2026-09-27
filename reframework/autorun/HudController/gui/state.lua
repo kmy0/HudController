@@ -6,6 +6,7 @@
 ---@field listener BindListener
 ---@field collision string?
 
+local filter = require("HudController.util.imgui.filter")
 local util_gui = require("HudController.gui.util")
 
 ---@class GuiState
@@ -28,6 +29,15 @@ function this.get_input(draw_cancel)
 
     ---@diagnostic disable-next-line: return-type-mismatch
     return changed, this.input and this.input.buf
+end
+
+---@return boolean
+function this.any_input()
+    return this.listener ~= nil or this.input ~= nil or filter.is_any_active()
+end
+
+function this.clear_listener()
+    this.listener = nil
 end
 
 return this

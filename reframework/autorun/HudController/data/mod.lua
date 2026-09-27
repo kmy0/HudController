@@ -5,6 +5,7 @@
 ---@field initialized boolean
 ---@field is_reset boolean
 ---@field is_title_request boolean
+---@field is_block_input boolean
 
 ---@class (exact) ModMap
 ---@field slider_grid_ratio string[]
@@ -93,6 +94,7 @@ local this = {
     is_reset = false,
     pause = false,
     is_title_request = false,
+    is_block_input = false,
 }
 ---@enum HudType
 this.enum.hud_type = { ---@class HudType.*

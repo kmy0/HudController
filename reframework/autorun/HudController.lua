@@ -1,4 +1,5 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
+local bind_manager = require("HudController.hud.bind.key.init")
 local call_queue = require("HudController.hud.call_queue")
 local canvas = require("HudController.hud.canvas.init")
 local combo = require("HudController.data.combo")
@@ -17,6 +18,7 @@ local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
 local util_mod = require("HudController.util.mod.init")
 local logger = util.misc.logger.g
+local gui_state = require("HudController.gui.state")
 local option = require("HudController.data.option.init")
 
 local init = init_chain:new(
@@ -128,6 +130,20 @@ re.on_frame(function()
     end
 
     config.run_save()
+
+    if gui_state.listener then
+        bind_manager.monitor:pause()
+    else
+        gui_state.clear_listener()
+        bind_manager.monitor:unpause()
+    end
+
+    if config_gui.main.is_opened and gui_state.any_input() then
+        util_mod.block_input()
+    else
+        util_mod.release_input()
+    end
+
     hook.hook_options_mod()
 end)
 

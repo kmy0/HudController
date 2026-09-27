@@ -65,6 +65,7 @@ function this.draw()
         gui_elements.sorter.close()
         gui_elements.selector.close()
         state.input = nil
+        state.clear_listener()
         config.save_global()
         imgui.end_window()
         imgui.pop_style_var(1)

@@ -105,6 +105,7 @@ function this.hook_hud(hud_id, hud_name)
     end
 end
 
+---@param option_key string
 function this.hook_option(option_key)
     if this.is_option_hooked[option_key] then
         return
@@ -116,6 +117,20 @@ function this.hook_option(option_key)
     end
 
     this.is_option_hooked[option_key] = true
+end
+
+---@param option_key string
+function this.hook_option_mod(option_key)
+    if this.is_option_mod_hooked[option_key] then
+        return
+    end
+
+    local fn = this.option_mod[option_key]
+    if fn then
+        hook_fn(fn)
+    end
+
+    this.is_option_mod_hooked[option_key] = true
 end
 
 ---@param profile_config  ModProfileConfig

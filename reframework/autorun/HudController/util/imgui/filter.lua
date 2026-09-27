@@ -24,6 +24,11 @@ function this.activate(id)
     end
 end
 
+---@return boolean
+function this.is_any_active()
+    return active ~= nil
+end
+
 ---@param id string
 ---@return boolean
 function this.is_active(id)

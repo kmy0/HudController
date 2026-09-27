@@ -42,11 +42,6 @@ local function restore_indexes()
     config:set("__temp.option_value", 0)
 end
 
-local function clear_listener()
-    state.listener = nil
-    bind_manager.monitor:unpause()
-end
-
 local function start_listener()
     state.listener = {
         listener = util_bind.listener:new(),
@@ -60,7 +55,6 @@ local function draw_listener(manager)
     end
 
     util_imgui.adjust_pos(0, -2)
-    bind_manager.monitor:pause()
 
     local bind = state.listener.listener:listen() --[[@as ModBind]]
     ---@type string[]
@@ -83,7 +77,7 @@ local function draw_listener(manager)
 
     if imgui.button(util_gui.tr("menu.bind.key.button_save")) then
         manager:register(bind)
-        clear_listener()
+        state.clear_listener()
     end
 
     util_imgui.end_disabled()
@@ -103,7 +97,7 @@ local function draw_listener(manager)
     imgui.same_line()
 
     if imgui.button(util_gui.tr("menu.bind.key.button_cancel")) then
-        clear_listener()
+        state.clear_listener()
     end
 
     imgui.end_table()
@@ -178,7 +172,7 @@ local function draw_buttons(buttons, max_width)
     if changed then
         local manager = this.managers[config_mod.bind.key.key_type_selection]
 
-        clear_listener()
+        state.clear_listener()
         restore_indexes()
 
         if manager then
@@ -450,7 +444,7 @@ end
 
 function this.draw()
     if not util_menubar.draw_menu(util_gui.tr("menu.bind.key.name"), draw_key_bind_menu) then
-        clear_listener()
+        state.clear_listener()
     end
 end
 
