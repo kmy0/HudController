@@ -25,6 +25,8 @@ local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
+---@module "HudController.hud.hook.init"
+local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 local mod = data.mod
 local ace = data.ace
@@ -57,6 +59,7 @@ local this = {
             apply = function(key, value)
                 local opt = def.mod.opt[key]
                 config:set(opt.config_key, value)
+                hook.hook_option_mod(opt.key)
             end,
             notification = function(key, value)
                 local opt = def.mod.opt[key]
@@ -105,10 +108,23 @@ local this = {
         elem_option = {
             apply = function(key, value)
                 local ctx = elements.get_element_ctx(value.ctx_path)
+
                 if ctx then
                     local opt = def.elem.get_opt(key)
                     opt:apply(ctx, value.value)
                     ctx.elem.overridden_options[opt.key] = util_table.deep_copy(value.value)
+                    local elem = ctx.elem:get_root()
+                    local opt_hook_table = hook.hud_option_hooks[elem.name_key]
+                    local opt_path = string.format("%s.%s", ctx.config_path, opt.key)
+
+                    if opt_hook_table then
+                        local opt_hook = opt_hook_table[opt_path]
+                        if opt_hook and not hook.is_option_mod_hooked[opt_path] then
+                            opt_hook.force_once = true
+                        end
+                    end
+
+                    hook.hook_hud(elem.hud_id, elem.name_key)
                 end
             end,
             notification = function(key, value)

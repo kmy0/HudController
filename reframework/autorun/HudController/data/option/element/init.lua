@@ -13,6 +13,9 @@
 ---@field elem_config C
 ---@field config_key string
 
+---@class (exact) ElementOptionContextWithPath<E, C> : ElementOptionContext<E, C>
+---@field config_path string path without hud profile
+
 ---@class (exact) OptionCtxPath
 ---@field hud_id app.GUIHudDef.TYPE
 ---@field path string

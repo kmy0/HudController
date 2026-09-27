@@ -21,7 +21,7 @@ local this = {
 }
 
 ---@param path OptionCtxPath
----@return ElementOptionContext<HudBase, HudBaseConfig>?
+---@return ElementOptionContextWithPath<HudBase, HudBaseConfig>?
 function this.get_element_ctx(path)
     local hudbase = this.by_hudid[path.hud_id]
     if not hudbase then
@@ -44,7 +44,12 @@ function this.get_element_ctx(path)
         ctx_config = util_table.get_by_path(root_config, path.path)
     end
 
-    return { elem = ctx, elem_config = ctx_config, config_key = config_key }
+    return {
+        elem = ctx,
+        elem_config = ctx_config,
+        config_key = config_key,
+        config_path = string.format("%s.%s", hudbase.name_key, path.path),
+    }
 end
 
 ---@param element HudBaseConfig

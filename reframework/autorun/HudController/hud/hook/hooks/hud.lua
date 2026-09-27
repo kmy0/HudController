@@ -1,6 +1,7 @@
 ---@class HudOptionHook
 ---@field condition fun(config_path: string): boolean
 ---@field fn fun()
+---@field force_once boolean
 
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
@@ -36,16 +37,30 @@ local function opt_key(node, opt)
     return ("%s.%s"):format(node, opt)
 end
 
+---@return HudOptionHook
 local function make_hud_options_hook(fn, condition)
     condition = condition
         or function(config_path)
             local profile = hud.get_current() --[[@as ModProfileConfig]]
             return util_table.get_by_path(profile, string.format("elements.%s", config_path))
         end
-    return {
-        condition = condition,
+
+    local ret = {
+        force_once = false,
         fn = fn,
     }
+
+    ret.condition = function(...)
+        if ret.force_once then
+            ret.force_once = false
+            return true
+        end
+
+        return condition(...)
+    end
+
+    ---@diagnostic disable-next-line: return-type-mismatch
+    return ret
 end
 
 function hud_hooks.target_reticle()
