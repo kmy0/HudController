@@ -333,6 +333,11 @@ function this:_clear()
     self.key_buffer.snapshot = {}
 end
 
+---@return boolean
+function this:is_pause()
+    return self._pause
+end
+
 function this:pause()
     self:_clear()
     self._pause = true

@@ -135,7 +135,9 @@ re.on_frame(function()
         bind_manager.monitor:pause()
     else
         gui_state.clear_listener()
-        bind_manager.monitor:unpause()
+        if bind_manager.monitor:is_pause() then
+            bind_manager.monitor:unpause()
+        end
     end
 
     if config_gui.main.is_opened and gui_state.any_input() then
