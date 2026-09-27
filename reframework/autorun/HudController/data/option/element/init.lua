@@ -284,7 +284,7 @@ local function get_elem_option_map()
     ---@param names string[]
     ---@return ElementOptNode?
     local function make_node(elem_config, hud_id, base_opt, main_opt, sub_opt, keys, path, names)
-        if elem_config.name_key:sub(1, 2) == "__" then
+        if elem_config.name_key:sub(1, 2) == "__" and elem_config.name_key:sub(-2) ~= "__" then
             return
         end
 

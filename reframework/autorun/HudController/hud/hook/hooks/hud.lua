@@ -403,7 +403,7 @@ end
 function hud_hooks.progress()
     local root = elem_def.map[elem_base_def.Progress]
 
-    hud_option_hooks[elem_base_def.Progres] = {
+    hud_option_hooks[elem_base_def.Progress] = {
         [opt_key(root, "_cache_reset")] = make_hud_options_hook(function()
             m.hook(
                 "app.MissionManager.unLoadMissionData(app.MissionIDList.ID)",
@@ -554,7 +554,7 @@ end
 function hud_hooks.minimap()
     local root = elem_def.map[elem_base_def.Minimap]
     local def = elem_def.main[mod_enum.hud_type.MINIMAP]
-    local classic = root.children.classic_minimap
+    local classic = root.children["__classic_minimap__"]
 
     hud_option_hooks[elem_base_def.Minimap] = {
         [opt_key(classic, def.opt.classic_minimap)] = make_hud_options_hook(function()

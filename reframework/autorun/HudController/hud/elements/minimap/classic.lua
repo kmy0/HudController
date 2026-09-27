@@ -241,7 +241,7 @@ end
 ---@return ClassicMinimapConfig
 function this.get_config()
     local base = {
-        name_key = "__classic_minimap",
+        name_key = "__classic_minimap__",
         enabled_classic_minimap = false,
         hide_pl_pulse = false,
         children = {},
