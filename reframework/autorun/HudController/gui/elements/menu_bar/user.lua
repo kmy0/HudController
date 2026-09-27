@@ -1,4 +1,5 @@
 local cd = require("HudController.data.combo")
+local color = require("HudController.util.imgui.color")
 local combo_multi = require("HudController.util.imgui.combo_multi")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
@@ -9,7 +10,6 @@ local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
-local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod_def = option.mod
@@ -106,7 +106,7 @@ local function draw_options_menu()
         local text_y = min.y + (height - config.lang.font_size) * 0.5
 
         local draw_list = imgui.get_window_draw_list()
-        local text_col = 0xffffffff
+        local text_col = color.with_alpha(0xffffffff)
 
         draw_list:push_clip_rect({ left, min.y }, { right, max.y }, true)
         draw_list:add_text(
@@ -114,10 +114,6 @@ local function draw_options_menu()
             text_col,
             config.lang:tr("menu.user.options.combo_game_options")
         )
-
-        if util_imgui.is_disabled() then
-            text_col = util_misc.mul_alpha(text_col, 0.6)
-        end
 
         draw_list:pop_clip_rect()
     end, function(query, _)

@@ -1,3 +1,4 @@
+local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local d = require("HudController.util.imgui.disabled")
 local filter = require("HudController.util.imgui.filter")
@@ -175,10 +176,9 @@ local function draw_combo(
         util_imgui.tooltip(full_preview)
     end
 
-    local bg_col = hovered and 0xff4f4e4d or 0xff403636
-    local text_col = 0xFFFFFFFF
-    bg_col = disabled and util_misc.mul_alpha(bg_col, 0.6) or bg_col
-    text_col = disabled and util_misc.mul_alpha(text_col, 0.6) or text_col
+    local bg_col = color.with_alpha(hovered and 0xff4f4e4d or 0xff403636)
+    local text_col = color.with_alpha(0xFFFFFFFF)
+
     draw_list:add_rect_filled(
         { pos.x, pos.y },
         { pos.x + width, pos.y + frame_height },
@@ -583,10 +583,8 @@ local function draw_custom_combo(label, popup_id, draw_preview)
     d.end_disabled()
 
     local hovered = imgui.is_item_hovered()
-    local bg_col = hovered and 0xff4f4e4d or 0xff403636
-    local fg_col = 0xffffffff
-    bg_col = disabled and util_misc.mul_alpha(bg_col, 0.6) or bg_col
-    fg_col = disabled and util_misc.mul_alpha(fg_col, 0.6) or fg_col
+    local bg_col = color.with_alpha(hovered and 0xff4f4e4d or 0xff403636)
+    local fg_col = color.with_alpha(0xFFFFFFFF)
 
     draw_list:add_rect_filled(
         { pos.x, pos.y },

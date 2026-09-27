@@ -336,6 +336,7 @@ return {
         tools = {
             name = "Tools",
             box_block_input = "Block Game Input",
+            slider_window_opacity = "Window Opacity",
         },
     },
     hud = {

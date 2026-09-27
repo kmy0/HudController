@@ -78,6 +78,7 @@
 ---@field hide_disabled_element_profiles boolean
 ---@field display_active_element_profile_name boolean
 ---@field block_input boolean
+---@field window_opacity number
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
 ---@field user_options table<string, any>
@@ -127,6 +128,7 @@ return {
         hide_disabled_element_profiles = false,
         display_active_element_profile_name = false,
         block_input = false,
+        window_opacity = 0.5,
         user_scripts = {},
         user_conditions = {},
         user_options = {},

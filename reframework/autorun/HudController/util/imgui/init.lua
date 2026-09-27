@@ -1,3 +1,4 @@
+local color = require("HudController.util.imgui.color")
 local combo_filter = require("HudController.util.imgui.combo_filter")
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
@@ -60,18 +61,13 @@ end
 ---@param label string
 ---@param padding [number, number]?
 ---@param thickness number?
----@param color integer?
-function this.separator_text(label, padding, thickness, color)
+---@param col integer?
+function this.separator_text(label, padding, thickness, col)
     local pad_x = padding and padding[1] or 50
     local pad_y = padding and padding[2] or 0
     thickness = thickness or 3
-    color = color or 2106363020
-    local color_text = 0xffffffff
-
-    if disabled.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-        color_text = util_misc.mul_alpha(color_text, 0.6)
-    end
+    col = color.with_alpha(col or 2106363020)
+    local color_text = color.with_alpha(0xffffffff)
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -81,12 +77,12 @@ function this.separator_text(label, padding, thickness, color)
     local pos_y = pos.y + label_size.y / 2 + pad_y
     local label_x = pos.x + pad_x + 15
 
-    draw_list:add_line({ pos.x, pos_y }, { pos.x + pad_x, pos_y }, color, thickness)
+    draw_list:add_line({ pos.x, pos_y }, { pos.x + pad_x, pos_y }, col, thickness)
     draw_list:add_text({ label_x, pos.y + pad_y }, color_text, label)
     draw_list:add_line(
         { label_x + label_size.x + 15, pos_y },
         { window_pos.x + window_size.x, pos_y },
-        color,
+        col,
         thickness
     )
 
@@ -97,21 +93,17 @@ function this.separator_text(label, padding, thickness, color)
 end
 
 ---@param thickness number?
----@param color integer?
-function this.separator(thickness, color)
+---@param col integer?
+function this.separator(thickness, col)
     thickness = thickness or 3
-    color = color or 2106363020
-
-    if disabled.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    col = color.with_alpha(col or 2106363020)
 
     local draw_list = imgui.get_window_draw_list()
     local pos = imgui.get_cursor_screen_pos()
     local window_pos = imgui.get_window_pos()
     local window_size = imgui.get_window_size()
 
-    draw_list:add_line({ pos.x, pos.y }, { window_pos.x + window_size.x, pos.y }, color, thickness)
+    draw_list:add_line({ pos.x, pos.y }, { window_pos.x + window_size.x, pos.y }, col, thickness)
     imgui.invisible_button(uuid.generate(), {
         window_pos.x + window_size.x - pos.x - 2,
         thickness,
@@ -123,17 +115,13 @@ end
 ---@param padding [number, number]?
 ---@param spacing number?
 ---@param thickness number?
----@param color integer?
-function this.separator_text_item(label, item_width, padding, spacing, thickness, color)
+---@param col integer?
+function this.separator_text_item(label, item_width, padding, spacing, thickness, col)
     local pad_x = padding and padding[1] or 50
     local pad_y = padding and padding[2] or 0
     spacing = spacing or 15
     thickness = thickness or 3
-    color = color or 2106363020
-
-    if disabled.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    col = color.with_alpha(col or 2106363020)
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -146,12 +134,12 @@ function this.separator_text_item(label, item_width, padding, spacing, thickness
     local label_x = pos.x + pad_x + spacing
     local pos_y = pos.y + label_size.y / 2
 
-    draw_list:add_line({ pos.x, pos_y + pad_y }, { pos.x + pad_x, pos_y + pad_y }, color, thickness)
-    draw_list:add_text({ label_x, pos.y + pad_y }, color, label)
+    draw_list:add_line({ pos.x, pos_y + pad_y }, { pos.x + pad_x, pos_y + pad_y }, col, thickness)
+    draw_list:add_text({ label_x, pos.y + pad_y }, col, label)
     draw_list:add_line(
         { label_x + label_size.x + spacing, pos_y + pad_y },
         { line_end, pos_y + pad_y },
-        color,
+        col,
         thickness
     )
 
@@ -540,13 +528,8 @@ function this.header(text, width, disabled)
     local p1 = { pos.x, pos.y }
     local p2 = { pos.x + width, pos.y + height }
 
-    local bg_color = 0xFF3A3A3A
-    local text_color = 0xFFFFFFFF
-
-    if disabled then
-        bg_color = util_misc.mul_alpha(bg_color, 0.6)
-        text_color = util_misc.mul_alpha(text_color, 0.6)
-    end
+    local bg_color = color.with_alpha(0xFF3A3A3A)
+    local text_color = color.with_alpha(0xFFFFFFFF)
 
     imgui.invisible_button("##header_" .. text, { width, height })
     draw_list:add_rect_filled(p1, p2, bg_color, 0, 0)
@@ -641,13 +624,8 @@ function this.slider_list(label, index, v_min, v_max, values)
 
     local draw_list = imgui.get_window_draw_list()
     local padding = 5
-    local separator_color = 0xffe0853d
-    local text_color = 0xffffffff
-
-    if this.is_disabled() then
-        separator_color = util_misc.mul_alpha(separator_color, 0.6)
-        text_color = util_misc.mul_alpha(text_color, 0.6)
-    end
+    local separator_color = color.with_alpha(0xffe0853d)
+    local text_color = color.with_alpha(0xFFFFFFFF)
 
     local inner_left = pos.x + grab_padding
 
@@ -849,11 +827,7 @@ function this.draw_drag_button(id, size)
     local clicked = imgui.button("##button_drag|" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local cx = pos.x + size * 0.5
     local cy = pos.y + size * 0.5
@@ -861,7 +835,7 @@ function this.draw_drag_button(id, size)
     local spacing = size * 0.20
 
     for i = -1, 1 do
-        draw_list:add_circle_filled({ cx, cy + i * spacing }, radius, color, 12)
+        draw_list:add_circle_filled({ cx, cy + i * spacing }, radius, col, 12)
     end
 
     return clicked
@@ -877,11 +851,7 @@ function this.draw_sort_button(id, size)
     local clicked = imgui.button("##button_sort|" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local cx = pos.x + size * 0.5
     local thickness = size * 0.07
@@ -908,7 +878,7 @@ function this.draw_sort_button(id, size)
         }, {
             cx + half_width,
             ys[i] + half_thickness,
-        }, color, 0, 0)
+        }, col, 0, 0)
     end
 
     return clicked
@@ -924,11 +894,7 @@ function this.draw_add_button(id, size)
     local clicked = imgui.button("##button_add|" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local cx = pos.x + size * 0.5
     local cy = pos.y + size * 0.5
@@ -951,7 +917,7 @@ function this.draw_add_button(id, size)
     draw_list:path_line_to({ cx - half_length, cy - half_thickness })
     draw_list:path_line_to({ cx - half_thickness, cy - half_thickness })
 
-    draw_list:path_fill_concave(color)
+    draw_list:path_fill_concave(col)
 
     return clicked
 end
@@ -966,11 +932,7 @@ function this.draw_rename_button(id, size)
     local clicked = imgui.button("##button_rename|" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local cx = pos.x + size * 0.5
     local cy = pos.y + size * 0.5
@@ -994,7 +956,7 @@ function this.draw_rename_button(id, size)
     draw_list:path_line_to({ cx - half_thickness, bar_bottom })
     draw_list:path_line_to({ cx - half_width, bar_bottom })
 
-    draw_list:path_fill_concave(color)
+    draw_list:path_fill_concave(col)
 
     return clicked
 end
@@ -1009,11 +971,7 @@ function this.draw_remove_button(id, size)
     local clicked = imgui.button("##button_remove|" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local cx = pos.x + size * 0.5
     local cy = pos.y + size * 0.5
@@ -1039,7 +997,7 @@ function this.draw_remove_button(id, size)
     draw_list:path_line_to({ cx - l, cy + l - t })
     draw_list:path_line_to({ cx - t, cy })
 
-    draw_list:path_fill_concave(color)
+    draw_list:path_fill_concave(col)
 
     return clicked
 end
@@ -1054,11 +1012,7 @@ function this.draw_duplicate_button(id, size)
     local clicked = imgui.button("##button_duplicate" .. id, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local color = 0xffffffff
-
-    if this.is_disabled() then
-        color = util_misc.mul_alpha(color, 0.6)
-    end
+    local col = color.with_alpha(0xFFFFFFFF)
 
     local thickness = size * 0.06
     local width = size * 0.34
@@ -1076,21 +1030,21 @@ function this.draw_duplicate_button(id, size)
     local fy2 = y2 + offset
 
     -- back page: only visible top and left edges
-    draw_list:add_rect_filled({ x1, y1 }, { x2, y1 + thickness }, color, 0, 0)
+    draw_list:add_rect_filled({ x1, y1 }, { x2, y1 + thickness }, col, 0, 0)
 
-    draw_list:add_rect_filled({ x1, y1 + thickness }, { x1 + thickness, y2 }, color, 0, 0)
+    draw_list:add_rect_filled({ x1, y1 + thickness }, { x1 + thickness, y2 }, col, 0, 0)
 
     -- front page: top
-    draw_list:add_rect_filled({ fx1, fy1 }, { fx2, fy1 + thickness }, color, 0, 0)
+    draw_list:add_rect_filled({ fx1, fy1 }, { fx2, fy1 + thickness }, col, 0, 0)
 
     -- front page: bottom
-    draw_list:add_rect_filled({ fx1, fy2 - thickness }, { fx2, fy2 }, color, 0, 0)
+    draw_list:add_rect_filled({ fx1, fy2 - thickness }, { fx2, fy2 }, col, 0, 0)
 
     -- front page: left
     draw_list:add_rect_filled(
         { fx1, fy1 + thickness },
         { fx1 + thickness, fy2 - thickness },
-        color,
+        col,
         0,
         0
     )
@@ -1099,7 +1053,7 @@ function this.draw_duplicate_button(id, size)
     draw_list:add_rect_filled(
         { fx2 - thickness, fy1 + thickness },
         { fx2, fy2 - thickness },
-        color,
+        col,
         0,
         0
     )

@@ -2,10 +2,11 @@ local canvas = require("HudController.gui.elements.menu_bar.tools.canvas")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
+local def = require("HudController.data.option.mod")
 local grid = require("HudController.gui.elements.menu_bar.tools.grid")
 local gui_debug = require("HudController.gui.debug")
 local gui_selector = require("HudController.gui.elements.selector")
-local set = require("HudController.gui.set")
+local option = require("HudController.data.option.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
@@ -16,7 +17,15 @@ local mod = data.mod
 local this = {}
 
 local function draw_tools_menu()
-    set:menu_item(util_gui.tr("menu.tools.box_block_input"), "mod.block_input")
+    option.draw_menu_item(def.opt.block_input)
+
+    imgui.indent(2)
+    util_menubar.draw_menu(util_gui.tr(def.opt.window_opacity.lang_key), function()
+        util_imgui.even_popup_border(function()
+            option.draw(def.opt.window_opacity, { label = false })
+        end)
+    end)
+    imgui.unindent(2)
 
     --FIXME: some padding from somwhere is fuckin shit up
     util_imgui.adjust_pos(0, -2)

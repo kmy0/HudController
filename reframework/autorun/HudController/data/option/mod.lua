@@ -330,6 +330,14 @@ local this = {
             format = util_opt.format_checkbox,
             active = util_opt.active_checkbox,
         },
+        ---@type OptionDef<number>
+        window_opacity = {
+            config_key = "mod.window_opacity",
+            lang_key = "menu.tools.slider_window_opacity",
+            bindable = true,
+            draw = util_opt.slider_float(0.3, 1),
+            format = util_opt.format_number("%.2f"),
+        },
     },
 }
 

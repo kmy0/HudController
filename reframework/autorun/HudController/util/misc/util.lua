@@ -454,14 +454,6 @@ function this.to_base62(n)
     return result
 end
 
----@param col integer
----@param factor number 0.0 - 1.0
----@return integer
-function this.mul_alpha(col, factor)
-    local a = math.floor(((col >> 24) & 0xFF) * factor)
-    return (col & 0x00FFFFFF) | (a << 24)
-end
-
 ---@param t integer[]
 ---@return integer
 function this.pack_bits(t)

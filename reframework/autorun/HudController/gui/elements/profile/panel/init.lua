@@ -1,3 +1,4 @@
+local color = require("HudController.util.imgui.color")
 local combo_multi = require("HudController.util.imgui.combo_multi")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
@@ -13,7 +14,6 @@ local sub_panel = require("HudController.gui.elements.profile.panel.sub.init")
 local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
-local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
@@ -268,7 +268,7 @@ function draw_panel_child_contents(elem, elem_config, config_key, elems, tree, o
 
         draw_panel(child, child_config, child_config_key, tree, nil, indent - 21)
 
-        util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+        util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide or false)
 
         local children = util_table.filter_inplace(
             child_config.children or {},
@@ -318,7 +318,7 @@ local function draw_collapsed_child(elem, elem_config, children, config_key)
         then
             draw_panel(child, child_config, child_config_key, tree_type.NONE)
 
-            util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide)
+            util_imgui.begin_disabled(child_config.hide ~= nil and child_config.hide or false)
 
             local children = util_table.filter_inplace(
                 child_config.children or {},
@@ -409,10 +409,7 @@ local function draw_profile_selector(elem_config, config_key)
                 local left = min.x + 1
                 local right = max.x - 1
 
-                local star_col = star_color
-                if util_imgui.is_disabled() then
-                    star_col = util_misc.mul_alpha(star_col, 0.6)
-                end
+                local star_col = color.with_alpha(star_color)
 
                 -- active profile indicator
                 if is_active then
@@ -445,11 +442,7 @@ local function draw_profile_selector(elem_config, config_key)
                     text_right = star_center_x - star_radius - spacing
                 end
 
-                local text_col = text_color
-                if util_imgui.is_disabled() then
-                    text_col = util_misc.mul_alpha(text_col, 0.6)
-                end
-
+                local text_col = color.with_alpha(text_color)
                 if text_right > left then
                     draw_list:push_clip_rect({ left, min.y }, { text_right, max.y }, true)
                     draw_list:add_text({ left, text_y }, text_col, name)
@@ -530,11 +523,8 @@ local function draw_profile_selector(elem_config, config_key)
                         row_pos.x + icon_size * 0.5,
                         row_pos.y + row_height * 0.5,
                     }
-                    local enabled_col = imgui.is_item_hovered() and 0xffe38a45 or accent_color
-
-                    if util_imgui.is_disabled() then
-                        enabled_col = util_misc.mul_alpha(enabled_col, 0.6)
-                    end
+                    local enabled_col =
+                        color.with_alpha(imgui.is_item_hovered() and 0xffe38a45 or accent_color)
 
                     if is_enabled then
                         draw_list:add_circle_filled(enabled_center, circle_radius, enabled_col, 12)
@@ -559,11 +549,8 @@ local function draw_profile_selector(elem_config, config_key)
                         row_pos.x + icon_size + icon_size * 0.5,
                         row_pos.y + row_height * 0.5,
                     }
-                    local default_col = imgui.is_item_hovered() and 0xff45f7fa or star_color
-
-                    if util_imgui.is_disabled() then
-                        default_col = util_misc.mul_alpha(default_col, 0.6)
-                    end
+                    local default_col =
+                        color.with_alpha(imgui.is_item_hovered() and 0xff45f7fa or star_color)
 
                     draw_star(draw_list, default_center, star_radius, is_default, default_col)
                     util_imgui.end_disabled()
@@ -622,11 +609,7 @@ local function draw_profile_selector(elem_config, config_key)
                         text_x = text_x + active_radius * 2 + 6
                     end
 
-                    local text_col = text_color
-                    if not is_enabled then
-                        text_col = util_misc.mul_alpha(text_col, 0.6)
-                    end
-
+                    local text_col = color.with_alpha(text_color)
                     local text_y = name_pos.y + (row_height - config.lang.font_size) * 0.5
                     draw_list:add_text(
                         { text_x, text_y },

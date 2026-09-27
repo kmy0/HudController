@@ -3,7 +3,9 @@ local this = {}
 ---@type table<integer, boolean>
 local disabled_stack = {}
 local disabled_depth = 0
+this.alpha = 0.6
 
+---@param disabled boolean
 function this.begin_disabled(disabled)
     disabled = disabled ~= false
 
@@ -26,6 +28,7 @@ function this.end_disabled()
     end
 end
 
+---@return boolean
 function this.is_disabled()
     return disabled_depth > 0
 end

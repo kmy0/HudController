@@ -1,3 +1,4 @@
+local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local mod = require("HudController.data.mod")
 local set = require("HudController.gui.set")
@@ -61,8 +62,7 @@ function this.draw_slider_settings(
     local usable_width = slider_area_width - group_spacing * (count - 1)
     local base_group_width = math.floor(usable_width / count)
     local decimals = tonumber(format:match("%.(%d+)f")) --[[@as number]]
-    local border_color = 0xff4f4e4d
-    border_color = not disabled and border_color or util_misc.mul_alpha(border_color, 0.6)
+    local border_color = color.with_alpha(0xff4f4e4d)
     local row_start = imgui.get_cursor_pos()
 
     row_start.x = math.floor(row_start.x + 0.5)

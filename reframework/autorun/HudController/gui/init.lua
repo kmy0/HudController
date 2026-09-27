@@ -6,6 +6,7 @@
 ---@field flags integer
 ---@field condition integer
 
+local alpha = require("HudController.util.imgui.alpha")
 local column = require("HudController.gui.elements.column")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
@@ -29,10 +30,11 @@ local this = {
 }
 
 function this.draw()
-    imgui.push_style_var(12, 2)
-
     local gui_main = config.gui.current.gui.main
     local config_mod = config.current.mod
+
+    imgui.push_style_var(imgui.ImGuiStyleVar.FrameRounding, 2)
+    alpha.push(config_mod.window_opacity)
 
     imgui.set_next_window_pos(Vector2f.new(gui_main.pos_x, gui_main.pos_y), this.window.condition)
     imgui.set_next_window_size(
@@ -69,6 +71,7 @@ function this.draw()
         config.save_global()
         imgui.end_window()
         imgui.pop_style_var(1)
+        alpha.pop()
         return
     end
 
@@ -96,6 +99,7 @@ function this.draw()
         end
 
         imgui.pop_style_var(1)
+        alpha.pop()
         imgui.end_window()
         return
     end
@@ -123,6 +127,7 @@ function this.draw()
     end
 
     imgui.pop_style_var(1)
+    alpha.pop()
     imgui.spacing()
     imgui.end_window()
 
