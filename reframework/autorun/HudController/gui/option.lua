@@ -233,7 +233,7 @@ end
 ---@return boolean
 function this.draw_bool_slider(label, config_key)
     local value = config:get(config_key)
-    local slider_value = value and 1 or 0
+    local slider_value = value and 2 or 1
     local temp_key = string.format("__temp.%s.__value", config_key)
     config:set(temp_key, slider_value)
 
