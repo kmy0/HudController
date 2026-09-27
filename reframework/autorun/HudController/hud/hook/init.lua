@@ -16,6 +16,7 @@ local common = require("HudController.hud.hook.common")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
+local elem_base_def = require("HudController.hud.elements.init")
 local elements = require("HudController.hud.hook.elements.init")
 local hooks = require("HudController.hud.hook.hooks.init")
 local hud = require("HudController.hud.init")
@@ -204,26 +205,26 @@ end
 
 ---@return boolean
 function this.init()
-    this.hud["TARGET_RETICLE"] = this.hud_hooks.target_reticle
-    this.hud["MENU_BUTTON_GUIDE"] = this.hud_hooks.menu_button_guide
-    this.hud["DAMAGE_NUMBERS"] = this.hud_hooks.damage_numbers
-    this.hud["SUBTITLES"] = this.hud_hooks.subtitles
-    this.hud["SUBTITLES_CHOICE"] = this.hud_hooks.subtitles
-    this.hud["TRAINING_ROOM_HUD"] = this.hud_hooks.training_room_hud
-    this.hud["NAME_ACCESSIBLE"] = this.hud_hooks.name_access
-    this.hud["BARREL_BOWLING_SCORE"] = this.hud_hooks.barrel_bowling_score
-    this.hud["CHAT_LOG"] = this.hud_hooks.chat_log
-    this.hud["SHORTCUT_GAMEPAD"] = this.hud_hooks.radial
-    this.hud["SLIDER_ITEM"] = this.hud_hooks.itembar
-    this.hud["SLIDER_BULLET"] = this.hud_hooks.ammo
-    this.hud["NAME_OTHER"] = this.hud_hooks.name_other
-    this.hud["CONTROL"] = this.hud_hooks.control
-    this.hud["PROGRESS"] = this.hud_hooks.progress
-    this.hud["NOTICE"] = this.hud_hooks.notice
-    this.hud["SHORTCUT_KEYBOARD"] = this.hud_hooks.shortcut_keyboard
-    this.hud["MINIMAP"] = this.hud_hooks.minimap
-    this.hud["QUEST_END_TIMER"] = this.hud_hooks.quest_end_timer
-    this.hud["BUTTON_PRESS"] = this.hud_hooks.button_press
+    this.hud[elem_base_def.TargetReticle] = this.hud_hooks.target_reticle
+    this.hud[elem_base_def.MenuButtonGuide] = this.hud_hooks.menu_button_guide
+    this.hud[elem_base_def.DamageNumbers] = this.hud_hooks.damage_numbers
+    this.hud[elem_base_def.Subtitles] = this.hud_hooks.subtitles
+    this.hud[elem_base_def.SubtitlesChoice] = this.hud_hooks.subtitles
+    this.hud[elem_base_def.TrainingRoomHud] = this.hud_hooks.training_room_hud
+    this.hud[elem_base_def.NameAccess] = this.hud_hooks.name_access
+    this.hud[elem_base_def.BarrelScore] = this.hud_hooks.barrel_bowling_score
+    this.hud[elem_base_def.ChatLog] = this.hud_hooks.chat_log
+    this.hud[elem_base_def.Radial] = this.hud_hooks.radial
+    this.hud[elem_base_def.Itembar] = this.hud_hooks.itembar
+    this.hud[elem_base_def.Ammo] = this.hud_hooks.ammo
+    this.hud[elem_base_def.NameOther] = this.hud_hooks.name_other
+    this.hud[elem_base_def.Control] = this.hud_hooks.control
+    this.hud[elem_base_def.Progress] = this.hud_hooks.progress
+    this.hud[elem_base_def.Notice] = this.hud_hooks.notice
+    this.hud[elem_base_def.ShortcutKeyboard] = this.hud_hooks.shortcut_keyboard
+    this.hud[elem_base_def.Minimap] = this.hud_hooks.minimap
+    this.hud[elem_base_def.QuestEndTimer] = this.hud_hooks.quest_end_timer
+    this.hud[elem_base_def.ButtonPress] = this.hud_hooks.button_press
     --
     this.option[hud_def.opt.disable_scoutflies.key] = this.option_hooks.disable_scoutflies
     this.option[hud_def.opt.disable_porter_call.key] = this.option_hooks.disable_porter_call

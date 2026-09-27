@@ -102,6 +102,7 @@ local this = {
     ChatLog = "CHAT_LOG",
     QuestEndTimer = "QUEST_END_TIMER",
     TU3_Canvas = "TU3_CANVAS",
+    ButtonPress = "BUTTON_PRESS",
     --
     HEALTH = require("HudController.hud.elements.health.init"),
     WEAPON = require("HudController.hud.elements.weapon.init"),
