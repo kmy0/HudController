@@ -155,7 +155,7 @@ return {
             enable_condition_binds = "Enable Condition Binds",
             enable_key_binds = "Enable Key Binds",
             disable_condition_binds_held = "Disable Condition Binds Held",
-            disable_condition_binds_time = "Condition Bind Disable Time",
+            disable_condition_binds_time = "Disable Condition Binds Timed",
             disable_condition_binds_held_tooltip = "Disable Condition Binds while Hud key bind is held",
             disable_condition_binds_timed_tooltip = "Disable Condition Binds for n seconds after Hud key bind is pressed",
             display_active_element_profile_name = "Display Active Element Profile Name",
