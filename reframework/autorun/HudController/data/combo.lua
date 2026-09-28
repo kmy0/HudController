@@ -84,11 +84,7 @@ local this = {
     combo_cache = {},
     combo = {
         hud_elem = combo:new(nil, {
-            sort_fn = function(a, b)
-                local enum = e.get("app.GUIHudDef.TYPE")
-                return enum[a.key] < enum[b.key]
-            end,
-
+            sort_fn = sort_by_value,
             translate_fn = function(key)
                 return ace_map.hudid_name_to_local_name[key]
             end,
