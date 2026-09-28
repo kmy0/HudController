@@ -88,7 +88,7 @@ local function draw_options_menu()
     imgui.same_line()
 
     local id = "##game_options_combo"
-    if imgui.is_popup_open("##" .. id .. "_custom_filter_popup") then
+    if not imgui.is_popup_open("##" .. id .. "_custom_filter_popup") then
         user_options_popup.active = false
     end
 
