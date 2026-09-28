@@ -4,16 +4,17 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def_mod = require("HudController.data.option.mod")
 local e = require("HudController.util.game.enum")
+local element_def = require("HudController.data.option.element.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local hud = require("HudController.hud.init")
 local main_panel = require("HudController.gui.elements.profile.panel.main.init")
 local op = require("HudController.hud.manager.op.init")
 local option = require("HudController.data.option.init")
-local set = require("HudController.gui.set")
 local sub_panel = require("HudController.gui.elements.profile.panel.sub.init")
 local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
+local util_opt = require("HudController.data.option.util")
 local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
@@ -167,20 +168,22 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
                 local cursor_pos = imgui.get_cursor_screen_pos()
                 cursor_pos.y = cursor_pos.y + text_size.y / 2 - 3
                 local var_key = child_config.gui_thing or "hide"
+                local ctx =
+                    { elem = child, elem_config = child_config, config_key = child_config_key }
+                local label = string.format(
+                    "%s %s##%s",
+                    config.lang:tr("hud_element.entry.box_" .. var_key),
+                    ace_map.weaponid_name_to_local_name[child_config.name_key]
+                        or config.lang:tr("hud_subelement." .. child_config.name_key),
+                    string.format("%s.%s", child_config_key, var_key)
+                )
 
-                if
-                    set:checkbox(
-                        string.format(
-                            "%s %s##%s",
-                            config.lang:tr("hud_element.entry.box_" .. var_key),
-                            ace_map.weaponid_name_to_local_name[child_config.name_key]
-                                or config.lang:tr("hud_subelement." .. child_config.name_key),
-                            string.format("%s.%s", child_config_key, var_key)
-                        ),
-                        string.format("%s.%s", child_config_key, var_key)
-                    ) and op.hud_elem.is_current_profile(elem)
-                then
-                    child["set_" .. var_key](child, child_config[var_key])
+                if var_key == "hide" then
+                    util_opt.draw_apply_elem(element_def.opt.hide, ctx, label)
+                else
+                    local def = element_def.sub[child_config.hud_sub_type]
+                    local opt = def.opt[var_key]
+                    util_opt.draw_apply_elem(opt, ctx, label)
                 end
 
                 if node_pos and i == 1 then
