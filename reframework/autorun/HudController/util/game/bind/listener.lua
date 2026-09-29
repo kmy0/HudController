@@ -34,6 +34,7 @@ function this:bind_base_ctor(type)
         name_display = "",
         device = type,
         trigger_repeat = false,
+        invalid = false,
     }
 end
 

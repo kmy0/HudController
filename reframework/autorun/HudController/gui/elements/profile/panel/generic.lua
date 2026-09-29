@@ -239,7 +239,7 @@ function this.table_thing(id, col_count, draw_fn)
                 | imgui.TableFlags.BordersOuterV
                 | imgui.TableFlags.SizingFixedFit
                 | imgui.TableFlags.ScrollY --[[@as ImGuiTableFlags]],
-            Vector2f.new(0, 4 * (config.lang.font_size * (46 / 16)))
+            Vector2f.new(0, 4 * util_imgui.scale_w_font_size(46))
         )
     then
         draw_fn()
@@ -254,7 +254,7 @@ function this.child_window_thing_remove(id, size, draw_fn)
     if size > 0 then
         size = size + 1
         local item_height = (config.lang.font_size + 6) * size + 4 * math.max(size - 1, 0)
-        local height = math.min(item_height, 4 * (config.lang.font_size * (46 / 16)))
+        local height = math.min(item_height, 4 * util_imgui.scale_w_font_size(46))
 
         if imgui.begin_child_window(id, { imgui.calc_item_width(), height }, false) then
             draw_fn()

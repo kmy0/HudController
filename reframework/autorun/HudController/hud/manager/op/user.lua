@@ -15,26 +15,26 @@ function this.verify_conditions()
         end
     end
 
-    ---@param condition_set ConditionSetConfig[]
-    local function filter(condition_set)
-        for _, cond_set in ipairs(condition_set) do
-            local res = {}
-            for _, cond in ipairs(cond_set.conditions or {}) do
-                if bind_condition.conditions[cond.class] then
-                    table.insert(res, cond)
-                end
-            end
+    -- ---@param condition_set ConditionBindRuleConfig[] --TODO:
+    -- local function filter(condition_set)
+    --     for _, cond_set in ipairs(condition_set) do
+    --         local res = {}
+    --         for _, cond in ipairs(cond_set.conditions or {}) do
+    --             if bind_condition.conditions[cond.class] then
+    --                 table.insert(res, cond)
+    --             end
+    --         end
 
-            cond_set.conditions = res
-            filter(cond_set.element_profile or {})
-            filter(cond_set.hud_option or {})
-            filter(cond_set.mod_option or {})
-            filter(cond_set.game_option or {})
-            filter(cond_set.user_option or {})
-        end
-    end
+    --         cond_set.conditions = res
+    --         filter(cond_set.element_profile or {})
+    --         filter(cond_set.hud_option or {})
+    --         filter(cond_set.mod_option or {})
+    --         filter(cond_set.game_option or {})
+    --         filter(cond_set.user_option or {})
+    --     end
+    -- end
 
-    filter(config_mod.bind.condition.hud)
+    -- filter(config_mod.bind.condition.hud)
 end
 
 ---@param elem_config HudBaseConfig
@@ -105,27 +105,27 @@ function this.verify_options()
 
     config_mod.bind.key.option_user = res
 
-    local sorted = util_table.sort(
-        util_table.keys(user_option.get_bindable_options()),
-        function(a, b)
-            return a.sort < b.sort
-        end
-    )
-    for _, cond_set in pairs(config_mod.bind.condition.hud) do
-        ---@type ConditionSetConfig[]
-        res = {}
-        for _, cond_child in ipairs(cond_set.user_option or {}) do
-            local new_index = util_table.index(sorted, function(o)
-                return o.key == cond_child.key
-            end)
-            if new_index then
-                cond_child.combo_profile = new_index
-                table.insert(res, cond_child)
-            end
-        end
+    -- local sorted = util_table.sort( --TODO:
+    --     util_table.keys(user_option.get_bindable_options()),
+    --     function(a, b)
+    --         return a.sort < b.sort
+    --     end
+    -- )
+    -- for _, cond_set in pairs(config_mod.bind.condition.hud) do
+    --     ---@type ConditionBindRuleConfig[]
+    --     res = {}
+    --     for _, cond_child in ipairs(cond_set.user_option or {}) do
+    --         local new_index = util_table.index(sorted, function(o)
+    --             return o.key == cond_child.key
+    --         end)
+    --         if new_index then
+    --             cond_child.combo_profile = new_index
+    --             table.insert(res, cond_child)
+    --         end
+    --     end
 
-        cond_set.user_option = res
-    end
+    --     cond_set.user_option = res
+    -- end
 end
 
 return this

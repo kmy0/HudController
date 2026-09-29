@@ -13,25 +13,16 @@ local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
+local mod_enum = data.mod.enum
 
 local this = {
     ---@type table<BindKeyType, GuiKeyManagerBase>
     managers = {},
 }
----@enum BindKeyType
-local tab_type = {
-    ALL = 1,
-    HUD = 2,
-    OPTION_ELEM = 3,
-    OPTION_HUD = 4,
-    OPTION_MOD = 5,
-    OPTION_GAME = 6,
-    OPTION_USER = 7,
-}
 
 ---@return number
 local function get_width()
-    return config.lang.font_size * (200 / 16) * 3 + 6 * 4 + config.lang.font_size + 6
+    return util_imgui.scale_w_font_size(200) * 3 + 6 * 4 + config.lang.font_size + 6
 end
 
 local function restore_indexes()
@@ -120,19 +111,28 @@ end
 ---@return {label: string, key: BindKeyType}[], number
 local function get_buttons()
     local buttons = {
-        { label = config.lang:tr("menu.bind.key.all"), key = tab_type.ALL },
-        { label = config.lang:tr("menu.bind.key.hud"), key = tab_type.HUD },
-        { label = config.lang:tr("menu.bind.key.option_elem"), key = tab_type.OPTION_ELEM },
-        { label = config.lang:tr("menu.bind.key.option"), key = tab_type.OPTION_HUD },
-        { label = config.lang:tr("menu.bind.key.option_mod"), key = tab_type.OPTION_MOD },
-        { label = config.lang:tr("menu.bind.key.option_game"), key = tab_type.OPTION_GAME },
+        { label = config.lang:tr("menu.bind.key.all"), key = mod_enum.bind_key_type.ALL },
+        { label = config.lang:tr("menu.bind.key.hud"), key = mod_enum.bind_key_type.HUD },
+        {
+            label = config.lang:tr("menu.bind.key.option_elem"),
+            key = mod_enum.bind_key_type.OPTION_ELEM,
+        },
+        { label = config.lang:tr("menu.bind.key.option"), key = mod_enum.bind_key_type.OPTION_HUD },
+        {
+            label = config.lang:tr("menu.bind.key.option_mod"),
+            key = mod_enum.bind_key_type.OPTION_MOD,
+        },
+        {
+            label = config.lang:tr("menu.bind.key.option_game"),
+            key = mod_enum.bind_key_type.OPTION_GAME,
+        },
     }
 
     if not cd.combo.option_user_bind:empty() then
-        table.insert(
-            buttons,
-            { label = config.lang:tr("menu.bind.key.option_user"), key = tab_type.OPTION_USER }
-        )
+        table.insert(buttons, {
+            label = config.lang:tr("menu.bind.key.option_user"),
+            key = mod_enum.bind_key_type.OPTION_USER,
+        })
     end
 
     local max_width = 0
@@ -226,7 +226,10 @@ local function draw_registered_binds(manager)
             local bind = binds[i]
             local color = 0
 
-            if state.listener and state.listener.collision == manager:get_bind_name(bind) then
+            if
+                (state.listener and state.listener.collision == manager:get_bind_name(bind))
+                or bind.invalid
+            then
                 color = mod.enum.colors.bad
             end
 
@@ -282,6 +285,7 @@ local function draw_registered_binds(manager)
                 manager.manager:unregister(bind)
             end
 
+            bind_manager.check_invalid()
             config:set(manager.config_key, manager.manager:get_base_binds())
         end
 
@@ -297,37 +301,37 @@ local function draw_all_registered_binds()
     if not util_table.empty(bind_manager.hud.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.hud"))
-        draw_registered_binds(this.managers[tab_type.HUD])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.HUD])
     end
 
     if not util_table.empty(bind_manager.option_elem.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_elem"))
-        draw_registered_binds(this.managers[tab_type.OPTION_ELEM])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_ELEM])
     end
 
     if not util_table.empty(bind_manager.option_hud.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option"))
-        draw_registered_binds(this.managers[tab_type.OPTION_HUD])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_HUD])
     end
 
     if not util_table.empty(bind_manager.option_mod.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_mod"))
-        draw_registered_binds(this.managers[tab_type.OPTION_MOD])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_MOD])
     end
 
     if not util_table.empty(bind_manager.option_game.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_game"))
-        draw_registered_binds(this.managers[tab_type.OPTION_GAME])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_GAME])
     end
 
     if not util_table.empty(bind_manager.option_user.binds) then
         any = true
         util_imgui.separator_text(config.lang:tr("menu.bind.key.option_user"))
-        draw_registered_binds(this.managers[tab_type.OPTION_USER])
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_USER])
     end
 
     if not any then
@@ -338,7 +342,7 @@ end
 
 ---@param manager GuiKeyManagerBase
 local function draw_bind_option_table(manager)
-    local item_width = config.lang.font_size * (200 / 16)
+    local item_width = util_imgui.scale_w_font_size(200)
 
     if imgui.begin_table("bind_table1", 4) then
         imgui.table_setup_column(
@@ -443,7 +447,14 @@ local function draw_key_bind_menu()
 end
 
 function this.draw()
-    if not util_menubar.draw_menu(util_gui.tr("menu.bind.key.name"), draw_key_bind_menu) then
+    if
+        not util_menubar.draw_menu(
+            util_gui.tr("menu.bind.key.name"),
+            draw_key_bind_menu,
+            nil,
+            bind_manager.any_invalid and mod_enum.colors.bad or nil
+        )
+    then
         state.clear_listener()
     end
 end
@@ -452,16 +463,17 @@ end
 function this.init()
     restore_indexes()
 
-    this.managers[tab_type.HUD] = managers.hud:new(bind_manager.hud, "mod.bind.key.hud")
-    this.managers[tab_type.OPTION_MOD] =
+    this.managers[mod_enum.bind_key_type.HUD] =
+        managers.hud:new(bind_manager.hud, "mod.bind.key.hud")
+    this.managers[mod_enum.bind_key_type.OPTION_MOD] =
         managers.option_mod:new(bind_manager.option_mod, "mod.bind.key.option_mod")
-    this.managers[tab_type.OPTION_ELEM] =
+    this.managers[mod_enum.bind_key_type.OPTION_ELEM] =
         managers.option_elem:new(bind_manager.option_elem, "mod.bind.key.option_elem")
-    this.managers[tab_type.OPTION_HUD] =
+    this.managers[mod_enum.bind_key_type.OPTION_HUD] =
         managers.option_hud:new(bind_manager.option_hud, "mod.bind.key.option_hud")
-    this.managers[tab_type.OPTION_GAME] =
+    this.managers[mod_enum.bind_key_type.OPTION_GAME] =
         managers.option_game:new(bind_manager.option_game, "mod.bind.key.option_game")
-    this.managers[tab_type.OPTION_USER] =
+    this.managers[mod_enum.bind_key_type.OPTION_USER] =
         managers.option_user:new(bind_manager.option_user, "mod.bind.key.option_user")
 
     local manager = this.managers[config.current.mod.bind.key.key_type_selection]

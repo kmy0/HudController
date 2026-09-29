@@ -142,6 +142,10 @@ end
 ---@param bind ModBind<string, any>
 ---@return string
 function this:get_bind_name(bind)
+    if bind.invalid then
+        return config.lang:tr("misc.text_unknown")
+    end
+
     local opt = def.get_opt(bind.bound_value.key)
     return string.format(
         "%s (%s)",

@@ -13,11 +13,7 @@ function this:new()
     local o = condition_base.new(
         self,
         "_RIDING",
-        config.lang.make_placeholder("menu.bind.condition.condition_riding"),
-        {
-            config.lang.make_placeholder("misc.text_yes"),
-            config.lang.make_placeholder("misc.text_no"),
-        }
+        config.lang.make_placeholder("menu.bind.condition.condition_riding")
     )
     setmetatable(o, self)
     ---@cast o RidingCondition

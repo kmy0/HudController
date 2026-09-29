@@ -33,6 +33,8 @@
 ---@field hide_npc HideNpc.*
 ---@field em_scar EmScar.*
 ---@field em_icon EmIcon.*
+---@field bind_cond_type BindCondType.*
+---@field bind_key_type BindKeyType.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -228,6 +230,25 @@ this.enum.em_icon = { ---@class EmIcon.*
     DISABLED = 1,
     HIDE_ICON = 2,
     HIDE_ICON_TARGET = 3,
+}
+---@enum BindCondType
+this.enum.bind_cond_type = { ---@class BindCondType.*
+    HUD = "HUD",
+    OPTION_ELEM = "OPTION_ELEM",
+    OPTION_HUD = "OPTION_HUD",
+    OPTION_MOD = "OPTION_MOD",
+    OPTION_GAME = "OPTION_GAME",
+    OPTION_USER = "OPTION_USER",
+}
+---@enum BindKeyType
+this.enum.bind_key_type = { ---@class BindKeyType.*
+    ALL = 1,
+    HUD = 2,
+    OPTION_ELEM = 3,
+    OPTION_HUD = 4,
+    OPTION_MOD = 5,
+    OPTION_GAME = 6,
+    OPTION_USER = 7,
 }
 
 ---@return boolean

@@ -427,6 +427,10 @@ function this:_resolve_buffer()
         local m = self.managers[manager_name]
 
         for _, bind in ipairs(m.manager.sorted) do
+            if bind.invalid then
+                goto continue
+            end
+
             local bind_key = self:_get_bind_key(bind)
             local is_held = m.held.by_key[bind_key] ~= nil
 
@@ -462,6 +466,8 @@ function this:_resolve_buffer()
                 m.triggered.by_key[bind_key] = bind
                 m.triggered.by_name[bind.name] = true
             end
+
+            ::continue::
         end
     end
 

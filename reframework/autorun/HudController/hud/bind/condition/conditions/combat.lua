@@ -121,16 +121,16 @@ function this:draw_additional_options()
 
     set:checkbox(
         util_gui.tr("menu.bind.condition.quest_in_combat"),
-        self:get_config_key_option("quest_in_combat")
+        self:get_additional_options_config_key_option("quest_in_combat")
     )
     set:checkbox(
         util_gui.tr("menu.bind.condition.ride_ignore_combat"),
-        self:get_config_key_option("ride_ignore_combat")
+        self:get_additional_options_config_key_option("ride_ignore_combat")
     )
     util_imgui.tooltip(config.lang:tr("menu.bind.condition.ride_ignore_combat_tooltip"), true)
     set:slider_int(
         util_gui.tr("menu.bind.condition.out_of_combat_delay"),
-        self:get_config_key_option("out_of_combat_delay"),
+        self:get_additional_options_config_key_option("out_of_combat_delay"),
         0,
         600,
         options.out_of_combat_delay == 0 and config.lang:tr("misc.text_disabled")
@@ -138,7 +138,7 @@ function this:draw_additional_options()
     )
     set:slider_int(
         util_gui.tr("menu.bind.condition.in_combat_delay"),
-        self:get_config_key_option("in_combat_delay"),
+        self:get_additional_options_config_key_option("in_combat_delay"),
         0,
         600,
         options.in_combat_delay == 0 and config.lang:tr("misc.text_disabled")

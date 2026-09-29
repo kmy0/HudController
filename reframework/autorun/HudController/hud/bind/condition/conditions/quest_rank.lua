@@ -33,18 +33,18 @@ function this:new()
     return o
 end
 
+---@param selected table<string, boolean>
 ---@return boolean
-function this:update()
+function this:update(selected)
     local quest_data = s.get("app.MissionManager"):get_ActiveQuestData()
     if not quest_data then
         return false
     end
 
     local quest_rank = quest_data:getTargetEmDifficulityRank()
-    local options = self:get_additional_options_table()
-
-    for _, rank in pairs(options.selected) do
-        if quest_rank:Contains(rank) then
+    for rank, _ in pairs(selected) do
+        ---@diagnostic disable-next-line: param-type-mismatch
+        if quest_rank:Contains(tonumber(rank)) then
             return true
         end
     end

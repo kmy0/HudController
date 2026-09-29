@@ -41,31 +41,67 @@
 --- pos_y: number,
 --- }
 
----@class (exact) ConditionConfigBase
----@field class string
----@field combo integer
----@field expected_result ExpectedResult
-
 ---@class (exact) ConditionBindOptionsBase
 
----@class (exact) ConditionSetConfig
----@field key integer | string
----@field conditions ConditionConfigBase[]
----@field combo_profile integer
----@field combo_condition integer
----@field collapsed boolean
----@field parent_key (integer | string)?
----@field element_profile ConditionSetConfig[]
----@field hud_option ConditionSetConfig[]
----@field mod_option ConditionSetConfig[]
----@field game_option ConditionSetConfig[]
----@field user_option ConditionSetConfig[]
----@field free_value any?
+-- -@class (exact) ConditionConfigBase
+-- -@field class string
+-- -@field combo integer
+-- -@field expected_result ExpectedResult
+
+-- -@class (exact) ConditionSetConfig
+-- -@field key integer | string
+-- -@field conditions ConditionConfigBase[]
+-- -@field combo_profile integer
+-- -@field combo_condition integer
+-- -@field collapsed boolean
+-- -@field parent_key (integer | string)?
+-- -@field element_profile ConditionSetConfig[]
+-- -@field hud_option ConditionSetConfig[]
+-- -@field mod_option ConditionSetConfig[]
+-- -@field game_option ConditionSetConfig[]
+-- -@field user_option ConditionSetConfig[]
+-- -@field free_value any?
+
+-- -@class (exact) ConditionBindStateConfig
+-- -@field condition_options table<string, ConditionBindOptionsBase>
+-- -@field hud ConditionSetConfig[]
+-- -@field highlight_pass boolean
+
+---@class ValidationState
+---@field free_value string?
+---@field free_value2 string?
+---@field class string?
+---@field class_config string?
+---@field class_config_value string?
 
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
----@field hud ConditionSetConfig[]
+---@field sets table<BindCondType, ConditionBindRuleSet>
 ---@field highlight_pass boolean
+---@field cond_type_selection BindCondType
+---@field path string
+---@field invalid boolean
+
+---@class (exact) ConditionBindRuleSet
+---@field type BindCondType
+---@field rules ConditionBindRuleConfig[]
+---@field selection integer
+
+---@class (exact) ConditionBindRuleConfig
+---@field target_select any
+---@field conditions ConditionConfigBase[][]
+---@field sets table<BindCondType, ConditionBindRuleSet>
+---@field invalid ValidationState?
+---@field free_value any
+---@field free_value2 any
+---@field cond_type_selection BindCondType
+
+---@class (exact) ConditionConfigBase
+---@field class string
+---@field combo integer
+---@field combo_key any
+---@field negate boolean
+---@field invalid ValidationState?
 
 ---@class (exact) ModSettings
 ---@field enabled boolean
@@ -128,7 +164,7 @@ return {
         hide_disabled_element_profiles = false,
         display_active_element_profile_name = false,
         block_input = false,
-        window_opacity = 0.5,
+        window_opacity = 1,
         user_scripts = {},
         user_conditions = {},
         user_options = {},
@@ -179,8 +215,11 @@ return {
             },
             condition = {
                 condition_options = {},
-                hud = {},
+                sets = {},
                 highlight_pass = false,
+                cond_type_selection = "HUD",
+                path = "mod.bind.condition",
+                invalid = false,
             },
         },
         hud = {},

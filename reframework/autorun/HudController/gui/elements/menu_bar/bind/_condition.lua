@@ -1,6 +1,6 @@
 ---@class ConditionSetDrawParams
 ---@field index integer
----@field cond_set ConditionSetConfig
+---@field cond_set ConditionBindRuleConfig
 ---@field config_key string
 ---@field dragger Drag
 ---@field collapse_id string
@@ -19,7 +19,7 @@
 ---@field combo Combo<any>
 ---@field default_value any
 ---@field draw_value fun(config_key: string, i: integer, j: integer)
----@field draw_selector fun(config_key: string, i: integer, j: integer, cond_child: ConditionSetConfig)?
+---@field draw_selector fun(config_key: string, i: integer, j: integer, cond_child: ConditionBindRuleConfig)?
 
 local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
@@ -45,7 +45,7 @@ local COLOR_NONE = 0
 
 ---@return number
 local function get_width()
-    return config.lang.font_size * (500 / 16)
+    return util_imgui.scale_w_font_size(500)
 end
 
 ---@param color integer
@@ -157,10 +157,7 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
                 imgui.button(
                     util_gui.tr(
                         "menu.bind.condition.expected_result_values."
-                            .. util_table.reverse_lookup(
-                                mod.enum.expected_result,
-                                cond.expected_result
-                            ),
+                            .. util_table.reverse_lookup(mod.enum.expected_result, cond.negate),
                         "hud_condition",
                         config_key,
                         k
@@ -168,15 +165,15 @@ local function draw_condition_rows(conditions, config_key, highlight, path_fn)
                     { x_size, 0 }
                 )
             then
-                if cond.expected_result == mod.enum.expected_result.TRUE then
-                    cond.expected_result = mod.enum.expected_result.FALSE
+                if cond.negate == mod.enum.expected_result.TRUE then
+                    cond.negate = mod.enum.expected_result.FALSE
                 else
-                    cond.expected_result = mod.enum.expected_result.TRUE
+                    cond.negate = mod.enum.expected_result.TRUE
                 end
 
                 config:set(
                     string.format("%s.conditions.int:%s.expected_result", config_key, k),
-                    cond.expected_result
+                    cond.negate
                 )
             end
 
@@ -242,9 +239,9 @@ local function draw_add_condition(conditions, config_key, combo_condition_key)
     util_imgui.end_disabled()
 end
 
----@param items ConditionSetConfig[]
+---@param items ConditionBindRuleConfig[]
 ---@param remove integer[]
----@return ConditionSetConfig[]
+---@return ConditionBindRuleConfig[]
 local function remove_sets(items, remove)
     if util_table.empty(remove) then
         return items
@@ -255,11 +252,11 @@ local function remove_sets(items, remove)
     end)
 end
 
----@param items ConditionSetConfig[]
+---@param items ConditionBindRuleConfig[]
 ---@param dragger any
 ---@param remove integer[]
----@param duplicate ConditionSetConfig?
----@return ConditionSetConfig[]
+---@param duplicate ConditionBindRuleConfig?
+---@return ConditionBindRuleConfig[]
 local function finalize_set_list(items, dragger, remove, duplicate)
     if dragger:is_released() then
         config:save()
@@ -284,7 +281,7 @@ local function finalize_set_list(items, dragger, remove, duplicate)
     return items
 end
 
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 ---@param config_key string
 ---@param highlight boolean
 ---@param path_fn fun(k: integer): any[]
@@ -376,17 +373,17 @@ local function draw_condition_set(params)
     return remove, duplicate
 end
 
----@param items ConditionSetConfig[]
+---@param items ConditionBindRuleConfig[]
 ---@param dragger any
----@param draw_item fun(i: integer, cond_set: ConditionSetConfig): boolean, boolean
----@return ConditionSetConfig[]
+---@param draw_item fun(i: integer, cond_set: ConditionBindRuleConfig): boolean, boolean
+---@return ConditionBindRuleConfig[]
 local function draw_condition_set_list(items, dragger, draw_item)
     dragger:clear()
     imgui.indent(1)
 
     ---@type integer[]
     local remove = {}
-    ---@type ConditionSetConfig?
+    ---@type ConditionBindRuleConfig?
     local duplicate
 
     for i, cond_set in ipairs(items) do
@@ -404,7 +401,7 @@ local function draw_condition_set_list(items, dragger, draw_item)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 ---@param elem_profiles HudBaseConfigProfileForShow[]
 local function draw_element_profiles(i, cond_set, elem_profiles)
     local values = util_table.slice(elem_profiles, 2, #elem_profiles)
@@ -438,7 +435,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
     then
         table.insert(
             cond_set.element_profile,
-            bind_condition.new_condition_set(elem_profiles[1].key, cond_set.key)
+            bind_condition.new_condition_rule(elem_profiles[1].key, cond_set.key)
         )
         cond_set.element_profile[#cond_set.element_profile].combo_profile = 0
         config:save()
@@ -528,7 +525,7 @@ local function draw_element_profiles(i, cond_set, elem_profiles)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 ---@param params ConditionOptionDrawParams
 local function draw_options(i, cond_set, params)
     imgui.spacing()
@@ -547,12 +544,12 @@ local function draw_options(i, cond_set, params)
 
     imgui.same_line()
     util_imgui.adjust_pos(3)
-    ---@type ConditionSetConfig[]
+    ---@type ConditionBindRuleConfig[]
     local items = cond_set[params.field]
     if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition", params.tr_key)) then
         table.insert(
             items,
-            bind_condition.new_condition_set(params.combo:get_keys()[1], cond_set.key)
+            bind_condition.new_condition_rule(params.combo:get_keys()[1], cond_set.key)
         )
 
         items[#items].free_value = params.default_value
@@ -644,7 +641,7 @@ local function draw_game_option(config_key, i, j)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 local function draw_hud_options(i, cond_set)
     draw_options(i, cond_set, {
         field = "hud_option",
@@ -656,7 +653,7 @@ local function draw_hud_options(i, cond_set)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 local function draw_game_options(i, cond_set)
     util_imgui.begin_disabled(cd.combo.option_game_bind:empty())
     draw_options(i, cond_set, {
@@ -689,7 +686,7 @@ local function draw_user_option(config_key, i, j)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 local function draw_user_options(i, cond_set)
     draw_options(i, cond_set, {
         field = "user_option",
@@ -720,7 +717,7 @@ local function draw_user_options(i, cond_set)
 end
 
 ---@param i integer
----@param cond_set ConditionSetConfig
+---@param cond_set ConditionBindRuleConfig
 local function draw_mod_options(i, cond_set)
     draw_options(i, cond_set, {
         field = "mod_option",
@@ -753,7 +750,7 @@ local function draw_condition_bind_menu()
     if imgui.button(util_gui.tr("menu.bind.condition.button_add_new_condition")) then
         table.insert(
             config_mod.bind.condition.hud,
-            bind_condition.new_condition_set(config_mod.hud[1].key)
+            bind_condition.new_condition_rule(config_mod.hud[1].key)
         )
         config:save()
     end

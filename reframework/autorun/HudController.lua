@@ -33,9 +33,9 @@ local init = init_chain:new(
     bind_condition.init,
     canvas.init,
     user.init,
+    combo.init,
     hud.manager.init,
     hook.init,
-    combo.init,
     config_menu.init,
     data.mod.init
 )
@@ -91,7 +91,7 @@ re.on_draw_ui(function()
 end)
 
 re.on_application_entry("BeginRendering", function()
-    init:init() -- reframework does not like nested re.on_frame
+    init:init()
 end)
 
 re.on_frame(function()

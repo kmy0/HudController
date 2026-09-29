@@ -32,7 +32,6 @@ end
 ---@param config MainSettings
 function this.fns.conditions(config)
     local data_ace = require("HudController.data.ace")
-    local bind_condition = require("HudController.hud.bind.condition.init")
 
     local config_cond = config.mod.bind.condition
     local config_wep = config.mod.bind.weapon
@@ -49,8 +48,13 @@ function this.fns.conditions(config)
     local GAME_MODE_SINGLEPLAYER, GAME_MODE_MULTIPLAYER = 1, 2
 
     local function get_cond_set(hud_key)
-        ---@diagnostic disable-next-line: missing-fields, param-type-mismatch
-        local ret = bind_condition.new_condition_set({ key = hud_key })
+        local ret = {
+            hud_key = hud_key,
+            conditions = {},
+            combo_hud = 1,
+            combo_condition = 1,
+            collapsed = false,
+        }
         ret.combo_hud = util_table.index(config.mod.hud, function(o)
             return o.key == hud_key
         end) --[[@as integer]]
@@ -58,7 +62,7 @@ function this.fns.conditions(config)
     end
 
     local function get_combat_cond(mode, key)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local ret = {}
         local combat_in = config_wep[mode][key].combat_in.hud_key --[[@as integer]]
         local combat_out = config_wep[mode][key].combat_out.hud_key --[[@as integer]]
@@ -93,7 +97,7 @@ function this.fns.conditions(config)
         return ret
     end
 
-    ---@return ConditionSetConfig[]
+    ---@return ConditionBindRuleConfig[]
     local function tag_and_merge(ret, mode, key, class, combo)
         if not config_wep[mode][key] or not config_wep[mode][key].enabled then
             return ret
@@ -111,7 +115,7 @@ function this.fns.conditions(config)
     end
 
     local function get_weapon_cond(mode)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local ret = {}
 
         if not config_wep[mode].GLOBAL then
@@ -144,15 +148,15 @@ function this.fns.conditions(config)
             end) ~= nil
         end
 
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local shared = util_table.filter_array(singleplayer, function(_, cond_set)
             return contains(multiplayer, cond_set)
         end)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local unique_singleplayer = util_table.filter_array(singleplayer, function(_, cond_set)
             return not contains(multiplayer, cond_set)
         end)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local unique_multiplayer = util_table.filter_array(multiplayer, function(_, cond_set)
             return not contains(singleplayer, cond_set)
         end)

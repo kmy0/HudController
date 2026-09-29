@@ -356,10 +356,6 @@ function this.init_combo_condition()
 
     this.combo.condition:swap(names)
     this.combo.condition:translate()
-
-    for _, cond_set in pairs(config.current.mod.bind.condition.hud) do
-        cond_set.combo_condition = math.min(cond_set.combo_condition, this.combo.condition:size())
-    end
 end
 
 function this.translate_combo()

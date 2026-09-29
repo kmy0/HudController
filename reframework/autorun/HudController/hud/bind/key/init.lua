@@ -6,6 +6,7 @@
 ---@field option_game OptionModBindManager
 ---@field option_elem OptionModBindManager
 ---@field monitor ModBindMonitor
+---@field any_invalid boolean
 
 ---@class (exact) ModBindBase : BindBase
 ---@field action_type BindActionType
@@ -57,7 +58,7 @@ local function action_hud(bind)
             bind,
             new_value,
             { key = current.hud.key, profile = util_table.deep_copy(current.profile_bits) }
-        )
+        ) --TODO: this is likely broken
         this.monitor:register_on_release_callback(bind.name, function()
             local value = this.monitor:remove_hold(manager_name, bind.bound_value.key, bind)
             if value ~= nil then
@@ -230,6 +231,21 @@ local function action_option_elem(bind)
 end
 
 ---@return boolean
+function this.check_invalid()
+    for _, m in pairs(this.monitor.managers) do
+        for _, b in pairs(m.manager.binds) do
+            if b.invalid then
+                this.any_invalid = true
+                return true
+            end
+        end
+    end
+
+    this.any_invalid = false
+    return false
+end
+
+---@return boolean
 function this.init()
     local bind_key = config.current.mod.bind.key
 
@@ -274,6 +290,7 @@ function this.init()
         this.option_elem
     )
     this.monitor:set_max_buffer_frame(bind_key.buffer)
+    this.check_invalid()
     return true
 end
 

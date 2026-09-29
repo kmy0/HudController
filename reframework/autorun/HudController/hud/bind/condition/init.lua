@@ -40,13 +40,7 @@ local conditions = {
     quest_target = require("HudController.hud.bind.condition.conditions.quest_target"),
 }
 
-local condition_set_children = {
-    "element_profile",
-    "hud_option",
-    "mod_option",
-    "game_option",
-    "user_option",
-}
+local mod_enum = mod.enum
 
 local this = {
     ---@type table<string, ConditionBase>
@@ -55,197 +49,197 @@ local this = {
     passing_sets = {},
 }
 
----@param o ConditionConfigBase
----@return boolean
-local function eval_condition(o)
-    local cond = this.conditions[o.class]
-    if not cond then
-        return true
-    end
+-- ---@param o ConditionConfigBase
+-- ---@return boolean
+-- local function eval_condition(o)
+--     local cond = this.conditions[o.class]
+--     if not cond then
+--         return true
+--     end
 
-    local combo = cd.bind_condition_options[o.class]
-    local option_key = combo and combo:get_key(o.combo)
+--     local combo = cd.bind_condition_options[o.class]
+--     local option_key = combo and combo:get_key(o.combo)
 
-    local res = cond:update(option_key)
+--     local res = cond:update(option_key)
 
-    if o.expected_result == mod.enum.expected_result.FALSE then
-        res = not res
-    end
+--     if o.expected_result == mod.enum.expected_result.FALSE then
+--         res = not res
+--     end
 
-    return res
-end
+--     return res
+-- end
 
----@param conditions ConditionConfigBase[]
----@return boolean
-local function eval(conditions)
-    return util_table.all(conditions or {}, eval_condition)
-end
+-- ---@param conditions ConditionConfigBase[]
+-- ---@return boolean
+-- local function eval(conditions)
+--     return util_table.all(conditions or {}, eval_condition)
+-- end
 
----@param condition_sets ConditionSetConfig[]
----@param cache ConditionSetPass[]
----@param parent_key (integer|string)?
----@return integer[]
-local function eval_all_and_store(condition_sets, cache, parent_key)
-    ---@type integer[]
-    local ret = {}
+-- ---@param condition_sets ConditionBindRuleConfig[]
+-- ---@param cache ConditionSetPass[]
+-- ---@param parent_key (integer|string)?
+-- ---@return integer[]
+-- local function eval_all_and_store(condition_sets, cache, parent_key)
+--     ---@type integer[]
+--     local ret = {}
 
-    for i, cond_set in ipairs(condition_sets or {}) do
-        if parent_key and parent_key ~= cond_set.parent_key then
-            goto continue_set
-        end
+--     for i, cond_set in ipairs(condition_sets or {}) do
+--         if parent_key and parent_key ~= cond_set.parent_key then
+--             goto continue_set
+--         end
 
-        ---@type ConditionSetPass
-        local pass = {
-            conditions = {},
-            pass = true,
-            element_profile = {},
-            hud_option = {},
-            mod_option = {},
-            game_option = {},
-            user_option = {},
-        }
+--         ---@type ConditionSetPass
+--         local pass = {
+--             conditions = {},
+--             pass = true,
+--             element_profile = {},
+--             hud_option = {},
+--             mod_option = {},
+--             game_option = {},
+--             user_option = {},
+--         }
 
-        cache[i] = pass
-        for j, condition in pairs(cond_set.conditions or {}) do
-            local res = eval_condition(condition)
-            pass.conditions[j] = res
-            pass.pass = pass.pass and res
-        end
+--         cache[i] = pass
+--         for j, condition in pairs(cond_set.conditions or {}) do
+--             local res = eval_condition(condition)
+--             pass.conditions[j] = res
+--             pass.pass = pass.pass and res
+--         end
 
-        for _, child_name in ipairs(condition_set_children) do
-            eval_all_and_store(
-                cond_set[child_name] or {},
-                pass[child_name] --[==[@as ConditionSetPass[]]==],
-                cond_set.key
-            )
-        end
+--         for _, child_name in ipairs(condition_set_children) do
+--             eval_all_and_store(
+--                 cond_set[child_name] or {},
+--                 pass[child_name] --[==[@as ConditionSetPass[]]==],
+--                 cond_set.key
+--             )
+--         end
 
-        if pass.pass then
-            table.insert(ret, cond_set.key)
-        end
+--         if pass.pass then
+--             table.insert(ret, cond_set.key)
+--         end
 
-        ::continue_set::
-    end
+--         ::continue_set::
+--     end
 
-    return ret
-end
+--     return ret
+-- end
 
----@param hud_conditions ConditionSetConfig
----@return integer[]
-local function eval_profiles(hud_conditions)
-    ---@type integer[]
-    local ret = {}
-    for _, profile_conditions in ipairs(hud_conditions.element_profile or {}) do
-        if
-            profile_conditions.parent_key == hud_conditions.key
-            and eval(profile_conditions.conditions or {})
-        then
-            table.insert(ret, profile_conditions.key)
-        end
-    end
+-- ---@param hud_conditions ConditionBindRuleConfig
+-- ---@return integer[]
+-- local function eval_profiles(hud_conditions)
+--     ---@type integer[]
+--     local ret = {}
+--     for _, profile_conditions in ipairs(hud_conditions.element_profile or {}) do
+--         if
+--             profile_conditions.parent_key == hud_conditions.key
+--             and eval(profile_conditions.conditions or {})
+--         then
+--             table.insert(ret, profile_conditions.key)
+--         end
+--     end
 
-    return ret
-end
+--     return ret
+-- end
 
----@param option_conditions ConditionSetConfig[]
----@return table<string, any>
-local function eval_options(option_conditions)
-    ---@type table<string, any>
-    local ret = {}
-    for _, cond in ipairs(option_conditions) do
-        if ret[cond.key] == nil and eval(cond.conditions or {}) then
-            ---@diagnostic disable-next-line: no-unknown
-            ret[cond.key] = cond.free_value
-        end
-    end
+-- ---@param option_conditions ConditionBindRuleConfig[]
+-- ---@return table<string, any>
+-- local function eval_options(option_conditions)
+--     ---@type table<string, any>
+--     local ret = {}
+--     for _, cond in ipairs(option_conditions) do
+--         if ret[cond.key] == nil and eval(cond.conditions or {}) then
+--             ---@diagnostic disable-next-line: no-unknown
+--             ret[cond.key] = cond.free_value
+--         end
+--     end
 
-    return ret
-end
+--     return ret
+-- end
 
----@return ConditionEvalResult?
-local function eval_conditions()
-    local bind_conditions = config.current.mod.bind.condition
-    for _, hud_conditions in ipairs(bind_conditions.hud) do
-        if eval(hud_conditions.conditions or {}) then
-            return {
-                hud = { key = hud_conditions.key, profile = eval_profiles(hud_conditions) },
-                hud_option = eval_options(hud_conditions.hud_option or {}),
-                mod_option = eval_options(hud_conditions.mod_option or {}),
-                game_option = eval_options(hud_conditions.game_option or {}),
-                user_option = eval_options(hud_conditions.user_option or {}),
-            }
-        end
-    end
-end
+-- ---@return ConditionEvalResult?
+-- local function eval_conditions()
+--     local bind_conditions = config.current.mod.bind.condition
+--     for _, hud_conditions in ipairs(bind_conditions.hud) do
+--         if eval(hud_conditions.conditions or {}) then
+--             return {
+--                 hud = { key = hud_conditions.key, profile = eval_profiles(hud_conditions) },
+--                 hud_option = eval_options(hud_conditions.hud_option or {}),
+--                 mod_option = eval_options(hud_conditions.mod_option or {}),
+--                 game_option = eval_options(hud_conditions.game_option or {}),
+--                 user_option = eval_options(hud_conditions.user_option or {}),
+--             }
+--         end
+--     end
+-- end
 
----@param condition_sets ConditionSetConfig[]
----@param cache ConditionSetPass[]
----@param parent_key integer|string
----@return table<string, any>
-local function collect_options(condition_sets, cache, parent_key)
-    ---@type table<string, any>
-    local ret = {}
+-- ---@param condition_sets ConditionBindRuleConfig[]
+-- ---@param cache ConditionSetPass[]
+-- ---@param parent_key integer|string
+-- ---@return table<string, any>
+-- local function collect_options(condition_sets, cache, parent_key)
+--     ---@type table<string, any>
+--     local ret = {}
 
-    for i, cond_set in ipairs(condition_sets or {}) do
-        if
-            cond_set.parent_key == parent_key
-            and ret[cond_set.key] == nil
-            and cache[i]
-            and cache[i].pass
-        then
-            ---@diagnostic disable-next-line: no-unknown
-            ret[cond_set.key] = cond_set.free_value
-        end
-    end
+--     for i, cond_set in ipairs(condition_sets or {}) do
+--         if
+--             cond_set.parent_key == parent_key
+--             and ret[cond_set.key] == nil
+--             and cache[i]
+--             and cache[i].pass
+--         then
+--             ---@diagnostic disable-next-line: no-unknown
+--             ret[cond_set.key] = cond_set.free_value
+--         end
+--     end
 
-    return ret
-end
+--     return ret
+-- end
 
----@return ConditionEvalResult?
-local function eval_all_conditions()
-    local bind_conditions = config.current.mod.bind.condition
-    local passing_huds = eval_all_and_store(bind_conditions.hud, this.passing_sets)
-    local hud = passing_huds[1]
+-- ---@return ConditionEvalResult?
+-- local function eval_all_conditions()
+--     local bind_conditions = config.current.mod.bind.condition
+--     local passing_huds = eval_all_and_store(bind_conditions.hud, this.passing_sets)
+--     local hud = passing_huds[1]
 
-    if not hud then
-        return
-    end
+--     if not hud then
+--         return
+--     end
 
-    for i, hud_conditions in ipairs(bind_conditions.hud) do
-        if hud_conditions.key == hud then
-            local hud_pass = this.passing_sets[i]
+--     for i, hud_conditions in ipairs(bind_conditions.hud) do
+--         if hud_conditions.key == hud then
+--             local hud_pass = this.passing_sets[i]
 
-            ---@type integer[]
-            local profiles = {}
-            for j, profile_conditions in ipairs(hud_conditions.element_profile or {}) do
-                if
-                    profile_conditions.parent_key == hud_conditions.key
-                    and hud_pass.element_profile[j]
-                    and hud_pass.element_profile[j].pass
-                then
-                    table.insert(profiles, profile_conditions.key)
-                end
-            end
+--             ---@type integer[]
+--             local profiles = {}
+--             for j, profile_conditions in ipairs(hud_conditions.element_profile or {}) do
+--                 if
+--                     profile_conditions.parent_key == hud_conditions.key
+--                     and hud_pass.element_profile[j]
+--                     and hud_pass.element_profile[j].pass
+--                 then
+--                     table.insert(profiles, profile_conditions.key)
+--                 end
+--             end
 
-            local ret = {
-                hud = { key = hud, profile = profiles },
-            }
+--             local ret = {
+--                 hud = { key = hud, profile = profiles },
+--             }
 
-            for _, child_name in ipairs(condition_set_children) do
-                if child_name ~= "element_profile" then
-                    ret[child_name] = collect_options(
-                        hud_conditions[child_name] or {},
-                        hud_pass[child_name],
-                        hud_conditions.key
-                    )
-                end
-            end
+--             for _, child_name in ipairs(condition_set_children) do
+--                 if child_name ~= "element_profile" then
+--                     ret[child_name] = collect_options(
+--                         hud_conditions[child_name] or {},
+--                         hud_pass[child_name],
+--                         hud_conditions.key
+--                     )
+--                 end
+--             end
 
-            ---@cast ret ConditionEvalResult
-            return ret
-        end
-    end
-end
+--             ---@cast ret ConditionEvalResult
+--             return ret
+--         end
+--     end
+-- end
 
 ---@param current_hud ModHud
 ---@param force boolean?
@@ -257,23 +251,23 @@ function this.update(current_hud, force)
 
     this.passing_sets = {}
 
-    if bind_conditions.highlight_pass and config.gui.current.gui.main.is_opened then
-        res = eval_all_conditions()
-    else
-        res = eval_conditions()
-    end
+    -- if bind_conditions.highlight_pass and config.gui.current.gui.main.is_opened then
+    --     res = eval_all_conditions()
+    -- else
+    --     res = eval_conditions()
+    -- end
 
-    if not res then
-        return
-    end
+    -- if not res then
+    --     return
+    -- end
 
-    local same_as_current = current_hud
-        and res.hud.key == current_hud.hud.key
-        and util_table.equal(res.hud.profile, current_hud.profile_bits or {})
+    -- local same_as_current = current_hud
+    --     and res.hud.key == current_hud.hud.key
+    --     and util_table.equal(res.hud.profile, current_hud.profile_bits or {})
 
-    if same_as_current and not force then
-        res.hud = nil
-    end
+    -- if same_as_current and not force then
+    --     res.hud = nil
+    -- end
 
     ---@cast res ConditionEvalRet
     return res
@@ -281,31 +275,60 @@ end
 
 function this.update_conditions_only()
     this.passing_sets = {}
-    eval_all_conditions()
+    -- eval_all_conditions()
 end
 
 function this.reset()
     condition_base.reset_all()
 end
 
----@param key integer|string
----@param parent_key (integer|string)?
----@return ConditionSetConfig
-function this.new_condition_set(key, parent_key)
+---@return ConditionBindRuleConfig
+function this.new_condition_rule()
     return {
-        key = key,
-        conditions = {},
-        combo_profile = 1,
-        combo_condition = 1,
-        collapsed = false,
-        parent_key = parent_key,
-        element_profile = {},
-        hud_option = {},
-        mod_option = {},
-        game_option = {},
-        user_option = {},
+        conditions = { {} },
+        sets = {},
+        cond_type_selection = mod_enum.bind_cond_type.HUD,
     }
 end
+
+---@param rule_type BindCondType
+---@return ConditionBindRuleSet
+function this.new_condition_rule_set(rule_type)
+    return {
+        type = rule_type,
+        rules = { this.new_condition_rule() },
+        ok = true,
+        selection = 1,
+    }
+end
+
+function this.new_conditions()
+    return {}
+end
+
+---@return boolean
+function this.check_invalid()
+    return config.current.mod.bind.condition.invalid
+end
+
+-- ---@param key integer|string
+-- ---@param parent_key (integer|string)?
+-- ---@return ConditionBindRuleConfig
+-- function this.new_condition_set(key, parent_key)
+--     return {
+--         key = key,
+--         conditions = {},
+--         combo_profile = 1,
+--         combo_condition = 1,
+--         collapsed = false,
+--         parent_key = parent_key,
+--         element_profile = {},
+--         hud_option = {},
+--         mod_option = {},
+--         game_option = {},
+--         user_option = {},
+--     }
+-- end
 
 ---@param condition ConditionBase
 function this.register_condition(condition)

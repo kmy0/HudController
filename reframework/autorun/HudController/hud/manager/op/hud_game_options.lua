@@ -44,24 +44,24 @@ end
 
 local function refresh_combo_option_game_bind()
     cd.init_combo_option_game_bind()
-    local config_mod = config.current.mod
-    for _, cond_set in pairs(config_mod.bind.condition.hud) do
-        ---@type ConditionSetConfig[]
-        local res = {}
-        for _, cond_child in ipairs(cond_set.game_option or {}) do
-            ---@diagnostic disable-next-line: param-type-mismatch
-            local new_index = cd.combo.option_game_bind:get_index(cond_child.key)
-            if new_index then
-                cond_child.combo_profile = new_index
-                table.insert(res, cond_child)
-            end
-        end
+    local config_mod = config.current.mod --TODO:
+    -- for _, cond_set in pairs(config_mod.bind.condition.hud) do
+    --     ---@type ConditionBindRuleConfig[]
+    --     local res = {}
+    --     for _, cond_child in ipairs(cond_set.game_option or {}) do
+    --         ---@diagnostic disable-next-line: param-type-mismatch
+    --         local new_index = cd.combo.option_game_bind:get_index(cond_child.key)
+    --         if new_index then
+    --             cond_child.combo_profile = new_index
+    --             table.insert(res, cond_child)
+    --         end
+    --     end
 
-        cond_set.game_option = res
-    end
+    --     cond_set.game_option = res
+    -- end
 
     ---@type BindBase[]
-    local res = {}
+    local res = {} --TODO:
     for _, bind in ipairs(config_mod.bind.key.option_game) do
         if cd.combo.option_game_bind:get_index(bind.bound_value.option_key) then
             table.insert(res, bind)

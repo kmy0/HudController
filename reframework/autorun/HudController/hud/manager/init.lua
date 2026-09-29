@@ -378,6 +378,8 @@ function this.init()
     op.user.merge_mod_user_settings()
     op.hud_profile.verify_elements()
 
+    op.bind.verify_binds()
+
     bind_manager.init()
     return true
 end

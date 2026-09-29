@@ -251,8 +251,12 @@ end
 ---@param options string[]
 ---@return number
 local function get_combo_popup_height(options)
+    if #options == 0 then
+        return 1
+    end
+
     local item_height = config.lang.font_size + 6.0
-    if #options > item_height or #options == 0 then
+    if #options > item_height then
         return item_height * 8
     end
     return 0
@@ -381,8 +385,8 @@ end
 ---@param bits integer
 ---@param default_preview string
 ---@param values T[]
----@param get_key fun(value: T): integer
----@param get_label fun(value: T): string
+---@param get_key fun(value: T, index: integer): integer
+---@param get_label fun(value: T, index: integer): string
 ---@return boolean, integer
 function this.combo_multi_bits(label, bits, default_preview, values, get_key, get_label)
     local selected_keys = util_misc.unpack_bits(bits)
@@ -392,8 +396,8 @@ function this.combo_multi_bits(label, bits, default_preview, values, get_key, ge
     local selected = {}
     ---@diagnostic disable-next-line: no-unknown
     for i, value in ipairs(values) do
-        options[i] = get_label(value)
-        selected[i] = util_table.contains_any(selected_keys, get_key(value))
+        options[i] = get_label(value, i)
+        selected[i] = util_table.contains_any(selected_keys, get_key(value, i))
     end
 
     local changed, choice = this.combo_multi(label, selected, default_preview, options)
@@ -404,7 +408,7 @@ function this.combo_multi_bits(label, bits, default_preview, values, get_key, ge
     local new_bits = 0
     for i, enabled in ipairs(choice) do
         if enabled then
-            new_bits = new_bits | (1 << (get_key(values[i]) - 1))
+            new_bits = new_bits | (1 << (get_key(values[i], i) - 1))
         end
     end
     return true, new_bits
@@ -415,8 +419,8 @@ end
 ---@param bits integer
 ---@param default_preview string
 ---@param values T[]
----@param get_key fun(value: T): integer
----@param get_label fun(value: T): string
+---@param get_key fun(value: T, index: integer): integer
+---@param get_label fun(value: T, index: integer): string
 ---@return boolean, integer
 function this.combo_multi_bits_filter(label, bits, default_preview, values, get_key, get_label)
     bits = bits or 0
@@ -427,8 +431,8 @@ function this.combo_multi_bits_filter(label, bits, default_preview, values, get_
     local selected = {}
     ---@diagnostic disable-next-line: no-unknown
     for i, value in ipairs(values) do
-        options[i] = get_label(value)
-        selected[i] = util_table.contains_any(selected_keys, get_key(value))
+        options[i] = get_label(value, i)
+        selected[i] = util_table.contains_any(selected_keys, get_key(value, i))
     end
 
     local changed, choice = this.combo_multi_filter(label, selected, default_preview, options)
@@ -439,7 +443,7 @@ function this.combo_multi_bits_filter(label, bits, default_preview, values, get_
     local new_bits = 0
     for i, enabled in ipairs(choice) do
         if enabled then
-            new_bits = new_bits | (1 << (get_key(values[i]) - 1))
+            new_bits = new_bits | (1 << (get_key(values[i], i) - 1))
         end
     end
     return true, new_bits

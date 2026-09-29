@@ -137,7 +137,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
     ---@type Vector2f[]
     local node_positions = {}
     local text_size = imgui.calc_text_size("")
-    local indent = config.lang.font_size * (20 / 16)
+    local indent = util_imgui.scale_w_font_size(20)
     local indent_offset = -(config.lang.font_size - 16) / 4
 
     if node_pos then
@@ -222,7 +222,7 @@ local function draw_panel_child(elem, elem_config, children_filtered, config_key
     end
 
     if node_pos then
-        local offset_x = config.lang.font_size * (8 / 16)
+        local offset_x = util_imgui.scale_w_font_size(8)
         local start_pos = node_positions[1]
         start_pos.x = start_pos.x - offset_x
         start_pos.y = start_pos.y + text_size.y + 1
@@ -253,7 +253,7 @@ end
 ---@param out_node_positions Vector2f[]?
 function draw_panel_child_contents(elem, elem_config, config_key, elems, tree, out_node_positions)
     local text_size = imgui.calc_text_size("")
-    local indent = config.lang.font_size * (20 / 16)
+    local indent = util_imgui.scale_w_font_size(20)
 
     local keys = util_table.sort(util_table.keys(elems))
     for i = 1, #keys do

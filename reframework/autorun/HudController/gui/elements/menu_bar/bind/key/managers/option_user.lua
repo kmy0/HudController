@@ -67,6 +67,10 @@ end
 ---@param bind ModBind<string, any>
 ---@return string
 function this:get_bind_name(bind)
+    if bind.invalid then
+        return config.lang:tr("misc.text_unknown")
+    end
+
     local user_opt = user_option.bindable[bind.bound_value.key]
     return string.format(
         "%s (%s)",

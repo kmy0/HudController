@@ -68,7 +68,7 @@ function this:draw_additional_options()
                 config.lang:tr("menu.bind.condition.text_trigger_duration"),
                 self.condition_name
             ),
-            self:get_config_key_option("duration"),
+            self:get_additional_options_config_key_option("duration"),
             0.1,
             1,
             10,

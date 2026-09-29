@@ -1,4 +1,4 @@
-local bind_manager = require("HudController.hud.bind.key.init")
+local bind = require("HudController.hud.manager.op.bind")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local factory = require("HudController.hud.factory")
@@ -46,11 +46,6 @@ function this.sort(ordered_names)
 
     config_mod.combo.hud = util_op.hud_index_by_name(config_mod.hud, current_hud) or 1
     util_op.refresh_hud_combo(config_mod)
-
-    util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
-        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key --[[@as integer]])
-            or 1
-    end)
     cd.clear_cache()
 end
 
@@ -76,25 +71,7 @@ function this.remove(hud_config)
         hud_manager.clear()
     end
 
-    for _, bind in pairs(bind_manager.hud.binds) do
-        if bind.bound_value == hud_config.key then
-            bind_manager.hud:unregister(bind)
-        end
-    end
-
-    config_mod.bind.key.hud = bind_manager.hud:get_base_binds()
-    config_mod.bind.condition.hud = util_table.filter_array(
-        config_mod.bind.condition.hud,
-        function(_, value)
-            return value.key ~= hud_config.key
-        end
-    )
-
-    util_table.do_something(config_mod.bind.condition.hud, function(_, _, value)
-        value.combo_profile = util_op.hud_index_by_key(config_mod.hud, value.key --[[@as integer]])
-            or 1
-    end)
-
+    bind.mark_hud_invalid(hud_config.key)
     cd.clear_cache()
 end
 

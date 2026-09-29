@@ -20,10 +20,10 @@ end
 
 ---@param unique_key string
 ---@param value any
----@param y_size number?
-function this:draw_drag_button(unique_key, value, y_size)
-    self._start_pos = imgui.get_cursor_screen_pos().y
-    y_size = y_size or 0
+---@param offset_y number?
+function this:draw_drag_button(unique_key, value, offset_y)
+    offset_y = offset_y or 0
+    self._start_pos = imgui.get_cursor_screen_pos().y + offset_y
 
     imgui.push_style_color(21, 0xff363433)
     imgui.push_style_color(22, 0xff363433)
@@ -38,7 +38,7 @@ function this:draw_drag_button(unique_key, value, y_size)
         self._drag = value
     elseif hover and not mouse_down then
         local end_pos = imgui.get_cursor_screen_pos().y
-        util_imgui.highlight(mod.enum.colors.info, 0, -(end_pos - self._start_pos))
+        util_imgui.highlight(mod.enum.colors.info, 0, -(end_pos - self._start_pos) - offset_y)
     end
 end
 
@@ -78,8 +78,12 @@ function this:check_drag_pos(value, offset_x, offset_y)
     self._last_cursor_pos = cursor_pos
 end
 
+---@param value any?
 ---@return boolean
-function this:is_drag()
+function this:is_drag(value)
+    if value then
+        return self._drag ~= nil and self._drag == value
+    end
     return self._drag ~= nil
 end
 

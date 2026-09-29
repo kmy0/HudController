@@ -1,10 +1,10 @@
+local bind = require("HudController.hud.manager.op.bind")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local factory = require("HudController.hud.factory")
 local hud_elements = require("HudController.hud.manager.elements")
 local hud_manager = require("HudController.hud.manager.init")
-local util_misc = require("HudController.util.misc.init")
 local util_op = require("HudController.hud.manager.op.util")
 local util_table = require("HudController.util.misc.table")
 
@@ -136,40 +136,7 @@ function this.remove_elem_profile(hud_config, key)
         end
     end
 
-    ---@return integer
-    local function filter_binds(t, t_key)
-        local elem_profile_keys = util_misc.unpack_bits(t[t_key])
-        local filtered = util_table.filter_array(elem_profile_keys, function(_, value)
-            return value ~= key
-        end)
-        ---@diagnostic disable-next-line: no-unknown
-        t[t_key] = util_misc.pack_bits(filtered)
-        return t[t_key]
-    end
-
-    local config_mod = config.current.mod
-    for _, bind in pairs(config_mod.bind.key.hud) do
-        local bound_value = bind.bound_value
-        if bound_value.key == hud_config.key then
-            filter_binds(bound_value, "value")
-        end
-    end
-
-    for _, cond_set in pairs(config_mod.bind.condition.hud) do
-        if cond_set.key == hud_config.key and cond_set.element_profile then
-            for _, cond_child in pairs(cond_set.element_profile) do
-                cond_child.combo_profile = filter_binds(cond_child, "key")
-            end
-
-            cond_set.element_profile = util_table.filter_array(
-                cond_set.element_profile,
-                function(_, value)
-                    return value.combo_profile ~= 0
-                end
-            )
-        end
-    end
-
+    bind.mark_hud_profile_invalid(hud_config.key, key)
     cd.clear_cache()
 end
 

@@ -4,6 +4,7 @@ local migration_base = require("HudController.util.misc.migration_base")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 local mod_enum = require("HudController.data.mod").enum
+local bind_condition = require("HudController.hud.bind.condition.init")
 
 ---@module "HudController.hud.factory"
 local factory = util_misc.lazy_require("HudController.hud.factory")
@@ -154,9 +155,9 @@ function this.fns.binds(config)
     local to_remove =
         { "skip_quest_end_timer", "skip_quest_result", "mute_gossip", "hide_subtitles" }
     local res = {}
-    for _, b in pairs(config.mod.bind.key.hud) do
-        if not util_table.contains_any(to_remove, b.bound_value) then
-            table.insert(res, b)
+    for _, b in pairs(config.mod.bind.key.option_mod) do
+        if util_table.contains_any(to_remove, b.bound_value) then
+            b.invalid = true
         end
     end
 
@@ -202,10 +203,18 @@ end
 
 ---@param config MainSettings
 function this.fns.conditions(config)
+    if not util_table.empty(config.mod.bind.condition.hud) then
+        config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD] =
+            bind_condition.new_condition_rule_set(mod_enum.bind_cond_type.HUD)
+    end
     for _, b in pairs(config.mod.bind.condition.hud) do
-        b.key = b.hud_key
-        b.combo_profile = b.combo_hud
-        b.expected_result = 1
+        local rule = bind_condition.new_condition_rule()
+        rule.free_value = b.hud_key
+        rule.free_value2 = 0
+        rule.target_select = b.combo_hud
+        rule.conditions = util_table.deep_copy(b.conditions)
+
+        table.insert(config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD].rules, rule)
     end
 end
 

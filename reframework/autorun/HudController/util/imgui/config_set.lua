@@ -21,7 +21,10 @@ end
 ---@return boolean
 function this:generic_config(name, config_key, func, ...)
     local changed, value
-    changed, value = func(name, self.ref:get(config_key), ...)
+    local current = self.ref:get(config_key)
+    changed, value = func(name, current, ...)
+    -- this is for combo, when current index is nil, its changed automatically to 1, but returned changed flag is still false
+    changed = changed or value ~= current
 
     if changed then
         self.ref:set(config_key, value)
@@ -217,8 +220,8 @@ end
 ---@param config_key string
 ---@param default_preview string
 ---@param values T[]
----@param get_key fun(value: T): integer
----@param get_label fun(value: T): string
+---@param get_key fun(value: T, index: integer): integer
+---@param get_label fun(value: T, index: integer): string
 ---@return boolean
 function this:combo_multi_bits_filter(name, config_key, default_preview, values, get_key, get_label)
     return self:generic_config(
