@@ -5,7 +5,7 @@ local util_table = require("HudController.util.misc.table")
 
 local this = {}
 
----@param key string
+---@param key TranslationKey
 ---@param ... string | integer
 ---@return string
 function this.tr(key, ...)

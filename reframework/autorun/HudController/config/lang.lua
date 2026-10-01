@@ -44,7 +44,7 @@ function this:change(lang_file, font_size)
     lang_base.change(self, lang_file, font_size or self.ref.current.mod.lang.font_size)
 end
 
----@param key string
+---@param key TranslationKey
 ---@return string
 function this:tr(key)
     local ret = util_table.get_by_path(self.current, key)
