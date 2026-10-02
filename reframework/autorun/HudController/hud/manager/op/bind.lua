@@ -166,12 +166,48 @@ function this.iter_rules(root, cond_type)
     end)
 end
 
+---@param root ConditionBindStateConfig
+---@param cond_class string
+---@return fun(): ConditionConfigBase?
+function this.iter_conditions(root, cond_class)
+    return coroutine.wrap(function()
+        ---@param sets table<BindCondType, ConditionBindRuleSet>
+        local function visit(sets)
+            for _, set in pairs(sets) do
+                for _, rule in ipairs(set.rules) do
+                    for _, group in ipairs(rule.conditions) do
+                        for _, cond in ipairs(group) do
+                            if cond.class == cond_class then
+                                coroutine.yield(cond)
+                            end
+                        end
+                    end
+
+                    visit(rule.sets)
+                end
+            end
+        end
+
+        visit(root.sets)
+    end)
+end
+
 ---@param hud_key integer
 function this.mark_hud_invalid(hud_key)
     local config_mod = config.current.mod
     for rule in this.iter_rules(config_mod.bind.condition, mod_enum.bind_cond_type.HUD) do
         if rule.free_value == hud_key then
             this.set_condition_error(rule, "free_value", config.lang:tr("misc.text_missing_opt"))
+        end
+    end
+
+    for cond in this.iter_conditions(config_mod.bind.condition, "_HUD") do
+        if cond.combo_key == hud_key then
+            this.set_condition_error(
+                cond,
+                "class_config_value",
+                config.lang:tr("misc.text_wrong_value")
+            )
         end
     end
 
