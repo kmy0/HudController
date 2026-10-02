@@ -108,7 +108,7 @@ local function draw_listener(manager)
     imgui.separator()
 end
 
----@return {label: string, key: BindKeyType}[], number
+---@return {label: string, key: BindKeyType, tooltip: string?}[], number
 local function get_buttons()
     local buttons = {
         { label = config.lang:tr("menu.bind.key.all"), key = mod_enum.bind_key_type.ALL },
@@ -125,6 +125,10 @@ local function get_buttons()
         {
             label = config.lang:tr("menu.bind.key.option_game"),
             key = mod_enum.bind_key_type.OPTION_GAME,
+        },
+        {
+            label = config.lang:tr("menu.bind.key.condition"),
+            key = mod_enum.bind_key_type.CONDITION,
         },
     }
 
@@ -149,10 +153,6 @@ end
 ---@return BindKeyType
 local function draw_buttons(buttons, max_width)
     local config_mod = config.current.mod
-
-    config_mod.bind.key.key_type_selection =
-        math.min(config_mod.bind.key.key_type_selection, #buttons)
-
     local changed = false
 
     for _, b in ipairs(buttons) do
@@ -282,7 +282,7 @@ local function draw_registered_binds(manager)
 
         if not util_table.empty(remove) then
             for _, bind in pairs(remove) do
-                manager.manager:unregister(bind)
+                manager:unregister(bind)
             end
 
             bind_manager.check_invalid()
@@ -475,6 +475,8 @@ function this.init()
         managers.option_game:new(bind_manager.option_game, "mod.bind.key.option_game")
     this.managers[mod_enum.bind_key_type.OPTION_USER] =
         managers.option_user:new(bind_manager.option_user, "mod.bind.key.option_user")
+    this.managers[mod_enum.bind_key_type.CONDITION] =
+        managers.condition:new(bind_manager.condition, "mod.bind.key.condition")
 
     config.current.mod.bind.key.key_type_selection = mod_enum.bind_key_type.ALL
 

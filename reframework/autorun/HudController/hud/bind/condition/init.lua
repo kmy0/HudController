@@ -40,6 +40,7 @@ local conditions = {
     quest_target = require("HudController.hud.bind.condition.conditions.quest_target"),
     always = require("HudController.hud.bind.condition.conditions.always"),
     hud = require("HudController.hud.bind.condition.conditions.hud"),
+    key = require("HudController.hud.bind.condition.conditions.key"),
 }
 
 local mod_enum = mod.enum

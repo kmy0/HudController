@@ -71,8 +71,11 @@ end
 
 -- imgui things drawn to the right of condition name
 ---@param config_key string -- path to ConditionConfigBase config:get(key .. ".combo")
+---@return boolean -- changed
 ---@diagnostic disable-next-line: unused-local
-function this:draw_options(config_key) end
+function this:draw_options(config_key)
+    return false
+end
 
 ---@param config_key string
 ---@param param_key string

@@ -249,6 +249,7 @@ this.enum.bind_key_type = { ---@class BindKeyType.*
     OPTION_MOD = 5,
     OPTION_GAME = 6,
     OPTION_USER = 7,
+    CONDITION = 8,
 }
 
 ---@return boolean

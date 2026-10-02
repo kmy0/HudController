@@ -212,19 +212,18 @@ function this.draw_conditions(manager, config_key, readonly)
                     return
                 end
 
+                local changed = false
                 local key = string.format("%s.int:%s", config_key, i)
                 if cond_class and cond_class:has_custom_options() then
-                    cond_class:draw_options(key)
+                    changed = cond_class:draw_options(key) or changed
                 elseif cond_class and cond_class.options then
                     imgui.set_next_item_width(-1)
-                    if
-                        set:combo_filter(
-                            string.format("##cond_opt.%s.%s", config_key, i),
-                            key .. ".combo",
-                            cd.bind_condition_options[cond.class]
-                        )
-                    then
-                        op.bind.set_condition_error(cond, "class_config_value", nil)
+                    changed = set:combo_filter(
+                        string.format("##cond_opt.%s.%s", config_key, i),
+                        key .. ".combo",
+                        cd.bind_condition_options[cond.class]
+                    ) or changed
+                    if changed then
                         config:set(
                             key .. ".combo_key",
                             cd.bind_condition_options[cond.class]:get_key(
@@ -234,6 +233,10 @@ function this.draw_conditions(manager, config_key, readonly)
                     end
                 else
                     imgui.invisible_button("i_button3" .. config_key .. i, { -1, 0 })
+                end
+
+                if changed then
+                    op.bind.set_condition_error(cond, "class_config_value", nil)
                 end
             end, function(err)
                 op.bind.set_condition_error(cond, "class_config", err)

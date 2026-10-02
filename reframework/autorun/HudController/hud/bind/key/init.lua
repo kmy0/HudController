@@ -5,6 +5,7 @@
 ---@field hud HudModBindManager
 ---@field option_game OptionModBindManager
 ---@field option_elem OptionModBindManager
+---@field condition HudModBindManager
 ---@field monitor ModBindMonitor
 ---@field any_invalid boolean
 
@@ -18,6 +19,7 @@
 ---@field frame_storage BindEvalRet
 
 ---@class (exact) BindEvalRet : ConditionEvalRet
+---@field condition table<string, boolean>
 
 local bind_monitor = require("HudController.util.game.bind.monitor")
 local config = require("HudController.config.init")
@@ -230,6 +232,11 @@ local function action_option_elem(bind)
     })
 end
 
+---@param bind ModBind
+local function action_condition(bind)
+    util_table.set_nested_value(this.monitor.frame_storage, { "condition", bind.name }, true)
+end
+
 ---@return boolean
 function this.check_invalid()
     for _, m in pairs(this.monitor.managers) do
@@ -254,6 +261,7 @@ function this.init()
     this.option_game = option_bind_manager:new("option_game", action_option_game)
     this.option_user = option_bind_manager:new("option_user", action_option_user)
     this.option_elem = option_bind_manager:new("option_elem", action_option_elem)
+    this.condition = hud_bind_manager:new("condition", action_condition)
     this.hud = hud_bind_manager:new("hud", action_hud)
 
     if not this.option_hud:load(bind_key.option_hud) then
@@ -280,6 +288,10 @@ function this.init()
         bind_key.hud = this.hud:get_base_binds()
     end
 
+    if not this.condition:load(bind_key.condition) then
+        bind_key.condition = this.condition:get_base_binds()
+    end
+
     ---@diagnostic disable-next-line: assign-type-mismatch
     this.monitor = bind_monitor:new(
         this.option_mod,
@@ -287,7 +299,8 @@ function this.init()
         this.option_hud,
         this.option_game,
         this.option_user,
-        this.option_elem
+        this.option_elem,
+        this.condition
     )
     this.monitor:set_max_buffer_frame(bind_key.buffer)
     this.check_invalid()

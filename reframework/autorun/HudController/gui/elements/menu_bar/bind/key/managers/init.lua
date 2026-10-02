@@ -5,6 +5,7 @@ local this = {
     option_hud = require("HudController.gui.elements.menu_bar.bind.key.managers.option_hud"),
     option_game = require("HudController.gui.elements.menu_bar.bind.key.managers.option_game"),
     option_user = require("HudController.gui.elements.menu_bar.bind.key.managers.option_user"),
+    condition = require("HudController.gui.elements.menu_bar.bind.key.managers.condition"),
 }
 
 return this

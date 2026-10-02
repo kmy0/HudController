@@ -223,6 +223,25 @@ function this.mark_hud_invalid(hud_key)
     bind_manager.check_invalid()
 end
 
+---@param bind BindBase
+---@param is_removal boolean?
+function this.check_condition_key_bind(bind, is_removal)
+    is_removal = is_removal and is_removal or false
+
+    local config_mod = config.current.mod
+    for cond in this.iter_conditions(config_mod.bind.condition, "_KEY") do
+        if cond.combo_key == bind.name then
+            this.set_condition_error(
+                cond,
+                "class_config_value",
+                is_removal and config.lang:tr("misc.text_wrong_value") or nil
+            )
+        end
+    end
+
+    this.evaluate_conditions(config_mod.bind.condition)
+end
+
 ---@param hud_key integer
 ---@param profile_key integer
 function this.mark_hud_profile_invalid(hud_key, profile_key)

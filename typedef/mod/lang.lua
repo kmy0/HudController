@@ -651,3 +651,5 @@
 ---| "misc.text_config_changed"
 ---| "menu.bind.condition.condition_always"
 ---| "menu.bind.condition.condition_hud"
+---| "menu.bind.key.condition"
+---| "menu.bind.condition.condition_key"

@@ -42,6 +42,7 @@ function this:new(condition_name, display_name, values, sort_fn)
 end
 
 ---@param config_key string
+---@return boolean
 function this:draw_options(config_key)
     imgui.set_next_item_width(-1)
 
@@ -72,6 +73,8 @@ function this:draw_options(config_key)
 
         config:save()
     end
+
+    return changed
 end
 
 ---@param options MultiSelectConditionConfig

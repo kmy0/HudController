@@ -87,6 +87,11 @@ function this:register(bind_base)
     self:make_base_bind()
 end
 
+---@param bind ModBind
+function this:unregister(bind)
+    self.manager:unregister(bind)
+end
+
 ---@param bind_base ModBindBase
 ---@return string?
 function this:is_collision(bind_base)

@@ -590,6 +590,19 @@ function this.do_something(t, func)
     return true
 end
 
+---@generic T
+---@param t T[]
+---@param func fun(t: T[], index: integer, value: T): boolean?
+---@return boolean
+function this.do_something_ordered(t, func)
+    for k, v in ipairs(t) do
+        if func(t, k, v) == false then
+            return false
+        end
+    end
+    return true
+end
+
 ---@param t table
 ---@param indent integer?
 ---@param visited table<table, boolean>?
