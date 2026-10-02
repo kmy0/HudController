@@ -372,15 +372,14 @@ function this.init()
     defaults.play_object:init()
     defaults.option:init()
 
-    op.user.verify_conditions()
     op.user.verify_options()
 
     op.user.merge_mod_user_settings()
     op.hud_profile.verify_elements()
 
+    bind_manager.init()
     op.bind.verify_binds()
 
-    bind_manager.init()
     return true
 end
 

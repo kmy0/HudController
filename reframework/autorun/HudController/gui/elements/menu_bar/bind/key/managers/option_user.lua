@@ -35,7 +35,7 @@ function this:draw_option()
     if not self:is_disabled() then
         return util_bind.draw_option(function()
             local opt = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target"))
-            return opt:draw(opt.label, "__temp.option_value")
+            return opt:draw("##" .. tostring(opt), "__temp.option_value")
         end)
     end
 
@@ -47,7 +47,7 @@ end
 function this:make_base_bind(set_default)
     if set_default then
         local opt = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target")) --[[@as RegisteredUserOption]]
-        config:set("__temp.option_value", user_option.get_default(opt))
+        config:set("__temp.option_value", opt and user_option.get_default(opt) or nil)
     end
 
     self.base_bind = {

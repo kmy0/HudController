@@ -648,3 +648,4 @@
 ---| "sorter.button_apply"
 ---| "sorter.button_sort_tooltip"
 ---| "sorter.name"
+---| "misc.text_config_changed"

@@ -8,6 +8,9 @@ local this = {
     [mod_enum.bind_cond_type.OPTION_GAME] = require(
         "HudController.gui.elements.menu_bar.bind.condition.managers.option_game"
     ),
+    [mod_enum.bind_cond_type.OPTION_USER] = require(
+        "HudController.gui.elements.menu_bar.bind.condition.managers.option_user"
+    ),
 }
 
 return this

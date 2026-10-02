@@ -482,4 +482,35 @@ function this.unpack_bits(bits)
     return indexes
 end
 
+---@param a any
+---@param b any
+---@return boolean
+function this.eval_type(a, b)
+    local ta = type(a)
+
+    if ta ~= type(b) then
+        return false
+    end
+
+    if ta == "table" then
+        ---@diagnostic disable-next-line: no-unknown
+        for ak, av in pairs(a) do
+            local bv = rawget(b, ak)
+
+            if bv == nil or not this.eval_type(av, bv) then
+                return false
+            end
+        end
+
+        ---@diagnostic disable-next-line: no-unknown
+        for bk in pairs(b) do
+            if rawget(a, bk) == nil then
+                return false
+            end
+        end
+    end
+
+    return true
+end
+
 return this

@@ -1,41 +1,9 @@
-local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
 local user_option = require("HudController.hud.user.option")
-local util_table = require("HudController.util.misc.table")
+local util_misc = require("HudController.util.misc.init")
 
 local this = {}
-
-function this.verify_conditions()
-    local config_mod = config.current.mod
-
-    for key, _ in pairs(config_mod.bind.condition.condition_options) do
-        if not bind_condition.conditions[key] then
-            config_mod.bind.condition.condition_options[key] = nil
-        end
-    end
-
-    -- ---@param condition_set ConditionBindRuleConfig[] --TODO:
-    -- local function filter(condition_set)
-    --     for _, cond_set in ipairs(condition_set) do
-    --         local res = {}
-    --         for _, cond in ipairs(cond_set.conditions or {}) do
-    --             if bind_condition.conditions[cond.class] then
-    --                 table.insert(res, cond)
-    --             end
-    --         end
-
-    --         cond_set.conditions = res
-    --         filter(cond_set.element_profile or {})
-    --         filter(cond_set.hud_option or {})
-    --         filter(cond_set.mod_option or {})
-    --         filter(cond_set.game_option or {})
-    --         filter(cond_set.user_option or {})
-    --     end
-    -- end
-
-    -- filter(config_mod.bind.condition.hud)
-end
 
 ---@param elem_config HudBaseConfig
 function this.merge_elem_user_options(elem_config)
@@ -74,58 +42,62 @@ function this.verify_options()
     local config_mod = config.current.mod
 
     for k, _ in pairs(config_mod.user_options) do
-        if not user_option.mod[k] then
+        local reg_opt = user_option.bindable[k]
+
+        if not reg_opt or reg_opt.module ~= "mod" then
             config_mod.user_options[k] = nil
+        elseif reg_opt then
+            local default_value = user_option.get_default(reg_opt)
+            if
+                not util_misc.eval_type(
+                    config_mod.user_options[k],
+                    user_option.get_default(reg_opt)
+                )
+            then
+                config_mod.user_options[k] = default_value
+            end
         end
     end
 
     for _, hud in pairs(config_mod.hud) do
         for k, _ in pairs(hud.user_options or {}) do
-            if not user_option.hud[k] then
+            local reg_opt = user_option.bindable[k]
+
+            if not reg_opt or reg_opt.module ~= "hud" then
                 hud.user_options[k] = nil
+            elseif reg_opt then
+                local default_value = user_option.get_default(reg_opt)
+
+                if
+                    not util_misc.eval_type(hud.user_options[k], user_option.get_default(reg_opt))
+                then
+                    hud.user_options[k] = default_value
+                end
             end
         end
 
         for _, elem in pairs(hud.elements or {}) do
             local hud_name = e.get("app.GUIHudDef.TYPE")[elem.hud_id]
             for k, _ in pairs(elem.user_options or {}) do
-                if not util_table.get_nested_value(user_option.element, { hud_name, k }) then
+                local reg_opt = user_option.bindable[k]
+
+                if reg_opt.module ~= "element" or reg_opt.element ~= hud_name then
                     elem.user_options[k] = nil
+                elseif reg_opt then
+                    local default_value = user_option.get_default(reg_opt)
+
+                    if
+                        not util_misc.eval_type(
+                            elem.user_options[k],
+                            user_option.get_default(reg_opt)
+                        )
+                    then
+                        elem.user_options[k] = default_value
+                    end
                 end
             end
         end
     end
-
-    local res = {}
-    for _, b in ipairs(config_mod.bind.key.option_user) do
-        if user_option.bindable[b.bound_value.key] then
-            table.insert(res, b)
-        end
-    end
-
-    config_mod.bind.key.option_user = res
-
-    -- local sorted = util_table.sort( --TODO:
-    --     util_table.keys(user_option.get_bindable_options()),
-    --     function(a, b)
-    --         return a.sort < b.sort
-    --     end
-    -- )
-    -- for _, cond_set in pairs(config_mod.bind.condition.hud) do
-    --     ---@type ConditionBindRuleConfig[]
-    --     res = {}
-    --     for _, cond_child in ipairs(cond_set.user_option or {}) do
-    --         local new_index = util_table.index(sorted, function(o)
-    --             return o.key == cond_child.key
-    --         end)
-    --         if new_index then
-    --             cond_child.combo_profile = new_index
-    --             table.insert(res, cond_child)
-    --         end
-    --     end
-
-    --     cond_set.user_option = res
-    -- end
 end
 
 return this

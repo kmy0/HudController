@@ -476,10 +476,7 @@ function this.init()
     this.managers[mod_enum.bind_key_type.OPTION_USER] =
         managers.option_user:new(bind_manager.option_user, "mod.bind.key.option_user")
 
-    local manager = this.managers[config.current.mod.bind.key.key_type_selection]
-    if manager then
-        manager:make_base_bind(true)
-    end
+    config.current.mod.bind.key.key_type_selection = mod_enum.bind_key_type.ALL
 
     return true
 end

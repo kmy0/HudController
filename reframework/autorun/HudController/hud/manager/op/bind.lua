@@ -52,14 +52,28 @@ local function merge_condition_sets(sets)
                     )
 
                     if cls then
-                        group[k] = util_table.merge(cls:new_config(), cond)
+                        local ok = true
+                        util_misc.try(function()
+                            group[k] = util_table.merge_same_types(cls:new_config(), cond)
+                        end, function(_)
+                            group[k] = cls:new_config()
+                            ok = false
+                        end)
 
-                        this.set_condition_error(
-                            cond,
-                            "class_config_value",
-                            not cls:validate(cond) and config.lang:tr("misc.text_wrong_value")
-                                or nil
-                        )
+                        if ok then
+                            this.set_condition_error(
+                                cond,
+                                "class_config_value",
+                                not cls:validate(cond) and config.lang:tr("misc.text_wrong_value")
+                                    or nil
+                            )
+                        else
+                            this.set_condition_error(
+                                cond,
+                                "class_config_value",
+                                config.lang:tr("misc.text_config_changed")
+                            )
+                        end
                     end
                 end
             end
@@ -93,6 +107,42 @@ local function condition_clear_class_config(root)
     end
 
     clear_sets(root.sets)
+end
+
+local function check_user_option_bind()
+    local config_mod = config.current.mod
+    for rule in this.iter_rules(config_mod.bind.condition, mod_enum.bind_cond_type.OPTION_USER) do
+        local reg_opt = user.option.bindable[rule.free_value]
+        this.set_condition_error(
+            rule,
+            "free_value",
+            not reg_opt and config.lang:tr("misc.text_missing_opt") or nil
+        )
+
+        if reg_opt then
+            local default_value = user.option.get_default(reg_opt)
+            if not util_misc.eval_type(default_value, rule.free_value2) then
+                this.set_condition_error(
+                    rule,
+                    "free_value2",
+                    config.lang:tr("misc.text_wrong_value")
+                )
+                rule.free_value2 = default_value
+            end
+        end
+    end
+
+    for _, b in pairs(bind_manager.option_user.binds) do
+        local reg_opt = user.option.bindable[b.bound_value.key]
+        if
+            not reg_opt
+            or not util_misc.eval_type(user.option.get_default(reg_opt), b.bound_value.value)
+        then
+            b.invalid = true
+        end
+    end
+
+    config_mod.bind.key.option_user = bind_manager.option_user:get_base_binds()
 end
 
 ---@param root ConditionBindStateConfig
@@ -257,7 +307,10 @@ function this.verify_binds()
 
     merge_condition_sets(config_mod.bind.condition.sets)
     condition_clear_class_config(config_mod.bind.condition)
+    check_user_option_bind()
+
     this.evaluate_conditions(config_mod.bind.condition)
+    bind_manager.check_invalid()
 
     --TODO: check for invalid etc
 end

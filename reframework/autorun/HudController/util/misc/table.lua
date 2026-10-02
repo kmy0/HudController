@@ -129,6 +129,43 @@ function this.merge(first, ...)
 end
 
 ---@generic T: table
+---@param first T
+---@param ... table
+---@return T
+function this.merge_same_types(first, ...)
+    local tables_to_merge = { ... }
+    local result = this.deep_copy(first)
+
+    for i = 1, #tables_to_merge do
+        local from = tables_to_merge[i]
+
+        for key, value in pairs(from) do
+            local existing = result[key]
+
+            if existing ~= nil then
+                assert(
+                    type(existing) == type(value),
+                    string.format(
+                        "Type mismatch for key '%s': expected %s, got %s",
+                        tostring(key),
+                        type(existing),
+                        type(value)
+                    )
+                )
+            end
+
+            if type(value) == "table" then
+                result[key] = this.merge(existing or {}, value)
+            else
+                result[key] = value
+            end
+        end
+    end
+
+    return result
+end
+
+---@generic T: table
 ---@param target T
 ---@param ... table
 ---@return T

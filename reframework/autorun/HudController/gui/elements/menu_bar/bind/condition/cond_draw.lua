@@ -27,10 +27,6 @@ function this.get_buttons()
         ret[cond_type] = config.lang:tr("menu.bind.condition.bind_cond_type." .. cond_type)
     end
 
-    if cd.combo.option_user_bind:empty() then
-        ret[mod_enum.bind_cond_type.OPTION_USER] = nil
-    end
-
     local max_width = 0
     for _, label in pairs(ret) do
         max_width = math.max(max_width, imgui.calc_text_size(label).x) --[[@as number]]
@@ -73,6 +69,13 @@ function this.draw_buttons(buttons, max_width, config_key)
             end
 
             for _, bind_type in ipairs(sorted) do
+                if
+                    bind_type == mod_enum.bind_cond_type.OPTION_USER
+                    and cd.combo.option_user_bind:empty()
+                then
+                    goto continue
+                end
+
                 if util_imgui.menu_item(buttons[bind_type], selected[bind_type]) then
                     if selected[bind_type] then
                         sets[bind_type] = nil
@@ -83,6 +86,8 @@ function this.draw_buttons(buttons, max_width, config_key)
                         config:save()
                     end
                 end
+
+                ::continue::
             end
         end,
         function(_)
@@ -108,7 +113,11 @@ function this.draw_buttons(buttons, max_width, config_key)
 
         if
             util_imgui.draw_sel_button(
-                string.format("%s##bind_cond_sel_button|%s", buttons[b], b),
+                string.format(
+                    "%s##bind_cond_sel_button|%s",
+                    config.lang:tr("menu.bind.condition.bind_cond_type." .. b),
+                    b
+                ),
                 struct.cond_type_selection == b,
                 { max_width - button_size, 0 }
             )
@@ -275,7 +284,7 @@ function this.draw_condition_target(manager, config_key)
             util_imgui.separator_text_centered(config.lang:tr("misc.text_or"))
         end
 
-        util_imgui.begin_disabled(i == 1)
+        util_imgui.begin_disabled(#conditions == 1)
 
         if util_imgui.draw_remove_button("cond_group_remove|" .. i) then
             to_remove = i
@@ -353,7 +362,7 @@ function this.draw_target(manager, config_key)
         drag:draw_drag_button(tostring(rule), rule, -4)
         imgui.same_line()
 
-        util_imgui.begin_disabled(i == 1)
+        util_imgui.begin_disabled(#rules == 1)
 
         if util_imgui.draw_remove_button("cond_target_remove|" .. i) then
             to_remove = i
@@ -367,7 +376,6 @@ function this.draw_target(manager, config_key)
 
         this.draw_manager_target(manager, rule_path)
 
-        util_imgui.spacer_x(4)
         imgui.pop_item_width()
         util_imgui.spacer_y(4)
 
@@ -460,6 +468,8 @@ function this.draw_manager_target(manager, rule_path)
     imgui.push_style_color(5, invalid.free_value and color.with_alpha(mod_enum.colors.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
+
+    util_imgui.spacer_x(4)
 
     imgui.begin_rect()
 

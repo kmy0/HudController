@@ -45,9 +45,10 @@ return {
         text_or = "OR",
         text_root = "Root",
         text_error = "Error!",
-        text_missing_cond = "Missing Condition",
+        text_missing_cond = "Missing Condition!",
         text_wrong_value = "Wrong Value!",
-        text_missing_opt = "Missing Option",
+        text_missing_opt = "Missing Option!",
+        text_config_changed = "Config Changed!",
     },
     debug = {
         name = "Debug",
