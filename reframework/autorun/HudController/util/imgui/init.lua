@@ -840,12 +840,18 @@ function this.button_with_popup(label, draw_fn, min_size, max_size)
     local scrollbar = 14
 
     local size = popup_sizes[popup_id] or { min_width, min_height }
+    local max_w = math.min(math.max(size[1], min_width), max_width)
+    local max_h = math.min(math.max(size[2], min_height), max_height)
     imgui.set_next_window_size({
-        math.min(math.max(size[1], min_width), max_width),
-        math.min(math.max(size[2], min_height), max_height),
+        max_w,
+        max_h,
     }, 1)
+    local flags = 4 | 2048
+    if max_w < max_width and max_h < max_height then
+        flags = flags | 1 << 3
+    end
 
-    if imgui.begin_popup(popup_id, 4 | 2048) then
+    if imgui.begin_popup(popup_id, flags) then
         local start = imgui.get_cursor_screen_pos()
 
         imgui.begin_group()

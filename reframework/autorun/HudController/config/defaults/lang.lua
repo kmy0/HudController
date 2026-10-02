@@ -250,6 +250,7 @@ return {
                 condition_opt_singleplayer = "Singleplayer",
                 condition_opt_multiplayer = "Multiplayer",
                 condition_always = "Always",
+                condition_hud = "Hud",
                 out_of_combat_delay = "Out of Combat Delay",
                 in_combat_delay = "In Combat Delay",
                 quest_in_combat = "Quest = In Combat",

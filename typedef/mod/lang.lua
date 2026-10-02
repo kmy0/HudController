@@ -649,3 +649,5 @@
 ---| "sorter.button_sort_tooltip"
 ---| "sorter.name"
 ---| "misc.text_config_changed"
+---| "menu.bind.condition.condition_always"
+---| "menu.bind.condition.condition_hud"

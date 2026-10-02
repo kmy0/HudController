@@ -4,7 +4,6 @@ local migration_base = require("HudController.util.misc.migration_base")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 local mod_enum = require("HudController.data.mod").enum
-local always = require("HudController.hud.bind.condition.conditions.always")
 
 ---@module "HudController.hud.factory"
 local factory = util_misc.lazy_require("HudController.hud.factory")
@@ -14,6 +13,8 @@ local subtitles = util_misc.lazy_require("HudController.hud.elements.subtitles")
 local quest_end_timer = util_misc.lazy_require("HudController.hud.elements.quest_end_timer")
 ---@module "HudController.hud.bind.condition.init"
 local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
+---@module "HudController.hud.bind.condition.conditions.always"
+local always = util_misc.lazy_require("HudController.hud.bind.condition.conditions.always")
 
 local this = migration_base.new("1.0.0")
 
