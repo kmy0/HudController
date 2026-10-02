@@ -38,6 +38,7 @@ local conditions = {
     minimap_state = require("HudController.hud.bind.condition.conditions.minimap_state"),
     quest_rank = require("HudController.hud.bind.condition.conditions.quest_rank"),
     quest_target = require("HudController.hud.bind.condition.conditions.quest_target"),
+    always = require("HudController.hud.bind.condition.conditions.always"),
 }
 
 local mod_enum = mod.enum

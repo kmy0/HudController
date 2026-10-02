@@ -4,6 +4,7 @@ local migration_base = require("HudController.util.misc.migration_base")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 local mod_enum = require("HudController.data.mod").enum
+local always = require("HudController.hud.bind.condition.conditions.always")
 
 ---@module "HudController.hud.factory"
 local factory = util_misc.lazy_require("HudController.hud.factory")
@@ -213,7 +214,11 @@ function this.fns.conditions(config)
         rule.free_value = b.hud_key
         rule.free_value2 = 0
         rule.target_select = b.combo_hud
-        rule.conditions = util_table.deep_copy(b.conditions)
+        rule.conditions = { util_table.deep_copy(b.conditions) }
+
+        if util_table.empty(rule.conditions[1]) then
+            table.insert(rule.conditions[1], always:new_config())
+        end
 
         table.insert(config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD].rules, rule)
     end
