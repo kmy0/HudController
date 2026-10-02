@@ -1,6 +1,6 @@
 local cd = require("HudController.data.combo")
 local color = require("HudController.util.imgui.color")
-local combo_multi = require(".HudController.util.imgui.combo.combo_multi")
+local combo_multi = require("HudController.util.imgui.combo.combo_multi")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local op = require("HudController.hud.manager.op.init")

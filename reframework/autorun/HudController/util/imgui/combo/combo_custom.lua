@@ -1,4 +1,4 @@
-local common = require(".HudController.util.imgui.combo.common")
+local common = require("HudController.util.imgui.combo.common")
 local filter = require("HudController.util.imgui.filter")
 
 local this = {}

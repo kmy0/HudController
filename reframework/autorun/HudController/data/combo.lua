@@ -48,7 +48,7 @@
 ---@field combo_cache table<string, ComboValues>
 ---@field bind_condition_options table<string, ComboValues>
 
-local combo = require(".HudController.util.imgui.combo.values")
+local combo = require("HudController.util.imgui.combo.values")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")

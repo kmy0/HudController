@@ -7,7 +7,7 @@
 ---@field selection table<string, boolean>
 
 local base = require("HudController.hud.def.condition_base")
-local combo_multi = require(".HudController.util.imgui.combo.combo_multi")
+local combo_multi = require("HudController.util.imgui.combo.combo_multi")
 local config = require("HudController.config.init")
 local util_table = require("HudController.util.misc.table")
 

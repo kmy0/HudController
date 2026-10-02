@@ -2,7 +2,7 @@
 
 local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
-local combo_multi = require(".HudController.util.imgui.combo.combo_multi")
+local combo_multi = require("HudController.util.imgui.combo.combo_multi")
 local config = require("HudController.config.init")
 local util_table = require("HudController.util.misc.table")
 

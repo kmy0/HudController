@@ -1,5 +1,5 @@
 local color = require("HudController.util.imgui.color")
-local combo_filter = require(".HudController.util.imgui.combo.combo_filter")
+local combo_filter = require("HudController.util.imgui.combo.combo_filter")
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
 local imgui_id = require("HudController.util.imgui.id")
