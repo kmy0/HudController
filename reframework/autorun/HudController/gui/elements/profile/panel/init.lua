@@ -1,5 +1,5 @@
 local color = require("HudController.util.imgui.color")
-local combo_multi = require("HudController.util.imgui.combo_multi")
+local combo_custom = require(".HudController.util.imgui.combo.combo_custom")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def_mod = require("HudController.data.option.mod")
@@ -388,7 +388,7 @@ local function draw_profile_selector(elem_config, config_key)
         util_imgui.get_something_with_button_width(config.lang:tr("misc.text_ellipsis"))
     )
     if
-        combo_multi.combo_custom_filter(
+        combo_custom.combo_custom_filter(
             "##elem_profile." .. config_key,
             elem_config.current_profile_gui,
             function(min, max, value)

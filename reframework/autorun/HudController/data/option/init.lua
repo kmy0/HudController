@@ -3,7 +3,7 @@
 ---@field config_key string | fun(self: OptionDef<T>, ...): string
 ---@field lang_key string
 ---@field bindable boolean
----@field combo Combo?
+---@field combo ComboValues?
 ---@field draw fun(self: OptionDef<T>, label: string?, config_key: string): boolean
 ---@field format fun(self: OptionDef<T>, val: T): string
 ---@field active (fun(self: OptionDef<T>, val: T): boolean)?

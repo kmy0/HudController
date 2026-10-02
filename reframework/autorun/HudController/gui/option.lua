@@ -161,7 +161,7 @@ end
 ---@param checkbox {config_key: string, label: string?}?
 ---@param config_key string
 ---@param label string
----@param combo Combo
+---@param combo ComboValues
 ---@param default_index integer?
 ---@return {key: any, value: string, index: integer}?
 function this.draw_combo(checkbox, config_key, label, combo, default_index)

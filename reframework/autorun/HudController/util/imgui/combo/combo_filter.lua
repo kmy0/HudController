@@ -23,7 +23,7 @@ end
 
 ---@param name string
 ---@param selection integer
----@param combo Combo
+---@param combo ComboValues
 ---@return boolean, integer
 function this.combo_filter(name, selection, combo)
     local changed = false

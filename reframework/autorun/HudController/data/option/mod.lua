@@ -120,7 +120,7 @@ local this = {
             lang_key = "menu.grid.combo_ratio",
             bindable = false,
             ---@diagnostic disable-next-line: missing-fields
-            combo = { values = mod.map.slider_grid_ratio } --[[@as Combo]],
+            combo = { values = mod.map.slider_grid_ratio } --[[@as ComboValues]],
             draw = util_opt.slider_list,
             format = util_opt.format_combo,
         },

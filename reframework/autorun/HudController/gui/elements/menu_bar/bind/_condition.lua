@@ -16,7 +16,7 @@
 ---@class ConditionOptionDrawParams
 ---@field field string
 ---@field tr_key string
----@field combo Combo<any>
+---@field combo ComboValues<any>
 ---@field default_value any
 ---@field draw_value fun(config_key: string, i: integer, j: integer)
 ---@field draw_selector fun(config_key: string, i: integer, j: integer, cond_child: ConditionBindRuleConfig)?

@@ -1,7 +1,7 @@
 ---@class (exact) ImguiConfigSet
 ---@field ref ConfigBase
 
-local combo_multi = require("HudController.util.imgui.combo_multi")
+local combo = require("HudController.util.imgui.combo.init")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class ImguiConfigSet
@@ -165,7 +165,7 @@ end
 
 ---@param name string
 ---@param config_key string
----@param combo Combo
+---@param combo ComboValues
 ---@return boolean
 function this:combo_filter(name, config_key, combo)
     return self:generic_config(name, config_key, util_imgui.combo_filter, combo)
@@ -177,7 +177,13 @@ end
 ---@param options string[]
 ---@return boolean
 function this:combo_multi(name, config_key, default_preview, options)
-    return self:generic_config(name, config_key, combo_multi.combo_multi, default_preview, options)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_multi.combo_multi,
+        default_preview,
+        options
+    )
 end
 
 ---@param name string
@@ -189,7 +195,7 @@ function this:combo_multi_filter(name, config_key, default_preview, options)
     return self:generic_config(
         name,
         config_key,
-        combo_multi.combo_multi_filter,
+        combo.combo_multi.combo_multi_filter,
         default_preview,
         options
     )
@@ -207,7 +213,7 @@ function this:combo_multi_bits(name, config_key, default_preview, values, get_ke
     return self:generic_config(
         name,
         config_key,
-        combo_multi.combo_multi_bits,
+        combo.combo_multi.combo_multi_bits,
         default_preview,
         values,
         get_key,
@@ -227,7 +233,7 @@ function this:combo_multi_bits_filter(name, config_key, default_preview, values,
     return self:generic_config(
         name,
         config_key,
-        combo_multi.combo_multi_bits_filter,
+        combo.combo_multi.combo_multi_bits_filter,
         default_preview,
         values,
         get_key,
@@ -335,7 +341,7 @@ function this:combo_popup(name, config_key, values, draw_fn, display_format, wid
     return self:generic_config(
         name,
         config_key,
-        combo_multi.combo_popup,
+        combo.combo_popup.combo_popup,
         values,
         draw_fn,
         display_format,
@@ -353,7 +359,7 @@ function this:combo_popup_filter(name, config_key, values, draw_fn, display_form
     return self:generic_config(
         name,
         config_key,
-        combo_multi.combo_popup_filter,
+        combo.combo_popup.combo_popup_filter,
         values,
         draw_fn,
         display_format,

@@ -1,54 +1,54 @@
 ---@class (exact) ComboRegistry
----@field hud_elem Combo<string>
----@field hud Combo<integer>
----@field item_decide Combo<string>
----@field control_point Combo<via.gui.ControlPoint>
----@field blend Combo<via.gui.BlendType>
----@field alpha_channel Combo<via.gui.AlphaChannelType>
----@field option_hud_bind Combo<string>
----@field option_mod_bind Combo<string>
----@field bind_action_type Combo<BindActionType>
----@field segment Combo<app.GUIDefApp.DRAW_SEGMENT>
----@field page_alignment Combo<via.gui.PageAlignment>
----@field enemy_msg_type Combo<app.ChatDef.ENEMY_LOG_TYPE>
----@field config Combo<integer>
----@field config_backup Combo<integer>
----@field log_id Combo<app.ChatDef.LOG_ID>
----@field map_filter Combo<string>
----@field condition Combo<string>
----@field elem_cache Combo<string>
----@field system_log Combo<string>
----@field enemy_log Combo<string>
----@field camp_log Combo<string>
----@field chat_log Combo<string>
----@field lobby_log Combo<string>
----@field auto_id Combo<string>
----@field object_category Combo<string>
----@field npc_type Combo<string>
----@field enemy_type Combo<integer>
----@field panel_type Combo<string>
----@field gossip_type Combo<string>
----@field nameplate_type Combo<string>
----@field subtitles Combo<string>
----@field npc Combo<string>
----@field dialogue_type Combo<string>
----@field dialogue_actor_type Combo<string>
----@field sfx_game_object Combo<integer>
----@field elem_option Combo<string>
----@field option_game_bind Combo<string>
----@field enable_disable Combo<integer>
----@field bind_trigger_type Combo<string>
----@field option_user_bind Combo<RegisteredUserOption>
----@field hide_npc Combo<HideNpc>
----@field em_scar Combo<EmScar>
----@field em_icon Combo<EmIcon>
+---@field hud_elem ComboValues<string>
+---@field hud ComboValues<integer>
+---@field item_decide ComboValues<string>
+---@field control_point ComboValues<via.gui.ControlPoint>
+---@field blend ComboValues<via.gui.BlendType>
+---@field alpha_channel ComboValues<via.gui.AlphaChannelType>
+---@field option_hud_bind ComboValues<string>
+---@field option_mod_bind ComboValues<string>
+---@field bind_action_type ComboValues<BindActionType>
+---@field segment ComboValues<app.GUIDefApp.DRAW_SEGMENT>
+---@field page_alignment ComboValues<via.gui.PageAlignment>
+---@field enemy_msg_type ComboValues<app.ChatDef.ENEMY_LOG_TYPE>
+---@field config ComboValues<integer>
+---@field config_backup ComboValues<integer>
+---@field log_id ComboValues<app.ChatDef.LOG_ID>
+---@field map_filter ComboValues<string>
+---@field condition ComboValues<string>
+---@field elem_cache ComboValues<string>
+---@field system_log ComboValues<string>
+---@field enemy_log ComboValues<string>
+---@field camp_log ComboValues<string>
+---@field chat_log ComboValues<string>
+---@field lobby_log ComboValues<string>
+---@field auto_id ComboValues<string>
+---@field object_category ComboValues<string>
+---@field npc_type ComboValues<string>
+---@field enemy_type ComboValues<integer>
+---@field panel_type ComboValues<string>
+---@field gossip_type ComboValues<string>
+---@field nameplate_type ComboValues<string>
+---@field subtitles ComboValues<string>
+---@field npc ComboValues<string>
+---@field dialogue_type ComboValues<string>
+---@field dialogue_actor_type ComboValues<string>
+---@field sfx_game_object ComboValues<integer>
+---@field elem_option ComboValues<string>
+---@field option_game_bind ComboValues<string>
+---@field enable_disable ComboValues<integer>
+---@field bind_trigger_type ComboValues<string>
+---@field option_user_bind ComboValues<RegisteredUserOption>
+---@field hide_npc ComboValues<HideNpc>
+---@field em_scar ComboValues<EmScar>
+---@field em_icon ComboValues<EmIcon>
 
 ---@class ComboData
 ---@field combo ComboRegistry
----@field combo_cache table<string, Combo>
----@field bind_condition_options table<string, Combo>
+---@field combo_cache table<string, ComboValues>
+---@field bind_condition_options table<string, ComboValues>
 
-local combo = require("HudController.util.imgui.combo")
+local combo = require(".HudController.util.imgui.combo.values")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
@@ -360,7 +360,7 @@ end
 
 function this.translate_combo()
     for _, c in
-        pairs(this.combo --[==[@as Combo[]]==])
+        pairs(this.combo --[==[@as ComboValues[]]==])
     do
         c:translate()
     end
@@ -429,7 +429,7 @@ end
 ---@param key string
 ---@param item_config_key string
 ---@param is_key_disabled (fun(item_config_key: string, key: any, value: string): boolean)?
----@return Combo<any>
+---@return ComboValues<any>
 function this.get_profile_combo(key, item_config_key, is_key_disabled)
     local cache_key = string.format("COMBO|%s|%s", key, item_config_key)
     local ret = this.combo_cache[cache_key]

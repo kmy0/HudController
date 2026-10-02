@@ -1,7 +1,7 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
 local color = require("HudController.util.imgui.color")
-local combo_multi = require("HudController.util.imgui.combo_multi")
+local combo_popup = require(".HudController.util.imgui.combo.combo_popup")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
@@ -46,7 +46,7 @@ function this.draw_buttons(buttons, max_width, config_key)
     local struct = config:get(config_key) --[[@as ConditionBindRuleConfig | ConditionBindStateConfig]]
 
     imgui.set_next_item_width(max_width)
-    combo_multi.combo_popup_filter(
+    combo_popup.combo_popup_filter(
         "##cond_main_add_rule",
         "",
         util_table.keys(buttons),

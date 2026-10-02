@@ -1,32 +1,32 @@
----@class (exact) Combo<K, V, R>
+---@class (exact) ComboValues<K, V, R>
 ---@field values string[]
 ---@field map {key: K, value: string}[]
 ---@field sort_fn (fun(a: {key: K, value: string}, b: {key: K, value: string}): boolean)?
 ---@field map_fn (fun(value: V, key: K): string)?
 ---@field _translate_fn (fun(key: K, value: string): string)?
----@field _is_disabled_fn (fun(self: Combo): boolean)?
----@field _getter_fn (fun(self: Combo): R?)?
+---@field _is_disabled_fn (fun(self: ComboValues): boolean)?
+---@field _getter_fn (fun(self: ComboValues): R?)?
 ---@field disabled {key: K, value: string}[]
 
 ---@class (exact) ComboOptionalArgs<K, V, R>
 ---@field sort_fn (fun(a: {key: K, value: string}, b: {key: K, value: string}): boolean)?
 ---@field map_fn (fun(value: V, key: K): string)?
 ---@field translate_fn (fun(key: K, value: string): string)?
----@field is_disabled_fn (fun(self: Combo): boolean)?
----@field getter_fn (fun(self: Combo<K, V, R>): R?)?
----@field swap_fn (fun(self: Combo, key_to_value: table<K, V>, current_index: integer?, disabled_keys: K[]?): integer?)?
+---@field is_disabled_fn (fun(self: ComboValues): boolean)?
+---@field getter_fn (fun(self: ComboValues<K, V, R>): R?)?
+---@field swap_fn (fun(self: ComboValues, key_to_value: table<K, V>, current_index: integer?, disabled_keys: K[]?): integer?)?
 ---@field disabled_keys K[]?
 
 local util_table = require("HudController.util.misc.table")
 
----@class Combo
+---@class ComboValues
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 
 ---@param key_to_value table<K, V>?
 ---@param optional_args ComboOptionalArgs<K ,V, R>?
----@return Combo
+---@return ComboValues
 function this:new(key_to_value, optional_args)
     optional_args = optional_args or {}
 
@@ -45,7 +45,7 @@ function this:new(key_to_value, optional_args)
     end
 
     setmetatable(o, self)
-    ---@cast o Combo
+    ---@cast o ComboValues
 
     if optional_args.swap_fn then
         o.swap = optional_args.swap_fn
