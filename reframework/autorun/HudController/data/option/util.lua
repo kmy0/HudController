@@ -219,9 +219,33 @@ function this.enabled_vec2_slider(speed, min, max, step, format)
     end
 end
 
+---@param get_combo fun(): ComboValues resolve the current combo on each draw
+---@param label_suffix string? config path suffix for a hidden label; defaults to ".value"
+---@return fun(self: ElementOptionDef, label: string?, config_key: string): boolean
+function this.enabled_combo(get_combo, label_suffix)
+    label_suffix = label_suffix or ".value"
+    return function(_, label, config_key)
+        local combo = get_combo()
+        local value_key = config_key .. ".value"
+        local changed = option_gui.draw_combo(
+            { config_key = config_key .. ".enabled" },
+            value_key,
+            this.get_label(label, config_key .. label_suffix),
+            combo,
+            ---@diagnostic disable-next-line: param-type-mismatch
+            combo:get_index(nil, config:get(value_key))
+        )
+        if changed then
+            config:set(value_key, changed.value)
+            return true
+        end
+        return false
+    end
+end
+
 ---@param min number
 ---@param max number
----@return fun(self: OptionDef<number>, label: string?, config_key: string): boolean
+---@return fun(self: OptionDef<number> | ElementOptionDef<any, any, number>, label: string?, config_key: string): boolean
 function this.slider_float(min, max)
     return function(self, label, config_key)
         local value = config:get(config_key)

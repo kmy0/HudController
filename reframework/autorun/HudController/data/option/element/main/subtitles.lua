@@ -38,8 +38,8 @@ local this = {
             draw = function(_, label, key)
                 return set:drag_int(util_opt.get_label(label, key), key, 0.1, 0, 120)
             end,
-            apply = function(_, ctx, value)
-                config:set(ctx.config_key, value)
+            apply = function(self, ctx, value)
+                config:set(ctx.config_key .. "." .. self.key, value)
             end,
         },
     },

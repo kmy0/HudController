@@ -38,7 +38,7 @@ local this = {
                     local h = config:get(config_key .. ".h")
 
                     draw.outline_quad(
-                        y * ss.x,
+                        x * ss.x,
                         y * ss.y,
                         x * ss.x,
                         (y + h) * ss.y,

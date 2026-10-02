@@ -12,7 +12,7 @@
 ---@field bound_value any
 ---@field keys integer[]
 ---@field trigger_repeat boolean
----@field invalid boolean
+---@field invalid boolean?
 
 ---@class (exact) Bind : BindBase
 ---@field action fun()

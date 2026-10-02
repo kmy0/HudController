@@ -51,7 +51,6 @@
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local option_gui = require("HudController.gui.option")
 local set = require("HudController.gui.set")
 local tree = require("HudController.util.imgui.tree")
 local util_gui = require("HudController.gui.util")
@@ -136,24 +135,9 @@ local this = {
             apply = function(_, ctx, value)
                 ctx.elem:set_segment(value)
             end,
-            draw = function(_, label, config_key)
-                local value_key = config_key .. ".value"
-                local changed = option_gui.draw_combo(
-                    { config_key = config_key .. ".enabled" },
-                    config_key .. ".value",
-                    util_opt.get_label(label, config_key),
-                    cd.combo.segment,
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                    cd.combo.segment:get_index(nil, config:get(value_key))
-                )
-
-                if changed then
-                    config:set(value_key, changed.value)
-                    return true
-                end
-
-                return false
-            end,
+            draw = util_opt.enabled_combo(function()
+                return cd.combo.segment
+            end, ""),
         },
         ---@type ElementBooleanDef
         disable_fade_opacity = {
@@ -165,8 +149,8 @@ local this = {
             bindable = false,
             draw = util_opt.checkbox,
             format = util_opt.format_checkbox,
-            apply = function(_, ctx, value)
-                config:set(ctx.config_key, value)
+            apply = function(self, ctx, value)
+                config:set(ctx.config_key .. "." .. self.key, value)
             end,
         },
         ---@type ElementFadeDef
@@ -253,8 +237,7 @@ local function get_elem_option_map()
     ---@param names string[]
     ---@param out table<string, NamedElementOptionDef>
     local function make_opt(elem_config, hud_id, options, keys, path, names, out)
-        for _, opt in pairs(options) do
-            local key = opt.key
+        for key, opt in pairs(options) do
             local available = util_opt.is_elem_available(opt, elem_config)
 
             if available then
@@ -276,9 +259,9 @@ local function get_elem_option_map()
 
     ---@param elem_config HudBaseConfig
     ---@param hud_id app.GUIHudDef.TYPE
-    ---@param base_opt table<string, ElementBooleanDef>
-    ---@param main_opt table<string, ElementBooleanDef>
-    ---@param sub_opt table<string, ElementBooleanDef>
+    ---@param base_opt table<string, ElementOptionDef>
+    ---@param main_opt table<string, ElementOptionDef>
+    ---@param sub_opt table<string, ElementOptionDef>
     ---@param keys string[]
     ---@param path string[]
     ---@param names string[]
@@ -368,10 +351,16 @@ function this.make_tree()
         ---@type BindElemOptNode[]
         local children = {}
         for _, child in pairs(node.children) do
-            table.insert(children, make_bind_node(child))
+            local bind_child = make_bind_node(child)
+            if bind_child then
+                table.insert(children, bind_child)
+            end
         end
+        table.sort(children, function(a, b)
+            return a.name < b.name
+        end)
 
-        if #node.opt == 0 and #node.children == 0 then
+        if #opt == 0 and #children == 0 then
             return nil
         end
 

@@ -4,8 +4,6 @@
 ---@class TextEnabledIntegerDef : ElementOptionDef<Text, TextConfig, EnabledInteger>
 
 local cd = require("HudController.data.combo")
-local config = require("HudController.config.init")
-local option_gui = require("HudController.gui.option")
 local util_opt = require("HudController.data.option.util")
 
 local this = {
@@ -27,22 +25,9 @@ local this = {
             lang_key = "hud_element.entry.box_enable_page_alignment",
             bindable = true,
             format = util_opt.format_enabled_value,
-            draw = function(_, label, config_key)
-                local value_key = config_key .. ".value"
-                local changed = option_gui.draw_combo(
-                    { config_key = config_key .. ".enabled" },
-                    value_key,
-                    util_opt.get_label(label, value_key),
-                    cd.combo.page_alignment,
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                    cd.combo.page_alignment:get_index(nil, config:get(value_key))
-                )
-                if changed then
-                    config:set(value_key, changed.value)
-                    return true
-                end
-                return false
-            end,
+            draw = util_opt.enabled_combo(function()
+                return cd.combo.page_alignment
+            end),
             apply = function(_, ctx, value)
                 ctx.elem:set_page_alignment(value)
             end,

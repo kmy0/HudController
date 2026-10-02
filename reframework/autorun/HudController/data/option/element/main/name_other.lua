@@ -1,7 +1,5 @@
 ---@class NameOtherNumberDef : ElementOptionDef<NameOther, NameOtherConfig, number>
 
-local config = require("HudController.config.init")
-local set = require("HudController.gui.set")
 local util_opt = require("HudController.data.option.util")
 
 local this = {
@@ -12,16 +10,7 @@ local this = {
             lang_key = "hud_element.entry.slider_pl_draw_distance",
             bindable = true,
             format = util_opt.format_disabled_number,
-            draw = function(self, label, config_key)
-                local value = config:get(config_key)
-                return set:slider_float(
-                    util_opt.get_label(label, config_key),
-                    config_key,
-                    0,
-                    50,
-                    self:format(value)
-                )
-            end,
+            draw = util_opt.slider_float(0, 50),
             apply = function(_, ctx, value)
                 ctx.elem:set_pl_draw_distance(value)
             end,
@@ -32,17 +21,7 @@ local this = {
             lang_key = "hud_element.entry.slider_pet_draw_distance",
             bindable = true,
             format = util_opt.format_disabled_number,
-            draw = function(self, label, config_key)
-                local config_key = config_key
-                local value = config:get(config_key)
-                return set:slider_float(
-                    util_opt.get_label(label, config_key),
-                    config_key,
-                    0,
-                    50,
-                    self:format(value)
-                )
-            end,
+            draw = util_opt.slider_float(0, 50),
             apply = function(_, ctx, value)
                 ctx.elem:set_pet_draw_distance(value)
             end,
