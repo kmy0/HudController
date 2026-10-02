@@ -37,7 +37,7 @@ function this:draw_target(rule_path)
     local hud_config = config_mod.hud[index]
 
     if not invalid.free_value then
-        --fix index after sort
+        --fix index after sort/removal
 
         ---@type integer?
         local free_value
@@ -46,7 +46,7 @@ function this:draw_target(rule_path)
         end
 
         if free_value and free_value ~= rule.free_value then
-            config:get(target_select_key, cd.combo.hud:get_index(rule.free_value))
+            config:set(target_select_key, cd.combo.hud:get_index(rule.free_value))
         end
     end
 
@@ -116,12 +116,12 @@ function this:empty()
     return cd.combo.hud:empty()
 end
 
----@param config_key string
+---@param rule_path string
 ---@param with_manager_name boolean?
 ---@return string
-function this:get_rule_name(config_key, with_manager_name)
+function this:get_rule_name(rule_path, with_manager_name)
     with_manager_name = with_manager_name == nil or with_manager_name
-    local rule = config:get(config_key) --[[@as ConditionBindRuleConfig]]
+    local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     local hud_profile = op.hud_profile.get_hud_by_key(rule.free_value)
     ---@type string?
     local ret
@@ -132,7 +132,7 @@ function this:get_rule_name(config_key, with_manager_name)
         ret = hud_profile.name
 
         if rule.free_value2 ~= 0 then
-            local invalid = self:get_rule_invalid(config_key)
+            local invalid = self:get_rule_invalid(rule_path)
 
             if invalid.free_value2 then
                 ret = string.format("%s (%s)", ret, config.lang:tr("misc.text_unknown"))

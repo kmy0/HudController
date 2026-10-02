@@ -47,6 +47,7 @@ end
 function this.draw_buttons(buttons, max_width, config_key)
     local changed = false
     local sets = config:get(config_key .. ".sets")--[[@as table<BindCondType, ConditionBindRuleSet>]]
+    local struct = config:get(config_key) --[[@as ConditionBindRuleConfig | ConditionBindStateConfig]]
 
     imgui.set_next_item_width(max_width)
     combo_multi.combo_popup_filter(
@@ -56,8 +57,8 @@ function this.draw_buttons(buttons, max_width, config_key)
         function(query, _)
             ---@type BindCondType[]
             local sorted = {}
-            for i, b in pairs(buttons) do
-                if b:lower():find(query, 1, true) ~= nil then
+            for i, label in pairs(buttons) do
+                if label:lower():find(query, 1, true) ~= nil then
                     table.insert(sorted, i)
                 end
             end
@@ -67,17 +68,18 @@ function this.draw_buttons(buttons, max_width, config_key)
 
             ---@type table<BindCondType, boolean>
             local selected = {}
-            for _, b in pairs(sets) do
-                selected[b.type] = true
+            for _, set in pairs(sets) do
+                selected[set.type] = true
             end
 
-            for _, b in ipairs(sorted) do
-                if util_imgui.menu_item(buttons[b], selected[b]) then
-                    if selected[b] then
-                        sets[b] = nil
+            for _, bind_type in ipairs(sorted) do
+                if util_imgui.menu_item(buttons[bind_type], selected[bind_type]) then
+                    if selected[bind_type] then
+                        sets[bind_type] = nil
                         config:save()
                     else
-                        sets[b] = bind_condition.new_condition_rule_set(b)
+                        sets[bind_type] = bind_condition.new_condition_rule_set(bind_type)
+                        struct.cond_type_selection = bind_type
                         config:save()
                     end
                 end
@@ -88,7 +90,6 @@ function this.draw_buttons(buttons, max_width, config_key)
         end
     )
 
-    local struct = config:get(config_key) --[[@as ConditionBindRuleConfig | ConditionBindStateConfig]]
     local button_size = config.lang.font_size + 6 + 8
 
     ---@type BindCondType[]
@@ -275,14 +276,17 @@ function this.draw_condition_target(manager, config_key)
         end
 
         util_imgui.begin_disabled(i == 1)
+
         if util_imgui.draw_remove_button("cond_group_remove|" .. i) then
             to_remove = i
         end
+
         util_imgui.end_disabled()
 
         imgui.same_line()
 
         local cond_key = string.format("%s.conditions.int:%s", config_key, i)
+
         imgui.set_next_item_width(-1)
         local changed = manager:draw_condition_target(cond_key)
 
@@ -350,9 +354,11 @@ function this.draw_target(manager, config_key)
         imgui.same_line()
 
         util_imgui.begin_disabled(i == 1)
+
         if util_imgui.draw_remove_button("cond_target_remove|" .. i) then
             to_remove = i
         end
+
         local remove_hovered = imgui.is_item_hovered()
         util_imgui.end_disabled()
 
@@ -445,19 +451,23 @@ function this.draw_manager_target(manager, rule_path)
     util_imgui.begin_disabled(manager:empty())
 
     imgui.begin_rect()
+
     if manager:draw_target(rule_path) then
         changed = true
         op.bind.set_condition_error(rule, "free_value", nil)
     end
+
     imgui.push_style_color(5, invalid.free_value and color.with_alpha(mod_enum.colors.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
 
     imgui.begin_rect()
+
     if manager:draw_option(rule_path) then
         changed = true
         op.bind.set_condition_error(rule, "free_value2", nil)
     end
+
     imgui.push_style_color(5, invalid.free_value2 and color.with_alpha(mod_enum.colors.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
@@ -488,7 +498,7 @@ function this.draw_tooltip(manager, rule_path)
         ---@diagnostic disable-next-line: no-unknown
         for j, _ in ipairs(config:get(cond_key)) do
             local key = string.format("%s.int:%s", cond_key, j)
-
+            -- skip empty sets
             if not util_table.empty(config:get(key)) then
                 if i > 1 then
                     util_imgui.separator_text_centered(config.lang:tr("misc.text_or"))

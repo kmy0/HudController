@@ -173,6 +173,34 @@ function this.mark_hud_profile_invalid(hud_key, profile_key)
     bind_manager.check_invalid()
 end
 
+---@param option_key string
+---@param is_removal boolean?
+function this.check_game_option_bind(option_key, is_removal)
+    is_removal = is_removal and is_removal or false
+
+    local config_mod = config.current.mod
+    for rule in this.iter_rules(config_mod.bind.condition, mod_enum.bind_cond_type.OPTION_GAME) do
+        if rule.free_value == option_key then
+            this.set_condition_error(
+                rule,
+                "free_value",
+                is_removal and config.lang:tr("misc.text_missing_opt") or nil
+            )
+        end
+    end
+
+    this.evaluate_conditions(config_mod.bind.condition)
+
+    for _, b in pairs(bind_manager.option_game.binds) do
+        if b.bound_value.key == option_key then
+            b.invalid = is_removal
+        end
+    end
+
+    config_mod.bind.key.option_game = bind_manager.option_game:get_base_binds()
+    bind_manager.check_invalid()
+end
+
 ---@param cond ConditionConfigBase | ConditionBindRuleConfig
 ---@param field string
 ---@param err any?
