@@ -147,7 +147,7 @@ local function iter_all_rules(root)
             for _, set in pairs(sets) do
                 for _, rule in ipairs(set.rules) do
                     coroutine.yield(set, rule)
-                    visit(rule.sets)
+                    visit(rule.sets or {})
                 end
             end
         end

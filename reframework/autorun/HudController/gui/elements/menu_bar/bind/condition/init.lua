@@ -20,7 +20,7 @@ local this = {
 
 ---@return number
 local function get_width()
-    return util_imgui.scale_w_font_size(200) * 3 + 6 * 4 + config.lang.font_size + 6
+    return util_imgui.scale_w_font_size(300) * 3 + 6 * 4 + config.lang.font_size + 6
 end
 
 ---@param config_key string
@@ -56,6 +56,7 @@ local function draw_condition_bind_menu()
 
     local has_rules = any_rules(path)
     local buttons, button_width = cond_draw.get_buttons()
+    local size_y = util_imgui.scale_w_font_size(300)
 
     util_imgui.adjust_pos(0, -2)
     if
@@ -63,7 +64,7 @@ local function draw_condition_bind_menu()
             "bind_cond_main_table",
             has_rules and 3 or 2,
             imgui.TableFlags.BordersInnerV | imgui.TableFlags.Resizable --[[@as ImGuiTableFlags]],
-            Vector2f.new(-1, -1)
+            Vector2f.new(get_width(), size_y)
         )
     then
         imgui.table_setup_column(
@@ -85,12 +86,16 @@ local function draw_condition_bind_menu()
             local set_path = string.format("%s.sets.%s", path, type_selection)
 
             imgui.table_set_column_index(1)
+            imgui.begin_child_window("##content", Vector2f.new(0, size_y), false)
             local rule_selection = cond_draw.draw_target(manager, set_path)
+            imgui.end_child_window()
 
             if rule_selection then
                 local rule_path = string.format("%s.rules.int:%s", set_path, rule_selection)
                 imgui.table_set_column_index(2)
+                imgui.begin_child_window("##content2", Vector2f.new(0, size_y), false)
                 cond_draw.draw_condition_target(manager, rule_path)
+                imgui.end_child_window()
             end
         else
             imgui.table_set_column_index(1)
@@ -106,28 +111,13 @@ local function draw_condition_bind_menu()
     imgui.spacing()
 end
 
-local open = true
 function this.draw()
-    if util_imgui.menu_item(util_gui.tr("menu.bind.condition.name"), false, nil, true) then
-        open = true
-    end
-    -- util_menubar.draw_menu(
-    --     util_gui.tr("menu.bind.condition.name"),
-    --     draw_condition_bind_menu,
-    --     nil,
-    --     bind_condition.check_invalid() and mod_enum.colors.bad or nil
-    -- )
+    util_menubar.draw_menu(
+        util_gui.tr("menu.bind.condition.name"),
+        draw_condition_bind_menu,
+        nil,
+        bind_condition.check_invalid() and mod_enum.colors.bad or nil
+    )
 end
-
-re.on_draw_ui(function()
-    if open then
-        imgui.push_style_var(imgui.ImGuiStyleVar.FrameRounding, 2)
-        imgui.push_style_var(imgui.ImGuiStyleVar.WindowRounding, 2)
-        open = imgui.begin_window("twojastara", open)
-        draw_condition_bind_menu()
-        imgui.end_window()
-        imgui.pop_style_var(2)
-    end
-end)
 
 return this

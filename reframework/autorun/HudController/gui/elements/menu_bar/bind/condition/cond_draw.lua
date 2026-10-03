@@ -148,7 +148,11 @@ function this.draw_conditions(manager, config_key, readonly)
     )
 
     if imgui.begin_table("conditions_" .. config_key, 3, imgui.TableFlags.SizingFixedFit) then
-        imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed)
+        imgui.table_setup_column(
+            "##buttons",
+            imgui.ColumnFlags.WidthFixed,
+            config.lang.font_size + 6 + 3
+        )
         imgui.table_setup_column("##name", imgui.ColumnFlags.WidthFixed)
         imgui.table_setup_column("##options", imgui.ColumnFlags.WidthStretch)
 
