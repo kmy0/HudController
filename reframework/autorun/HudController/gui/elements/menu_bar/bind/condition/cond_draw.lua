@@ -218,11 +218,13 @@ function this.draw_conditions(manager, config_key, readonly)
                     changed = cond_class:draw_options(key) or changed
                 elseif cond_class and cond_class.options then
                     imgui.set_next_item_width(-1)
+
                     changed = set:combo_filter(
                         string.format("##cond_opt.%s.%s", config_key, i),
                         key .. ".combo",
                         cd.bind_condition_options[cond.class]
                     ) or changed
+
                     if changed then
                         config:set(
                             key .. ".combo_key",
@@ -241,6 +243,10 @@ function this.draw_conditions(manager, config_key, readonly)
             end, function(err)
                 op.bind.set_condition_error(cond, "class_config", err)
             end)
+
+            if invalid.class_config_value then
+                util_imgui.tooltip(invalid.class_config_value)
+            end
 
             imgui.push_style_color(
                 5,
@@ -468,6 +474,10 @@ function this.draw_manager_target(manager, rule_path)
         op.bind.set_condition_error(rule, "free_value", nil)
     end
 
+    if invalid.free_value then
+        util_imgui.tooltip(invalid.free_value)
+    end
+
     imgui.push_style_color(5, invalid.free_value and color.with_alpha(mod_enum.colors.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
@@ -479,6 +489,10 @@ function this.draw_manager_target(manager, rule_path)
     if manager:draw_option(rule_path) then
         changed = true
         op.bind.set_condition_error(rule, "free_value2", nil)
+    end
+
+    if invalid.free_value2 then
+        util_imgui.tooltip(invalid.free_value)
     end
 
     imgui.push_style_color(5, invalid.free_value2 and color.with_alpha(mod_enum.colors.bad) or 0)

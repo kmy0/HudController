@@ -1,10 +1,14 @@
 local bind_condition = require("HudController.hud.bind.condition.init")
-local config = require("HudController.config.init")
-local util_table = require("HudController.util.misc.table")
-local mod_enum = require("HudController.data.mod").enum
 local bind_manager = require("HudController.hud.bind.key.init")
+local config = require("HudController.config.init")
+local data = require("HudController.data.init")
+local def = require("HudController.data.option.init")
 local user = require("HudController.hud.user.init")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
+
+local mod_enum = data.mod.enum
+local ace_map = data.ace.map
 
 local this = {}
 
@@ -30,6 +34,58 @@ local function merge_condition_sets(sets)
                             )
                         or nil
                 )
+            elseif i == mod_enum.bind_cond_type.OPTION_MOD then
+                local opt = def.mod.opt[rule.free_value]
+                if not opt or not opt.bindable then
+                    this.set_condition_error(
+                        rule,
+                        "free_value",
+                        string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_missing_opt"),
+                            rule.free_value
+                        )
+                    )
+                end
+            elseif i == mod_enum.bind_cond_type.OPTION_HUD then
+                local opt = def.hud.opt[rule.free_value]
+                if not opt or not opt.bindable then
+                    this.set_condition_error(
+                        rule,
+                        "free_value",
+                        string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_missing_opt"),
+                            rule.free_value
+                        )
+                    )
+                end
+            elseif i == mod_enum.bind_cond_type.OPTION_ELEM then
+                local opt = def.elem.get_opt(rule.free_value)
+                if not opt or not opt.bindable then
+                    this.set_condition_error(
+                        rule,
+                        "free_value",
+                        string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_missing_opt"),
+                            rule.free_value
+                        )
+                    )
+                end
+            elseif i == mod_enum.bind_cond_type.OPTION_GAME then
+                local opt = ace_map.option[rule.free_value]
+                if not opt then
+                    this.set_condition_error(
+                        rule,
+                        "free_value",
+                        string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_missing_opt"),
+                            rule.free_value
+                        )
+                    )
+                end
             end
 
             rule = util_table.merge(bind_condition.new_condition_rule(), rule)
@@ -116,7 +172,13 @@ local function check_user_option_bind()
         this.set_condition_error(
             rule,
             "free_value",
-            not reg_opt and config.lang:tr("misc.text_missing_opt") or nil
+            not reg_opt
+                    and string.format(
+                        "%s: %s",
+                        config.lang:tr("misc.text_missing_opt"),
+                        rule.free_value
+                    )
+                or nil
         )
 
         if reg_opt then
@@ -125,7 +187,11 @@ local function check_user_option_bind()
                 this.set_condition_error(
                     rule,
                     "free_value2",
-                    config.lang:tr("misc.text_wrong_value")
+                    string.format(
+                        "%s: %s",
+                        config.lang:tr("misc.text_wrong_value"),
+                        rule.free_value2
+                    )
                 )
                 rule.free_value2 = default_value
             end
@@ -197,7 +263,11 @@ function this.mark_hud_invalid(hud_key)
     local config_mod = config.current.mod
     for rule in this.iter_rules(config_mod.bind.condition, mod_enum.bind_cond_type.HUD) do
         if rule.free_value == hud_key then
-            this.set_condition_error(rule, "free_value", config.lang:tr("misc.text_missing_opt"))
+            this.set_condition_error(
+                rule,
+                "free_value",
+                string.format("%s: %s", config.lang:tr("misc.text_missing_opt"), rule.free_value)
+            )
         end
     end
 
@@ -206,7 +276,7 @@ function this.mark_hud_invalid(hud_key)
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                config.lang:tr("misc.text_wrong_value")
+                string.format("%s: %s", config.lang:tr("misc.text_wrong_value"), cond.combo_key)
             )
         end
     end
@@ -234,7 +304,13 @@ function this.check_condition_key_bind(bind, is_removal)
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                is_removal and config.lang:tr("misc.text_wrong_value") or nil
+                is_removal
+                        and string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_wrong_value"),
+                            cond.combo_key
+                        )
+                    or nil
             )
         end
     end
@@ -255,7 +331,11 @@ function this.mark_hud_profile_invalid(hud_key, profile_key)
                 this.set_condition_error(
                     rule,
                     "free_value2",
-                    config.lang:tr("misc.text_missing_opt")
+                    string.format(
+                        "%s: %s",
+                        config.lang:tr("misc.text_wrong_value"),
+                        rule.free_value2
+                    )
                 )
             end
         end
@@ -289,7 +369,13 @@ function this.check_game_option_bind(option_key, is_removal)
             this.set_condition_error(
                 rule,
                 "free_value",
-                is_removal and config.lang:tr("misc.text_missing_opt") or nil
+                is_removal
+                        and string.format(
+                            "%s: %s",
+                            config.lang:tr("misc.text_missing_opt"),
+                            rule.free_value
+                        )
+                    or nil
             )
         end
     end
