@@ -335,7 +335,9 @@ local function draw_all_registered_binds()
     end
 
     if not any then
-        util_imgui.tooltip_text(config.lang:tr("menu.bind.key.tooltip_no_binds"))
+        imgui.push_font(config.lang.font_header)
+        util_imgui.text_info(config.lang:tr("menu.bind.key.tooltip_no_binds"))
+        imgui.pop_font()
         imgui.invisible_button("i_button|all_binds", { get_width() + 6, 0 })
     end
 end

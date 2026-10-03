@@ -414,8 +414,6 @@ function this.verify_binds()
 
     this.evaluate_conditions(config_mod.bind.condition)
     bind_manager.check_invalid()
-
-    --TODO: check for invalid etc
 end
 
 return this

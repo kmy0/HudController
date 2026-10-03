@@ -11,6 +11,9 @@ local this = {
     [mod_enum.bind_cond_type.OPTION_USER] = require(
         "HudController.gui.elements.menu_bar.bind.condition.managers.option_user"
     ),
+    [mod_enum.bind_cond_type.OPTION_MOD] = require(
+        "HudController.gui.elements.menu_bar.bind.condition.managers.option_mod"
+    ),
 }
 
 return this
