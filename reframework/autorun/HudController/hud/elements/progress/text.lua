@@ -88,7 +88,7 @@ function this:set_align_left(align_left)
         self:mark_write("align_left")
         self.align_left = align_left
         self.page_alignment = e.get("via.gui.PageAlignment").LeftCenter
-    else
+    elseif self.write_properties["page_alignment"] then
         self:reset("page_alignment")
         self.align_left = nil
         self.page_alignment = nil

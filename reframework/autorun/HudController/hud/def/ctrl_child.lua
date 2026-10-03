@@ -122,7 +122,7 @@ function this:set_scale(scale)
     if scale and scale.enabled then
         self.scale = { x = scale.x, y = scale.y }
         self:mark_write("scale")
-    else
+    elseif self.write_properties["scale"] then
         self:reset("scale")
         self.scale = nil
         self:mark_idle("scale")
@@ -134,7 +134,7 @@ function this:set_size_x(size_x)
     if size_x then
         self.size_x = size_x.value
         self:mark_write("size_x")
-    else
+    elseif self.write_properties["size_x"] then
         self:reset("size_x")
         self.size_x = nil
         self:mark_idle("size_x")
@@ -146,7 +146,7 @@ function this:set_size_y(size_y)
     if size_y and size_y.enabled then
         self.size_y = size_y.value
         self:mark_write("size_y")
-    else
+    elseif self.write_properties["size_y"] then
         self:reset("size_y")
         self.size_y = nil
         self:mark_idle("size_y")
@@ -159,7 +159,7 @@ function this:set_color(color)
         self:mark_write("color")
         self.color = util_ref.value_type("via.Color")
         self.color.rgba = color.value
-    else
+    elseif self.write_properties["color"] then
         self:reset("color")
         self.color = nil
         self:mark_idle("color")

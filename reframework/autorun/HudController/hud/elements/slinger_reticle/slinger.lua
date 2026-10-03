@@ -115,7 +115,9 @@ end
 
 ---@param hide boolean
 function this:set_hide_slinger_empty(hide)
-    self:reset("hide_slinger_empty")
+    if self.write_properties["hide_slinger_empty"] then
+        self:reset("hide_slinger_empty")
+    end
 
     if self.hide_slinger_empty and not hide then
         self:mark_idle("hide_slinger_empty")

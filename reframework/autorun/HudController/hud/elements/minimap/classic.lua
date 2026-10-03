@@ -179,7 +179,7 @@ function this:set_enabled(val)
         self.children.mask.offset = self._mask_offset
         self.children.front.hide = true
         self:set_play_states(classic_minimap_states)
-    else
+    elseif self.write_properties["play_state"] then
         self:reset_play_states(classic_minimap_states)
         self.children.mask.scale = nil
         self.children.mask.offset = nil

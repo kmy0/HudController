@@ -515,7 +515,7 @@ function this:set_control(val)
     if val ~= -1 then
         self:mark_write("control")
         self.control = val
-    else
+    elseif self.write_properties["control"] then
         self:reset("input")
         self.control = val
         self:mark_idle("control")
@@ -527,7 +527,7 @@ function this:set_decide_key(val)
     if val ~= "option_disable" then
         self:mark_write("decide_key")
         self.decide_key = val
-    else
+    elseif self.write_properties["decide_key"] then
         self:reset("input")
         self.decide_key = val
         self:mark_idle("decide_key")
@@ -540,7 +540,7 @@ function this:set_disable_right_stick(disable_right_stick)
         self.children.right_stick_key:set_hide(true)
         self:mark_write("disable_right_stick")
         self.disable_right_stick = disable_right_stick
-    else
+    elseif self.write_properties["disable_right_stick"] then
         self:reset("input")
         self.disable_right_stick = disable_right_stick
         self.children.right_stick_key:set_hide(false)

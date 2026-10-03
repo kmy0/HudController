@@ -133,7 +133,9 @@ end
 
 ---@param hide boolean
 function this:set_hide_map_visible(hide)
-    self:reset("hide_map_visible")
+    if self.write_properties["hide_map_visible"] then
+        self:reset("hide_map_visible")
+    end
 
     if self.hide_map_visible and not hide then
         self:mark_idle("hide_map_visible")

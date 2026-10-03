@@ -119,7 +119,7 @@ end
 function this:set_var(val)
     if val.enabled then
         self:mark_write(val.key)
-    else
+    elseif self.write_properties[val.key] then
         self:reset(val.key)
         self:mark_idle(val.key)
     end

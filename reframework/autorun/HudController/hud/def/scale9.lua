@@ -94,7 +94,7 @@ function this:set_alpha_channel(alpha_channel)
     if alpha_channel and alpha_channel.enabled then
         self:mark_write("alpha_channel")
         self.alpha_channel = e.get("via.gui.AlphaChannelType")[alpha_channel.value]
-    else
+    elseif self.write_properties["alpha_channel"] then
         self:reset("alpha_channel")
         self.color = nil
         self:mark_idle("alpha_channel")
@@ -105,9 +105,8 @@ end
 function this:set_control_point(control_point)
     if control_point and control_point.enabled then
         self:mark_write("control_point")
-
         self.control_point = e.get("via.gui.ControlPoint")[control_point.value]
-    else
+    elseif self.write_properties["control_point"] then
         self:reset("control_point")
         self.color = nil
         self:mark_idle("control_point")
@@ -119,7 +118,7 @@ function this:set_blend(blend)
     if blend and blend.enabled then
         self:mark_write("blend")
         self.blend = e.get("via.gui.BlendType")[blend.value]
-    else
+    elseif self.write_properties["blend"] then
         self:reset("blend")
         self.color = nil
         self:mark_idle("blend")
@@ -131,7 +130,7 @@ function this:set_ignore_alpha(ignore_alpha)
     if ignore_alpha then
         self:mark_write("ignore_alpha")
         self.ignore_alpha = true
-    else
+    elseif self.write_properties["ignore_alpha"] then
         self:reset("ignore_alpha")
         self.ignore_alpha = nil
         self:mark_idle("ignore_alpha")

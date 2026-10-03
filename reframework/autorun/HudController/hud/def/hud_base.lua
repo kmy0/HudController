@@ -294,7 +294,7 @@ function this:set_color_scale(scale)
         self.color_scale.y = scale.y
         self.color_scale.z = scale.z
         self:mark_write("color_scale")
-    else
+    elseif self.write_properties["color_scale"] then
         self:reset("color_scale")
         self.color_scale = nil
         self:mark_idle("color_scale")
@@ -306,7 +306,7 @@ function this:set_scale(scale)
     if scale and scale.enabled then
         self.scale = Vector3f.new(scale.x, scale.y, 0)
         self:mark_write("scale")
-    else
+    elseif self.write_properties["scale"] then
         self:reset("scale")
         self.scale = nil
         self:mark_idle("scale")
@@ -318,7 +318,7 @@ function this:set_segment(segment)
     if segment and segment.enabled then
         self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment.value]
         self:mark_write("segment")
-    else
+    elseif self.write_properties["segment"] then
         self:reset("segment")
         self.segment = nil
         self:mark_idle("segment")
@@ -330,7 +330,7 @@ function this:set_offset(offset)
     if offset and offset.enabled then
         self:mark_write("offset")
         self.offset = Vector3f.new(offset.x, offset.y, 0)
-    else
+    elseif self.write_properties["offset"] then
         self:reset("offset")
         self.offset = nil
         self:mark_idle("offset")
@@ -342,7 +342,7 @@ function this:set_rot(rot)
     if rot and rot.enabled then
         self:mark_write("rot")
         self.rot = Vector3f.new(0, 0, rot.value)
-    else
+    elseif self.write_properties["rot"] then
         self:reset("rot")
         self.rot = nil
         self:mark_idle("rot")
@@ -352,7 +352,10 @@ end
 ---@param hide boolean
 function this:set_hide(hide)
     self.hide_changed = hide ~= self.hide
-    self:reset("hide")
+
+    if self.hide_changed then
+        self:reset("hide")
+    end
 
     if self.hide and not hide then
         self:mark_idle("hide")
@@ -367,7 +370,7 @@ function this:set_opacity(opacity)
     if opacity and opacity.enabled then
         self:mark_write("opacity")
         self.opacity = opacity.value
-    else
+    elseif self.write_properties["opacity"] then
         self:reset("opacity")
         self.opacity = nil
         self:mark_idle("opacity")
@@ -379,7 +382,7 @@ function this:set_play_state(play_state)
     if play_state and play_state.enabled then
         self:mark_write("play_state")
         self.play_state = play_state.value
-    else
+    elseif self.write_properties["play_state"] then
         self:reset("play_state")
         self.play_state = nil
         self:mark_idle("play_state")

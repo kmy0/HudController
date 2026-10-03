@@ -85,7 +85,7 @@ function this:set_offset_x(offset_x)
     if offset_x and offset_x.enabled then
         self:mark_write("offset_x")
         self.offset_x = offset_x.value
-    else
+    elseif self.write_properties["offset_x"] then
         self:reset("offset")
         self.offset_x = nil
         self.offset = nil
@@ -98,7 +98,7 @@ function this:set_clock_offset_x(clock_offset_x)
     if clock_offset_x and clock_offset_x.enabled then
         self:mark_write("clock_offset_x")
         self.clock_offset_x = clock_offset_x.value
-    else
+    elseif self.write_properties["clock_offset_x"] then
         self:reset("offset")
         self.clock_offset_x = nil
         self.offset = nil
@@ -111,7 +111,7 @@ function this:set_num_offset_x(num_offset_x)
     if num_offset_x and num_offset_x.enabled then
         self:mark_write("num_offset_x")
         self.num_offset_x = num_offset_x.value
-    else
+    elseif self.write_properties["num_offset_x"] then
         self:reset("offset")
         self.num_offset_x = nil
         self.offset = nil

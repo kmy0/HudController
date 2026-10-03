@@ -95,7 +95,7 @@ function this:set_page_alignment(page_alignment)
     if page_alignment and page_alignment.enabled then
         self:mark_write("page_alignment")
         self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment.value]
-    else
+    elseif self.write_properties["page_alignment"] then
         self:reset("page_alignment")
         self.page_alignment = nil
         self:mark_idle("page_alignment")
@@ -104,7 +104,9 @@ end
 
 ---@param hide_glow boolean
 function this:set_hide_glow(hide_glow)
-    self:reset("hide_glow")
+    if self.write_properties["hide_glow"] then
+        self:reset("hide_glow")
+    end
 
     if self.hide_glow and not hide_glow then
         self:mark_idle("hide_glow")
@@ -120,7 +122,7 @@ function this:set_glow_color(color)
         self:mark_write("glow_color")
         self.glow_color = util_ref.value_type("via.Color")
         self.glow_color.rgba = color.value
-    else
+    elseif self.write_properties["glow_color"] then
         self:reset("glow_color")
         self.glow_color = nil
         self:mark_idle("glow_color")
@@ -134,7 +136,7 @@ function this:set_font_size(size)
         self.font_size = util_ref.value_type("via.Size")
         self.font_size.w = size.value
         self.font_size.h = size.value
-    else
+    elseif self.write_properties["font_size"] then
         self:reset("font_size")
         self.font_size = nil
         self:mark_idle("font_size")
