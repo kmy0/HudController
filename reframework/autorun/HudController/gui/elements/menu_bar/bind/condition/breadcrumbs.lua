@@ -96,21 +96,10 @@ function this.make_breadcrumbs(path)
         last.children = {}
 
         for cond_type, rule_set in pairs(sets) do
-            for rule_index, rule in pairs(rule_set.rules) do
-                if
-                    util_table.any(rule.conditions, function(_, value)
-                        return not util_table.empty(value)
-                    end)
-                then
-                    local key = string.format(
-                        "%s.sets.%s.rules.int:%s",
-                        last.config_key,
-                        cond_type,
-                        rule_index
-                    )
-
-                    table.insert(last.children, make_crumb(key, rule_set, cond_type, rule_index))
-                end
+            for rule_index, _ in pairs(rule_set.rules) do
+                local key =
+                    string.format("%s.sets.%s.rules.int:%s", last.config_key, cond_type, rule_index)
+                table.insert(last.children, make_crumb(key, rule_set, cond_type, rule_index))
             end
         end
     end
@@ -230,7 +219,16 @@ function this.draw(crumbs)
 
         util_imgui.arrow_button_with_popup("##cond_crumbs|last", function()
             for _, crumb in ipairs(last.children) do
+                util_imgui.begin_disabled(
+                    not util_table.any(
+                        config:get(crumb.config_key).conditions --[==[@as ConditionConfigBase[][]]==],
+                        function(_, value)
+                            return not util_table.empty(value)
+                        end
+                    )
+                )
                 menu_item(crumb)
+                util_imgui.end_disabled()
             end
         end, 3, 1)
     end
