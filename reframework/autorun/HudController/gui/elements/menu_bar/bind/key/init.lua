@@ -20,11 +20,6 @@ local this = {
     managers = {},
 }
 
----@return number
-local function get_width()
-    return util_imgui.scale_w_font_size(200) * 3 + 6 * 4 + config.lang.font_size + 6
-end
-
 local function restore_indexes()
     config:set("__temp.combo_target", 1)
     config:set("__temp.combo_target_elem", "")
@@ -209,9 +204,7 @@ local function draw_registered_binds(manager)
     widths[3] = widths[3] + padding
     widths[4] = widths[4] + padding
 
-    if
-        imgui.begin_table("keybind_state", 5, imgui.TableFlags.NoClip, Vector2f.new(get_width(), 0))
-    then
+    if imgui.begin_table("keybind_state", 5, imgui.TableFlags.NoClip, Vector2f.new(-1, 0)) then
         imgui.table_setup_column("##0", imgui.ColumnFlags.WidthFixed, widths[1])
         imgui.table_setup_column("##1", imgui.ColumnFlags.WidthFixed, widths[2])
         imgui.table_setup_column("##2", imgui.ColumnFlags.WidthFixed, widths[3])
@@ -338,7 +331,6 @@ local function draw_all_registered_binds()
         imgui.push_font(config.lang.font_header)
         util_imgui.text_info(config.lang:tr("menu.bind.key.tooltip_no_binds"))
         imgui.pop_font()
-        imgui.invisible_button("i_button|all_binds", { get_width() + 6, 0 })
     end
 end
 
@@ -346,20 +338,20 @@ end
 local function draw_bind_option_table(manager)
     local item_width = util_imgui.scale_w_font_size(200)
 
-    if imgui.begin_table("bind_table1", 4) then
+    if imgui.begin_table("bind_table1", 4, 0, Vector2f.new(-1, 0)) then
         imgui.table_setup_column(
             util_gui.tr("menu.bind.key.combo_target"),
-            imgui.ColumnFlags.WidthFixed,
+            imgui.ColumnFlags.WidthStretch,
             item_width
         )
         imgui.table_setup_column(
             util_gui.tr("menu.bind.key.combo_trigger"),
-            imgui.ColumnFlags.WidthFixed,
+            imgui.ColumnFlags.WidthStretch,
             item_width
         )
         imgui.table_setup_column(
             util_gui.tr("menu.bind.key.combo_action"),
-            imgui.ColumnFlags.WidthFixed,
+            imgui.ColumnFlags.WidthStretch,
             item_width
         )
         imgui.table_setup_column("##Add", imgui.ColumnFlags.WidthFixed)
@@ -376,19 +368,19 @@ local function draw_bind_option_table(manager)
         imgui.table_next_row()
 
         imgui.table_set_column_index(0)
-        imgui.set_next_item_width(item_width)
+        imgui.set_next_item_width(-1)
         if manager:draw_target() then
             manager:make_base_bind(true)
         end
 
         imgui.table_set_column_index(1)
-        imgui.set_next_item_width(item_width)
+        imgui.set_next_item_width(-1)
         if manager:draw_trigger() then
             manager:make_base_bind()
         end
 
         imgui.table_set_column_index(2)
-        imgui.set_next_item_width(item_width)
+        imgui.set_next_item_width(-1)
         if manager:draw_action() then
             manager:make_base_bind()
         end
@@ -401,12 +393,12 @@ local function draw_bind_option_table(manager)
 
         imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 2))
         imgui.same_line()
-        util_imgui.dummy_button3("##i_button|bind1", { 6, 0 })
+        util_imgui.dummy_button3("##i_button|bind1", { 4, 0 })
         imgui.end_table()
         imgui.pop_style_var(1)
     end
 
-    imgui.push_item_width(get_width())
+    imgui.push_item_width(-4)
     if manager:draw_option() then
         manager:make_base_bind()
     end
@@ -415,11 +407,19 @@ end
 
 local function draw_key_bind_menu()
     imgui.spacing()
-    imgui.indent(2)
+    imgui.indent(4)
+    util_imgui.adjust_pos(0, -1)
 
     local buttons, button_width = get_buttons()
 
-    if imgui.begin_table("bind_key_main_table", 2, imgui.TableFlags.BordersInnerV) then
+    if
+        imgui.begin_table(
+            "bind_key_main_table",
+            2,
+            imgui.TableFlags.BordersInnerV,
+            Vector2f.new(0, -4)
+        )
+    then
         imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed, button_width)
         imgui.table_setup_column("##content", imgui.ColumnFlags.WidthStretch)
 
@@ -444,17 +444,18 @@ local function draw_key_bind_menu()
         imgui.end_table()
     end
 
-    imgui.unindent(2)
+    imgui.unindent(4)
     imgui.spacing()
 end
 
 function this.draw()
     if
-        not util_menubar.draw_menu(
+        not util_menubar.draw_menu_resizable(
             util_gui.tr("menu.bind.key.name"),
             draw_key_bind_menu,
-            nil,
-            bind_manager.any_invalid and mod_enum.colors.bad or nil
+            bind_manager.any_invalid and mod_enum.colors.bad or nil,
+            util_imgui.scale_w_font_size(750),
+            util_imgui.scale_w_font_size(190)
         )
     then
         state.clear_listener()

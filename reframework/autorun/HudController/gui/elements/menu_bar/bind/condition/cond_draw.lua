@@ -148,11 +148,7 @@ function this.draw_conditions(manager, config_key, readonly)
     )
 
     if imgui.begin_table("conditions_" .. config_key, 3, imgui.TableFlags.SizingFixedFit) then
-        imgui.table_setup_column(
-            "##buttons",
-            imgui.ColumnFlags.WidthFixed,
-            config.lang.font_size + 6 + 3
-        )
+        imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed)
         imgui.table_setup_column("##name", imgui.ColumnFlags.WidthFixed)
         imgui.table_setup_column("##options", imgui.ColumnFlags.WidthStretch)
 
@@ -221,7 +217,7 @@ function this.draw_conditions(manager, config_key, readonly)
                 if cond_class and cond_class:has_custom_options() then
                     changed = cond_class:draw_options(key) or changed
                 elseif cond_class and cond_class.options then
-                    imgui.set_next_item_width(-1)
+                    imgui.set_next_item_width(-3)
 
                     changed = set:combo_filter(
                         string.format("##cond_opt.%s.%s", config_key, i),
@@ -309,7 +305,7 @@ function this.draw_condition_target(manager, config_key)
 
         local cond_key = string.format("%s.conditions.int:%s", config_key, i)
 
-        imgui.set_next_item_width(-1)
+        imgui.set_next_item_width(-3)
         local changed = manager:draw_condition_target(cond_key)
 
         if changed and type(changed) == "string" then

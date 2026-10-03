@@ -2,6 +2,7 @@ local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
 local imgui_id = require("HudController.util.imgui.id")
+local resizable_popup = require("HudController.util.imgui.resizable_popup")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
 
@@ -17,8 +18,6 @@ local this = {
 }
 ---@type table<string, number>
 local child_window_sizes = {}
----@type table<string, [number,number]>
-local popup_sizes = {}
 
 ---@return number
 local function get_scrollbar_width()
@@ -832,73 +831,23 @@ end
 
 ---@param label string
 ---@param draw_fn fun()
----@param min_size number[]?
----@param max_size number[]?
-function this.button_with_popup(label, draw_fn, min_size, max_size)
+---@param init_w? number
+---@param init_h? number
+function this.button_with_popup(label, draw_fn, init_w, init_h)
     local popup_id = "##" .. label .. "_popup"
     local pos = imgui.get_cursor_screen_pos()
-    local constrained = min_size ~= nil or max_size ~= nil
 
     if imgui.button(label) then
         imgui.open_popup(popup_id)
     end
 
-    imgui.set_next_window_pos({ pos.x, pos.y + get_frame_height() }, 1)
-
-    if not constrained then
-        if imgui.begin_popup(popup_id, 4 | 64) then
-            draw_fn()
-            imgui.end_popup()
-        end
-
-        return
-    end
-
-    local min_width = min_size and min_size[1] or 1
-    local min_height = min_size and min_size[2] or 1
-    local max_width = max_size and max_size[1] or math.huge
-    local max_height = max_size and max_size[2] or math.huge
-    local padding = 8
-    local scrollbar = SCROLLBAR_WIDTH
-
-    local size = popup_sizes[popup_id] or { min_width, min_height }
-    local max_w = math.min(math.max(size[1], min_width), max_width)
-    local max_h = math.min(math.max(size[2], min_height), max_height)
-    imgui.set_next_window_size({
-        max_w,
-        max_h,
-    }, 1)
-    local flags = 4 | 2048
-    if max_w < max_width and max_h < max_height then
-        flags = flags | 1 << 3
-    end
-
-    if imgui.begin_popup(popup_id, flags) then
-        local start = imgui.get_cursor_screen_pos()
-
-        imgui.begin_group()
-        draw_fn()
-        imgui.end_group()
-
-        local after = imgui.get_cursor_screen_pos()
-        imgui.same_line()
-        local right = imgui.get_cursor_screen_pos()
-
-        local width = right.x - start.x + padding * 2
-        local height = after.y - start.y + padding * 2
-
-        local horizontal = width > max_width
-        local vertical = height > max_height
-        horizontal = horizontal or width + (vertical and scrollbar or 0) > max_width
-        vertical = vertical or height + (horizontal and scrollbar or 0) > max_height
-
-        popup_sizes[popup_id] = {
-            math.min(math.max(width + (vertical and scrollbar or 0), min_width), max_width),
-            math.min(math.max(height + (horizontal and scrollbar or 0), min_height), max_height),
-        }
-
-        imgui.end_popup()
-    end
+    resizable_popup.draw_popup(
+        popup_id,
+        draw_fn,
+        Vector2f.new(pos.x, pos.y + get_frame_height()),
+        init_w,
+        init_h
+    )
 end
 
 ---@return number

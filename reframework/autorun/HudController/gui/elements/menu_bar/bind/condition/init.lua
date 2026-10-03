@@ -18,11 +18,6 @@ local this = {
     managers = {},
 }
 
----@return number
-local function get_width()
-    return util_imgui.scale_w_font_size(300) * 3 + 6 * 4 + config.lang.font_size + 6
-end
-
 ---@param config_key string
 ---@return boolean
 local function any_rules(config_key)
@@ -33,7 +28,7 @@ end
 
 local function draw_condition_bind_menu()
     imgui.spacing()
-    imgui.indent(2)
+    imgui.indent(4)
 
     local config_mod = config.current.mod
     local path = config_mod.bind.condition.path
@@ -64,7 +59,7 @@ local function draw_condition_bind_menu()
             "bind_cond_main_table",
             has_rules and 3 or 2,
             imgui.TableFlags.BordersInnerV | imgui.TableFlags.Resizable --[[@as ImGuiTableFlags]],
-            Vector2f.new(get_width(), size_y)
+            Vector2f.new(-1, -4)
         )
     then
         imgui.table_setup_column(
@@ -86,14 +81,14 @@ local function draw_condition_bind_menu()
             local set_path = string.format("%s.sets.%s", path, type_selection)
 
             imgui.table_set_column_index(1)
-            imgui.begin_child_window("##content", Vector2f.new(0, size_y), false)
+            imgui.begin_child_window("##content", Vector2f.new(0, -4), false)
             local rule_selection = cond_draw.draw_target(manager, set_path)
             imgui.end_child_window()
 
             if rule_selection then
                 local rule_path = string.format("%s.rules.int:%s", set_path, rule_selection)
                 imgui.table_set_column_index(2)
-                imgui.begin_child_window("##content2", Vector2f.new(0, size_y), false)
+                imgui.begin_child_window("##content2", Vector2f.new(0, -4), false)
                 cond_draw.draw_condition_target(manager, rule_path)
                 imgui.end_child_window()
             end
@@ -107,16 +102,17 @@ local function draw_condition_bind_menu()
         imgui.end_table()
     end
 
-    imgui.unindent(2)
+    imgui.unindent(4)
     imgui.spacing()
 end
 
 function this.draw()
-    util_menubar.draw_menu(
+    util_menubar.draw_menu_resizable(
         util_gui.tr("menu.bind.condition.name"),
         draw_condition_bind_menu,
-        nil,
-        bind_condition.check_invalid() and mod_enum.colors.bad or nil
+        bind_condition.check_invalid() and mod_enum.colors.bad or nil,
+        util_imgui.scale_w_font_size(840),
+        util_imgui.scale_w_font_size(350)
     )
 end
 

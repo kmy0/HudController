@@ -27,7 +27,7 @@ end
 ---@param config_key string
 ---@return boolean
 function this:draw_options(config_key)
-    imgui.set_next_item_width(-1)
+    imgui.set_next_item_width(-3)
 
     local opt = self:get_option_table(config_key)
     local index = util_table.index(config.current.mod.hud, function(o)
