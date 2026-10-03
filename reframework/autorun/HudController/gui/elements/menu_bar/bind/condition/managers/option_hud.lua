@@ -1,10 +1,10 @@
----@class OptionModGuiCondManagerBase : GuiCondManagerBase
+---@class OptionHudGuiCondManagerBase : GuiCondManagerBase
 
 local base = require("HudController.gui.elements.menu_bar.bind.condition.managers.base")
 local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local def = require("HudController.data.option.mod")
+local def = require("HudController.data.option.hud")
 local set = require("HudController.gui.set")
 local util_bind = require("HudController.gui.elements.menu_bar.bind.condition.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -12,15 +12,15 @@ local util_misc = require("HudController.util.misc.init")
 
 local mod_enum = data.mod.enum
 
----@class OptionModGuiCondManagerBase
+---@class OptionHudGuiCondManagerBase
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = base })
 
----@return OptionModGuiCondManagerBase
+---@return OptionHudGuiCondManagerBase
 function this:new()
-    ---@type OptionModGuiCondManagerBase
+    ---@type OptionHudGuiCondManagerBase
     return setmetatable(base.new(self), self)
 end
 
@@ -33,18 +33,18 @@ function this:draw_target(rule_path)
     local invalid = self:get_rule_invalid(rule_path)
     local index = config:get(target_select_key) --[[@as integer]]
     ---@type string?
-    local free_value = cd.combo.option_mod_bind:get_key(index)
+    local free_value = cd.combo.option_hud_bind:get_key(index)
 
     if not invalid.free_value then
         --fix index after removal/add
 
         if free_value and free_value ~= rule.free_value then
-            config:set(target_select_key, cd.combo.option_mod_bind:get_index(rule.free_value))
+            config:set(target_select_key, cd.combo.option_hud_bind:get_index(rule.free_value))
         end
     end
 
     local changed =
-        set:combo_filter("##cond_target|" .. rule_path, target_select_key, cd.combo.option_mod_bind)
+        set:combo_filter("##cond_target|" .. rule_path, target_select_key, cd.combo.option_hud_bind)
 
     if not free_value and changed and invalid.free_value then
         -- preserving invalid state if index was out of range
@@ -53,7 +53,7 @@ function this:draw_target(rule_path)
 
     if changed then
         index = config:get(target_select_key)
-        rule.free_value = cd.combo.option_mod_bind:get_key(index)
+        rule.free_value = cd.combo.option_hud_bind:get_key(index)
         rule.free_value2 = def.get_default(def.opt[rule.free_value])
     end
 
@@ -102,7 +102,7 @@ function this:get_rule_name(rule_path, with_manager_name)
         ret = string.format(
             "%s: %s",
             config.lang:tr(
-                "menu.bind.condition.bind_cond_type." .. mod_enum.bind_cond_type.OPTION_MOD
+                "menu.bind.condition.bind_cond_type." .. mod_enum.bind_cond_type.OPTION_HUD
             ),
             ret
         )
