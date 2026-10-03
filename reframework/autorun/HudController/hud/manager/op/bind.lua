@@ -12,81 +12,85 @@ local ace_map = data.ace.map
 
 local this = {}
 
+---@param lang_key string
+---@param value any
+---@return string
+local function fmt_error(lang_key, value)
+    return string.format("%s: %s", config.lang:tr(lang_key), value)
+end
+
+---@type table<BindCondType, fun(key: any): any>
+local option_lookup = {
+    [mod_enum.bind_cond_type.OPTION_USER] = function(key)
+        return user.option.bindable[key]
+    end,
+    [mod_enum.bind_cond_type.OPTION_MOD] = function(key)
+        local opt = def.mod.opt[key]
+        return opt and opt.bindable
+    end,
+    [mod_enum.bind_cond_type.OPTION_HUD] = function(key)
+        local opt = def.hud.opt[key]
+        return opt and opt.bindable
+    end,
+    [mod_enum.bind_cond_type.OPTION_ELEM] = function(key)
+        local opt = def.elem.get_opt(key)
+        return opt and opt.bindable
+    end,
+    [mod_enum.bind_cond_type.OPTION_GAME] = function(key)
+        return ace_map.option[key]
+    end,
+}
+
+---@param cond_type BindCondType
+---@param rule ConditionBindRuleConfig
+local function check_option_rule(cond_type, rule)
+    local lookup = option_lookup[cond_type]
+    if not lookup then
+        return
+    end
+
+    this.set_condition_error(
+        rule,
+        "free_value",
+        not lookup(rule.free_value) and fmt_error("misc.text_missing_opt", rule.free_value)
+    )
+end
+
+local function verify_keybinds()
+    local config_mod = config.current.mod
+    local bind_types = {
+        { field = "option_game", cond = mod_enum.bind_cond_type.OPTION_GAME },
+        { field = "option_user", cond = mod_enum.bind_cond_type.OPTION_USER },
+        { field = "option_mod", cond = mod_enum.bind_cond_type.OPTION_MOD },
+        { field = "option_hud", cond = mod_enum.bind_cond_type.OPTION_HUD },
+        { field = "option_elem", cond = mod_enum.bind_cond_type.OPTION_ELEM },
+    }
+
+    for _, t in ipairs(bind_types) do
+        local manager = bind_manager[t.field] --[[@as BindManager]]
+        local lookup = option_lookup[t.cond]
+
+        for _, b in pairs(manager.binds) do
+            if not lookup(b.bound_value.key) then
+                b.invalid = true
+            end
+        end
+
+        config_mod.bind.key[t.field] = manager:get_base_binds()
+    end
+end
+
 ---@param sets table<BindCondType, ConditionBindRuleSet>
 local function merge_condition_sets(sets)
     if not sets then
         return
     end
 
-    for i, set in pairs(sets) do
+    for key, set in pairs(sets) do
         set = util_table.merge(bind_condition.new_condition_rule_set(set.type), set)
 
         for j, rule in pairs(set.rules) do
-            if i == mod_enum.bind_cond_type.OPTION_USER then
-                this.set_condition_error(
-                    rule,
-                    "free_value",
-                    not user.option.bindable[rule.free_value]
-                            and string.format(
-                                "%s: %s",
-                                config.lang:tr("misc.text_missing_opt"),
-                                rule.free_value
-                            )
-                        or nil
-                )
-            elseif i == mod_enum.bind_cond_type.OPTION_MOD then
-                local opt = def.mod.opt[rule.free_value]
-                if not opt or not opt.bindable then
-                    this.set_condition_error(
-                        rule,
-                        "free_value",
-                        string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_missing_opt"),
-                            rule.free_value
-                        )
-                    )
-                end
-            elseif i == mod_enum.bind_cond_type.OPTION_HUD then
-                local opt = def.hud.opt[rule.free_value]
-                if not opt or not opt.bindable then
-                    this.set_condition_error(
-                        rule,
-                        "free_value",
-                        string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_missing_opt"),
-                            rule.free_value
-                        )
-                    )
-                end
-            elseif i == mod_enum.bind_cond_type.OPTION_ELEM then
-                local opt = def.elem.get_opt(rule.free_value)
-                if not opt or not opt.bindable then
-                    this.set_condition_error(
-                        rule,
-                        "free_value",
-                        string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_missing_opt"),
-                            rule.free_value
-                        )
-                    )
-                end
-            elseif i == mod_enum.bind_cond_type.OPTION_GAME then
-                local opt = ace_map.option[rule.free_value]
-                if not opt then
-                    this.set_condition_error(
-                        rule,
-                        "free_value",
-                        string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_missing_opt"),
-                            rule.free_value
-                        )
-                    )
-                end
-            end
+            check_option_rule(set.type, rule)
 
             rule = util_table.merge(bind_condition.new_condition_rule(), rule)
             merge_condition_sets(rule.sets)
@@ -98,13 +102,7 @@ local function merge_condition_sets(sets)
                     this.set_condition_error(
                         cond,
                         "class",
-                        not cls
-                                and string.format(
-                                    "%s: %s",
-                                    config.lang:tr("misc.text_missing_cond"),
-                                    cond.class
-                                )
-                            or nil
+                        not cls and fmt_error("misc.text_missing_cond", cond.class)
                     )
 
                     if cls then
@@ -116,16 +114,17 @@ local function merge_condition_sets(sets)
                             ok = false
                         end)
 
+                        local merged = group[k]
                         if ok then
                             this.set_condition_error(
-                                cond,
+                                merged,
                                 "class_config_value",
                                 not cls:validate(cond) and config.lang:tr("misc.text_wrong_value")
                                     or nil
                             )
                         else
                             this.set_condition_error(
-                                cond,
+                                merged,
                                 "class_config_value",
                                 config.lang:tr("misc.text_config_changed")
                             )
@@ -135,63 +134,70 @@ local function merge_condition_sets(sets)
             end
         end
 
-        sets[i] = set
+        sets[key] = set
     end
 end
 
 ---@param root ConditionBindStateConfig
-local function condition_clear_class_config(root)
-    ---@param sets table<BindCondType, ConditionBindRuleSet>
-    local function clear_sets(sets)
-        for _, set in pairs(sets) do
-            for _, rule in ipairs(set.rules) do
-                if rule.invalid then
-                    rule.invalid.class_config = nil
+---@return fun(): ConditionBindRuleSet?, ConditionBindRuleConfig?
+local function iter_all_rules(root)
+    return coroutine.wrap(function()
+        ---@param sets table<BindCondType, ConditionBindRuleSet>
+        local function visit(sets)
+            for _, set in pairs(sets) do
+                for _, rule in ipairs(set.rules) do
+                    coroutine.yield(set, rule)
+                    visit(rule.sets)
                 end
-
-                for _, group in ipairs(rule.conditions) do
-                    for _, condition in ipairs(group) do
-                        if condition.invalid then
-                            condition.invalid.class_config = nil
-                        end
-                    end
-                end
-
-                clear_sets(rule.sets)
             end
+        end
+
+        visit(root.sets)
+    end)
+end
+
+---@param root ConditionBindStateConfig
+---@return fun(): ConditionConfigBase?
+local function iter_all_conditions(root)
+    return coroutine.wrap(function()
+        for _, rule in iter_all_rules(root) do
+            for _, group in ipairs(rule.conditions) do
+                for _, cond in ipairs(group) do
+                    coroutine.yield(cond)
+                end
+            end
+        end
+    end)
+end
+
+---@param root ConditionBindStateConfig
+local function condition_clear_class_config(root)
+    for _, rule in iter_all_rules(root) do
+        if rule.invalid then
+            rule.invalid.class_config = nil
         end
     end
 
-    clear_sets(root.sets)
+    for cond in iter_all_conditions(root) do
+        if cond.invalid then
+            cond.invalid.class_config = nil
+        end
+    end
 end
 
 local function check_user_option_bind()
     local config_mod = config.current.mod
     for rule in this.iter_rules(config_mod.bind.condition, mod_enum.bind_cond_type.OPTION_USER) do
-        local reg_opt = user.option.bindable[rule.free_value]
-        this.set_condition_error(
-            rule,
-            "free_value",
-            not reg_opt
-                    and string.format(
-                        "%s: %s",
-                        config.lang:tr("misc.text_missing_opt"),
-                        rule.free_value
-                    )
-                or nil
-        )
+        check_option_rule(mod_enum.bind_cond_type.OPTION_USER, rule)
 
+        local reg_opt = user.option.bindable[rule.free_value]
         if reg_opt then
             local default_value = user.option.get_default(reg_opt)
             if not util_misc.eval_type(default_value, rule.free_value2) then
                 this.set_condition_error(
                     rule,
                     "free_value2",
-                    string.format(
-                        "%s: %s",
-                        config.lang:tr("misc.text_wrong_value"),
-                        rule.free_value2
-                    )
+                    fmt_error("misc.text_wrong_value", rule.free_value2)
                 )
                 rule.free_value2 = default_value
             end
@@ -216,19 +222,11 @@ end
 ---@return fun(): ConditionBindRuleConfig?
 function this.iter_rules(root, cond_type)
     return coroutine.wrap(function()
-        local function visit(sets)
-            for _, set in pairs(sets) do
-                for _, rule in ipairs(set.rules) do
-                    if set.type == cond_type then
-                        coroutine.yield(rule)
-                    end
-
-                    visit(rule.sets)
-                end
+        for set, rule in iter_all_rules(root) do
+            if set.type == cond_type then
+                coroutine.yield(rule)
             end
         end
-
-        visit(root.sets)
     end)
 end
 
@@ -237,24 +235,11 @@ end
 ---@return fun(): ConditionConfigBase?
 function this.iter_conditions(root, cond_class)
     return coroutine.wrap(function()
-        ---@param sets table<BindCondType, ConditionBindRuleSet>
-        local function visit(sets)
-            for _, set in pairs(sets) do
-                for _, rule in ipairs(set.rules) do
-                    for _, group in ipairs(rule.conditions) do
-                        for _, cond in ipairs(group) do
-                            if cond.class == cond_class then
-                                coroutine.yield(cond)
-                            end
-                        end
-                    end
-
-                    visit(rule.sets)
-                end
+        for cond in iter_all_conditions(root) do
+            if cond.class == cond_class then
+                coroutine.yield(cond)
             end
         end
-
-        visit(root.sets)
     end)
 end
 
@@ -266,7 +251,7 @@ function this.mark_hud_invalid(hud_key)
             this.set_condition_error(
                 rule,
                 "free_value",
-                string.format("%s: %s", config.lang:tr("misc.text_missing_opt"), rule.free_value)
+                fmt_error("misc.text_missing_opt", rule.free_value)
             )
         end
     end
@@ -276,7 +261,7 @@ function this.mark_hud_invalid(hud_key)
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                string.format("%s: %s", config.lang:tr("misc.text_wrong_value"), cond.combo_key)
+                fmt_error("misc.text_wrong_value", cond.combo_key)
             )
         end
     end
@@ -304,13 +289,7 @@ function this.check_condition_key_bind(bind, is_removal)
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                is_removal
-                        and string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_wrong_value"),
-                            cond.combo_key
-                        )
-                    or nil
+                is_removal and fmt_error("misc.text_wrong_value", cond.combo_key)
             )
         end
     end
@@ -331,11 +310,7 @@ function this.mark_hud_profile_invalid(hud_key, profile_key)
                 this.set_condition_error(
                     rule,
                     "free_value2",
-                    string.format(
-                        "%s: %s",
-                        config.lang:tr("misc.text_wrong_value"),
-                        rule.free_value2
-                    )
+                    fmt_error("misc.text_wrong_value", rule.free_value2)
                 )
             end
         end
@@ -369,13 +344,7 @@ function this.check_game_option_bind(option_key, is_removal)
             this.set_condition_error(
                 rule,
                 "free_value",
-                is_removal
-                        and string.format(
-                            "%s: %s",
-                            config.lang:tr("misc.text_missing_opt"),
-                            rule.free_value
-                        )
-                    or nil
+                is_removal and fmt_error("misc.text_missing_opt", rule.free_value)
             )
         end
     end
@@ -396,7 +365,7 @@ end
 ---@param field string
 ---@param err any?
 function this.set_condition_error(cond, field, err)
-    if err ~= nil then
+    if err then
         cond.invalid = cond.invalid or {}
         ---@diagnostic disable-next-line: no-unknown
         cond.invalid[field] = tostring(err)
@@ -413,32 +382,24 @@ end
 ---@param root ConditionBindStateConfig
 ---@return boolean valid
 function this.evaluate_conditions(root)
-    ---@param sets table<BindCondType, ConditionBindRuleSet>
-    local function validate_sets(sets)
-        for _, set in pairs(sets) do
-            for _, rule in ipairs(set.rules) do
-                if rule.invalid and next(rule.invalid) then
-                    return false
-                end
+    local valid = true
 
-                for _, group in ipairs(rule.conditions) do
-                    for _, condition in ipairs(group) do
-                        if condition.invalid and next(condition.invalid) then
-                            return false
-                        end
-                    end
-                end
-
-                if not validate_sets(rule.sets) then
-                    return false
-                end
-            end
+    for _, rule in iter_all_rules(root) do
+        if rule.invalid and next(rule.invalid) then
+            valid = false
+            break
         end
-
-        return true
     end
 
-    local valid = validate_sets(root.sets)
+    if valid then
+        for cond in iter_all_conditions(root) do
+            if cond.invalid and next(cond.invalid) then
+                valid = false
+                break
+            end
+        end
+    end
+
     root.invalid = not valid
     return valid
 end
@@ -449,6 +410,7 @@ function this.verify_binds()
     merge_condition_sets(config_mod.bind.condition.sets)
     condition_clear_class_config(config_mod.bind.condition)
     check_user_option_bind()
+    verify_keybinds()
 
     this.evaluate_conditions(config_mod.bind.condition)
     bind_manager.check_invalid()
