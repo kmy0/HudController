@@ -1,9 +1,12 @@
 ---@class GuiCondManagerBase
+---@field type BindCondType
 
 local bind_condition = require("HudController.hud.bind.condition.init")
 local cd = require("HudController.data.combo")
 local combo_multi = require("HudController.util.imgui.combo.combo_multi")
 local config = require("HudController.config.init")
+local util_imgui = require("HudController.util.imgui.init")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@class GuiCondManagerBase
@@ -11,9 +14,10 @@ local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 
+---@param type BindCondType
 ---@return GuiCondManagerBase
-function this:new()
-    return setmetatable({}, self)
+function this:new(type)
+    return setmetatable({ type = type }, self)
 end
 
 ---@param rule_path string
@@ -132,6 +136,32 @@ function this:get_cond_invalid(cond_path)
         return cond.invalid
     end
     return {}
+end
+
+---@param key any?
+---@param value any?
+---@param with_manager_name boolean?
+---@return string
+function this:format_rule_name(key, value, with_manager_name)
+    local ret = config.lang:tr("misc.text_unknown")
+
+    if key ~= nil then
+        ret = key
+
+        if value ~= nil then
+            ret = string.format("%s (%s)", key, value)
+        end
+    end
+
+    if with_manager_name then
+        ret = string.format(
+            "%s: %s",
+            config.lang:tr("menu.bind.condition.bind_cond_type." .. self.type),
+            ret
+        )
+    end
+
+    return util_misc.trunc_string2(ret, util_imgui.scale_w_font_size(180))
 end
 
 return this

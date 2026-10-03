@@ -8,7 +8,6 @@ local set = require("HudController.gui.set")
 local user = require("HudController.hud.user.init")
 local util_bind = require("HudController.gui.elements.menu_bar.bind.condition.util")
 local util_imgui = require("HudController.util.imgui.init")
-local util_misc = require("HudController.util.misc.init")
 
 local mod_enum = data.mod.enum
 
@@ -21,7 +20,7 @@ setmetatable(this, { __index = base })
 ---@return OptionUserGuiCondManagerBase
 function this:new()
     ---@type OptionUserGuiCondManagerBase
-    return setmetatable(base.new(self), self)
+    return setmetatable(base.new(self, mod_enum.bind_cond_type.OPTION_USER), self)
 end
 
 ---@param rule_path string
@@ -99,38 +98,25 @@ end
 ---@param with_manager_name boolean?
 ---@return string
 function this:get_rule_name(rule_path, with_manager_name)
-    with_manager_name = with_manager_name == nil or with_manager_name
     local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     local invalid = self:get_rule_invalid(rule_path)
     local option_key = config:get(string.format("%s.free_value", rule_path))
     local registered_opt = user.option.bindable[option_key]
-    local name = registered_opt and registered_opt.name
+    local key = registered_opt and registered_opt.name
     ---@type string?
-    local ret
+    local value
 
-    if not name or invalid.free_value then
-        ret = config.lang:tr("misc.text_unknown")
+    if not key or invalid.free_value then
+        return self:format_rule_name(nil, nil, with_manager_name)
     else
-        ret = name
-
         if invalid.free_value2 then
-            ret = string.format("%s (%s)", ret, config.lang:tr("misc.text_unknown"))
+            value = config.lang:tr("misc.text_unknown")
         else
-            ret = string.format("%s (%s)", ret, registered_opt:format(rule.free_value2))
+            value = registered_opt:format(rule.free_value2)
         end
     end
 
-    if with_manager_name then
-        ret = string.format(
-            "%s: %s",
-            config.lang:tr(
-                "menu.bind.condition.bind_cond_type." .. mod_enum.bind_cond_type.OPTION_USER
-            ),
-            ret
-        )
-    end
-
-    return util_misc.trunc_string2(ret, util_imgui.scale_w_font_size(180))
+    return self:format_rule_name(key, value, with_manager_name)
 end
 
 return this

@@ -8,8 +8,6 @@ local data = require("HudController.data.init")
 local generic = require("HudController.gui.elements.profile.panel.generic")
 local options = require("HudController.hud.manager.options")
 local set = require("HudController.gui.set")
-local util_imgui = require("HudController.util.imgui.init")
-local util_misc = require("HudController.util.misc.init")
 
 local mod_enum = data.mod.enum
 
@@ -22,7 +20,7 @@ setmetatable(this, { __index = base })
 ---@return OptionGameGuiCondManagerBase
 function this:new()
     ---@type OptionGameGuiCondManagerBase
-    return setmetatable(base.new(self), self)
+    return setmetatable(base.new(self, mod_enum.bind_cond_type.OPTION_GAME), self)
 end
 
 ---@param rule_path string
@@ -92,38 +90,20 @@ end
 ---@param with_manager_name boolean?
 ---@return string
 function this:get_rule_name(rule_path, with_manager_name)
-    with_manager_name = with_manager_name == nil or with_manager_name
     local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     local invalid = self:get_rule_invalid(rule_path)
     local option_data = ace.map.option[rule.free_value] or {}
-    local name = option_data.name_local
+    local key = option_data.name_local
+    ---@type any?
+    local value
 
-    ---@type string?
-    local ret
-
-    if not name or invalid.free_value then
-        ret = config.lang:tr("misc.text_unknown")
+    if not key or invalid.free_value then
+        return self:format_rule_name(nil, nil, with_manager_name)
     else
-        ret = name
-
-        ret = string.format(
-            "%s (%s)",
-            ret,
-            options.get_option_setting_name(rule.free_value, rule.free_value2)
-        )
+        value = options.get_option_setting_name(rule.free_value, rule.free_value2)
     end
 
-    if with_manager_name then
-        ret = string.format(
-            "%s: %s",
-            config.lang:tr(
-                "menu.bind.condition.bind_cond_type." .. mod_enum.bind_cond_type.OPTION_GAME
-            ),
-            ret
-        )
-    end
-
-    return util_misc.trunc_string2(ret, util_imgui.scale_w_font_size(180))
+    return self:format_rule_name(key, value, with_manager_name)
 end
 
 return this

@@ -7,8 +7,6 @@ local data = require("HudController.data.init")
 local def = require("HudController.data.option.hud")
 local set = require("HudController.gui.set")
 local util_bind = require("HudController.gui.elements.menu_bar.bind.condition.util")
-local util_imgui = require("HudController.util.imgui.init")
-local util_misc = require("HudController.util.misc.init")
 
 local mod_enum = data.mod.enum
 
@@ -21,7 +19,7 @@ setmetatable(this, { __index = base })
 ---@return OptionHudGuiCondManagerBase
 function this:new()
     ---@type OptionHudGuiCondManagerBase
-    return setmetatable(base.new(self), self)
+    return setmetatable(base.new(self, mod_enum.bind_cond_type.OPTION_HUD), self)
 end
 
 ---@param rule_path string
@@ -81,34 +79,21 @@ end
 ---@param with_manager_name boolean?
 ---@return string
 function this:get_rule_name(rule_path, with_manager_name)
-    with_manager_name = with_manager_name == nil or with_manager_name
     local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     local invalid = self:get_rule_invalid(rule_path)
     local opt = def.opt[rule.free_value]
-    local name = opt and config.lang:tr(opt.lang_key)
-
+    local key = opt and config.lang:tr(opt.lang_key)
     ---@type string?
-    local ret
+    local value
 
-    if not name or invalid.free_value then
-        ret = config.lang:tr("misc.text_unknown")
+    if not key or invalid.free_value then
+        return self:format_rule_name(nil, nil, with_manager_name)
     else
-        ret = name
-
-        ret = string.format("%s (%s)", ret, opt:format(rule.free_value2))
+        key = key
+        value = opt:format(rule.free_value2)
     end
 
-    if with_manager_name then
-        ret = string.format(
-            "%s: %s",
-            config.lang:tr(
-                "menu.bind.condition.bind_cond_type." .. mod_enum.bind_cond_type.OPTION_HUD
-            ),
-            ret
-        )
-    end
-
-    return util_misc.trunc_string2(ret, util_imgui.scale_w_font_size(180))
+    return self:format_rule_name(key, value, with_manager_name)
 end
 
 return this
