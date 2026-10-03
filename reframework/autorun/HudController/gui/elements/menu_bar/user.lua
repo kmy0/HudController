@@ -1,6 +1,6 @@
 local cd = require("HudController.data.combo")
 local color = require("HudController.util.imgui.color")
-local combo_multi = require("HudController.util.imgui.combo.combo_multi")
+local combo_custom = require("HudController.util.imgui.combo.combo_custom")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local op = require("HudController.hud.manager.op.init")
@@ -93,7 +93,7 @@ local function draw_options_menu()
     end
 
     imgui.set_next_item_width(width)
-    combo_multi.combo_custom_filter(id, nil, function(min, max, _)
+    combo_custom.combo_custom_filter(id, nil, function(min, max, _)
         local width = max.x - min.x
         local height = max.y - min.y
 
