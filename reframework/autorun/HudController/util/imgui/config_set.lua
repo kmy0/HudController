@@ -165,10 +165,10 @@ end
 
 ---@param name string
 ---@param config_key string
----@param combo ComboValues
+---@param combo_values ComboValues
 ---@return boolean
-function this:combo_filter(name, config_key, combo)
-    return self:generic_config(name, config_key, util_imgui.combo_filter, combo)
+function this:combo_filter(name, config_key, combo_values)
+    return self:generic_config(name, config_key, combo.combo_filter.combo_filter, combo_values)
 end
 
 ---@param name string

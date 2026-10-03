@@ -1,4 +1,5 @@
 local cd = require("HudController.data.combo")
+local combo_filter = require("HudController.util.imgui.combo.combo_filter")
 local config = require("HudController.config.init")
 local def = require("HudController.data.option.element.main.subtitles")
 local generic = require("HudController.gui.elements.profile.panel.generic")
@@ -111,7 +112,7 @@ return function(elem, elem_config, config_key)
         imgui.set_next_item_width(util_imgui.get_drag_with())
         util_opt.draw_apply_elem(def.opt.cache_sfx_cooldown, ctx)
 
-        _, elem.combo_game_object = util_imgui.combo_filter(
+        _, elem.combo_game_object = combo_filter.combo_filter(
             util_gui.tr("hud_element.entry.combo_listen_to_go"),
             elem.combo_game_object,
             cd.combo.sfx_game_object

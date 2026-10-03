@@ -45,24 +45,20 @@ function this:draw_trigger()
     return false
 end
 
+function this:set_default()
+    config:set("__temp.option_value", 0)
+    config:set("__temp.combo_trigger_type", cd.combo.bind_trigger_type:get_index("REPEAT"))
+    config:set("__temp.combo_action_type", cd.combo.bind_action_type:get_index("SET"))
+end
+
 ---@param set_default boolean?
----@return ModBind
+---@return BindBase
 function this:make_base_bind(set_default)
     if set_default then
-        config:set("__temp.option_value", 0)
-        config:set("__temp.combo_trigger_type", cd.combo.bind_trigger_type:get_index("REPEAT"))
-        config:set("__temp.combo_action_type", cd.combo.bind_action_type:get_index("SET"))
+        self:set_default()
     end
 
-    self.base_bind = {
-        action_type = cd.combo.bind_action_type:get_key(config:get("__temp.combo_action_type")),
-        trigger_repeat = cd.combo.bind_trigger_type:get_key(
-            config:get("__temp.combo_trigger_type")
-        ) == "REPEAT",
-    }
-
-    ---@diagnostic disable-next-line: return-type-mismatch
-    return self.base_bind
+    return base.make_base_bind(self, nil)
 end
 
 ---@param bind ModBind<integer, any>

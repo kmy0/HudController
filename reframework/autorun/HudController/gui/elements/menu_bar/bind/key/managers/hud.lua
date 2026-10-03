@@ -58,25 +58,21 @@ function this:draw_option()
     return changed
 end
 
+function this:set_default()
+    config:set("__temp.option_value", 0)
+end
+
 ---@param set_default boolean?
----@return ModBind
+---@return BindBase
 function this:make_base_bind(set_default)
     if set_default then
-        config:set("__temp.option_value", 0)
+        self:set_default()
     end
 
-    self.base_bind = {
-        action_type = cd.combo.bind_action_type:get_key(config:get("__temp.combo_action_type")),
-        bound_value = {
-            key = config.current.mod.hud[config:get("__temp.combo_target")].key,
-            value = util_table.deep_copy(config:get("__temp.option_value")),
-        },
-        trigger_repeat = cd.combo.bind_trigger_type:get_key(
-            config:get("__temp.combo_trigger_type")
-        ) == "REPEAT",
-    }
-
-    return self.base_bind
+    return base.make_base_bind(self, {
+        key = config.current.mod.hud[config:get("__temp.combo_target")].key,
+        value = util_table.deep_copy(config:get("__temp.option_value")),
+    })
 end
 
 ---@param bind ModBind<integer, any>

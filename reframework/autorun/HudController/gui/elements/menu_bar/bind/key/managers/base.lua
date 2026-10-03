@@ -1,6 +1,6 @@
 ---@class GuiKeyManagerBase
 ---@field manager ModBindManager
----@field base_bind ModBind
+---@field base_bind BindBase
 ---@field config_key string
 
 local cd = require("HudController.data.combo")
@@ -66,12 +66,22 @@ function this:empty()
     return util_table.empty(self.manager.binds)
 end
 
----@param set_default boolean?
+---@param bound_value any
 ---@return BindBase
----@diagnostic disable-next-line: unused-local
-function this:make_base_bind(set_default)
+function this:make_base_bind(bound_value)
+    ---@diagnostic disable-next-line: missing-fields
+    self.base_bind = {
+        action_type = cd.combo.bind_action_type:get_key(config:get("__temp.combo_action_type")),
+        bound_value = bound_value,
+        trigger_repeat = cd.combo.bind_trigger_type:get_key(
+            config:get("__temp.combo_trigger_type")
+        ) == "REPEAT",
+    }
+
     return self.base_bind
 end
+
+function this:set_default() end
 
 ---@return boolean
 function this:is_disabled()
@@ -101,6 +111,13 @@ function this:is_collision(bind_base)
         ---@cast collision ModBind
         return self:get_bind_name(collision)
     end
+end
+
+---@param key any
+---@param value any
+---@return string
+function this:format_name(key, value)
+    return string.format("%s (%s)", key, value)
 end
 
 return this

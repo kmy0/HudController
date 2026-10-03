@@ -42,26 +42,22 @@ function this:draw_option()
     return false
 end
 
+function this:set_default()
+    local opt = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target")) --[[@as RegisteredUserOption]]
+    config:set("__temp.option_value", opt and user_option.get_default(opt) or nil)
+end
+
 ---@param set_default boolean?
----@return ModBind
+---@return BindBase
 function this:make_base_bind(set_default)
     if set_default then
-        local opt = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target")) --[[@as RegisteredUserOption]]
-        config:set("__temp.option_value", opt and user_option.get_default(opt) or nil)
+        self:set_default()
     end
 
-    self.base_bind = {
-        action_type = cd.combo.bind_action_type:get_key(config:get("__temp.combo_action_type")),
-        bound_value = {
-            key = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target")).key,
-            value = util_table.deep_copy(config:get("__temp.option_value")),
-        },
-        trigger_repeat = cd.combo.bind_trigger_type:get_key(
-            config:get("__temp.combo_trigger_type")
-        ) == "REPEAT",
-    }
-
-    return self.base_bind
+    return base.make_base_bind(self, {
+        key = cd.combo.option_user_bind:get_key(config:get("__temp.combo_target")).key,
+        value = util_table.deep_copy(config:get("__temp.option_value")),
+    })
 end
 
 ---@param bind ModBind<string, any>
@@ -72,8 +68,8 @@ function this:get_bind_name(bind)
     end
 
     local user_opt = user_option.bindable[bind.bound_value.key]
-    return string.format(
-        "%s (%s)",
+    return base.format_name(
+        self,
         user_opt.label,
         user_option.format_value(user_opt, bind.bound_value.value)
     )
