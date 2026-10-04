@@ -498,7 +498,6 @@ end
 ---@param bind Bind
 ---@param value any
 ---@param current any
----@return any
 function this:push_hold(manager_name, option, bind, value, current)
     local states = self.managers[manager_name].hold_states
     local state = states[option]
@@ -522,9 +521,8 @@ function this:push_hold(manager_name, option, bind, value, current)
         bind_key = bind_key,
         value = value,
     })
-
-    return value
 end
+
 ---@param manager_name string
 ---@param option string | integer
 ---@param bind Bind

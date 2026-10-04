@@ -42,6 +42,35 @@ local mod = data.mod
 ---@class ModBinds
 local this = {}
 
+---@param manager_name string
+---@param key any
+---@param bind ModBind
+---@param new_value any
+---@param current_value any
+---@param frame_path table
+---@param on_release fun(value: any)?
+local function register_hold(
+    manager_name,
+    key,
+    bind,
+    new_value,
+    current_value,
+    frame_path,
+    on_release
+)
+    this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
+    this.monitor:register_on_release_callback(bind.name, function()
+        local value = this.monitor:remove_hold(manager_name, key, bind)
+        if value ~= nil then
+            if on_release then
+                on_release(value)
+            else
+                util_table.set_nested_value(this.monitor.frame_storage, frame_path, value)
+            end
+        end
+    end)
+end
+
 ---@param bind ModBind<integer, integer>
 local function action_hud(bind)
     local manager_name = "hud"
@@ -51,150 +80,119 @@ local function action_hud(bind)
         key = bind.bound_value.key,
         profile = { bind.bound_value.value },
     }
+    local path = { manager_name }
 
     if is_triggered and is_hold and profile_switcher.current_hud then
         local current = profile_switcher.current_hud --[[@as ModHud]]
-        new_value = this.monitor:push_hold(
+        register_hold(
             manager_name,
             bind.bound_value.key,
             bind,
             new_value,
-            { key = current.hud.key, profile = util_table.deep_copy(current.profile_bits) }
+            { key = current.hud.key, profile = util_table.deep_copy(current.profile_bits) },
+            path
         )
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, bind.bound_value.key, bind)
-            if value ~= nil then
-                util_table.set_nested_value(this.monitor.frame_storage, { manager_name }, value)
-            end
-        end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
 end
 
----@param bind ModBind<string, integer>
+---@param bind ModBind<string, any>
 local function action_option_hud(bind)
     local manager_name = "option_hud"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
     local key = bind.bound_value.key
     local new_value = bind.bound_value.value
-    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
+    local path = { manager_name, key }
 
     if is_triggered and is_hold then
         local hud_profile = hud.get_current() --[[@as ModProfileConfig]]
-        local current_value = hud_profile[key] and 1 or 0
-        new_value = this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
-
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, key, bind)
-            if value ~= nil then
-                util_table.set_nested_value(
-                    this.monitor.frame_storage,
-                    { manager_name, key },
-                    value
-                )
-            end
-        end)
+        register_hold(
+            manager_name,
+            key,
+            bind,
+            new_value,
+            util_table.deep_copy(hud_profile[key]),
+            path
+        )
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
 end
 
 ---@param bind ModBind<string, any>
 local function action_option_mod(bind)
     local manager_name = "option_mod"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
     local key = bind.bound_value.key
     local new_value = util_table.deep_copy(bind.bound_value.value)
-    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
+    local path = { manager_name, key }
 
     if is_triggered and is_hold then
         local opt = def.mod.opt[key]
-        local current_value = util_table.deep_copy(config:get(opt.config_key))
 
-        this.monitor:push_hold(
+        register_hold(
             manager_name,
             key,
             bind,
             util_table.deep_copy(new_value),
-            current_value
+            util_table.deep_copy(config:get(opt.config_key)),
+            path
         )
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, key, bind)
-            if value ~= nil then
-                util_table.set_nested_value(
-                    this.monitor.frame_storage,
-                    { manager_name, key },
-                    value
-                )
-            end
-        end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
 end
 
 ---@param bind ModBind<string, integer>
 local function action_option_game(bind)
     local manager_name = "option_game"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
     local key = bind.bound_value.key
     local new_value = bind.bound_value.value
-    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
+    local path = { manager_name, key }
 
     if is_triggered and is_hold then
-        local current_value = options.get_option(key)
-        new_value = this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
-
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, key, bind)
-            if value ~= nil then
-                util_table.set_nested_value(
-                    this.monitor.frame_storage,
-                    { manager_name, key },
-                    value
-                )
-            end
-        end)
+        register_hold(manager_name, key, bind, new_value, options.get_option(key), path)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
 end
 
 ---@param bind ModBind<string, any>
 local function action_option_user(bind)
     local manager_name = "option_user"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
     local key = bind.bound_value.key
     local new_value = bind.bound_value.value
-    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
+    local path = { manager_name, key }
 
     if is_triggered and is_hold then
-        local current_value = user_option.get_current_value(user_option.bindable[key])
-        new_value = this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
-
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, key, bind)
-            if value ~= nil then
-                util_table.set_nested_value(
-                    this.monitor.frame_storage,
-                    { manager_name, key },
-                    value
-                )
-            end
-        end)
+        register_hold(
+            manager_name,
+            key,
+            bind,
+            new_value,
+            util_table.deep_copy(user_option.get_current_value(user_option.bindable[key])),
+            path
+        )
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
 end
 
 ---@param bind ModBind<string, any, OptionCtxPath>
 local function action_option_elem(bind)
     local manager_name = "option_elem"
     local is_triggered = this.monitor:is_triggered(manager_name, bind)
+    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
     local key = bind.bound_value.key
     local new_value = util_table.deep_copy(bind.bound_value.value)
-    local is_hold = bind.action_type == mod.enum.action_type.SET_HOLD
+    local path = { manager_name, key }
 
     if is_triggered and is_hold then
         local current_hud = hud.get_current().key
@@ -205,28 +203,27 @@ local function action_option_elem(bind)
             return
         end
 
-        ---@diagnostic disable-next-line: no-unknown
-        local current_value =
-            util_table.deep_copy(util_opt.get_elem_config_value(opt, ctx.elem_config))
-        new_value = this.monitor:push_hold(manager_name, key, bind, new_value, current_value)
+        register_hold(
+            manager_name,
+            key,
+            bind,
+            new_value,
+            util_table.deep_copy(util_opt.get_elem_config_value(opt, ctx.elem_config)),
+            path,
+            function(value)
+                if hud.get_current().key ~= current_hud then
+                    return
+                end
 
-        this.monitor:register_on_release_callback(bind.name, function()
-            local value = this.monitor:remove_hold(manager_name, key, bind)
-
-            if hud.get_current().key ~= current_hud then
-                return
-            end
-
-            if value ~= nil then
                 util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, {
                     value = value,
                     ctx_path = bind.bound_value.free_value,
                 })
             end
-        end)
+        )
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, {
+    util_table.set_nested_value(this.monitor.frame_storage, path, {
         value = new_value,
         ctx_path = bind.bound_value.free_value,
     })
