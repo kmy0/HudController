@@ -1,5 +1,4 @@
 local ace_misc = require("HudController.util.ace.misc")
-local deprecated = require("HudController.data.deprecated")
 local e = require("HudController.util.game.enum")
 local game_lang = require("HudController.util.game.lang")
 local lang_base = require("HudController.util.misc.lang_base")
@@ -498,7 +497,6 @@ function this.init()
     get_subtitles_map()
     get_literals()
 
-    deprecated.init()
     return true
 end
 

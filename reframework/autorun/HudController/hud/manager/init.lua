@@ -34,7 +34,6 @@ local ace = data.ace
 ---@class HudManager
 local this = {
     is_cleared = true,
-    overridden_options = options.overridden_options, --FIXME: DEPRECATED
     disable_condition_binds = timer:new(0),
     force_update = false,
     condition_options = {},

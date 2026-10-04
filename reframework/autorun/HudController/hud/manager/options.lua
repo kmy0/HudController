@@ -8,7 +8,6 @@ local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
 local m = require("HudController.util.ref.methods")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
-local table_proxy = require("HudController.util.misc.table_proxy")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -17,7 +16,7 @@ local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 ---@class OptionManager
 local this = {
-    overridden_options = table_proxy.new(),
+    overridden_options = {},
     override_fns = {},
 }
 
@@ -92,7 +91,7 @@ function this.clear_overridden(key)
 end
 
 function this.clear()
-    this.overridden_options.clear()
+    this.overridden_options = {}
 end
 
 return this
