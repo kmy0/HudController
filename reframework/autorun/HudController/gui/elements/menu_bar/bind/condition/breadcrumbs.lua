@@ -45,7 +45,7 @@ function this.make_breadcrumbs(path)
 
         return {
             config_key = key,
-            name = manager:get_rule_name(key),
+            name = manager:get_rule_name(key, true),
             siblings = rule_set,
             prefix = prefix,
             rule_index = rule_index,

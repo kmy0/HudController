@@ -235,8 +235,8 @@ local function get_combo_popup_height(options)
         return 1
     end
 
-    local item_height = config.lang.font_size + FRAME_HEIGHT_PADDING
-    if #options > item_height then
+    if #options > MAX_POPUP_ITEMS then
+        local item_height = config.lang.font_size + FRAME_HEIGHT_PADDING
         return item_height * MAX_POPUP_ITEMS
     end
     return 0
