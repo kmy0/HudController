@@ -152,42 +152,38 @@ function this.update()
 
     local force_update = this.force_update
     local target = profile_switcher.requested_hud or profile_switcher.current_hud --[[@as ModHud]]
-    local target_hud = target.hud
-    local target_profile = target.profile
+    local requested_profile = requests.hud.profile
+    local profile_matches = not requested_profile
+        or util_table.equal(target.profile_bits, requested_profile)
 
-    local requested_hud = util_table.find_value(config_mod.hud, function(_, hud)
+    local requested_index = util_table.index(config_mod.hud, function(hud)
         return hud.key == requests.hud.key
     end)
-    local requested_profile = requests.hud.profile
 
-    if requested_hud then
-        if
-            target_hud.key == requested_hud.key
-            and (not requested_profile or target_profile == requested_profile)
-            and not force_update
-        then
+    if requested_index then
+        local requested_hud = config_mod.hud[requested_index]
+
+        if target.hud.key == requested_hud.key and profile_matches and not force_update then
             return
         end
 
-        config_mod.combo.hud = util_table.index(config_mod.hud, function(hud)
-            return hud.key == requested_hud.key
-        end) --[[@as integer]]
+        config_mod.combo.hud = requested_index
 
-        if not requested_profile then
-            profile_switcher.request_hud_with_default(requested_hud, force_update)
-        else
+        if requested_profile then
             profile_switcher.request_hud_with_profiles(
                 requested_hud,
                 requested_profile,
                 force_update
             )
+        else
+            profile_switcher.request_hud_with_default(requested_hud, force_update)
         end
     elseif requested_profile then
-        if target_profile == requested_profile and not force_update then
+        if profile_matches and not force_update then
             return
         end
 
-        profile_switcher.request_hud_with_profiles(target_hud, requested_profile, force_update)
+        profile_switcher.request_hud_with_profiles(target.hud, requested_profile, force_update)
     end
 
     this.force_update = false
