@@ -15,7 +15,7 @@ end
 
 ---@param path string
 ---@return string
-local function make_short_name(path)
+function this.make_short_name(path)
     local opt = util_table.get_by_path(def.map, path) --[[@as NamedElementOptionDef]]
     local res = {}
 
@@ -65,7 +65,7 @@ function this.draw(label, config_key)
 
         return selected
     end, function(value)
-        return make_short_name(value)
+        return this.make_short_name(value)
     end, config.lang.font_size + 1)
 end
 

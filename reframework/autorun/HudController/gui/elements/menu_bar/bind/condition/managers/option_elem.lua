@@ -68,14 +68,14 @@ function this:get_rule_name(rule_path, with_manager_name)
     local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     local invalid = self:get_rule_invalid(rule_path)
     local opt = rule.free_value and def.get_opt(rule.free_value)
-    local key = opt and config.lang:tr(opt.lang_key)
+    local key = opt and elem_opt_selector.make_short_name(opt.path)
     ---@type string?
     local value
 
     if not key or invalid.free_value then
         return self:format_rule_name(nil, nil, with_manager_name)
     else
-        value = string.format("%s (%s)", key, opt:format(rule.free_value2))
+        value = opt:format(rule.free_value2)
     end
 
     return self:format_rule_name(key, value, with_manager_name)
