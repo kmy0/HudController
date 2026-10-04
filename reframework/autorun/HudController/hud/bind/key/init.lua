@@ -16,9 +16,9 @@
 ---@field bound_value {key: K, value: V, free_value: F}
 
 ---@class ModBindMonitor : BindMonitor
----@field frame_storage BindEvalRet
+---@field frame_storage BindEvalResult
 
----@class (exact) BindEvalRet : ConditionEvalResult
+---@class (exact) BindEvalResult : ConditionEvalResult
 ---@field condition table<string, boolean>
 
 local bind_monitor = require("HudController.util.game.bind.monitor")

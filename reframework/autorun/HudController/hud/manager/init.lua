@@ -1,178 +1,38 @@
 ---@class HudManager
----@field overridden_options TableProxy<string, boolean> --FIXME: DEPRECATED
 ---@field is_cleared boolean
 ---@field disable_condition_binds Timer
 ---@field force_update boolean
----@field condition_options table<string, table<string, any>>
 
 local ace_misc = require("HudController.util.ace.misc")
+local bind_actions = require("HudController.hud.manager.bind_actions")
 local bind_condition = require("HudController.hud.bind.condition.init")
 local bind_manager = require("HudController.hud.bind.key.init")
 local cache = require("HudController.util.misc.cache")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local def = require("HudController.data.option.init")
 local defaults = require("HudController.hud.defaults.init")
 local elements = require("HudController.hud.manager.elements")
 local fade_manager = require("HudController.hud.fade.init")
 local options = require("HudController.hud.manager.options")
 local profile_switcher = require("HudController.hud.manager.profile_switcher")
 local timer = require("HudController.util.misc.timer")
-local user_option = require("HudController.hud.user.option")
-local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
----@module "HudController.hud.hook.init"
-local hook = util_misc.lazy_require("HudController.hud.hook.init")
 
 local mod = data.mod
-local ace = data.ace
 
 ---@class HudManager
 local this = {
     is_cleared = true,
     disable_condition_binds = timer:new(0),
     force_update = false,
-    condition_options = {},
-    condition_option_handlers = {
-        hud_option = {
-            apply = function(key, value)
-                options.overwrite_hud_option(key, value)
-            end,
-            notification = function(key, value)
-                local opt = def.hud.opt[key]
-                ace_misc.send_message(
-                    string.format(
-                        "%s %s %s",
-                        config.lang:tr(opt.lang_key),
-                        config.lang:tr("misc.text_override_notifcation_message"),
-                        util_gui.format_boolean(value)
-                    )
-                )
-            end,
-        },
-        mod_option = {
-            apply = function(key, value)
-                local opt = def.mod.opt[key]
-                config:set(opt.config_key, value)
-                hook.hook_option_mod(opt.key)
-            end,
-            notification = function(key, value)
-                local opt = def.mod.opt[key]
-                ace_misc.send_message(
-                    string.format(
-                        "%s %s %s",
-                        config.lang:tr(opt.lang_key),
-                        config.lang:tr("misc.text_changed_notifcation_message"),
-                        opt:format(value)
-                    )
-                )
-            end,
-        },
-        game_option = {
-            apply = function(key, value)
-                options.apply_option(key, value)
-            end,
-            notification = function(key, value)
-                ace_misc.send_message(
-                    string.format(
-                        "%s %s %s",
-                        ace.map.option[key].name_local,
-                        config.lang:tr("misc.text_changed_notifcation_message"),
-                        options.get_option_setting_name(key, value)
-                    )
-                )
-            end,
-        },
-        user_option = {
-            apply = function(key, value)
-                local opt = user_option.bindable[key]
-                user_option.set_option_value(opt, value)
-            end,
-            notification = function(key, value)
-                local opt = user_option.bindable[key]
-                ace_misc.send_message(
-                    string.format(
-                        "%s %s %s",
-                        opt.label,
-                        config.lang:tr("misc.text_changed_notifcation_message"),
-                        user_option.format_value(opt, value)
-                    )
-                )
-            end,
-        },
-        elem_option = {
-            apply = function(key, value)
-                local ctx = elements.get_element_ctx(value.ctx_path)
-
-                if ctx then
-                    local opt = def.elem.get_opt(key)
-                    opt:apply(ctx, value.value)
-                    ctx.elem.overridden_options[opt.key] = util_table.deep_copy(value.value)
-                    local elem = ctx.elem:get_root()
-                    local opt_hook_table = hook.hud_option_hooks[elem.name_key]
-                    local opt_path = string.format("%s.%s", ctx.config_path, opt.key)
-
-                    if opt_hook_table then
-                        local opt_hook = opt_hook_table[opt_path]
-                        if opt_hook and not hook.is_option_mod_hooked[opt_path] then
-                            opt_hook.force_once = true
-                        end
-                    end
-
-                    hook.hook_hud(elem.hud_id, elem.name_key)
-                end
-            end,
-            notification = function(key, value)
-                local ctx = elements.get_element_ctx(value.ctx_path)
-                if ctx then
-                    local opt = def.elem.get_opt(key)
-                    ace_misc.send_message(
-                        string.format(
-                            "%s %s %s",
-                            table.concat(
-                                util_table.slice(opt.name_path, #opt.name_path - 1, #opt.name_path),
-                                " > "
-                            ),
-                            config.lang:tr("misc.text_changed_notifcation_message"),
-                            opt:format(value.value)
-                        )
-                    )
-                end
-            end,
-        },
-    },
 }
 
----@param request ConditionEvalResult
-local function update_condition_options(request)
-    local config_mod = config.current.mod
-
-    for name, handler in pairs(this.condition_option_handlers) do
-        local current = request[name] or {} --[[@as table<string, any>]]
-        local previous = this.condition_options[name] or {}
-
-        for key, value in pairs(current) do
-            handler.apply(key, value)
-
-            if
-                config_mod.enable_notification
-                and handler.notification
-                and not util_table.equal(previous[key], value)
-            then
-                handler.notification(key, value)
-            end
-        end
-
-        this.condition_options[name] = current
-    end
-end
-
 ---@return boolean is_held
----@return BindEvalRet
+---@return BindEvalResult
 local function update_key_binds()
     local config_mod = config.current.mod
     bind_manager.monitor:monitor()
@@ -205,15 +65,15 @@ end
 local function update_requests()
     local config_mod = config.current.mod
     local is_held = false
-    ---@type BindEvalRet?
-    local bind_requests
+    ---@type BindEvalResult?
+    local key_requests
 
     if config_mod.enable_key_binds then
-        is_held, bind_requests = update_key_binds()
+        is_held, key_requests = update_key_binds()
     end
 
-    if bind_requests and util_table.empty(bind_requests) then
-        bind_requests = nil
+    if key_requests and util_table.empty(key_requests) then
+        key_requests = nil
     end
 
     if
@@ -227,30 +87,16 @@ local function update_requests()
             bind_condition.eval_rules()
         end
 
-        return bind_requests
+        return key_requests
     end
 
     local cond_requests = bind_condition.update(profile_switcher.current_hud, this.force_update)
     if not cond_requests then
-        return bind_requests
+        return key_requests
     end
 
-    if bind_requests and cond_requests then
-        if bind_requests.hud then
-            if bind_requests.hud.key ~= cond_requests.hud.key then
-                cond_requests.hud = bind_requests.hud
-            elseif bind_requests.hud.profile[1] ~= mod.enum.elem_profile.DEFAULT then
-                table.insert(cond_requests.hud.profile, 1, bind_requests.hud.profile[1])
-            end
-        end
-
-        for opt_manager, _ in pairs(this.condition_option_handlers) do
-            for opt_name, opt_value in
-                pairs(bind_requests[opt_manager] or {} --[[@as table<string, any>]])
-            do
-                util_table.set_nested_value(cond_requests, { opt_manager, opt_name }, opt_value)
-            end
-        end
+    if key_requests and cond_requests then
+        return bind_actions.merge_requests(key_requests, cond_requests)
     end
 
     return cond_requests
@@ -293,14 +139,14 @@ function this.update()
 
     this.disable_condition_binds:update_args({ timeout = config_mod.disable_condition_binds_time })
 
-    local request = update_requests()
-    if not request then
+    local requests = update_requests()
+    if not requests then
         return
     end
 
-    update_condition_options(request)
+    bind_actions.apply_requests(requests)
 
-    if not request.hud then
+    if not requests.hud then
         return
     end
 
@@ -310,9 +156,9 @@ function this.update()
     local target_profile = target.profile
 
     local requested_hud = util_table.find_value(config_mod.hud, function(_, hud)
-        return hud.key == request.hud.key
+        return hud.key == requests.hud.key
     end)
-    local requested_profile = request.hud.profile
+    local requested_profile = requests.hud.profile
 
     if requested_hud then
         if
@@ -366,7 +212,7 @@ function this.clear()
     cache.clear_all()
     this.is_cleared = true
     this.force_update = false
-    this.condition_options = {}
+    bind_actions.clear()
 end
 
 function this.init()
