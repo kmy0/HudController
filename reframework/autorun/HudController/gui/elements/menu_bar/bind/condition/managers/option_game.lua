@@ -69,6 +69,7 @@ function this:draw_option(rule_path)
     local option_key = config:get(string.format("%s.free_value", rule_path))
 
     if not option_key then
+        imgui.combo("##cond_option|" .. rule_path)
         return false
     end
 

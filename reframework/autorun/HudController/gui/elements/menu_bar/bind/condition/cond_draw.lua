@@ -5,6 +5,7 @@ local combo_popup = require("HudController.util.imgui.combo.combo_popup")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
+local managers = require("HudController.gui.elements.menu_bar.bind.condition.managers.init")
 local op = require("HudController.hud.manager.op.init")
 local set = require("HudController.gui.set")
 local util_gui = require("HudController.gui.util")
@@ -78,6 +79,9 @@ function this.draw_buttons(buttons, config_key)
                     goto continue
                 end
 
+                local manager = managers[bind_type]
+                util_imgui.begin_disabled(manager:empty())
+
                 if util_imgui.menu_item(buttons[bind_type], selected[bind_type]) then
                     if selected[bind_type] then
                         table.remove(
@@ -99,6 +103,7 @@ function this.draw_buttons(buttons, config_key)
                     end
                 end
 
+                util_imgui.end_disabled()
                 ::continue::
             end
         end,
