@@ -23,6 +23,7 @@
 ---@field dx boolean
 ---@field dy boolean
 
+local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 
 local this = {}
@@ -345,12 +346,22 @@ end
 
 ---@param id string
 ---@param draw_contents fun()
+---@param label_color integer?
 ---@param init_w? number
 ---@param init_h? number
 ---@return boolean
-function this.draw_menu(id, draw_contents, init_w, init_h)
+function this.draw_menu(id, draw_contents, label_color, init_w, init_h)
     return this.draw(id, function()
-        return imgui.begin_menu(id)
+        if label_color then
+            imgui.push_style_color(0, color.with_alpha(label_color))
+        end
+
+        local open = imgui.begin_menu(id)
+
+        if label_color then
+            imgui.pop_style_color(1)
+        end
+        return open
     end, imgui.end_menu, draw_contents, init_w, init_h)
 end
 

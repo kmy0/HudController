@@ -21,8 +21,11 @@ local this = {
 ---@param config_key string
 ---@return boolean
 local function any_rules(config_key)
-    local sets = config:get(config_key .. ".sets") --[[@as table<BindCondType, ConditionBindRuleSet>]]
-    local set = sets[config:get(config_key .. ".cond_type_selection")] --[[@as ConditionBindRuleSet]]
+    local sets = config:get(config_key .. ".sets") --[==[@as ConditionBindRuleSet[]]==]
+    local set = sets[util_table.index(sets, function(o)
+        return o.type == config:get(config_key .. ".cond_type_selection")
+    end)] --[[@as ConditionBindRuleSet]]
+
     return set and not util_table.empty(set.rules)
 end
 
@@ -51,7 +54,7 @@ local function draw_condition_bind_menu()
 
     local has_rules = any_rules(path)
     local buttons, button_width = cond_draw.get_buttons()
-    local size_y = util_imgui.scale_w_font_size(300)
+    local button_size = (config.lang.font_size + 6 + 8) * 2
 
     util_imgui.adjust_pos(0, -2)
     if
@@ -65,7 +68,7 @@ local function draw_condition_bind_menu()
         imgui.table_setup_column(
             "##buttons",
             imgui.ColumnFlags.WidthFixed | imgui.ColumnFlags.NoResize --[[@as ImGuiTableColumnFlags]],
-            button_width
+            button_width + button_size
         )
         imgui.table_setup_column("##content", imgui.ColumnFlags.WidthStretch, 0.3)
         if has_rules then
@@ -74,11 +77,11 @@ local function draw_condition_bind_menu()
 
         imgui.table_next_row()
         imgui.table_set_column_index(0)
-        local type_selection = cond_draw.draw_buttons(buttons, button_width, path)
+        local rule_set, index = cond_draw.draw_buttons(buttons, path)
 
-        if type_selection and has_rules then
-            local manager = managers[type_selection]
-            local set_path = string.format("%s.sets.%s", path, type_selection)
+        if rule_set and has_rules and index then
+            local manager = managers[rule_set.type]
+            local set_path = string.format("%s.sets.int:%s", path, index)
 
             imgui.table_set_column_index(1)
             imgui.begin_child_window("##content", Vector2f.new(0, -4), false)

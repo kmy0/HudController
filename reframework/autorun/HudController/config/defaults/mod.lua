@@ -76,7 +76,7 @@
 
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
----@field sets table<BindCondType, ConditionBindRuleSet>
+---@field sets ConditionBindRuleSet[]
 ---@field highlight_pass boolean
 ---@field cond_type_selection BindCondType
 ---@field path string
@@ -90,7 +90,7 @@
 ---@class (exact) ConditionBindRuleConfig
 ---@field target_select any
 ---@field conditions ConditionConfigBase[][]
----@field sets table<BindCondType, ConditionBindRuleSet>
+---@field sets ConditionBindRuleSet[]
 ---@field invalid ValidationState?
 ---@field free_value any
 ---@field free_value2 any

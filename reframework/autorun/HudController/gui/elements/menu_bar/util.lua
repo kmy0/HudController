@@ -41,17 +41,7 @@ end
 ---@param init_h? number
 ---@return boolean
 function this.draw_menu_resizable(label, draw_func, text_color, init_w, init_h)
-    if text_color then
-        imgui.push_style_color(0, text_color)
-    end
-
-    local open = resizable_popup.draw_menu(label, draw_func, init_w, init_h)
-
-    if text_color then
-        imgui.pop_style_color(1)
-    end
-
-    return open
+    return resizable_popup.draw_menu(label, draw_func, text_color, init_w, init_h)
 end
 
 return this

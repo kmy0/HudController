@@ -36,12 +36,11 @@ function this.make_breadcrumbs(path)
 
     ---@param key string
     ---@param rule_set ConditionBindRuleSet
-    ---@param cond_type BindCondType
     ---@param rule_index integer
     ---@return ConditionRuleCrumb
-    local function make_crumb(key, rule_set, cond_type, rule_index)
+    local function make_crumb(key, rule_set, rule_index)
         local rule = rule_set.rules[rule_index]
-        local manager = managers[cond_type]
+        local manager = managers[rule_set.type]
         local prefix = key:match("^(.-)%.rules%.int:%d+$")
 
         return {
@@ -51,7 +50,7 @@ function this.make_breadcrumbs(path)
             prefix = prefix,
             rule_index = rule_index,
             rule = rule,
-            cond_type = cond_type,
+            cond_type = rule_set.type,
             tooltip = function()
                 cond_draw.draw_tooltip(manager, key)
             end,
@@ -60,21 +59,20 @@ function this.make_breadcrumbs(path)
     end
 
     while true do
-        local start_pos, end_pos, type_str, rule_str =
-            string.find(path, "%.sets%.([^%.]+)%.rules%.int:(%d+)", pos)
+        local start_pos, end_pos, rule_set_str, rule_str =
+            string.find(path, "%.sets%.int:(%d+)%.rules%.int:(%d+)", pos)
 
         if not start_pos then
             break
         end
 
-        ---@type BindCondType
-        local cond_type = type_str
+        local rule_set_index = tonumber(rule_set_str)
         local rule_index = tonumber(rule_str)
-        if not rule_index then
+        if not rule_index or not rule_set_index then
             break
         end
 
-        local rule_set = sets[cond_type]
+        local rule_set = sets[rule_set_index]
         if not rule_set then
             break
         end
@@ -85,7 +83,7 @@ function this.make_breadcrumbs(path)
         end
 
         local key = path:sub(1, end_pos)
-        table.insert(ret, make_crumb(key, rule_set, cond_type, rule_index))
+        table.insert(ret, make_crumb(key, rule_set, rule_index))
 
         sets = rule.sets
         pos = end_pos + 1
@@ -95,11 +93,11 @@ function this.make_breadcrumbs(path)
         local last = ret[#ret]
         last.children = {}
 
-        for cond_type, rule_set in pairs(sets) do
+        for i, rule_set in ipairs(sets) do
             for rule_index, _ in pairs(rule_set.rules) do
                 local key =
-                    string.format("%s.sets.%s.rules.int:%s", last.config_key, cond_type, rule_index)
-                table.insert(last.children, make_crumb(key, rule_set, cond_type, rule_index))
+                    string.format("%s.sets.int:%s.rules.int:%s", last.config_key, i, rule_index)
+                table.insert(last.children, make_crumb(key, rule_set, rule_index))
             end
         end
     end

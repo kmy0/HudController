@@ -293,7 +293,7 @@ end
 ---@param path string
 ---@return ConditionTreeNode
 function this.make_tree(path)
-    ---@param sets table<BindCondType, ConditionBindRuleSet>?
+    ---@param sets ConditionBindRuleSet[]?
     ---@param parent_path string
     ---@param selection BindCondType
     ---@return ConditionTreeNode[]
@@ -304,18 +304,17 @@ function this.make_tree(path)
             return nodes
         end
 
-        local keys = util_table.sort(util_table.keys(sets))
-        for _, cond_type in ipairs(keys) do
-            local manager = managers[cond_type]
-            local rule_set = sets[cond_type]
+        for i, rule_set in ipairs(sets) do
+            local manager = managers[rule_set.type]
 
             if rule_set then
-                local set_path = string.format("%s.sets.%s", parent_path, cond_type)
+                local set_path = string.format("%s.sets.int:%s", parent_path, i)
                 ---@type ConditionTreeNode[]
                 local rules = {}
 
                 for rule_index, rule in ipairs(rule_set.rules or {}) do
                     local rule_path = string.format("%s.rules.int:%d", set_path, rule_index)
+
                     table.insert(rules, {
                         name = manager:get_rule_name(rule_path, false),
                         config_key = rule_path,
@@ -325,7 +324,7 @@ function this.make_tree(path)
                         children = build_sets(rule.sets, rule_path, rule.cond_type_selection),
                         selected_edit = parent_path == path
                             and rule_set.selection == rule_index
-                            and cond_type == selection,
+                            and rule_set.type == selection,
                         tooltip = function()
                             cond_draw.draw_tooltip(manager, rule_path)
                         end,
@@ -337,8 +336,8 @@ function this.make_tree(path)
                 end
 
                 table.insert(nodes, {
-                    name = config.lang:tr("menu.bind.condition.bind_cond_type." .. cond_type),
-                    type = cond_type,
+                    name = config.lang:tr("menu.bind.condition.bind_cond_type." .. rule_set.type),
+                    type = rule_set.type,
                     config_key = parent_path,
                     children = rules,
                     is_dummy = true,

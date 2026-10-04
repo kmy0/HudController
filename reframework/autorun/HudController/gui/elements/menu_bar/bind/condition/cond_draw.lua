@@ -37,15 +37,17 @@ function this.get_buttons()
 end
 
 ---@param buttons table<BindCondType, string>
----@param max_width number
 ---@param config_key string
----@return BindCondType?
-function this.draw_buttons(buttons, max_width, config_key)
+---@return ConditionBindRuleSet?, integer?
+function this.draw_buttons(buttons, config_key)
     local changed = false
-    local sets = config:get(config_key .. ".sets")--[[@as table<BindCondType, ConditionBindRuleSet>]]
+    local sets = config:get(config_key .. ".sets")--[==[@as ConditionBindRuleSet[]]==]
     local struct = config:get(config_key) --[[@as ConditionBindRuleConfig | ConditionBindStateConfig]]
+    local index = util_table.index(sets, function(o)
+        return o.type == struct.cond_type_selection
+    end)
 
-    imgui.set_next_item_width(max_width)
+    imgui.set_next_item_width(-1)
     combo_popup.combo_popup_filter(
         "##cond_main_add_rule",
         "",
@@ -78,10 +80,20 @@ function this.draw_buttons(buttons, max_width, config_key)
 
                 if util_imgui.menu_item(buttons[bind_type], selected[bind_type]) then
                     if selected[bind_type] then
-                        sets[bind_type] = nil
+                        table.remove(
+                            sets,
+                            util_table.index(sets, function(o)
+                                return o.type == bind_type
+                            end)
+                        )
+                        index = 1
+                        if sets[index] then
+                            struct.cond_type_selection = sets[index].type
+                        end
+
                         config:save()
                     else
-                        sets[bind_type] = bind_condition.new_condition_rule_set(bind_type)
+                        table.insert(sets, bind_condition.new_condition_rule_set(bind_type))
                         struct.cond_type_selection = bind_type
                         config:save()
                     end
@@ -95,17 +107,17 @@ function this.draw_buttons(buttons, max_width, config_key)
         end
     )
 
-    local button_size = config.lang.font_size + 6 + 8
+    drag:clear()
 
-    ---@type BindCondType[]
-    local sorted = util_table.keys(sets)
-    table.sort(sorted, function(a, b)
-        return buttons[a] < buttons[b]
-    end)
+    local sel = sets[index]
+    ---@type integer?
+    local to_remove
+    for i, set in ipairs(sets) do
+        drag:draw_drag_button(set.type, set.type)
+        imgui.same_line()
 
-    for _, b in ipairs(sorted) do
-        if util_imgui.draw_remove_button("cond_set_main_remove|" .. b) then
-            sets[b] = nil
+        if util_imgui.draw_remove_button("cond_set_main_remove|" .. set.type) then
+            to_remove = i
             changed = true
         end
 
@@ -115,22 +127,48 @@ function this.draw_buttons(buttons, max_width, config_key)
             util_imgui.draw_sel_button(
                 string.format(
                     "%s##bind_cond_sel_button|%s",
-                    config.lang:tr("menu.bind.condition.bind_cond_type." .. b),
-                    b
+                    config.lang:tr("menu.bind.condition.bind_cond_type." .. set.type),
+                    set.type
                 ),
-                struct.cond_type_selection == b,
-                { max_width - button_size, 0 }
+                struct.cond_type_selection == set.type,
+                { -1, 0 }
             )
         then
-            struct.cond_type_selection = b
+            struct.cond_type_selection = set.type
+            index = i
         end
+
+        drag:check_drag_pos(set.type)
+    end
+
+    if drag:is_released() then
+        changed = true
+    elseif drag:is_drag() then
+        table.sort(sets, function(a, b)
+            return drag.item_pos[a.type] < drag.item_pos[b.type]
+        end)
+
+        index = util_table.index(sets, function(o)
+            return o == sel
+        end)
+    end
+
+    if to_remove then
+        table.remove(sets, to_remove)
+        index = 1
+
+        if sets[index] then
+            struct.cond_type_selection = sets[index].type
+        end
+
+        changed = true
     end
 
     if changed then
         config:save()
     end
 
-    return sets[struct.cond_type_selection] and struct.cond_type_selection
+    return index and sets[index], index
 end
 
 ---@param manager GuiCondManagerBase

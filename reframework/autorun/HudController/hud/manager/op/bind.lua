@@ -80,7 +80,7 @@ local function verify_keybinds()
     end
 end
 
----@param sets table<BindCondType, ConditionBindRuleSet>
+---@param sets ConditionBindRuleSet[]
 local function merge_condition_sets(sets)
     if not sets then
         return
@@ -142,7 +142,7 @@ end
 ---@return fun(): ConditionBindRuleSet?, ConditionBindRuleConfig?
 local function iter_all_rules(root)
     return coroutine.wrap(function()
-        ---@param sets table<BindCondType, ConditionBindRuleSet>
+        ---@param sets ConditionBindRuleSet[]
         local function visit(sets)
             for _, set in pairs(sets) do
                 for _, rule in ipairs(set.rules) do
