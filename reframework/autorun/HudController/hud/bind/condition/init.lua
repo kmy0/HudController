@@ -4,7 +4,10 @@
 ---@field option_mod table<string, integer>?
 ---@field option_game table<string, integer>?
 ---@field option_user table<string, any>?
----@field option_elem table<string, any>?
+---@field option_elem table<string, {
+--- ctx_path: OptionCtxPath,
+--- value: any,
+--- }>?
 
 local _ = require("HudController.hud.bind.condition.conditions.custom")
 local condition_base = require("HudController.hud.def.condition_base")
@@ -143,7 +146,16 @@ local function get_evaluation_result(triggered_rules)
         elseif util_table.get_nested_value(triggered, { t.type, opt_key }) then
             goto continue
         else
-            util_table.set_nested_value(ret, { key, opt_key }, opt_value)
+            if t.type == mod_enum.bind_cond_type.OPTION_ELEM then
+                util_table.set_nested_value(
+                    ret,
+                    { key, opt_key },
+                    { value = opt_value, ctx_path = t.rule.free_value3 }
+                )
+            else
+                util_table.set_nested_value(ret, { key, opt_key }, opt_value)
+            end
+
             util_table.set_nested_value(triggered, { t.type, opt_key }, true)
         end
 
@@ -196,6 +208,7 @@ function this.update(current_hud, force)
     end
 
     local same_as_current = current_hud
+        and ret.hud
         and ret.hud.key == current_hud.hud.key
         and util_table.equal(ret.hud.profile, current_hud.profile_bits or {})
 

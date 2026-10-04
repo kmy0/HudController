@@ -39,6 +39,7 @@ function this:draw_target(rule_path)
         local path = config:get(free_value_path)
         local opt = def.get_opt(path)
         config:set(rule_path .. ".free_value2", util_table.deep_copy(opt.default_value))
+        config:set(rule_path .. ".free_value3", opt.ctx_path)
     end
 
     return changed

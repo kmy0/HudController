@@ -71,6 +71,7 @@
 ---@field invalid ValidationState?
 ---@field free_value any
 ---@field free_value2 any
+---@field free_value3 any
 ---@field cond_type_selection BindCondType
 
 ---@class (exact) ConditionConfigBase
