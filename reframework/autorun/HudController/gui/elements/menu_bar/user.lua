@@ -177,6 +177,7 @@ local function draw_options_menu()
 
         return false, nil
     end, false)
+    util_imgui.spacer_x(2)
 
     option.draw(mod_def.opt.game_options_display_full_path)
 
