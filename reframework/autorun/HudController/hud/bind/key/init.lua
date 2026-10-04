@@ -18,7 +18,7 @@
 ---@class ModBindMonitor : BindMonitor
 ---@field frame_storage BindEvalRet
 
----@class (exact) BindEvalRet : ConditionEvalRet
+---@class (exact) BindEvalRet : ConditionEvalResult
 ---@field condition table<string, boolean>
 
 local bind_monitor = require("HudController.util.game.bind.monitor")
@@ -60,16 +60,16 @@ local function action_hud(bind)
             bind,
             new_value,
             { key = current.hud.key, profile = util_table.deep_copy(current.profile_bits) }
-        ) --TODO: this is likely broken
+        )
         this.monitor:register_on_release_callback(bind.name, function()
             local value = this.monitor:remove_hold(manager_name, bind.bound_value.key, bind)
             if value ~= nil then
-                util_table.set_nested_value(this.monitor.frame_storage, { "hud" }, value)
+                util_table.set_nested_value(this.monitor.frame_storage, { manager_name }, value)
             end
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "hud" }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name }, new_value)
 end
 
 ---@param bind ModBind<string, integer>
@@ -90,14 +90,14 @@ local function action_option_hud(bind)
             if value ~= nil then
                 util_table.set_nested_value(
                     this.monitor.frame_storage,
-                    { "hud_option", key },
+                    { manager_name, key },
                     value
                 )
             end
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "hud_option", key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
 end
 
 ---@param bind ModBind<string, any>
@@ -124,14 +124,14 @@ local function action_option_mod(bind)
             if value ~= nil then
                 util_table.set_nested_value(
                     this.monitor.frame_storage,
-                    { "mod_option", key },
+                    { manager_name, key },
                     value
                 )
             end
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "mod_option", key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
 end
 
 ---@param bind ModBind<string, integer>
@@ -151,14 +151,14 @@ local function action_option_game(bind)
             if value ~= nil then
                 util_table.set_nested_value(
                     this.monitor.frame_storage,
-                    { "game_option", key },
+                    { manager_name, key },
                     value
                 )
             end
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "game_option", key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
 end
 
 ---@param bind ModBind<string, any>
@@ -178,14 +178,14 @@ local function action_option_user(bind)
             if value ~= nil then
                 util_table.set_nested_value(
                     this.monitor.frame_storage,
-                    { "user_option", key },
+                    { manager_name, key },
                     value
                 )
             end
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "user_option", key }, new_value)
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, new_value)
 end
 
 ---@param bind ModBind<string, any, OptionCtxPath>
@@ -218,7 +218,7 @@ local function action_option_elem(bind)
             end
 
             if value ~= nil then
-                util_table.set_nested_value(this.monitor.frame_storage, { "elem_option", key }, {
+                util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, {
                     value = value,
                     ctx_path = bind.bound_value.free_value,
                 })
@@ -226,7 +226,7 @@ local function action_option_elem(bind)
         end)
     end
 
-    util_table.set_nested_value(this.monitor.frame_storage, { "elem_option", key }, {
+    util_table.set_nested_value(this.monitor.frame_storage, { manager_name, key }, {
         value = new_value,
         ctx_path = bind.bound_value.free_value,
     })

@@ -98,7 +98,7 @@ end
 ---@return ConditionTreeState
 local function new_state(node)
     return {
-        selected = node and node.selected or false,
+        selected = (node and node.selected) or (node and node.selected_edit) or false,
         triggering = node and node.triggering or false,
         invalid = node and node.invalid or false,
     }
@@ -120,12 +120,12 @@ local function get_state_color(state, style)
         return style.invalid_color
     end
 
-    if state.selected then
-        return style.selected_color
-    end
-
     if state.triggering then
         return style.triggering_color
+    end
+
+    if state.selected then
+        return style.selected_color
     end
 
     return style.normal_color

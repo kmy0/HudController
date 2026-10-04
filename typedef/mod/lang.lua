@@ -492,6 +492,7 @@
 ---| "menu.bind.condition.tooltip_option_condition_set"
 ---| "menu.bind.condition.tooltip_wrong_parent_key"
 ---| "menu.bind.condition_option.box_highlight_pass"
+---| "menu.bind.condition_option.box_highlight_pass_cond"
 ---| "menu.bind.condition_option.category_general"
 ---| "menu.bind.condition_option.name"
 ---| "menu.bind.key.action_type.SET"

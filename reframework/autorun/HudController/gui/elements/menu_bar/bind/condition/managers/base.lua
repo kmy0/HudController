@@ -88,9 +88,8 @@ end
 
 ---@param rule_path string
 ---@return boolean
----@diagnostic disable-next-line: unused-local
 function this:is_rule_triggering(rule_path)
-    return false
+    return bind_condition.successful_paths[rule_path]
 end
 
 ---@param rule_path string
@@ -125,7 +124,8 @@ end
 ---@param cond_path string
 ---@return boolean
 function this:is_cond_triggering(cond_path)
-    return false
+    local cond = config:get(cond_path) --[[@as ConditionConfigBase]]
+    return bind_condition.eval_cond(cond)
 end
 
 ---@param cond_path string

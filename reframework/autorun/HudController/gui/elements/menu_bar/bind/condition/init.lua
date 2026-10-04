@@ -54,7 +54,7 @@ local function draw_condition_bind_menu()
 
     local has_rules = any_rules(path)
     local buttons, button_width = cond_draw.get_buttons()
-    local button_size = (config.lang.font_size + 6 + 8) * 2
+    local button_size = (config.lang.font_size + 6 + 6) * 2
 
     util_imgui.adjust_pos(0, -2)
     if

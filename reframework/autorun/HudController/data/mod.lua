@@ -28,7 +28,6 @@
 ---@field quest_end_timer QuestEndTimerSetting.*
 ---@field manager_names ModBindManagerType.*
 ---@field action_type BindActionType.*
----@field expected_result ExpectedResult.*
 ---@field trigger_type TriggerType.*
 ---@field hide_npc HideNpc.*
 ---@field em_scar EmScar.*
@@ -148,7 +147,7 @@ this.enum.hud_sub_type = { ---@class HudSubType.*
 ---@enum GuiColors
 this.enum.colors = { ---@class GuiColors.*
     bad = 0xff1947ff,
-    good = 0xff47ff59,
+    good = 0xff38cc47,
     info = 0xff27f3f5,
 }
 ---@enum CanvasActionEnum
@@ -201,11 +200,6 @@ this.enum.action_type = { ---@class BindActionType.*
     NONE = "NONE",
     SET = "SET",
     SET_HOLD = "SET_HOLD",
-}
----@enum ExpectedResult
-this.enum.expected_result = { ---@class ExpectedResult.*
-    TRUE = 1,
-    FALSE = 2,
 }
 ---@enum BindTriggerType
 this.enum.trigger_type = { ---@class TriggerType.*

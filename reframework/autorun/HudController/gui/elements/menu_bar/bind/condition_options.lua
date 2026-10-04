@@ -15,7 +15,8 @@ local function draw_condition_option_menu()
     imgui.indent(2)
 
     util_imgui.separator_text(config.lang:tr("menu.bind.condition_option.category_general"))
-    option.draw(mod_def.opt.condition_highlight_pass)
+    option.draw(mod_def.opt.condition_highlight_pass_rule)
+    option.draw(mod_def.opt.condition_highlight_pass_cond)
 
     local conditions = util_table.filter(bind_condition.conditions, function(_, value)
         return value:has_additional_options()

@@ -32,7 +32,7 @@ function this.get_buttons()
         max_width = math.max(max_width, imgui.calc_text_size(label).x) --[[@as number]]
     end
 
-    max_width = max_width + config.lang.font_size * 3
+    max_width = max_width + config.lang.font_size
     return ret, max_width
 end
 
@@ -184,6 +184,7 @@ function this.draw_conditions(manager, config_key, readonly)
         config.lang:tr("menu.bind.condition.expected_result_values.TRUE"),
         config.lang:tr("menu.bind.condition.expected_result_values.FALSE")
     )
+    local item_size = readonly and -1 or -3
 
     if imgui.begin_table("conditions_" .. config_key, 3, imgui.TableFlags.SizingFixedFit) then
         imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed)
@@ -196,14 +197,16 @@ function this.draw_conditions(manager, config_key, readonly)
             local cond_path = string.format("%s.int:%s", config_key, i)
             local invalid = manager:get_cond_invalid(cond_path)
 
-            imgui.begin_rect()
             imgui.table_set_column_index(0)
+            imgui.begin_rect()
 
-            if not readonly and util_imgui.draw_remove_button("cond_remove|" .. i) then
-                to_remove = i
+            if not readonly then
+                if util_imgui.draw_remove_button("cond_remove|" .. i) then
+                    to_remove = i
+                end
+
+                imgui.same_line()
             end
-
-            imgui.same_line()
 
             if
                 imgui.button(
@@ -245,7 +248,7 @@ function this.draw_conditions(manager, config_key, readonly)
                         color.with_alpha(mod_enum.colors.bad)
                     )
                     imgui.same_line()
-                    imgui.invisible_button("i_button3" .. config_key .. i, { -1, 0 })
+                    imgui.invisible_button("i_button3" .. config_key .. i, { item_size, 0 })
 
                     return
                 end
@@ -255,7 +258,7 @@ function this.draw_conditions(manager, config_key, readonly)
                 if cond_class and cond_class:has_custom_options() then
                     changed = cond_class:draw_options(key) or changed
                 elseif cond_class and cond_class.options then
-                    imgui.set_next_item_width(-3)
+                    imgui.set_next_item_width(item_size)
 
                     changed = set:combo_filter(
                         string.format("##cond_opt.%s.%s", config_key, i),
@@ -272,7 +275,7 @@ function this.draw_conditions(manager, config_key, readonly)
                         )
                     end
                 else
-                    imgui.invisible_button("i_button3" .. config_key .. i, { -1, 0 })
+                    imgui.invisible_button("i_button3" .. config_key .. i, { item_size, 0 })
                 end
 
                 if changed then
@@ -298,7 +301,7 @@ function this.draw_conditions(manager, config_key, readonly)
             imgui.push_style_color(
                 5,
                 invalid.class and color.with_alpha(mod_enum.colors.bad)
-                    or ((config.current.mod.bind.condition.highlight_pass and manager:is_cond_triggering(
+                    or ((config.current.mod.bind.condition.highlight_pass_cond and manager:is_cond_triggering(
                         cond_path
                     )) and color.with_alpha(mod_enum.colors.good))
                     or 0
@@ -433,7 +436,7 @@ function this.draw_target(manager, config_key)
             5,
             color.with_alpha(
                 (
-                    config.current.mod.bind.condition.highlight_pass
+                    config.current.mod.bind.condition.highlight_pass_rule
                     and manager:is_rule_triggering(rule_path)
                     and mod_enum.colors.good
                 )
@@ -571,7 +574,6 @@ function this.draw_tooltip(manager, rule_path)
                     util_imgui.adjust_pos(0, -2)
                 end
 
-                util_imgui.adjust_pos(-8)
                 this.draw_conditions(manager, string.format("%s.int:%s", cond_key, j), true)
                 i = i + 1
             end

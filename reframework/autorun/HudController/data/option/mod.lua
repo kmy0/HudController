@@ -297,9 +297,17 @@ local this = {
             end,
         },
         ---@type OptionDef<boolean>
-        condition_highlight_pass = {
-            config_key = "mod.bind.condition.highlight_pass",
+        condition_highlight_pass_rule = {
+            config_key = "mod.bind.condition.highlight_pass_rule",
             lang_key = "menu.bind.condition_option.box_highlight_pass",
+            bindable = false,
+            draw = util_opt.checkbox,
+            format = util_opt.format_checkbox,
+        },
+        ---@type OptionDef<boolean>
+        condition_highlight_pass_cond = {
+            config_key = "mod.bind.condition.highlight_pass_cond",
+            lang_key = "menu.bind.condition_option.box_highlight_pass_cond",
             bindable = false,
             draw = util_opt.checkbox,
             format = util_opt.format_checkbox,

@@ -43,30 +43,6 @@
 
 ---@class (exact) ConditionBindOptionsBase
 
--- -@class (exact) ConditionConfigBase
--- -@field class string
--- -@field combo integer
--- -@field expected_result ExpectedResult
-
--- -@class (exact) ConditionSetConfig
--- -@field key integer | string
--- -@field conditions ConditionConfigBase[]
--- -@field combo_profile integer
--- -@field combo_condition integer
--- -@field collapsed boolean
--- -@field parent_key (integer | string)?
--- -@field element_profile ConditionSetConfig[]
--- -@field hud_option ConditionSetConfig[]
--- -@field mod_option ConditionSetConfig[]
--- -@field game_option ConditionSetConfig[]
--- -@field user_option ConditionSetConfig[]
--- -@field free_value any?
-
--- -@class (exact) ConditionBindStateConfig
--- -@field condition_options table<string, ConditionBindOptionsBase>
--- -@field hud ConditionSetConfig[]
--- -@field highlight_pass boolean
-
 ---@class ValidationState
 ---@field free_value string?
 ---@field free_value2 string?
@@ -77,7 +53,8 @@
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
 ---@field sets ConditionBindRuleSet[]
----@field highlight_pass boolean
+---@field highlight_pass_rule boolean
+---@field highlight_pass_cond boolean
 ---@field cond_type_selection BindCondType
 ---@field path string
 ---@field invalid boolean
@@ -218,7 +195,8 @@ return {
             condition = {
                 condition_options = {},
                 sets = {},
-                highlight_pass = false,
+                highlight_pass_rule = false,
+                highlight_pass_cond = false,
                 cond_type_selection = "HUD",
                 path = "mod.bind.condition",
                 invalid = false,

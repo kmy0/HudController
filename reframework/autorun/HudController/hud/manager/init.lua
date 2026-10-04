@@ -147,7 +147,7 @@ local this = {
     },
 }
 
----@param request ConditionEvalRet
+---@param request ConditionEvalResult
 local function update_condition_options(request)
     local config_mod = config.current.mod
 
@@ -201,7 +201,7 @@ local function update_key_binds()
     return is_held, bind_manager.monitor.frame_storage
 end
 
----@return ConditionEvalRet?
+---@return ConditionEvalResult?
 local function update_requests()
     local config_mod = config.current.mod
     local is_held = false
@@ -221,8 +221,10 @@ local function update_requests()
         or this.disable_condition_binds:active()
         or is_held
     then
-        if config_mod.bind.condition.highlight_pass and config.gui.current.gui.main.is_opened then
-            bind_condition.update_conditions_only()
+        if
+            config_mod.bind.condition.highlight_pass_rule and config.gui.current.gui.main.is_opened
+        then
+            bind_condition.eval_rules()
         end
 
         return bind_requests
