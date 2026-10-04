@@ -398,7 +398,7 @@ local function draw_bind_option_table(manager)
         imgui.pop_style_var(1)
     end
 
-    imgui.push_item_width(-4)
+    imgui.push_item_width(-5)
     if manager:draw_option() then
         manager:make_base_bind()
     end

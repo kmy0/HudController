@@ -23,7 +23,7 @@ end
 ---@param config_key string
 ---@return boolean
 function this:draw_options(config_key)
-    imgui.set_next_item_width(-3)
+    imgui.set_next_item_width(-1)
 
     local opt = self:get_option_table(config_key)
     ---@type string[]
