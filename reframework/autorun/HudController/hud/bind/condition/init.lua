@@ -56,6 +56,10 @@ local this = {
     successful_paths = {},
     ---@type table<string, boolean>
     overridden_paths = {},
+    ---@type table<string, table<string, string>>  [type_key][opt_key] = rule path
+    applied_by = {},
+    ---@type {key: integer, paths: string[]}?
+    applied_hud = nil,
 }
 
 ---@param cond_config ConditionBindStateConfig | ConditionBindRuleConfig
@@ -138,6 +142,7 @@ local function get_evaluation_result(triggered_rules)
         local opt_value = t.rule.free_value2
         local key_taken = util_table.get_nested_value(triggered, { t.type, opt_key })
         local applied = true
+        local path = t.path
 
         if t.type == mod_enum.bind_cond_type.HUD then
             if key_taken then
@@ -146,6 +151,7 @@ local function get_evaluation_result(triggered_rules)
                 applied = false
             else
                 ret.hud = { key = opt_key, profile = { opt_value } }
+                this.applied_hud = { key = opt_key, paths = {} }
             end
         elseif key_taken then
             applied = false
@@ -163,10 +169,19 @@ local function get_evaluation_result(triggered_rules)
             util_table.set_nested_value(triggered, { t.type, opt_key }, true)
         end
 
-        if t.path then
-            local paths = applied and this.successful_paths or this.overridden_paths
-            ---@diagnostic disable-next-line: no-unknown
-            paths[t.path] = true
+        if path then
+            if applied then
+                this.successful_paths[path] = true
+
+                if t.type == mod_enum.bind_cond_type.HUD then
+                    table.insert(this.applied_hud.paths, t.path)
+                else
+                    this.applied_by[key] = this.applied_by[key] or {}
+                    this.applied_by[key][opt_key] = t.path
+                end
+            else
+                this.overridden_paths[path] = true
+            end
         end
     end
 
@@ -200,6 +215,14 @@ function this.eval_cond(cond_config)
     return res
 end
 
+---@param path string?
+function this.demote_path(path)
+    if path and this.successful_paths[path] then
+        this.successful_paths[path] = nil
+        this.overridden_paths[path] = true
+    end
+end
+
 ---@param current_hud ModHud
 ---@param force boolean?
 ---@return ConditionEvalResult?
@@ -225,6 +248,10 @@ end
 ---@return ConditionEvalResult?
 function this.eval_rules()
     this.successful_paths = {}
+    this.overridden_paths = {}
+    this.applied_by = {}
+    this.applied_hud = nil
+
     local config_gui = config.gui.current.gui.main
     local config_cond = config.current.mod.bind.condition
     local base_path = config_cond.highlight_pass_rule

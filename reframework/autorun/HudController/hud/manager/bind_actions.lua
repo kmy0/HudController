@@ -21,6 +21,7 @@
 ---@field applied_requests table<string, table<string, any>>
 
 local ace_misc = require("HudController.util.ace.misc")
+local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def = require("HudController.data.option.init")
@@ -155,7 +156,15 @@ local handlers = {
 ---@return ConditionEvalResult
 function this.merge_requests(key_requests, cond_requests)
     if key_requests.hud then
-        if key_requests.hud.key ~= cond_requests.hud.key then
+        if not cond_requests.hud or key_requests.hud.key ~= cond_requests.hud.key then
+            local applied_hud = bind_condition.applied_hud
+
+            if applied_hud and applied_hud.key ~= key_requests.hud.key then
+                for _, path in ipairs(applied_hud.paths) do
+                    bind_condition.demote_path(path)
+                end
+            end
+
             cond_requests.hud = key_requests.hud
         elseif key_requests.hud.profile[1] ~= mod.enum.elem_profile.DEFAULT then
             table.insert(cond_requests.hud.profile, 1, key_requests.hud.profile[1])
@@ -163,10 +172,15 @@ function this.merge_requests(key_requests, cond_requests)
     end
 
     for opt_manager, _ in pairs(handlers) do
-        for opt_name, opt_value in
-            pairs(key_requests[opt_manager] or {} --[[@as table<string, any>]])
-        do
-            util_table.set_nested_value(cond_requests, { opt_manager, opt_name }, opt_value)
+        if opt_manager ~= "hud" then
+            for opt_name, opt_value in
+                pairs(key_requests[opt_manager] or {} --[[@as table<string, any>]])
+            do
+                local by = bind_condition.applied_by[opt_manager]
+                bind_condition.demote_path(by and by[opt_name])
+
+                util_table.set_nested_value(cond_requests, { opt_manager, opt_name }, opt_value)
+            end
         end
     end
 
