@@ -401,6 +401,7 @@ function this.draw_target(manager, config_key)
     local sel = rules[ret]
     ---@type integer?
     local to_remove
+    local highlight = config.current.mod.bind.condition.highlight_pass_rule
 
     for i, rule in ipairs(rules) do
         local rule_path = string.format("%s.int:%s", rules_key, i)
@@ -437,18 +438,22 @@ function this.draw_target(manager, config_key)
         imgui.end_group()
         imgui.end_group()
 
-        imgui.push_style_color(
-            5,
-            color.with_alpha(
-                (
-                    config.current.mod.bind.condition.highlight_pass_rule
-                    and manager:is_rule_triggering(rule_path)
-                    and mod_enum.colors.good
-                )
-                    or ret == i and 0xff7f4a18
-                    or 0xff493e36
-            )
-        )
+        local col = 0xff493e36
+        if ret == i then
+            col = 0xff7f4a18
+        end
+
+        if highlight then
+            if manager:is_rule_overridden(rule_path) then
+                col = 0xff1f6baa
+            end
+
+            if manager:is_rule_triggering(rule_path) then
+                col = mod_enum.colors.good
+            end
+        end
+
+        imgui.push_style_color(5, color.with_alpha(col))
         imgui.end_rect(0, 0)
         imgui.pop_style_color(1)
 

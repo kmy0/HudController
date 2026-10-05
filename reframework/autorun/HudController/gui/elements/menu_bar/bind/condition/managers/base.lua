@@ -94,6 +94,12 @@ end
 
 ---@param rule_path string
 ---@return boolean
+function this:is_rule_overridden(rule_path)
+    return bind_condition.overridden_paths[rule_path]
+end
+
+---@param rule_path string
+---@return boolean
 function this:is_rule_invalid(rule_path)
     local rule = config:get(rule_path) --[[@as ConditionBindRuleConfig]]
     if rule.invalid then

@@ -54,6 +54,8 @@ local this = {
     conditions = {},
     ---@type table<string, boolean>
     successful_paths = {},
+    ---@type table<string, boolean>
+    overridden_paths = {},
 }
 
 ---@param cond_config ConditionBindStateConfig | ConditionBindRuleConfig
@@ -128,43 +130,44 @@ local function get_evaluation_result(triggered_rules)
     local triggered = {}
     ---@type ConditionEvalResult
     local ret = {}
+
     for i = #triggered_rules, 1, -1 do
         local t = triggered_rules[i]
         local key = key_map[t.type]
         local opt_key = t.rule.free_value
         local opt_value = t.rule.free_value2
+        local key_taken = util_table.get_nested_value(triggered, { t.type, opt_key })
+        local applied = true
 
         if t.type == mod_enum.bind_cond_type.HUD then
-            if util_table.get_nested_value(triggered, { t.type, opt_key }) then
+            if key_taken then
                 table.insert(ret.hud.profile, opt_value)
             elseif triggered[t.type] then
-                goto continue
+                applied = false
             else
                 ret.hud = { key = opt_key, profile = { opt_value } }
-                util_table.set_nested_value(triggered, { t.type, opt_key }, true)
             end
-        elseif util_table.get_nested_value(triggered, { t.type, opt_key }) then
-            goto continue
+        elseif key_taken then
+            applied = false
+        elseif t.type == mod_enum.bind_cond_type.OPTION_ELEM then
+            util_table.set_nested_value(
+                ret,
+                { key, opt_key },
+                { value = opt_value, ctx_path = t.rule.free_value3 }
+            )
         else
-            if t.type == mod_enum.bind_cond_type.OPTION_ELEM then
-                util_table.set_nested_value(
-                    ret,
-                    { key, opt_key },
-                    { value = opt_value, ctx_path = t.rule.free_value3 }
-                )
-            else
-                util_table.set_nested_value(ret, { key, opt_key }, opt_value)
-            end
+            util_table.set_nested_value(ret, { key, opt_key }, opt_value)
+        end
 
+        if applied then
             util_table.set_nested_value(triggered, { t.type, opt_key }, true)
         end
 
         if t.path then
+            local paths = applied and this.successful_paths or this.overridden_paths
             ---@diagnostic disable-next-line: no-unknown
-            this.successful_paths[t.path] = true
+            paths[t.path] = true
         end
-
-        ::continue::
     end
 
     return ret

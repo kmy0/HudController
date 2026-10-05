@@ -3,6 +3,7 @@
 ---@field normal_color integer
 ---@field selected_color integer
 ---@field triggering_color integer
+---@field overridden_color integer
 ---@field invalid_color integer
 ---@field line_thickness number
 ---@field node_gap number
@@ -15,6 +16,7 @@
 ---@field selected boolean
 ---@field selected_edit boolean
 ---@field triggering boolean
+---@field overridden boolean
 ---@field invalid boolean
 ---@field tooltip fun()?
 ---@field disabled boolean
@@ -34,6 +36,7 @@
 ---@field selected boolean
 ---@field triggering boolean
 ---@field invalid boolean
+---@field overriden boolean
 
 ---@class ConditionTreeChild
 ---@field node ConditionTreeNodePos
@@ -101,6 +104,7 @@ local function new_state(node)
         selected = (node and node.selected) or (node and node.selected_edit) or false,
         triggering = node and node.triggering or false,
         invalid = node and node.invalid or false,
+        overriden = node and node.overridden or false,
     }
 end
 
@@ -110,6 +114,7 @@ local function merge_state(dst, src)
     dst.selected = dst.selected or src.selected
     dst.triggering = dst.triggering or src.triggering
     dst.invalid = dst.invalid or src.invalid
+    dst.overriden = dst.overriden or src.overriden
 end
 
 ---@param state ConditionTreeState
@@ -122,6 +127,10 @@ local function get_state_color(state, style)
 
     if state.triggering then
         return style.triggering_color
+    end
+
+    if state.overriden then
+        return style.overridden_color
     end
 
     if state.selected then
@@ -250,6 +259,7 @@ local function draw_node(item, style, collapsed, path)
         5,
         (item.selected_edit and style.selected_color)
             or (item.invalid and style.invalid_color)
+            or (item.overridden and style.overridden_color)
             or (item.triggering and style.triggering_color)
             or 0
     )
@@ -325,6 +335,7 @@ function this.make_tree(path)
                         config_key = rule_path,
                         selected = path == rule_path,
                         triggering = manager:is_rule_triggering(rule_path),
+                        overridden = manager:is_rule_overridden(rule_path),
                         invalid = manager:is_rule_invalid(rule_path),
                         children = build_sets(
                             rule.sets,
@@ -372,6 +383,7 @@ function this.make_tree(path)
         selected_edit = false,
         disabled = false,
         is_dummy = false,
+        overridden = false,
     }
 end
 
@@ -413,6 +425,7 @@ function this.draw(root, collapsed)
                 normal_color = color.with_alpha(0xff8a7668),
                 selected_color = color.with_alpha(0xffd47b35),
                 triggering_color = color.with_alpha(mod_enum.colors.good),
+                overridden_color = color.with_alpha(0xff1f6baa),
                 invalid_color = color.with_alpha(mod_enum.colors.bad),
                 line_thickness = 2,
                 node_gap = 2,
