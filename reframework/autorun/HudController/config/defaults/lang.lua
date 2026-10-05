@@ -267,7 +267,7 @@ return {
             condition_option = {
                 name = "Condition Options",
                 category_general = "General",
-                box_highlight_pass = "Highlight Passing Rules",
+                box_highlight_pass = "Highlight Triggering Rules",
                 box_highlight_pass_cond = "Highlight Passing Conditions",
             },
             key = {

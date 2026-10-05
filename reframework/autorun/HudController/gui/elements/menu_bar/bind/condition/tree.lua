@@ -216,10 +216,9 @@ local function draw_node(item, style, collapsed, path)
     local clicked
 
     imgui.begin_rect()
+    util_imgui.begin_disabled(item.disabled)
 
     if not item.is_dummy then
-        util_imgui.begin_disabled(item.disabled)
-
         clicked, node = draw_button_node(size_label, function(size)
             return util_imgui.draw_sel_button(
                 string.format("%s##%s", label, id),
@@ -231,8 +230,6 @@ local function draw_node(item, style, collapsed, path)
         if clicked then
             ret = item.config_key
         end
-
-        util_imgui.end_disabled()
     else
         clicked, node = draw_button_node(size_label, function(size)
             imgui.push_style_var(imgui.ImGuiStyleVar.ButtonTextAlign, Vector2f.new(0, 0.5))
@@ -246,6 +243,8 @@ local function draw_node(item, style, collapsed, path)
             ret = item.config_key
         end
     end
+
+    util_imgui.end_disabled()
 
     imgui.push_style_color(
         5,
@@ -296,14 +295,16 @@ function this.make_tree(path)
     ---@param sets ConditionBindRuleSet[]?
     ---@param parent_path string
     ---@param selection BindCondType
+    ---@param disabled boolean
     ---@return ConditionTreeNode[]
-    local function build_sets(sets, parent_path, selection)
+    local function build_sets(sets, parent_path, selection, disabled)
         ---@type ConditionTreeNode[]
         local nodes = {}
         if not sets then
             return nodes
         end
 
+        local parent_disabled = disabled
         for i, rule_set in ipairs(sets) do
             local manager = managers[rule_set.type]
 
@@ -314,6 +315,10 @@ function this.make_tree(path)
 
                 for rule_index, rule in ipairs(rule_set.rules or {}) do
                     local rule_path = string.format("%s.rules.int:%d", set_path, rule_index)
+                    disabled = disabled
+                        or not util_table.any(rule.conditions, function(_, value)
+                            return not util_table.empty(value)
+                        end) --[[@as boolean]]
 
                     table.insert(rules, {
                         name = manager:get_rule_name(rule_path, false),
@@ -321,16 +326,19 @@ function this.make_tree(path)
                         selected = path == rule_path,
                         triggering = manager:is_rule_triggering(rule_path),
                         invalid = manager:is_rule_invalid(rule_path),
-                        children = build_sets(rule.sets, rule_path, rule.cond_type_selection),
+                        children = build_sets(
+                            rule.sets,
+                            rule_path,
+                            rule.cond_type_selection,
+                            disabled
+                        ),
                         selected_edit = parent_path == path
                             and rule_set.selection == rule_index
                             and rule_set.type == selection,
                         tooltip = function()
                             cond_draw.draw_tooltip(manager, rule_path)
                         end,
-                        disabled = not util_table.any(rule.conditions, function(_, value)
-                            return not util_table.empty(value)
-                        end),
+                        disabled = disabled,
                         is_dummy = false,
                     })
                 end
@@ -341,6 +349,7 @@ function this.make_tree(path)
                     config_key = parent_path,
                     children = rules,
                     is_dummy = true,
+                    disabled = parent_disabled,
                 })
             end
         end
@@ -355,7 +364,8 @@ function this.make_tree(path)
         children = build_sets(
             config.current.mod.bind.condition.sets,
             ROOT_KEY,
-            config.current.mod.bind.condition.cond_type_selection
+            config.current.mod.bind.condition.cond_type_selection,
+            false
         ),
         invalid = false,
         triggering = false,
