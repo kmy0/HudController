@@ -2,6 +2,7 @@
 ---@field ref ConfigBase
 
 local combo = require("HudController.util.imgui.combo.init")
+local range_slider = require("HudController.util.imgui.range_slider")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class ImguiConfigSet
@@ -28,6 +29,21 @@ function this:generic_config(name, config_key, func, ...)
 
     if changed then
         self.ref:set(config_key, value)
+    end
+    return changed
+end
+
+---@param name string
+---@param config_key_a string
+---@param config_key_b string
+---@param func fun(...): boolean, any, any
+---@return boolean
+function this:generic_config2(name, config_key_a, config_key_b, func, ...)
+    local changed, value_a, value_b =
+        func(name, self.ref:get(config_key_a), self.ref:get(config_key_b), ...)
+    if changed then
+        self.ref:set(config_key_a, value_a)
+        self.ref:set(config_key_b, value_b)
     end
     return changed
 end
@@ -364,6 +380,64 @@ function this:combo_popup_filter(name, config_key, values, draw_fn, display_form
         draw_fn,
         display_format,
         width_offset
+    )
+end
+
+---@param name string
+---@param config_key_lo string
+---@param config_key_hi string
+---@param v_min integer
+---@param v_max integer
+---@param display_format string?
+---@param display_text string?
+---@return boolean
+function this:range_slider_int(
+    name,
+    config_key_lo,
+    config_key_hi,
+    v_min,
+    v_max,
+    display_format,
+    display_text
+)
+    return self:generic_config2(
+        name,
+        config_key_lo,
+        config_key_hi,
+        range_slider.range_slider_int,
+        v_min,
+        v_max,
+        display_format,
+        display_text
+    )
+end
+
+---@param name string
+---@param config_key_lo string
+---@param config_key_hi string
+---@param v_min number
+---@param v_max number
+---@param display_format string?
+---@param display_text string?
+---@return boolean
+function this:range_slider_float(
+    name,
+    config_key_lo,
+    config_key_hi,
+    v_min,
+    v_max,
+    display_format,
+    display_text
+)
+    return self:generic_config2(
+        name,
+        config_key_lo,
+        config_key_hi,
+        range_slider.range_slider_float,
+        v_min,
+        v_max,
+        display_format,
+        display_text
     )
 end
 
