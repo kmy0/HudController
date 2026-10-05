@@ -26,6 +26,12 @@
 ---@field dx boolean
 ---@field dy boolean
 
+---@class Border
+---@field dir [integer, integer]
+---@field n1 [integer, integer]
+---@field n2 [integer, integer]
+---@field angle number
+
 local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 
@@ -56,7 +62,9 @@ local HANDLE_BOTTOM = "##b"
 local PI = math.pi
 
 local BORDERS = {
+    ---@type Border
     right = { dir = { -1, 0 }, n1 = { 1, 0 }, n2 = { 1, 1 }, angle = 0 },
+    ---@type Border
     down = { dir = { 0, -1 }, n1 = { 1, 1 }, n2 = { 0, 1 }, angle = PI * 0.5 },
 }
 
@@ -121,6 +129,12 @@ local function lerp_point(a, b, n)
     return a[1] + (b[1] - a[1]) * n[1], a[2] + (b[2] - a[2]) * n[2]
 end
 
+---@param dl ImDrawList
+---@param def Border
+---@param x number
+---@param y number
+---@param angle_min number
+---@param angle_max number
 local function path_border_arc(dl, def, x, y, angle_min, angle_max)
     local center = {
         x + 0.5 + def.dir[1] * ROUNDING,
@@ -129,6 +143,12 @@ local function path_border_arc(dl, def, x, y, angle_min, angle_max)
     dl:path_arc_to(center, ROUNDING, angle_min, angle_max, 0)
 end
 
+---@param dl ImDrawList
+---@param def Border
+---@param pos Vector2f
+---@param size Vector2f
+---@param col integer
+---@param thickness integer
 local function render_border(dl, def, pos, size, col, thickness)
     local seg_min, seg_max = border_segment(def, pos, size)
     local x1, y1 = lerp_point(seg_min, seg_max, def.n1)
@@ -140,6 +160,11 @@ local function render_border(dl, def, pos, size, col, thickness)
     dl:path_stroke(col, 0, thickness)
 end
 
+---@param dl ImDrawList
+---@param right number
+---@param bottom number
+---@param size number
+---@param col integer
 local function render_grip(dl, right, bottom, size, col)
     local inset = math.floor(BORDER_SIZE * 0.5 + 0.5)
 
@@ -159,6 +184,11 @@ local function calc_grip_sizes()
     return draw, hit
 end
 
+---@param wp Vector2f
+---@param ws Vector2f
+---@param winner HandleId?
+---@param is_active boolean?
+---@param grip_draw_size number
 local function draw_highlight(wp, ws, winner, is_active, grip_draw_size)
     if not winner then
         return
