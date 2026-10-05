@@ -1,8 +1,11 @@
 ---@alias HandleId "##c"|"##r"|"##b"
+---@alias BeginFn fun(): boolean
+---@alias EndFn fun()
 
 ---@class ResizableState
 ---@field w number
 ---@field h number
+---@field open boolean
 ---@field drag? DragState
 
 ---@class DragState
@@ -64,6 +67,34 @@ local EDGE_STYLES = {
 
 ---@type table<string, ResizableState>
 local states = {}
+---@type string[]
+local stack = {}
+
+---@param id string
+local function stack_remove(id)
+    for i = #stack, 1, -1 do
+        if stack[i] == id then
+            for j = #stack, i, -1 do
+                local st = states[stack[j]]
+                if st then
+                    st.open = false
+                    st.drag = nil
+                end
+                stack[j] = nil
+            end
+            return
+        end
+    end
+end
+
+---@param id string
+---@param st ResizableState
+local function stack_push(id, st)
+    if not st.open then
+        st.open = true
+        stack[#stack + 1] = id
+    end
+end
 
 ---@param def table
 ---@param pos { x: number, y: number }
@@ -192,7 +223,7 @@ local function get_state(id, init_w, init_h)
     local st = states[id]
     if not st then
         local w, h = get_initial_size(id, init_w, init_h)
-        st = { w = w, h = h }
+        st = { w = w, h = h, open = false }
         states[id] = st
     end
     return st
@@ -241,21 +272,23 @@ local function build_handles(ws, grip_hit_size)
 end
 
 ---@param st ResizableState
+---@param id string
 ---@param handles Handle[]
 ---@param wp { x: number, y: number }
 ---@return table<HandleId, boolean> hovered
 ---@return table<HandleId, boolean> active
-local function submit_handles(st, handles, wp)
+local function submit_handles(st, id, handles, wp)
     ---@type table<string, boolean>, table<string, boolean>
     local hovered, active = {}, {}
     local m = imgui.get_mouse()
 
+    local allowed = st.drag ~= nil or stack[#stack] == id
     for _, h in ipairs(handles) do
         local min_x = wp.x + h.x
         local min_y = wp.y + h.y
         local max_x = min_x + h.w
         local max_y = min_y + h.h
-        local is_hovered = m.x >= min_x and m.x < max_x and m.y >= min_y and m.y < max_y
+        local is_hovered = allowed and m.x >= min_x and m.x < max_x and m.y >= min_y and m.y < max_y
 
         hovered[h.id] = is_hovered
         active[h.id] = st.drag ~= nil and st.drag.id == h.id and imgui.is_mouse_down(MOUSE_LEFT)
@@ -293,9 +326,6 @@ local function pick_winner(st, handles, hovered)
     end
 end
 
----@alias BeginFn fun(): boolean
----@alias EndFn fun()
-
 ---@param id string
 ---@param begin_fn BeginFn
 ---@param end_fn EndFn
@@ -314,13 +344,16 @@ function this.draw(id, begin_fn, end_fn, draw_contents, init_w, init_h)
 
     if not open then
         st.drag = nil
+        stack_remove(id)
         return false
     end
+
+    stack_push(id, st)
 
     local wp, ws = imgui.get_window_pos(), imgui.get_window_size()
     local grip_draw_size, grip_hit_size = calc_grip_sizes()
     local handles = build_handles(ws, grip_hit_size)
-    local hovered, active = submit_handles(st, handles, wp)
+    local hovered, active = submit_handles(st, id, handles, wp)
     local winner = pick_winner(st, handles, hovered)
 
     imgui.set_cursor_pos(CONTENT_PADDING)
