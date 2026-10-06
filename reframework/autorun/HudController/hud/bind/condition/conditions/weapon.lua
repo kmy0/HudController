@@ -18,10 +18,7 @@ function this:new()
         self,
         "_WEAPON",
         config.lang.make_placeholder("menu.bind.condition.condition_weapon"),
-        data_ace.map.weaponid_name_to_local_name,
-        function(a, b)
-            return a.value < b.value
-        end
+        data_ace.map.weaponid_name_to_local_name
     )
     setmetatable(o, self)
     ---@cast o WeaponCondition

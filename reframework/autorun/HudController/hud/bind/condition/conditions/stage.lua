@@ -32,10 +32,7 @@ function this:new()
         self,
         "_STAGE",
         config.lang.make_placeholder("menu.bind.condition.condition_stage"),
-        values,
-        function(a, b)
-            return a.value < b.value
-        end
+        values
     )
     setmetatable(o, self)
     ---@cast o StageCondition

@@ -36,10 +36,7 @@ function this:new()
         self,
         "_QUEST_TARGET",
         config.lang.make_placeholder("menu.bind.condition.condition_quest_target"),
-        values,
-        function(a, b)
-            return a.value < b.value
-        end
+        values
     )
     setmetatable(o, self)
     ---@cast o QuestTargetCondition
