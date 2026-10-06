@@ -174,13 +174,13 @@ end
 local function condition_clear_class_config(root)
     for _, rule in iter_all_rules(root) do
         if rule.invalid then
-            rule.invalid.class_config = nil
+            this.set_condition_error(rule, "class_config", nil)
         end
     end
 
     for cond in iter_all_conditions(root) do
         if cond.invalid then
-            cond.invalid.class_config = nil
+            this.set_condition_error(cond, "class_config", nil)
         end
     end
 end

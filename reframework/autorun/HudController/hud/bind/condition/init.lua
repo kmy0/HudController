@@ -207,6 +207,7 @@ function this.eval_cond(cond_config)
         res = cls:update(cls:get_update_arg(cond_config))
     end, function(err)
         op.bind.set_condition_error(cond_config, "class_config", err)
+        op.bind.evaluate_conditions(config.current.mod.bind.condition)
     end)
 
     if cond_config.negate then
@@ -257,8 +258,12 @@ function this.eval_rules()
     this.applied_by = {}
     this.applied_hud = nil
 
-    local config_gui = config.gui.current.gui.main
     local config_cond = config.current.mod.bind.condition
+    if config_cond.invalid then
+        return
+    end
+
+    local config_gui = config.gui.current.gui.main
     local base_path = config_cond.highlight_pass_rule
             and config_gui.is_opened
             and "mod.bind.condition"
@@ -276,6 +281,7 @@ end
 
 ---@return ConditionBindRuleConfig
 function this.new_condition_rule()
+    ---@type ConditionBindRuleConfig
     return {
         conditions = { {} },
         sets = {},
@@ -286,10 +292,10 @@ end
 ---@param rule_type BindCondType
 ---@return ConditionBindRuleSet
 function this.new_condition_rule_set(rule_type)
+    ---@type ConditionBindRuleSet
     return {
         type = rule_type,
         rules = { this.new_condition_rule() },
-        ok = true,
         selection = 1,
     }
 end
