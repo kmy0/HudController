@@ -53,11 +53,17 @@ function this:draw_options(config_key)
         table.insert(selection_idx, opt.selection[tostring(struct.key)] ~= nil)
     end
 
+    ---@type string[]
+    local sorted_values = {}
+    for _, value in ipairs(self.sorted_values) do
+        table.insert(sorted_values, config.lang:try_replace(value))
+    end
+
     local changed, out = combo_multi.combo_multi_filter(
         "##" .. config_key,
         selection_idx,
         config.lang:tr("misc.text_none"),
-        self.sorted_values
+        sorted_values
     )
 
     if changed then
