@@ -1,34 +1,30 @@
-local ace_player = require("HudController.util.ace.player")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
+local util_mod = require("HudController.util.mod.init")
 
----@class WeaponDrawnCondition : ConditionBase
+---@class MapOpenCondition : ConditionBase
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = condition_base })
 
----@return WeaponDrawnCondition
+---@return MapOpenCondition
 function this:new()
     local o = condition_base.new(
         self,
-        "_WEAPON_DRAWN",
-        config.lang.make_placeholder("menu.bind.condition.condition_weapon_drawn")
+        "_MAP_OPEN",
+        config.lang.make_placeholder("menu.bind.condition.condition_map_open")
     )
     setmetatable(o, self)
-    ---@cast o WeaponDrawnCondition
+    ---@cast o MapOpenCondition
 
     return o
 end
 
 ---@return boolean
 function this:update()
-    local char = ace_player.get_master_char()
-    if not char then
-        return false
-    end
-
-    return char:get_IsWeaponOn()
+    local component = util_mod.get_component("app.GUI060000")
+    return component and component:get_Enabled()
 end
 
 return this
