@@ -257,11 +257,12 @@ function this.mark_hud_invalid(hud_key)
     end
 
     for cond in this.iter_conditions(config_mod.bind.condition, "_HUD") do
-        if cond.combo_key == hud_key then
+        ---@cast cond MultiSelectConditionConfig
+        if cond.selection[tostring(hud_key)] then
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                fmt_error("misc.text_wrong_value", cond.combo_key)
+                fmt_error("misc.text_wrong_value", hud_key)
             )
         end
     end
@@ -285,11 +286,12 @@ function this.check_condition_key_bind(bind, is_removal)
 
     local config_mod = config.current.mod
     for cond in this.iter_conditions(config_mod.bind.condition, "_KEY") do
-        if cond.combo_key == bind.name then
+        ---@cast cond MultiSelectConditionConfig
+        if cond.selection[bind.name] then
             this.set_condition_error(
                 cond,
                 "class_config_value",
-                is_removal and fmt_error("misc.text_wrong_value", cond.combo_key)
+                is_removal and fmt_error("misc.text_wrong_value", bind.name)
             )
         end
     end

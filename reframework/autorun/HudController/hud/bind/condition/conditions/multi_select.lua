@@ -41,6 +41,11 @@ function this:new(condition_name, display_name, values, sort_fn)
     return o
 end
 
+---@return { key: any, value: string }[], string[]
+function this:get_sorted()
+    ---@diagnostic disable-next-line: missing-return
+end
+
 ---@param config_key string
 ---@return boolean
 function this:draw_options(config_key)
@@ -49,31 +54,50 @@ function this:draw_options(config_key)
     local opt = self:get_option_table(config_key) --[[@as MultiSelectConditionConfig]]
     ---@type boolean[]
     local selection_idx = {}
-    for _, struct in ipairs(self.sorted) do
+    ---@type { key: any, value: string }[]
+    local sorted = self.sorted
+    ---@type string[]
+    local sorted_values = self.sorted_values
+    ---@type string[]
+    local translated_sorted_values = {}
+
+    if self.get_sorted ~= this.get_sorted then
+        sorted, sorted_values = self:get_sorted()
+    end
+
+    for _, struct in ipairs(sorted) do
         table.insert(selection_idx, opt.selection[tostring(struct.key)] ~= nil)
     end
 
-    ---@type string[]
-    local sorted_values = {}
-    for _, value in ipairs(self.sorted_values) do
-        table.insert(sorted_values, config.lang:try_replace(value))
+    for _, value in ipairs(sorted_values) do
+        table.insert(translated_sorted_values, config.lang:try_replace(value))
     end
 
     local changed, out = combo_multi.combo_multi_filter(
         "##" .. config_key,
         selection_idx,
         config.lang:tr("misc.text_none"),
-        sorted_values
+        translated_sorted_values
     )
 
     if changed then
         for i, b in pairs(out) do
-            local struct = self.sorted[i]
+            local struct = sorted[i]
             local key = tostring(struct.key)
             if not b then
                 opt.selection[key] = nil
             else
                 opt.selection[key] = true
+            end
+        end
+
+        for k, _ in pairs(opt.selection) do
+            if
+                not util_table.index(sorted, function(o)
+                    return tostring(o.key) == k
+                end)
+            then
+                opt.selection[k] = nil
             end
         end
 
