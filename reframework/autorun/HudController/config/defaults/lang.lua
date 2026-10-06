@@ -256,6 +256,7 @@ return {
                 condition_stamina_threshold = "Stamina Threshold",
                 condition_weapon_drawn = "Weapon Drawn",
                 condition_map_open = "Map Open",
+                condition_stage = "Stage",
                 condition_quest = "Quest",
                 text_threshold = "From %s%% To %s%%",
                 out_of_combat_delay = "Out of Combat Delay",

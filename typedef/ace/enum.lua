@@ -69,6 +69,7 @@
 ---@class app.Option.SCENE : System.Enum
 ---@class app.GUI030100.DISP_DATA_FLAG : System.Enum
 ---@class app.WeaponDef.KIREAJI_TYPE : System.Enum
+---@class app.FieldDef.STAGE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

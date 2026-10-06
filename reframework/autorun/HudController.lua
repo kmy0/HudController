@@ -64,6 +64,8 @@ m.canOpenStartMenu =
 m.enablePlNoHit =
     m.wrap(m.get("app.GUIFlowGUI050001View.cGUI050001ViewFlowBase.makePlInvincible()")) --[[@as fun()]]
 m.getNpcName = m.wrap(m.get("app.NpcUtil.getNpcName(app.NpcDef.ID)")) --[[@as fun(id: app.NpcDef.ID): System.String]]
+m.getStageNameGuid =
+    m.wrap(m.get("app.GUIUtilApp.MapUtil.getStageFullName(app.FieldDef.STAGE, System.Guid)")) --[[@as fun(stage: app.FieldDef.STAGE, guid_ptr: integer): System.Boolean]]
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then

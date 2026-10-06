@@ -704,3 +704,6 @@
 ---@field setup fun(self: app.GUI030100.DispData, some_bool: System.Boolean)
 ---@field get_OptionType fun(self: app.GUI030100.DispData): app.Option.TYPE
 ---@field getFlags fun(self: app.GUI030100.DispData): app.GUI030100.DISP_DATA_FLAG
+
+---@class app.MasterFieldManager : ace.GAElement
+---@field get_CurrentStage fun(self: app.MasterFieldManager): app.FieldDef.STAGE
