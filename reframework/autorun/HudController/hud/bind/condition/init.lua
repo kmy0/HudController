@@ -13,11 +13,14 @@ local _ = require("HudController.hud.bind.condition.conditions.custom")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local mod = require("HudController.data.mod")
+local slot = require("HudController.hud.manager.bind_actions.slot")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
+---@module "HudController.hud.manager.bind_actions.held"
+local held = util_misc.lazy_require("HudController.hud.manager.bind_actions.held")
 
 local conditions = {
     combat = require("HudController.hud.bind.condition.conditions.combat"),
@@ -61,6 +64,10 @@ local this = {
     conditions = {},
     ---@type table<string, boolean>
     successful_paths = {},
+    ---@type table<string, {name: ManagerName, key: any, value: any}>
+    held = {},
+    ---@type table<string, {name: ManagerName, key: any, value: any}>
+    held_last_frame = {},
     ---@type table<string, boolean>
     overridden_paths = {},
     ---@type table<string, table<string, string>>  [type_key][opt_key] = rule path
@@ -174,6 +181,15 @@ local function get_evaluation_result(triggered_rules)
 
         if applied then
             util_table.set_nested_value(triggered, { t.type, opt_key }, true)
+
+            if t.rule.restore then
+                local slot_key = key == "hud" and "hud" or opt_key
+                this.held[string.format("%s|%s", key, tostring(slot_key))] = {
+                    name = key,
+                    key = slot_key,
+                    value = util_table.deep_copy(slot.get(ret, key, opt_key)),
+                }
+            end
         end
 
         if path then
@@ -193,6 +209,23 @@ local function get_evaluation_result(triggered_rules)
     end
 
     return ret
+end
+
+function this.resolve_held()
+    for id, entry in pairs(this.held) do
+        if not this.held_last_frame[id] then
+            held.push_hold(entry.name, entry.key, held.COND, entry.value)
+        end
+    end
+
+    for id, entry in pairs(this.held_last_frame) do
+        if not this.held[id] then
+            held.release_hold(entry.name, entry.key, held.COND)
+        end
+    end
+
+    this.held_last_frame = this.held
+    this.held = {}
 end
 
 ---@param cond_config ConditionConfigBase
@@ -250,6 +283,11 @@ function this.update(current_hud, force)
         ret.hud = nil
     end
 
+    if config.current.mod.enable_condition_binds then
+        this.resolve_held()
+    end
+    held.apply_restores(ret)
+
     return ret
 end
 
@@ -259,6 +297,7 @@ function this.eval_rules()
     this.overridden_paths = {}
     this.applied_by = {}
     this.applied_hud = nil
+    this.held = {}
 
     local config_cond = config.current.mod.bind.condition
     if config_cond.invalid then
@@ -288,6 +327,7 @@ function this.new_condition_rule()
         conditions = { {} },
         sets = {},
         cond_type_selection = mod_enum.bind_cond_type.HUD,
+        restore = false,
     }
 end
 

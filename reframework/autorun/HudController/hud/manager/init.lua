@@ -4,7 +4,7 @@
 ---@field force_update boolean
 
 local ace_misc = require("HudController.util.ace.misc")
-local bind_actions = require("HudController.hud.manager.bind_actions")
+local bind_actions = require("HudController.hud.manager.bind_actions.init")
 local bind_condition = require("HudController.hud.bind.condition.init")
 local bind_manager = require("HudController.hud.bind.key.init")
 local cache = require("HudController.util.misc.cache")
@@ -64,42 +64,36 @@ end
 ---@return ConditionEvalResult?
 local function update_requests()
     local config_mod = config.current.mod
-    local is_held = false
+    local is_condition_bind_disabled = false
     ---@type BindEvalResult?
     local key_requests
+    ---@type ConditionEvalResult?
+    local cond_requests
 
     if config_mod.enable_key_binds then
-        is_held, key_requests = update_key_binds()
-    end
-
-    if key_requests and util_table.empty(key_requests) then
-        key_requests = nil
+        is_condition_bind_disabled, key_requests = update_key_binds()
     end
 
     if
         not config_mod.enable_condition_binds
         or this.disable_condition_binds:active()
-        or is_held
+        or is_condition_bind_disabled
     then
         if
             config_mod.bind.condition.highlight_pass_rule and config.gui.current.gui.main.is_opened
         then
             bind_condition.eval_rules()
         end
-
-        return key_requests
+    else
+        cond_requests = bind_condition.update(profile_switcher.current_hud, this.force_update)
     end
 
-    local cond_requests = bind_condition.update(profile_switcher.current_hud, this.force_update)
-    if not cond_requests then
-        return key_requests
+    local ret = bind_actions.merge_requests(key_requests or {}, cond_requests or {})
+    if util_table.empty(ret) then
+        return
     end
 
-    if key_requests and cond_requests then
-        return bind_actions.merge_requests(key_requests, cond_requests)
-    end
-
-    return cond_requests
+    return ret
 end
 
 function this.request_update()

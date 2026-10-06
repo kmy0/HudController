@@ -267,6 +267,7 @@ return {
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
                 text_trigger_duration = "Trigger Duration",
                 --TODO:
+                tooltip_restore = "Restore the original value when the rule stops triggering",
                 tooltip_add_new_condition = "Rules are evaluated from top to bottom",
                 tooltip_wrong_parent_key = "These element profile rules belong to %s and are currently inactive.\nSwitch back to %s to use them.",
                 tooltip_option_condition_set = "Rules are applied from top to bottom",

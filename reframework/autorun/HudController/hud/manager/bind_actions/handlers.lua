@@ -1,6 +1,8 @@
 ---@class BindActionHandler<K, V>
 ---@field apply fun(key: K, value: V)
 ---@field notification fun(key: K, value: V)
+---@field get_current fun(key: K, value: V): boolean, V
+---@field is_hold_valid fun(hold_state: HoldState): boolean
 
 ---@class BindActionOptionHud : BindActionHandler<string, any>
 ---@class BindActionOptionMod : BindActionHandler<string, any>
@@ -17,11 +19,7 @@
 ---@field option_elem BindActionOptionElem
 ---@field hud BindActionHud
 
----@class BindActionManager
----@field applied_requests table<string, table<string, any>>
-
 local ace_misc = require("HudController.util.ace.misc")
-local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def = require("HudController.data.option.init")
@@ -29,20 +27,20 @@ local elements = require("HudController.hud.manager.elements")
 local options = require("HudController.hud.manager.options")
 local user_option = require("HudController.hud.user.option")
 local util_misc = require("HudController.util.misc.init")
+local util_opt = require("HudController.data.option.util")
 local util_table = require("HudController.util.misc.table")
 
 ---@module "HudController.hud.hook.init"
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
+---@module "HudController.hud.init"
+local hud = util_misc.lazy_require("HudController.hud.init")
+---@module "HudController.hud.manager.profile_switcher"
+local profile_switcher = util_misc.lazy_require("HudController.hud.manager.profile_switcher")
 
-local mod = data.mod
 local ace = data.ace
 
----@class BindActionManager
-local this = {
-    applied_requests = {},
-}
 ---@class BindActionHandlers
-local handlers = {
+local this = {
     option_hud = {
         apply = function(key, value)
             options.overwrite_hud_option(key, value)
@@ -57,6 +55,13 @@ local handlers = {
                     opt:format(value)
                 )
             )
+        end,
+        get_current = function(key, _)
+            local hud_profile = hud.get_current() --[[@as ModProfileConfig]]
+            return true, hud.get_overridden(key) or hud_profile[key]
+        end,
+        is_hold_valid = function(hold_state)
+            return hud.get_current().key == hold_state.hud_key
         end,
     },
     option_mod = {
@@ -76,6 +81,12 @@ local handlers = {
                 )
             )
         end,
+        get_current = function(key, _)
+            return true, config:get(def.mod.opt[key].config_key)
+        end,
+        is_hold_valid = function(_)
+            return true
+        end,
     },
     option_game = {
         apply = function(key, value)
@@ -90,6 +101,12 @@ local handlers = {
                     options.get_option_setting_name(key, value)
                 )
             )
+        end,
+        get_current = function(key, _)
+            return true, options.get_option(key)
+        end,
+        is_hold_valid = function(_)
+            return true
         end,
     },
     option_user = {
@@ -107,6 +124,12 @@ local handlers = {
                     user_option.format_value(opt, value)
                 )
             )
+        end,
+        get_current = function(key, _)
+            return true, user_option.get_current_value(user_option.bindable[key])
+        end,
+        is_hold_valid = function(_)
+            return true
         end,
     },
     option_elem = {
@@ -148,71 +171,41 @@ local handlers = {
                 )
             end
         end,
+        get_current = function(key, value)
+            local ctx = elements.get_element_ctx(value.ctx_path)
+            if not ctx then
+                ---@diagnostic disable-next-line: missing-return-value
+                return false
+            end
+
+            local opt = def.elem.get_opt(key)
+            return true,
+                {
+                    value = ctx.elem.overridden_options[opt.key]
+                        or util_opt.get_elem_config_value(opt, ctx.elem_config),
+                    ctx_path = value.ctx_path,
+                }
+        end,
+        is_hold_valid = function(hold_state)
+            return hud.get_current().key == hold_state.hud_key
+        end,
+    },
+    hud = {
+        apply = function() end,
+        notification = function() end,
+        is_hold_valid = function()
+            return true
+        end,
+        get_current = function()
+            local current = profile_switcher.current_hud
+            if not current then
+                ---@diagnostic disable-next-line: missing-return-value
+                return false
+            end
+
+            return true, { key = current.hud.key, profile = current.profile_bits }
+        end,
     },
 }
-
----@param key_requests BindEvalResult
----@param cond_requests ConditionEvalResult
----@return ConditionEvalResult
-function this.merge_requests(key_requests, cond_requests)
-    if key_requests.hud then
-        if not cond_requests.hud or key_requests.hud.key ~= cond_requests.hud.key then
-            local applied_hud = bind_condition.applied_hud
-
-            if applied_hud and applied_hud.key ~= key_requests.hud.key then
-                for _, path in ipairs(applied_hud.paths) do
-                    bind_condition.demote_path(path)
-                end
-            end
-
-            cond_requests.hud = key_requests.hud
-        elseif key_requests.hud.profile[1] ~= mod.enum.elem_profile.DEFAULT then
-            table.insert(cond_requests.hud.profile, 1, key_requests.hud.profile[1])
-        end
-    end
-
-    for opt_manager, _ in pairs(handlers) do
-        if opt_manager ~= "hud" then
-            for opt_name, opt_value in
-                pairs(key_requests[opt_manager] or {} --[[@as table<string, any>]])
-            do
-                local by = bind_condition.applied_by[opt_manager]
-                bind_condition.demote_path(by and by[opt_name])
-
-                util_table.set_nested_value(cond_requests, { opt_manager, opt_name }, opt_value)
-            end
-        end
-    end
-
-    return cond_requests
-end
-
----@param requests ConditionEvalResult
-function this.apply_requests(requests)
-    local config_mod = config.current.mod
-
-    for name, handler in pairs(handlers) do
-        local current = requests[name] or {} --[[@as table<string, any>]]
-        local previous = this.applied_requests[name] or {}
-
-        for key, value in pairs(current) do
-            handler.apply(key, value)
-
-            if
-                config_mod.enable_notification
-                and handler.notification
-                and not util_table.equal(previous[key], value)
-            then
-                handler.notification(key, value)
-            end
-        end
-
-        this.applied_requests[name] = current
-    end
-end
-
-function this.clear()
-    this.applied_requests = {}
-end
 
 return this

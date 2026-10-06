@@ -521,6 +521,10 @@ function this.draw_manager_target(manager, rule_path)
 
     util_imgui.begin_disabled(manager:empty())
 
+    set:checkbox("##restore|" .. rule_path, rule_path .. ".restore")
+    util_imgui.tooltip(config.lang:tr("menu.bind.condition.tooltip_restore"))
+    imgui.same_line()
+
     imgui.begin_rect()
 
     if manager:draw_target(rule_path) then

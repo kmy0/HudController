@@ -69,6 +69,7 @@
 ---@field conditions ConditionConfigBase[][]
 ---@field sets ConditionBindRuleSet[]
 ---@field invalid ValidationState?
+---@field restore boolean
 ---@field free_value any
 ---@field free_value2 any
 ---@field free_value3 any
