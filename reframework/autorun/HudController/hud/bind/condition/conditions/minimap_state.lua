@@ -1,32 +1,31 @@
-local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
+local multi_select = require("HudController.hud.bind.condition.conditions.multi_select")
 local s = require("HudController.util.ref.singletons")
-local util_table = require("HudController.util.misc.table")
 
 local minimap_state = { "DEFAULT", "BLACK_CIRCLE", "RED_CIRCLE", "WHITE_CIRCLE", "PURPLE_CIRCLE" }
 
----@class MinimapStateCondition : ConditionBase
+---@class MinimapStateCondition : MultiSelectCondition
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
-setmetatable(this, { __index = condition_base })
+setmetatable(this, { __index = multi_select })
 
 ---@return MinimapStateCondition
 function this:new()
-    local o = condition_base.new(
+    ---@type table<string, string>
+    local values = {}
+    for _, state in pairs(minimap_state) do
+        values[state] = string.format(
+            config.lang.make_placeholder("menu.bind.condition.condition_minimap_state_values.%s"),
+            state
+        )
+    end
+
+    local o = multi_select.new(
         self,
         "_MINIMAP_STATE",
         config.lang.make_placeholder("menu.bind.condition.condition_minimap_state"),
-        util_table.collect(util_table.iterator(function(index)
-            if minimap_state[index] then
-                return string.format(
-                    config.lang.make_placeholder(
-                        "menu.bind.condition.condition_minimap_state_values.%s"
-                    ),
-                    minimap_state[index]
-                )
-            end
-        end))
+        values
     )
     setmetatable(o, self)
     ---@cast o MinimapStateCondition
@@ -34,9 +33,9 @@ function this:new()
     return o
 end
 
----@param option_key integer
+---@param selected table<string, boolean>
 ---@return boolean
-function this:update(option_key)
+function this:update(selected)
     local map = s.get("app.GUIManager"):get_MAP3D()
     if not map then
         return false
@@ -45,7 +44,7 @@ function this:update(option_key)
     local radar_front = map:get_GUIRadarFront()
     local radar = radar_front:get_Radar()
     local pnl = radar._PerimeterChangerPanel
-    return pnl:get_PlayState() == minimap_state[option_key]
+    return selected[pnl:get_PlayState()]
 end
 
 return this

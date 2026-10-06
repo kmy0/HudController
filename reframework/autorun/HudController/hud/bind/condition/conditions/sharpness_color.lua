@@ -1,49 +1,41 @@
 local ace_player = require("HudController.util.ace.player")
-local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local e = require("HudController.util.game.enum")
-local util_table = require("HudController.util.misc.table")
+local multi_select = require("HudController.hud.bind.condition.conditions.multi_select")
 
----@type string[]
-local sharpness_color
-
----@class SharpnessColorCondition : ConditionBase
+---@class SharpnessColorCondition : MultiSelectCondition
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
-setmetatable(this, { __index = condition_base })
+setmetatable(this, { __index = multi_select })
 
 ---@return SharpnessColorCondition
 function this:new()
-    local enum = e.get("app.WeaponDef.KIREAJI_TYPE")
-    sharpness_color = util_table.sort(util_table.keys(enum.field_to_enum), function(a, b)
-        return enum[a] < enum[b]
-    end)
+    ---@type table<string, string>
+    local values = {}
+    for name, _ in e.iter("app.WeaponDef.KIREAJI_TYPE") do
+        values[name] = string.format(
+            config.lang.make_placeholder("menu.bind.condition.condition_sharpness_color_values.%s"),
+            name
+        )
+    end
 
-    local o = condition_base.new(
+    local o = multi_select.new(
         self,
         "_SHARPNESS_COLOR",
         config.lang.make_placeholder("menu.bind.condition.condition_sharpness_color"),
-        util_table.collect(util_table.iterator(function(index)
-            if sharpness_color[index] then
-                return string.format(
-                    config.lang.make_placeholder(
-                        "menu.bind.condition.condition_sharpness_color_values.%s"
-                    ),
-                    sharpness_color[index]
-                )
-            end
-        end))
+        values
     )
+
     setmetatable(o, self)
     ---@cast o SharpnessColorCondition
 
     return o
 end
 
----@param option_key integer
+---@param selected table<string, boolean>
 ---@return boolean
-function this:update(option_key)
+function this:update(selected)
     local char = ace_player.get_master_char()
     if not char then
         return false
@@ -60,7 +52,7 @@ function this:update(option_key)
     end
 
     local sharpness = kireaji:get_CurrentType()
-    return sharpness_color[option_key] == e.get("app.WeaponDef.KIREAJI_TYPE")[sharpness]
+    return selected[e.get("app.WeaponDef.KIREAJI_TYPE")[sharpness]]
 end
 
 return this
