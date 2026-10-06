@@ -661,3 +661,4 @@
 ---| "menu.bind.condition.condition_weapon_drawn"
 ---| "menu.bind.condition.condition_map_open"
 ---| "menu.bind.condition.condition_stage"
+---| "menu.bind.condition.condition_tent_area"

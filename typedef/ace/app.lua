@@ -141,6 +141,13 @@
 ---@field get_WeaponHandling fun(self: app.HunterCharacter): app.cHunterWeaponHandlingBase
 ---@field get_HunterHealth fun(self: app.HunterCharacter): app.cHunterHealth
 ---@field get_HunterStamina fun(self: app.HunterCharacter): app.cHunterStamina
+---@field get_HunterContext fun(self: app.HunterCharacter): app.cHunterContext
+
+---@class app.cHunterContext : app.cGameContext
+---@field get_TentAreaInfo fun(self: app.cHunterContext): app.cHunterTentAreaInfo
+
+---@class app.cHunterTentAreaInfo : via.clr.ManagedObject
+---@field get_IsInTentArea fun(self: app.cHunterTentAreaInfo): System.Boolean
 
 ---@class app.cHunterStamina : via.clr.ManagedObject
 ---@field get_Stamina fun(self: app.cHunterStamina): System.Single

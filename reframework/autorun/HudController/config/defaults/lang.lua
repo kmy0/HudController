@@ -243,6 +243,7 @@ return {
                 condition_quest_rank = "Quest Rank",
                 condition_quest_target = "Quest Target",
                 condition_weapon_type = "Weapon Type",
+                condition_tent_area = "Tent Area",
                 condition_opt_melee = "Melee",
                 condition_opt_ranged = "Ranged",
                 condition_weapon = "Weapon",
