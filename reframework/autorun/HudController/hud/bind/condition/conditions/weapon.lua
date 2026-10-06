@@ -1,55 +1,38 @@
----@class WeaponCondition : ConditionBase
----@field protected _index_to_name table<integer, string>
+---@class WeaponCondition : MultiSelectCondition
 
 local ace_player = require("HudController.util.ace.player")
-local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
 local data_ace = require("HudController.data.ace")
 local e = require("HudController.util.game.enum")
-local util_table = require("HudController.util.misc.table")
+local multi_select = require("HudController.hud.bind.condition.conditions.multi_select")
 
 ---@class WeaponCondition
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
-setmetatable(this, { __index = condition_base })
+setmetatable(this, { __index = multi_select })
 
 ---@return WeaponCondition
 function this:new()
-    ---@type table<integer, string>
-    local index_to_name = {}
-    ---@type string[]
-    local sorted_weapons = {}
-    local weapons = util_table.entries(data_ace.map.weaponid_name_to_local_name)
-
-    table.sort(weapons, function(a, b)
-        return a.value < b.value
-    end)
-
-    util_table.do_something(weapons, function(_, key, value)
-        index_to_name[key] = value.key
-        table.insert(sorted_weapons, value.value)
-    end)
-
-    local o = condition_base.new(
+    local o = multi_select.new(
         self,
         "_WEAPON",
         config.lang.make_placeholder("menu.bind.condition.condition_weapon"),
-        sorted_weapons
+        data_ace.map.weaponid_name_to_local_name,
+        function(a, b)
+            return a.value < b.value
+        end
     )
     setmetatable(o, self)
     ---@cast o WeaponCondition
-
-    o._index_to_name = index_to_name
     return o
 end
 
----@param option_key integer
+---@param selected table<string, boolean>
 ---@return boolean
-function this:update(option_key)
-    local name = self._index_to_name[option_key]
-    local weapon = e.get("app.WeaponDef.TYPE")[name]
-    return weapon == ace_player.get_weapon_type()
+function this:update(selected)
+    local weapon = e.get("app.WeaponDef.TYPE")[ace_player.get_weapon_type()]
+    return selected[weapon]
 end
 
 return this
