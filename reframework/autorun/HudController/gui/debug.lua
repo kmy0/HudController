@@ -10,6 +10,7 @@ local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
 local hud_debug = require("HudController.hud.debug.init")
 local mod = require("HudController.data.mod")
+local style = require("HudController.util.imgui.style")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
@@ -229,7 +230,7 @@ local function draw_panel_tree(panel, key)
     end
 
     if panel.draw_name then
-        if not hud_debug.draw_pos(panel, panel.name, 0xFFFFFFFF) then
+        if not hud_debug.draw_pos(panel, panel.name, style.color.text) then
             panel.draw_name = false
         end
     end

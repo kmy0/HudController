@@ -5,9 +5,9 @@ local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local element_def = require("HudController.data.option.element.init")
 local hud = require("HudController.hud.init")
-local mod = require("HudController.data.mod")
 local option_gui = require("HudController.gui.option")
 local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
 local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -102,7 +102,7 @@ function this.draw_option(option_key, item_config_key, callback, label, add_defa
             end
         end
     else
-        imgui.text_colored(option_data.name_local, mod.enum.colors.bad)
+        imgui.text_colored(option_data.name_local, style.color.bad)
     end
 
     if name ~= "" then
@@ -253,7 +253,7 @@ end
 function this.child_window_thing_remove(id, size, draw_fn)
     if size > 0 then
         size = size + 1
-        local item_height = (config.lang.font_size + 6) * size + 4 * math.max(size - 1, 0)
+        local item_height = util_imgui.get_frame_height() * size + 4 * math.max(size - 1, 0)
         local height = math.min(item_height, 4 * util_imgui.scale_w_font_size(46))
 
         if imgui.begin_child_window(id, { imgui.calc_item_width(), height }, false) then

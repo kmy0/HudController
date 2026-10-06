@@ -2,23 +2,17 @@ local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local d = require("HudController.util.imgui.disabled")
 local filter = require("HudController.util.imgui.filter")
+local style = require("HudController.util.imgui.style")
 local util_misc = require("HudController.util.misc.init")
 
 ---@module "HudController.util.imgui.init"
 local util_imgui = util_misc.lazy_require("HudController.util.imgui.init")
 
-local FRAME_HEIGHT_PADDING = 6.0
-local PREVIEW_PADDING = 4.0
-local POPUP_INNER_SPACING = 4.0
-local POPUP_ITEM_PADDING = 8.0
 local MAX_POPUP_ITEMS = 8
 local POPUP_FLAGS = 4 | 64
 local ARROW_RADIUS_SCALE = 0.40
 local ARROW_HALF_WIDTH_SCALE = 0.866
 local ARROW_HALF_HEIGHT_SCALE = 0.750
-local BACKGROUND_COLOR = 0xff403636
-local HOVER_BACKGROUND_COLOR = 0xff4f4e4d
-local TEXT_COLOR = 0xFFFFFFFF
 
 ---@param combo_id string
 ---@param popup_id string
@@ -74,7 +68,7 @@ end
 ---@param frame_height number
 ---@return string, string, boolean
 local function get_text_preview(default_preview, width, frame_height)
-    local max_preview_width = width - frame_height - 2 * PREVIEW_PADDING
+    local max_preview_width = width - frame_height - 2 * style.size.frame_padding_x
     local full_preview = default_preview
     local preview = full_preview
     local text_oversize = false
@@ -93,7 +87,7 @@ end
 ---@return boolean, Vector2f, number, ImDrawList, boolean
 local function begin_combo_button(button_id, width)
     local disabled = d.is_disabled()
-    local frame_height = config.lang.font_size + FRAME_HEIGHT_PADDING
+    local frame_height = util_imgui.get_frame_height()
     local pos = imgui.get_cursor_screen_pos()
     local draw_list = imgui.get_window_draw_list()
 
@@ -111,8 +105,9 @@ end
 ---@param hovered boolean
 ---@return integer, number, boolean
 local function draw_combo_background(draw_list, pos, width, frame_height, hovered)
-    local bg_col = color.with_alpha(hovered and HOVER_BACKGROUND_COLOR or BACKGROUND_COLOR)
-    local text_col = color.with_alpha(TEXT_COLOR)
+    local bg_col =
+        color.with_alpha(hovered and style.color.background_hover or style.color.background_frame)
+    local text_col = color.with_alpha(style.color.text)
     draw_list:add_rect_filled(
         { pos.x, pos.y },
         { pos.x + width, pos.y + frame_height },
@@ -123,8 +118,10 @@ local function draw_combo_background(draw_list, pos, width, frame_height, hovere
 
     local r = config.lang.font_size * ARROW_RADIUS_SCALE
     local arrow_width = 2 * ARROW_HALF_WIDTH_SCALE * r
-    local arrow_fits = width >= arrow_width + 2 * PREVIEW_PADDING
-    local preview_width = width - 2 * PREVIEW_PADDING - (arrow_fits and frame_height or 0)
+    local arrow_fits = width >= arrow_width + 2 * style.size.frame_padding_x
+    local preview_width = width
+        - 2 * style.size.frame_padding_x
+        - (arrow_fits and frame_height or 0)
     return text_col, preview_width, arrow_fits
 end
 
@@ -144,7 +141,7 @@ local function draw_combo_arrow(draw_list, pos, width, frame_height, popup_id, t
         draw_list:add_rect_filled(
             { pos.x + width - frame_height, pos.y },
             { pos.x + width, pos.y + frame_height },
-            color.with_alpha(HOVER_BACKGROUND_COLOR),
+            color.with_alpha(style.color.background_hover),
             0,
             0
         )
@@ -198,7 +195,7 @@ local function draw_combo(
     local text_fits = available_text_width > 0 and text_width <= available_text_width
     if text_fits then
         local text_y = pos.y + (frame_height - config.lang.font_size) * 0.5
-        draw_list:add_text({ pos.x + PREVIEW_PADDING, text_y }, text_col, preview)
+        draw_list:add_text({ pos.x + style.size.frame_padding_x, text_y }, text_col, preview)
     end
 
     draw_combo_arrow(draw_list, pos, width, frame_height, popup_id, text_col, arrow_fits)
@@ -211,8 +208,8 @@ end
 ---@return number
 local function get_popup_width(options, width)
     local checkmark_width = config.lang.font_size
-    local inner_spacing = POPUP_INNER_SPACING
-    local item_padding = POPUP_ITEM_PADDING
+    local inner_spacing = style.size.frame_padding_x
+    local item_padding = style.size.item_spacing_x
     local min_popup_width = width
     for _, name in ipairs(options) do
         local needed = checkmark_width + inner_spacing + imgui.calc_text_size(name).x + item_padding
@@ -225,7 +222,7 @@ end
 
 ---@return number
 local function get_max_popup_height()
-    return (config.lang.font_size + FRAME_HEIGHT_PADDING) * MAX_POPUP_ITEMS
+    return util_imgui.get_frame_height() * MAX_POPUP_ITEMS
 end
 
 ---@param options string[]
@@ -236,15 +233,13 @@ local function get_combo_popup_height(options)
     end
 
     if #options > MAX_POPUP_ITEMS then
-        local item_height = config.lang.font_size + FRAME_HEIGHT_PADDING
+        local item_height = util_imgui.get_frame_height()
         return item_height * MAX_POPUP_ITEMS
     end
     return 0
 end
 
 return {
-    FRAME_HEIGHT_PADDING = FRAME_HEIGHT_PADDING,
-    PREVIEW_PADDING = PREVIEW_PADDING,
     POPUP_FLAGS = POPUP_FLAGS,
     update_combo_filter = update_combo_filter,
     reset_combo_filter = reset_combo_filter,

@@ -6,6 +6,7 @@ local data = require("HudController.data.init")
 local op = require("HudController.hud.manager.op.init")
 local option = require("HudController.data.option.init")
 local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
 local user = require("HudController.hud.user.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -13,7 +14,6 @@ local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
 
 local mod_def = option.mod
-local mod = data.mod
 local ace_map = data.ace.map
 local user_options_popup = {
     active = false,
@@ -24,7 +24,7 @@ local this = {}
 
 ---@param user_manager UserManager
 local function draw_user_sub_menu(user_manager)
-    imgui.push_style_var(14, Vector2f.new(0, 2))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 2))
 
     local config_user = user_manager:get_config()
     local sorted = util_table.sort(util_table.keys(config_user))
@@ -38,10 +38,10 @@ local function draw_user_sub_menu(user_manager)
         local pop_color = false
 
         if user_manager.failed[name] ~= nil then
-            imgui.push_style_color(0, mod.enum.colors.bad)
+            imgui.push_style_color(0, style.color.bad)
             pop_color = true
         elseif config_user[name] ~= (user_manager.loaded[name] ~= nil) then
-            imgui.push_style_color(0, mod.enum.colors.info)
+            imgui.push_style_color(0, style.color.info)
             pop_color = true
         end
 
@@ -106,7 +106,7 @@ local function draw_options_menu()
         local text_y = min.y + (height - config.lang.font_size) * 0.5
 
         local draw_list = imgui.get_window_draw_list()
-        local text_col = color.with_alpha(0xffffffff)
+        local text_col = color.with_alpha(style.color.text)
 
         draw_list:push_clip_rect({ left, min.y }, { right, max.y }, true)
         draw_list:add_text(
@@ -223,12 +223,12 @@ local function draw_user_menu()
 
     util_menubar.draw_menu(util_gui.tr("menu.user.scripts.name"), function()
         draw_user_sub_menu(user.script)
-    end, nil, user.script:is_need_attention() and mod.enum.colors.info or nil)
+    end, nil, user.script:is_need_attention() and style.color.info or nil)
     util_imgui.tooltip(string.format(".../reframework/data/%s/user_scripts", config.name))
 
     util_menubar.draw_menu(util_gui.tr("menu.user.conditions.name"), function()
         draw_user_sub_menu(user.condition)
-    end, nil, user.condition:is_need_attention() and mod.enum.colors.info or nil)
+    end, nil, user.condition:is_need_attention() and style.color.info or nil)
     util_imgui.tooltip(string.format(".../reframework/data/%s/user_conditions", config.name))
 
     util_menubar.draw_menu(util_gui.tr("menu.user.options.name"), function()
@@ -244,8 +244,7 @@ function this.draw()
         util_gui.tr("menu.user.name"),
         draw_user_menu,
         nil,
-        (user.script:is_need_attention() or user.condition:is_need_attention())
-                and mod.enum.colors.info
+        (user.script:is_need_attention() or user.condition:is_need_attention()) and style.color.info
             or nil
     )
 end

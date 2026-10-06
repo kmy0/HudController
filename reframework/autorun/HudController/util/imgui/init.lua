@@ -3,13 +3,9 @@ local config = require("HudController.config.init")
 local disabled = require("HudController.util.imgui.disabled")
 local imgui_id = require("HudController.util.imgui.id")
 local resizable_popup = require("HudController.util.imgui.resizable_popup")
+local style = require("HudController.util.imgui.style")
 local util_game = require("HudController.util.game.init")
 local util_misc = require("HudController.util.misc.init")
-
-local FRAME_PADDING_X = 4.0
-local ITEM_SPACING_X = 8.0
-local FRAME_PADDING_Y = 3
-local SCROLLBAR_WIDTH = 14
 
 local this = {
     begin_disabled = disabled.begin_disabled,
@@ -21,24 +17,19 @@ local child_window_sizes = {}
 
 ---@return number
 local function get_scrollbar_width()
-    return imgui.get_scroll_max_y() > 0 and SCROLLBAR_WIDTH or 0
-end
-
----@return number
-local function get_frame_height()
-    return config.lang.font_size + FRAME_PADDING_Y * 2
+    return imgui.get_scroll_max_y() > 0 and style.size.scrollbar_width or 0
 end
 
 ---@param label string
 ---@param size number?
 local function begin_icon_button(label, size)
-    size = size or get_frame_height()
+    size = size or this.get_frame_height()
 
     local pos = imgui.get_cursor_screen_pos()
     local clicked = imgui.button(label, { size, size })
 
     local draw_list = imgui.get_window_draw_list()
-    local col = color.with_alpha(0xFFFFFFFF)
+    local col = color.with_alpha(style.color.text)
 
     return size, pos, clicked, draw_list, col
 end
@@ -60,7 +51,7 @@ end
 ---@param separate_text string? by_default (?)
 ---@param col integer?
 function this.tooltip(text, separate, separate_text, col)
-    col = col or 0xff918f8f
+    col = col or style.color.text_tooltip
 
     if separate then
         separate_text = separate_text or "(?)"
@@ -78,7 +69,7 @@ end
 ---@param col integer?
 ---@param width integer?
 function this.tooltip_custom(draw_fn, separate, separate_text, col, width)
-    col = col or 0xff918f8f
+    col = col or style.color.text_tooltip
 
     if separate then
         separate_text = separate_text or "(?)"
@@ -118,9 +109,9 @@ end
 function this.separator_text(label, padding, thickness, col)
     local pad_x = padding and padding[1] or 50
     local pad_y = padding and padding[2] or 0
-    thickness = thickness or 3
-    col = color.with_alpha(col or 2106363020)
-    local color_text = color.with_alpha(0xffffffff)
+    thickness = thickness or style.size.separator_thickness
+    col = color.with_alpha(col or style.color.separator)
+    local color_text = color.with_alpha(style.color.text)
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -149,10 +140,10 @@ end
 ---@param thickness number?
 ---@param col integer?
 function this.separator_text_centered(label, thickness, col)
-    thickness = thickness or 3
+    thickness = thickness or style.size.separator_thickness
 
-    col = color.with_alpha(col or 2106363020)
-    local color_text = color.with_alpha(0xffffffff)
+    col = color.with_alpha(col or style.color.separator)
+    local color_text = color.with_alpha(style.color.text)
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -190,8 +181,8 @@ end
 ---@param thickness number?
 ---@param col integer?
 function this.separator(thickness, col)
-    thickness = thickness or 3
-    col = color.with_alpha(col or 2106363020)
+    thickness = thickness or style.size.separator_thickness
+    col = color.with_alpha(col or style.color.separator)
 
     local draw_list = imgui.get_window_draw_list()
     local pos = imgui.get_cursor_screen_pos()
@@ -215,8 +206,8 @@ function this.separator_text_item(label, item_width, padding, spacing, thickness
     local pad_x = padding and padding[1] or 50
     local pad_y = padding and padding[2] or 0
     spacing = spacing or 15
-    thickness = thickness or 3
-    col = color.with_alpha(col or 2106363020)
+    thickness = thickness or style.size.separator_thickness
+    col = color.with_alpha(col or style.color.separator)
 
     local draw_list = imgui.get_window_draw_list()
     local label_size = imgui.calc_text_size(label)
@@ -268,23 +259,23 @@ end
 function this.spacer(x, y)
     x = x or 0
     y = y or 0
-    imgui.push_style_var(14, Vector2f.new(x, y))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(x, y))
     imgui.invisible_button(imgui_id.get())
     imgui.pop_style_var(1)
 end
 
 ---@param x number
 function this.spacer_x(x)
-    imgui.push_style_var(14, Vector2f.new(x, 0))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(x, 0))
     imgui.same_line()
     imgui.pop_style_var(1)
-    imgui.push_style_var(14, Vector2f.new(4, 4))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(4, 4))
     imgui.new_line()
     imgui.pop_style_var(1)
 end
 
 function this.spacer_y(y)
-    imgui.push_style_var(14, Vector2f.new(0, y))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, y))
     imgui.invisible_button(imgui_id.get())
     imgui.pop_style_var(1)
 end
@@ -304,9 +295,9 @@ end
 ---@param size_object Vector2f|Vector3f|Vector4f|number[]?
 ---@return boolean
 function this.dummy_button2(label, size_object)
-    imgui.push_style_color(21, 0x00000000)
-    imgui.push_style_color(23, 0xff4f4e4d)
-    imgui.push_style_var(11, Vector2f.new(0, 0))
+    imgui.push_style_color(21, style.color.transparent)
+    imgui.push_style_color(23, style.color.background_hover)
+    imgui.push_style_var(imgui.ImGuiStyleVar.FramePadding, Vector2f.new(0, 0))
     local ret = imgui.button(label, size_object)
     imgui.pop_style_color(2)
     imgui.pop_style_var(1)
@@ -325,11 +316,11 @@ function this.dummy_button3(label, size_object, offset)
         imgui.set_cursor_pos(pos)
     end
 
-    imgui.push_style_color(21, 0x00000000)
-    imgui.push_style_color(22, 0x00000000)
-    imgui.push_style_color(23, 0x00000000)
-    imgui.push_style_var(11, Vector2f.new(0, 0))
-    imgui.push_style_var(14, Vector2f.new(0, 0))
+    imgui.push_style_color(21, style.color.transparent)
+    imgui.push_style_color(22, style.color.transparent)
+    imgui.push_style_color(23, style.color.transparent)
+    imgui.push_style_var(imgui.ImGuiStyleVar.FramePadding, Vector2f.new(0, 0))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 0))
     local ret = imgui.button(label, size_object)
     imgui.pop_style_color(3)
     imgui.pop_style_var(2)
@@ -399,11 +390,11 @@ end
 ---@param x number
 ---@param y number
 ---@param size integer
----@param col integer? by default, 0xFFFFFFFF
+---@param col integer? by default, style.color.text
 function this.draw_checkmark(x, y, size, col)
     local thickness = math.max(size / 5.0, 1.0)
     local third = size / 3.0
-    col = color.with_alpha(col or 0xFFFFFFFF)
+    col = color.with_alpha(col or style.color.text)
     local bx = x - size
     local by = y + size - third * 0.5
 
@@ -466,7 +457,7 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
         }, {
             win_pos.x + win_size.x - scrollbar_width,
             pos_screen.y + item_height,
-        }, color.with_alpha(0xff4f4e4d), 0, 0)
+        }, color.with_alpha(style.color.background_hover), 0, 0)
     end
 
     imgui.set_cursor_screen_pos({
@@ -480,8 +471,7 @@ function this.menu_item(label, selected_obj, enabled_obj, close_on_click)
         this.draw_checkmark(
             win_pos.x + win_size.x - padding - scrollbar_width,
             pos_screen.y + padding,
-            text_size.y - padding,
-            disabled and 0xff9d9d9d or nil
+            text_size.y - padding
         )
     end
 
@@ -553,7 +543,7 @@ end
 ---@param outline_color integer
 function this.draw_text_outlined(text, x, y, col, outline_color)
     col = color.with_alpha(col)
-    outline_color = color.with_alpha(outline_color or 0xFF000000)
+    outline_color = color.with_alpha(outline_color or style.color.text_outline)
     draw.text(text, x - 1, y, outline_color)
     draw.text(text, x + 1, y, outline_color)
     draw.text(text, x, y - 1, outline_color)
@@ -564,7 +554,8 @@ end
 ---@param label string
 ---@return number
 function this.get_button_width(label)
-    return imgui.calc_text_size(util_misc.split_string(label, "##")[1]).x + FRAME_PADDING_X * 2
+    return imgui.calc_text_size(util_misc.split_string(label, "##")[1]).x
+        + style.size.frame_padding_x * 2
 end
 
 ---@param button_label string
@@ -576,10 +567,10 @@ function this.get_something_with_button_width(button_label, ...)
     local total_width = imgui.calc_item_width()
     local button_width = this.get_button_width(button_label)
 
-    local ret = total_width - button_width - ITEM_SPACING_X
+    local ret = total_width - button_width - style.size.item_spacing_x
 
     for _, w in pairs(other_widths) do
-        ret = ret - w - ITEM_SPACING_X
+        ret = ret - w - style.size.item_spacing_x
     end
     return ret <= 0 and 0 or ret
 end
@@ -588,7 +579,7 @@ end
 ---@return number
 function this.get_something_with_any_width(width)
     local total_width = imgui.calc_item_width()
-    local button_width = width + FRAME_PADDING_X * 2
+    local button_width = width + style.size.frame_padding_x * 2
     local ret = total_width - button_width
     return ret <= 0 and 0 or ret
 end
@@ -629,7 +620,7 @@ function this.header(text, width, disabled)
     local draw_list = imgui.get_window_draw_list()
     local pos = imgui.get_cursor_screen_pos()
 
-    local height = get_frame_height()
+    local height = this.get_frame_height()
     local padding_x = 8
 
     if not width then
@@ -641,8 +632,8 @@ function this.header(text, width, disabled)
     local p1 = { pos.x, pos.y }
     local p2 = { pos.x + width, pos.y + height }
 
-    local bg_color = color.with_alpha(0xFF3A3A3A)
-    local text_color = color.with_alpha(0xFFFFFFFF)
+    local bg_color = color.with_alpha(style.color.background)
+    local text_color = color.with_alpha(style.color.text)
 
     imgui.invisible_button("##header_" .. text, { width, height })
     draw_list:add_rect_filled(p1, p2, bg_color, 0, 0)
@@ -658,9 +649,9 @@ end
 ---@param size_y number?
 ---@param col integer?
 function this.with_border(draw_fn, size_x, size_y, col)
-    col = color.with_alpha(col or 0xff4f4e4d)
+    col = color.with_alpha(col or style.color.background_hover)
     size_x = size_x or imgui.calc_item_width()
-    size_y = size_y or get_frame_height()
+    size_y = size_y or this.get_frame_height()
 
     local pos = imgui.get_cursor_screen_pos()
     local draw_list = imgui.get_window_draw_list()
@@ -720,7 +711,7 @@ function this.slider_list(label, index, v_min, v_max, values)
     end
 
     local width = imgui.calc_item_width()
-    local height = (config.lang.font_size + 8)
+    local height = config.lang.font_size + 8
 
     local pos = imgui.get_cursor_screen_pos()
     local grab_padding = 2
@@ -737,8 +728,8 @@ function this.slider_list(label, index, v_min, v_max, values)
 
     local draw_list = imgui.get_window_draw_list()
     local padding = 5
-    local separator_color = color.with_alpha(0xffe0853d)
-    local text_color = color.with_alpha(0xFFFFFFFF)
+    local separator_color = color.with_alpha(style.color.accent)
+    local text_color = color.with_alpha(style.color.text)
 
     local inner_left = pos.x + grab_padding
 
@@ -783,7 +774,7 @@ end
 --- }[]
 function this.option_button(id, options)
     local popup_id = "##" .. id .. "_popup"
-    local frame_height = get_frame_height()
+    local frame_height = this.get_frame_height()
     local pos = imgui.get_cursor_screen_pos()
 
     if imgui.button(string.format("%s##%s", config.lang:tr("misc.text_ellipsis"), id)) then
@@ -822,7 +813,7 @@ function this.arrow_button_with_popup(label, draw_fn, arrow_dir_open, arrow_dir_
         imgui.open_popup(popup_id)
     end
 
-    imgui.set_next_window_pos({ pos.x, pos.y + get_frame_height() }, 1)
+    imgui.set_next_window_pos({ pos.x, pos.y + this.get_frame_height() }, 1)
     if imgui.begin_popup(popup_id, 4 | 64) then
         draw_fn()
         imgui.end_popup()
@@ -844,7 +835,7 @@ function this.button_with_popup(label, draw_fn, init_w, init_h)
     resizable_popup.draw_popup(
         popup_id,
         draw_fn,
-        Vector2f.new(pos.x, pos.y + get_frame_height()),
+        Vector2f.new(pos.x, pos.y + this.get_frame_height()),
         init_w,
         init_h
     )
@@ -884,7 +875,7 @@ end
 
 ---@return number
 function this.get_button_height()
-    return imgui.calc_text_size("A").y + FRAME_PADDING_Y * 2
+    return imgui.calc_text_size("A").y + style.size.frame_padding_y * 2
 end
 
 ---@param id string
@@ -895,27 +886,27 @@ function this.fake_tree_node(id, label, draw_children)
     local cursor = imgui.get_cursor_screen_pos()
     local font_size = config.lang.font_size
 
-    local row_height = get_frame_height()
+    local row_height = this.get_frame_height()
     local label_size = imgui.calc_text_size(label)
     local radius = this.scale_w_font_size(2.6)
 
     imgui.invisible_button("##fake_tree_" .. id, {
-        font_size + FRAME_PADDING_X * 2 + label_size.x,
+        font_size + style.size.frame_padding_x * 2 + label_size.x,
         row_height,
     })
 
     local marker_center = {
-        cursor.x + FRAME_PADDING_X + font_size * 0.5,
-        cursor.y + FRAME_PADDING_Y + font_size * 0.5,
+        cursor.x + style.size.frame_padding_x + font_size * 0.5,
+        cursor.y + style.size.frame_padding_y + font_size * 0.5,
     }
 
     local label_position = {
-        cursor.x + FRAME_PADDING_X * 2 + font_size,
-        cursor.y + FRAME_PADDING_Y,
+        cursor.x + style.size.frame_padding_x * 2 + font_size,
+        cursor.y + style.size.frame_padding_y,
     }
 
-    draw_list:add_circle_filled(marker_center, radius, color.with_alpha(0xFFFFFFFF), 12)
-    draw_list:add_text(label_position, color.with_alpha(0xFFFFFFFF), label)
+    draw_list:add_circle_filled(marker_center, radius, color.with_alpha(style.color.text), 12)
+    draw_list:add_text(label_position, color.with_alpha(style.color.text), label)
 
     if draw_children then
         imgui.indent(0)
@@ -932,9 +923,9 @@ function this.draw_sel_button(label, selected, size_object)
     imgui.push_style_var(imgui.ImGuiStyleVar.ButtonTextAlign, Vector2f.new(0, 0.5))
 
     if selected then
-        imgui.push_style_color(21, 0xff49301f)
-        imgui.push_style_color(22, 0xff5c3b24)
-        imgui.push_style_color(23, 0xff684328)
+        imgui.push_style_color(21, style.color.background_accent_sel)
+        imgui.push_style_color(22, style.color.background_accent_sel_active)
+        imgui.push_style_color(23, style.color.background_accent_sel_hover)
     end
 
     local pos = imgui.get_cursor_screen_pos()
@@ -945,7 +936,7 @@ function this.draw_sel_button(label, selected, size_object)
     dl:add_rect_filled(
         { pos.x, pos.y },
         { pos.x + 2, pos.y + height - 4 },
-        color.with_alpha(selected and 0xffd47b35 or 0xff8a7668),
+        color.with_alpha(selected and style.color.accent_sel or style.color.accent_sel_secondary),
         1,
         0
     )
@@ -1178,11 +1169,11 @@ function this.even_popup_border(draw_fn)
     --FIXME: XDD
     this.spacer(0, 4)
     this.spacer(4, 0)
-    imgui.push_style_var(14, Vector2f.new(2, 0))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
     imgui.same_line()
     imgui.pop_style_var(1)
     draw_fn()
-    imgui.push_style_var(14, Vector2f.new(2, 0))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
     imgui.same_line()
     imgui.pop_style_var(1)
     imgui.new_line()
@@ -1192,6 +1183,11 @@ end
 ---@param default_size number
 function this.scale_w_font_size(default_size)
     return config.lang.font_size * (default_size / config.lang.default_font_size)
+end
+
+---@return number
+function this.get_frame_height()
+    return config.lang.font_size + style.size.frame_padding_y * 2
 end
 
 return this

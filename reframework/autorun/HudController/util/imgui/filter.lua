@@ -1,11 +1,8 @@
-local config = require("HudController.config.init")
 local input = require("HudController.util.imgui.input")
+local style = require("HudController.util.imgui.style")
+local util_imgui = require("HudController.util.imgui.init")
 
 local this = {}
-
-local FILTER_BG = 0xff403636
-local LABEL_BG = 0xff363433
-local TEXT_COLOR = 0xFFFFFFFF
 
 ---@type string?
 local active
@@ -93,7 +90,7 @@ end
 function this.draw(pos, width)
     local draw_list = imgui.get_window_draw_list()
     local font_height = imgui.calc_text_size("A").y
-    local height = config.lang.font_size + 6.0
+    local height = util_imgui.get_frame_height()
     local padding = 4
     local caret_margin = 2
 
@@ -117,11 +114,17 @@ function this.draw(pos, width)
     local stroke = math.max(1.0, font_height * 0.075)
 
     draw_list:push_clip_rect({ pos.x, pos.y }, { box_right, box_bottom }, true)
-    draw_list:add_rect_filled(pos, { box_right, box_bottom }, FILTER_BG, 0, 0)
-    draw_list:add_rect_filled({ pos.x, pos.y }, { input_start_x, box_bottom }, LABEL_BG, 0, 0)
+    draw_list:add_rect_filled(pos, { box_right, box_bottom }, style.color.background_frame, 0, 0)
+    draw_list:add_rect_filled(
+        { pos.x, pos.y },
+        { input_start_x, box_bottom },
+        style.color.background,
+        0,
+        0
+    )
 
     -- Magnifying glass circle
-    draw_list:add_circle({ center_x, center_y }, radius, TEXT_COLOR, 16, stroke)
+    draw_list:add_circle({ center_x, center_y }, radius, style.color.text, 16, stroke)
 
     -- Magnifying glass handle
     local handle_start_x = center_x + radius * 0.70
@@ -132,7 +135,7 @@ function this.draw(pos, width)
     draw_list:add_line(
         { handle_start_x, handle_start_y },
         { handle_end_x, handle_end_y },
-        TEXT_COLOR,
+        style.color.text,
         stroke
     )
 
@@ -143,8 +146,8 @@ function this.draw(pos, width)
             true
         )
 
-        draw_list:add_text({ input_start_x - scroll_x, text_y }, TEXT_COLOR, buf)
-        draw_list:add_line({ caret_x, pos.y + 4 }, { caret_x, box_bottom - 4 }, TEXT_COLOR, 1)
+        draw_list:add_text({ input_start_x - scroll_x, text_y }, style.color.text, buf)
+        draw_list:add_line({ caret_x, pos.y + 4 }, { caret_x, box_bottom - 4 }, style.color.text, 1)
         draw_list:pop_clip_rect()
     end
 

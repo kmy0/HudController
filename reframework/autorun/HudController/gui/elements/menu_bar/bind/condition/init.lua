@@ -2,16 +2,14 @@ local bind_condition = require("HudController.hud.bind.condition.init")
 local breadcrumbs = require("HudController.gui.elements.menu_bar.bind.condition.breadcrumbs")
 local cond_draw = require("HudController.gui.elements.menu_bar.bind.condition.cond_draw")
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
 local managers = require("HudController.gui.elements.menu_bar.bind.condition.managers.init")
 local op = require("HudController.hud.manager.op.init")
+local style = require("HudController.util.imgui.style")
 local tree = require("HudController.gui.elements.menu_bar.bind.condition.tree")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_table = require("HudController.util.misc.table")
-
-local mod_enum = data.mod.enum
 
 local this = {
     ---@type table<BindCondType, GuiCondManagerBase>
@@ -54,7 +52,7 @@ local function draw_condition_bind_menu()
 
     local has_rules = any_rules(path)
     local buttons, button_width = cond_draw.get_buttons()
-    local button_size = (config.lang.font_size + 6 + 6) * 2
+    local button_size = (util_imgui.get_frame_height() + 6) * 2
 
     util_imgui.adjust_pos(0, -2)
     if
@@ -113,7 +111,7 @@ function this.draw()
     util_menubar.draw_menu_resizable(
         util_gui.tr("menu.bind.condition.name"),
         draw_condition_bind_menu,
-        bind_condition.check_invalid() and mod_enum.colors.bad or nil,
+        bind_condition.check_invalid() and style.color.bad or nil,
         util_imgui.scale_w_font_size(840),
         util_imgui.scale_w_font_size(350)
     )

@@ -5,7 +5,7 @@
 ---@field protected _last_cursor_pos number
 ---@field protected _dir integer
 
-local mod = require("HudController.data.mod")
+local style = require("HudController.util.imgui.style")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class Drag
@@ -25,9 +25,9 @@ function this:draw_drag_button(unique_key, value, offset_y)
     offset_y = offset_y or 0
     self._start_pos = imgui.get_cursor_screen_pos().y + offset_y
 
-    imgui.push_style_color(21, 0xff363433)
-    imgui.push_style_color(22, 0xff363433)
-    imgui.push_style_color(23, 0xff363433)
+    imgui.push_style_color(21, style.color.background)
+    imgui.push_style_color(22, style.color.background)
+    imgui.push_style_color(23, style.color.background)
     util_imgui.draw_drag_button(unique_key)
     imgui.pop_style_color(3)
 
@@ -38,7 +38,7 @@ function this:draw_drag_button(unique_key, value, offset_y)
         self._drag = value
     elseif hover and not mouse_down then
         local end_pos = imgui.get_cursor_screen_pos().y
-        util_imgui.highlight(mod.enum.colors.info, 0, -(end_pos - self._start_pos) - offset_y)
+        util_imgui.highlight(style.color.info, 0, -(end_pos - self._start_pos) - offset_y)
     end
 end
 
@@ -53,7 +53,7 @@ function this:check_drag_pos(value, offset_x, offset_y)
 
     if self._drag == value then
         util_imgui.highlight(
-            mod.enum.colors.info,
+            style.color.info,
             0 + offset_x,
             -(end_pos - self._start_pos) + offset_y
         )

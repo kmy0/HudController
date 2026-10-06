@@ -8,6 +8,7 @@ local op = require("HudController.hud.manager.op.init")
 local option = require("HudController.data.option.init")
 local panel = require("HudController.gui.elements.profile.panel.init")
 local state = require("HudController.gui.state")
+local style = require("HudController.util.imgui.style")
 local timer = require("HudController.util.misc.timer")
 local user_option = require("HudController.hud.user.option")
 local util_gui = require("HudController.gui.util")
@@ -15,7 +16,6 @@ local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local hud_def = option.hud
-local mod_enum = data.mod.enum
 local ace_map = data.ace.map
 
 local this = {}
@@ -188,7 +188,10 @@ local function draw_elements()
         imgui.same_line()
 
         if
-            util_imgui.draw_remove_button("##" .. elem_config.name_key, config.lang.font_size + 6)
+            util_imgui.draw_remove_button(
+                "##" .. elem_config.name_key,
+                util_imgui.get_frame_height()
+            )
         then
             table.insert(remove, elem_config.name_key)
         end
@@ -300,10 +303,7 @@ local function draw_profiles()
     util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
 
     imgui.same_line()
-    imgui.text_colored(
-        string.format("%s/%s", #profiles - 1, config.max_profile),
-        mod_enum.colors.info
-    )
+    imgui.text_colored(string.format("%s/%s", #profiles - 1, config.max_profile), style.color.info)
 
     imgui.separator()
 

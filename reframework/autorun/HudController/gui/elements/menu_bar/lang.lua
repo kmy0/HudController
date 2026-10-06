@@ -43,7 +43,7 @@ local function draw_lang_menu()
                 config_lang.font_size = math.min(math.max(config_lang.font_size, 8), 48)
             end
 
-            imgui.push_style_var(14, Vector2f.new(2, 0))
+            imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(2, 0))
             imgui.same_line()
             if imgui.button(util_gui.tr("menu.language.font_size.button_apply")) then
                 config.lang:change(nil, config_lang.font_size)

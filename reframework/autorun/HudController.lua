@@ -20,6 +20,7 @@ local util_mod = require("HudController.util.mod.init")
 local logger = util.misc.logger.g
 local gui_state = require("HudController.gui.state")
 local option = require("HudController.data.option.init")
+local style = require("HudController.util.imgui.style")
 
 local init = init_chain:new(
     "MAIN",
@@ -74,15 +75,15 @@ re.on_draw_ui(function()
         local errors = logger:format_errors()
         if errors then
             imgui.same_line()
-            imgui.text_colored("Error!", data.mod.enum.colors.bad)
+            imgui.text_colored("Error!", style.color.bad)
             util.imgui.tooltip_exclamation(errors)
         elseif not init.ok then
             imgui.same_line()
-            imgui.text_colored("Initializing...", data.mod.enum.colors.info)
+            imgui.text_colored("Initializing...", style.color.info)
         end
     else
         imgui.same_line()
-        imgui.text_colored("Init failed!", data.mod.enum.colors.bad)
+        imgui.text_colored("Init failed!", style.color.bad)
         local errors = logger:get_last_error()
         if errors then
             util.imgui.tooltip_exclamation(errors)

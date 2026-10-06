@@ -1,7 +1,7 @@
 local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
-local mod = require("HudController.data.mod")
 local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
 
@@ -53,7 +53,7 @@ function this.draw_slider_settings(
         util_imgui.begin_disabled(false)
     end
 
-    local button_size = config.lang.font_size + 6
+    local button_size = util_imgui.get_frame_height()
     local group_spacing = 8
     local min_drag_width = 20
     local min_group_width = button_size * 2 + min_drag_width
@@ -62,7 +62,7 @@ function this.draw_slider_settings(
     local usable_width = slider_area_width - group_spacing * (count - 1)
     local base_group_width = math.floor(usable_width / count)
     local decimals = tonumber(format:match("%.(%d+)f")) --[[@as number]]
-    local border_color = color.with_alpha(0xff4f4e4d)
+    local border_color = color.with_alpha(style.color.background_hover)
     local row_start = imgui.get_cursor_pos()
 
     row_start.x = math.floor(row_start.x + 0.5)
@@ -89,7 +89,7 @@ function this.draw_slider_settings(
 
         local drag_width = math.max(min_drag_width, group_width - button_size * 2)
 
-        imgui.push_style_var(14, Vector2f.new(0, 4))
+        imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 4))
 
         util_imgui.with_border(function()
             if
@@ -150,7 +150,7 @@ function this.draw_slider_settings(
         imgui.spacing()
         imgui.same_line()
 
-        imgui.text_colored(additional_text, mod.enum.colors.info)
+        imgui.text_colored(additional_text, style.color.info)
     end
 
     util_imgui.end_disabled()

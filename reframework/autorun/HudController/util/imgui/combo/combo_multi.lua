@@ -1,6 +1,6 @@
 local common = require("HudController.util.imgui.combo.common")
-local config = require("HudController.config.init")
 local filter = require("HudController.util.imgui.filter")
+local style = require("HudController.util.imgui.style")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -17,7 +17,7 @@ local this = {}
 ---@param static_preview boolean?
 ---@return string, string, boolean
 local function get_preview(selected, default_preview, options, width, frame_height, static_preview)
-    local max_preview_width = width - frame_height - 2 * common.PREVIEW_PADDING
+    local max_preview_width = width - frame_height - 2 * style.size.frame_padding_x
 
     ---@type string[]
     local chosen = {}
@@ -82,7 +82,7 @@ end
 function this.combo_multi(label, selected, default_preview, options)
     local width = imgui.calc_item_width()
     local popup_id = "##" .. label .. "_popup"
-    local frame_height = config.lang.font_size + common.FRAME_HEIGHT_PADDING
+    local frame_height = util_imgui.get_frame_height()
     local preview, full_preview, text_oversize =
         get_preview(selected, default_preview, options, width, frame_height)
     local clicked, pos = common.draw_combo(
@@ -128,7 +128,7 @@ function this.combo_multi_filter(label, selected, default_preview, options, stat
     local width = imgui.calc_item_width()
     local combo_id = label
     local popup_id = "##" .. label .. "_filter_popup"
-    local frame_height = config.lang.font_size + common.FRAME_HEIGHT_PADDING
+    local frame_height = util_imgui.get_frame_height()
     local preview, full_preview, text_oversize =
         get_preview(selected, default_preview, options, width, frame_height, static_preview)
     local clicked, pos = common.draw_combo(

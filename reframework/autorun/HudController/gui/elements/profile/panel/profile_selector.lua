@@ -4,6 +4,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def_mod = require("HudController.data.option.mod")
 local hud = require("HudController.hud.init")
+local imgui_style = require("HudController.util.imgui.style")
 local op = require("HudController.hud.manager.op.init")
 local option = require("HudController.data.option.init")
 local util_imgui = require("HudController.util.imgui.init")
@@ -59,8 +60,6 @@ local function draw_profile_preview(root, min, max, value, style)
     local star_radius = style.star_radius
     local active_radius = style.active_radius
     local spacing = style.spacing
-    local star_color = style.star_color
-    local text_color = style.text_color
 
     local width = max.x - min.x
     local height = max.y - min.y
@@ -82,7 +81,7 @@ local function draw_profile_preview(root, min, max, value, style)
     local left = min.x + 1
     local right = max.x - 1
 
-    local star_col = color.with_alpha(star_color)
+    local star_col = color.with_alpha(imgui_style.color.info)
 
     -- active profile indicator
     if is_active then
@@ -108,7 +107,7 @@ local function draw_profile_preview(root, min, max, value, style)
         text_right = star_center_x - star_radius - spacing
     end
 
-    local text_col = color.with_alpha(text_color)
+    local text_col = color.with_alpha(imgui_style.color.text)
     if text_right > left then
         draw_list:push_clip_rect({ left, min.y }, { text_right, max.y }, true)
         draw_list:add_text({ left, text_y }, text_col, name)
@@ -129,9 +128,6 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
     local row_height = style.row_height
     local icon_size = style.icon_size
     local circle_radius = style.circle_radius
-    local accent_color = style.accent_color
-    local star_color = style.star_color
-    local text_color = style.text_color
 
     local changed = false
     local draw_list = imgui.get_window_draw_list()
@@ -180,7 +176,10 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
         row_pos.x + icon_size * 0.5,
         row_pos.y + row_height * 0.5,
     }
-    local enabled_col = color.with_alpha(imgui.is_item_hovered() and 0xffe38a45 or accent_color)
+    local enabled_col = color.with_alpha(
+        imgui.is_item_hovered() and imgui_style.color.accent_sel_hover
+            or imgui_style.color.accent_sel
+    )
 
     if is_enabled then
         draw_list:add_circle_filled(enabled_center, circle_radius, enabled_col, 12)
@@ -205,7 +204,9 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
         row_pos.x + icon_size + icon_size * 0.5,
         row_pos.y + row_height * 0.5,
     }
-    local default_col = color.with_alpha(imgui.is_item_hovered() and 0xff45f7fa or star_color)
+    local default_col = color.with_alpha(
+        imgui.is_item_hovered() and imgui_style.color.info_hover or imgui_style.color.info
+    )
 
     draw_star(draw_list, default_center, star_radius, is_default, default_col)
     util_imgui.end_disabled()
@@ -229,12 +230,13 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
         draw_list:add_rect_filled(
             name_pos,
             name_max,
-            is_selected and 0xff684328 or 0xff4f4e4d,
+            is_selected and imgui_style.color.background_accent_sel_hover
+                or imgui_style.color.background_hover,
             0,
             0
         )
     elseif is_selected then
-        draw_list:add_rect_filled(name_pos, name_max, 0xff49301f, 0, 0)
+        draw_list:add_rect_filled(name_pos, name_max, imgui_style.color.background_accent_sel, 0, 0)
     end
 
     if is_selected then
@@ -244,7 +246,7 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
         }, {
             name_pos.x + 2,
             name_pos.y + row_height - 2,
-        }, accent_color, 1, 0)
+        }, imgui_style.color.accent_sel, 1, 0)
     end
 
     -- active profile indicator
@@ -253,12 +255,12 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
         local cx = text_x + active_radius
         local cy = name_pos.y + row_height * 0.5
 
-        draw_active_profile_indicator(draw_list, cx, cy, active_radius, star_color)
+        draw_active_profile_indicator(draw_list, cx, cy, active_radius, imgui_style.color.info)
 
         text_x = text_x + active_radius * 2 + 6
     end
 
-    local text_col = color.with_alpha(text_color)
+    local text_col = color.with_alpha(imgui_style.color.text)
     local text_y = name_pos.y + (row_height - config.lang.font_size) * 0.5
     draw_list:add_text(
         { text_x, text_y },
@@ -280,13 +282,10 @@ function this.draw(elem_config, config_key)
     local style = {
         star_radius = config.lang.font_size * 0.35,
         active_radius = config.lang.font_size * 0.20,
-        spacing = 6,
-        row_height = config.lang.font_size + 6,
-        icon_size = config.lang.font_size + 6,
+        spacing = imgui_style.size.frame_padding_y * 2,
+        row_height = util_imgui.get_frame_height(),
+        icon_size = util_imgui.get_frame_height(),
         circle_radius = config.lang.font_size * 0.25,
-        accent_color = 0xffd47b35,
-        star_color = mod_enum.colors.info,
-        text_color = 0xffffffff,
     }
 
     imgui.set_next_item_width(
@@ -306,8 +305,8 @@ function this.draw(elem_config, config_key)
                 imgui.unindent(3)
                 imgui.separator()
 
-                imgui.push_style_var(11, Vector2f.new(0, 0))
-                imgui.push_style_var(14, Vector2f.new(0, 0))
+                imgui.push_style_var(imgui.ImGuiStyleVar.FramePadding, Vector2f.new(0, 0))
+                imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 0))
 
                 local config_mod = config.current.mod
                 local changed = false

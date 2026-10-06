@@ -34,6 +34,7 @@
 
 local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
+local style = require("HudController.util.imgui.style")
 
 local this = {}
 
@@ -45,11 +46,6 @@ local CONTENT_PADDING = { 0, 0 }
 
 local ROUNDING = 0
 local BORDER_SIZE = 1
-
-local COL_EDGE_HOVER = 0xC7BF661A
-local COL_EDGE_ACTIVE = 0xFFBF661A
-local COL_GRIP_HOVER = 0xff4f4e4d
-local COL_GRIP_ACTIVE = 0xff8d8c8c
 
 local COND_ALWAYS = 1
 local STYLE_VAR_WINDOW_PADDING = 2
@@ -69,8 +65,16 @@ local BORDERS = {
 }
 
 local EDGE_STYLES = {
-    [HANDLE_RIGHT] = { border = BORDERS.right, hover = COL_EDGE_HOVER, active = COL_EDGE_ACTIVE },
-    [HANDLE_BOTTOM] = { border = BORDERS.down, hover = COL_EDGE_HOVER, active = COL_EDGE_ACTIVE },
+    [HANDLE_RIGHT] = {
+        border = BORDERS.right,
+        hover = style.color.edge_hover,
+        active = style.color.edge_active,
+    },
+    [HANDLE_BOTTOM] = {
+        border = BORDERS.down,
+        hover = style.color.edge_hover,
+        active = style.color.edge_active,
+    },
 }
 
 ---@type table<string, ResizableState>
@@ -199,7 +203,7 @@ local function draw_highlight(wp, ws, winner, is_active, grip_draw_size)
     dl:push_clip_rect(wp, { right, bottom }, false)
 
     if winner == HANDLE_CORNER then
-        local col = is_active and COL_GRIP_ACTIVE or COL_GRIP_HOVER
+        local col = is_active and style.color.background_active or style.color.background_hover
         render_grip(dl, right, bottom, grip_draw_size, col)
     else
         local edge = EDGE_STYLES[winner]

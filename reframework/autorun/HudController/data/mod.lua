@@ -19,7 +19,6 @@
 ---@class (exact) ModEnum
 ---@field hud_type HudType.*
 ---@field hud_sub_type HudSubType.*
----@field colors GuiColors.*
 ---@field canvas CanvasActionEnum.*
 ---@field elem_cache ElemCache.*
 ---@field elem_profile ElemProfileIndex.*
@@ -143,12 +142,6 @@ this.enum.hud_sub_type = { ---@class HudSubType.*
     CTRL_CHILD = 6,
     PROGRESS_TEXT = 7,
     PROGRESS_PART = 8,
-}
----@enum GuiColors
-this.enum.colors = { ---@class GuiColors.*
-    bad = 0xff1947ff,
-    good = 0xff38cc47,
-    info = 0xff27f3f5,
 }
 ---@enum CanvasActionEnum
 this.enum.canvas = { ---@class CanvasActionEnum.*

@@ -1,4 +1,5 @@
 local color = require("HudController.util.imgui.color")
+local style = require("HudController.util.imgui.style")
 local util_disabled = require("HudController.util.imgui.disabled")
 local util_misc = require("HudController.util.misc.init")
 
@@ -8,16 +9,8 @@ local drag_state = {}
 ---@type table<string, string>
 local input_state = {}
 
-local COL_FRAME_BG = 0xff3f3535
-local COL_GRAB = 0xFFE0853D
-local COL_GRAB_ACT = 0xFFFA9642
-local COL_TEXT = 0xFFFFFFFF
-local COL_FRAME_BG_HOVERED = 0xff4f4e4d
-local COL_FRAME_BG_ACTIVE = 0xff8d8c8c
-
-local FRAME_PADDING_Y = 3.0
 local GRAB_MIN_SIZE = 12.0
-local ITEM_PADDING_Y = 2.0
+local GRAB_PADDING = 2.0
 
 ---@param str string
 ---@param v_min number
@@ -63,10 +56,10 @@ local function range_slider(label, v_lo, v_hi, v_min, v_max, display_format, dis
 
     local text_size = imgui.calc_text_size("!")
     local font_size = text_size.y
-    local frame_h = font_size + FRAME_PADDING_Y * 2.0
+    local frame_h = font_size + style.size.frame_padding_y * 2.0
     local avail_w = imgui.calc_item_width()
 
-    local base_inset = GRAB_MIN_SIZE * 0.5 + ITEM_PADDING_Y
+    local base_inset = GRAB_MIN_SIZE * 0.5 + GRAB_PADDING
     local rail_len_base = avail_w - base_inset * 2
 
     local grab_r = GRAB_MIN_SIZE * 0.5
@@ -80,8 +73,8 @@ local function range_slider(label, v_lo, v_hi, v_min, v_max, display_format, dis
     local frame_y0 = cp.y
     local frame_x1 = cp.x + avail_w
     local frame_y1 = cp.y + frame_h
-    local rail_x0 = frame_x0 + grab_r + ITEM_PADDING_Y
-    local rail_len = avail_w - (grab_r + ITEM_PADDING_Y) * 2
+    local rail_x0 = frame_x0 + grab_r + GRAB_PADDING
+    local rail_len = avail_w - (grab_r + GRAB_PADDING) * 2
 
     ---@param v number
     ---@return number
@@ -199,29 +192,29 @@ local function range_slider(label, v_lo, v_hi, v_min, v_max, display_format, dis
     dl:add_rect_filled(
         Vector2f.new(frame_x0, frame_y0),
         Vector2f.new(frame_x1, frame_y1),
-        disabled and color.with_alpha(COL_FRAME_BG)
+        disabled and color.with_alpha(style.color.background_frame)
             or (
-                is_active and COL_FRAME_BG_ACTIVE
-                or is_hovered and COL_FRAME_BG_HOVERED
-                or COL_FRAME_BG
+                is_active and style.color.background_frame_active
+                or is_hovered and style.color.background_hover
+                or style.color.background_frame
             ),
         0,
         0
     )
 
     dl:add_rect_filled(
-        Vector2f.new(lo_x - grab_r, frame_y0 + ITEM_PADDING_Y),
-        Vector2f.new(lo_x + grab_r, frame_y1 - ITEM_PADDING_Y),
-        disabled and color.with_alpha(COL_GRAB)
-            or (drag_state[id] == "lo" and COL_GRAB_ACT or COL_GRAB),
+        Vector2f.new(lo_x - grab_r, frame_y0 + GRAB_PADDING),
+        Vector2f.new(lo_x + grab_r, frame_y1 - GRAB_PADDING),
+        disabled and color.with_alpha(style.color.accent)
+            or (drag_state[id] == "lo" and style.color.accent_active or style.color.accent),
         0,
         0
     )
     dl:add_rect_filled(
-        Vector2f.new(hi_x - grab_r, frame_y0 + ITEM_PADDING_Y),
-        Vector2f.new(hi_x + grab_r, frame_y1 - ITEM_PADDING_Y),
-        disabled and color.with_alpha(COL_GRAB)
-            or (drag_state[id] == "hi" and COL_GRAB_ACT or COL_GRAB),
+        Vector2f.new(hi_x - grab_r, frame_y0 + GRAB_PADDING),
+        Vector2f.new(hi_x + grab_r, frame_y1 - GRAB_PADDING),
+        disabled and color.with_alpha(style.color.accent)
+            or (drag_state[id] == "hi" and style.color.accent_active or style.color.accent),
         0,
         0
     )
@@ -243,14 +236,14 @@ local function range_slider(label, v_lo, v_hi, v_min, v_max, display_format, dis
         local centered = overlay_size.x < imgui.calc_text_size(display_text or "").x
         local text_x = centered and frame_x0 or frame_x0 + (avail_w - overlay_size.x) * 0.5
         local text_y = frame_y0 + (frame_h - overlay_size.y) * 0.5
-        local col = color.with_alpha(COL_TEXT)
+        local col = color.with_alpha(style.color.text)
         dl:add_text(Vector2f.new(text_x, text_y), col, overlay)
     end
 
     if label then
         dl:add_text(
             Vector2f.new(frame_x1 + font_size * 0.5, frame_y0 + (frame_h - overlay_size.y) * 0.5),
-            color.with_alpha(COL_TEXT),
+            color.with_alpha(style.color.text),
             label
         )
     end

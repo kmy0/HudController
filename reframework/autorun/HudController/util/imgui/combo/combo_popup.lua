@@ -1,6 +1,6 @@
 local common = require("HudController.util.imgui.combo.common")
-local config = require("HudController.config.init")
 local filter = require("HudController.util.imgui.filter")
+local util_imgui = require("HudController.util.imgui.init")
 
 local this = {}
 
@@ -14,7 +14,7 @@ local this = {}
 function this.combo_popup(label, value, values, draw_fn, display_format, width_offset)
     local width = imgui.calc_item_width()
     local popup_id = "##" .. label .. "_popup"
-    local frame_height = config.lang.font_size + common.FRAME_HEIGHT_PADDING
+    local frame_height = util_imgui.get_frame_height()
     local preview, full_preview, text_oversize = common.get_text_preview(
         display_format and display_format(value) or value,
         width,
@@ -68,7 +68,7 @@ function this.combo_popup_filter(label, value, values, draw_fn, display_format, 
     local width = imgui.calc_item_width()
     local combo_id = label
     local popup_id = "##" .. label .. "_filter_popup"
-    local frame_height = config.lang.font_size + common.FRAME_HEIGHT_PADDING
+    local frame_height = util_imgui.get_frame_height()
     local preview, full_preview, text_oversize = common.get_text_preview(
         display_format and display_format(value) or value,
         width,

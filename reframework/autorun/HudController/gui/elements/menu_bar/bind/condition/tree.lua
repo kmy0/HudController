@@ -47,12 +47,12 @@
 ---@field count integer
 
 local color = require("HudController.util.imgui.color")
+local cond_draw = require("HudController.gui.elements.menu_bar.bind.condition.cond_draw")
 local config = require("HudController.config.init")
 local managers = require("HudController.gui.elements.menu_bar.bind.condition.managers.init")
+local style = require("HudController.util.imgui.style")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
-local mod_enum = require("HudController.data.mod").enum
-local cond_draw = require("HudController.gui.elements.menu_bar.bind.condition.cond_draw")
 
 local ROOT_KEY = "mod.bind.condition"
 
@@ -422,11 +422,11 @@ function this.draw(root, collapsed)
             ---@type ConditionTreeStyle
             local style = {
                 indent = util_imgui.scale_w_font_size(24),
-                normal_color = color.with_alpha(0xff8a7668),
-                selected_color = color.with_alpha(0xffd47b35),
-                triggering_color = color.with_alpha(mod_enum.colors.good),
-                overridden_color = color.with_alpha(0xff1f6baa),
-                invalid_color = color.with_alpha(mod_enum.colors.bad),
+                normal_color = color.with_alpha(style.color.accent_sel_secondary),
+                selected_color = color.with_alpha(style.color.accent_sel),
+                triggering_color = color.with_alpha(style.color.good),
+                overridden_color = color.with_alpha(style.color.good_less),
+                invalid_color = color.with_alpha(style.color.bad),
                 line_thickness = 2,
                 node_gap = 2,
                 summaries = {},

@@ -26,7 +26,7 @@ local function draw_mod_menu()
     option.draw_menu_item(mod_def.opt.enable_key_binds)
     option.draw_menu_item(mod_def.opt.display_active_element_profile_name)
 
-    imgui.push_style_var(14, Vector2f.new(0, 2))
+    imgui.push_style_var(imgui.ImGuiStyleVar.ItemSpacing, Vector2f.new(0, 2))
     imgui.separator()
     util_imgui.adjust_pos(0, -1)
     imgui.pop_style_var(1)

@@ -16,6 +16,7 @@ local gui_key = require("HudController.gui.elements.menu_bar.bind.key.init")
 local hook = require("HudController.hud.hook.init")
 local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
+local style = require("HudController.util.imgui.style")
 local util_imgui = require("HudController.util.imgui.init")
 
 local mod = data.mod
@@ -91,7 +92,7 @@ function this.draw()
 
     if not mod.is_ok() then
         imgui.indent(3)
-        imgui.text_colored(config.lang:tr("misc.text_no_hud"), mod.enum.colors.bad)
+        imgui.text_colored(config.lang:tr("misc.text_no_hud"), style.color.bad)
         imgui.unindent(3)
 
         if config.lang.font then

@@ -4,6 +4,7 @@ local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local managers = require("HudController.gui.elements.menu_bar.bind.key.managers.init")
 local state = require("HudController.gui.state")
+local style = require("HudController.util.imgui.style")
 local util_bind = require("HudController.util.game.bind.init")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
@@ -12,7 +13,6 @@ local util_menubar = require("HudController.gui.elements.menu_bar.util")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
-local mod = data.mod
 local mod_enum = data.mod.enum
 
 local this = {
@@ -95,7 +95,7 @@ local function draw_listener(manager)
                 config.lang:tr("menu.bind.tooltip_bound"),
                 util_misc.trunc_string2(state.listener.collision, util_imgui.get_available_width())
             ),
-            mod.enum.colors.bad
+            style.color.bad
         )
     end
 
@@ -223,7 +223,7 @@ local function draw_registered_binds(manager)
                 (state.listener and state.listener.collision == manager:get_bind_name(bind))
                 or bind.invalid
             then
-                color = mod.enum.colors.bad
+                color = style.color.bad
             end
 
             imgui.table_next_row()
@@ -356,9 +356,9 @@ local function draw_bind_option_table(manager)
         )
         imgui.table_setup_column("##Add", imgui.ColumnFlags.WidthFixed)
 
-        imgui.push_style_color(45, 0x00000000)
-        imgui.push_style_color(25, 0x00000000)
-        imgui.push_style_color(26, 0x00000000)
+        imgui.push_style_color(45, style.color.transparent)
+        imgui.push_style_color(25, style.color.transparent)
+        imgui.push_style_color(26, style.color.transparent)
 
         imgui.push_style_var(imgui.ImGuiStyleVar.CellPadding, Vector2f.new(2, 2))
         imgui.table_headers_row()
@@ -453,7 +453,7 @@ function this.draw()
         not util_menubar.draw_menu_resizable(
             util_gui.tr("menu.bind.key.name"),
             draw_key_bind_menu,
-            bind_manager.any_invalid and mod_enum.colors.bad or nil,
+            bind_manager.any_invalid and style.color.bad or nil,
             util_imgui.scale_w_font_size(750),
             util_imgui.scale_w_font_size(190)
         )

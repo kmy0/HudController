@@ -8,6 +8,7 @@ local drag_util = require("HudController.gui.drag")
 local managers = require("HudController.gui.elements.menu_bar.bind.condition.managers.init")
 local op = require("HudController.hud.manager.op.init")
 local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
@@ -232,7 +233,7 @@ function this.draw_conditions(manager, config_key, readonly)
             imgui.table_set_column_index(1)
 
             if not cond_class or invalid.class then
-                imgui.text_colored(cond.class, color.with_alpha(mod_enum.colors.bad))
+                imgui.text_colored(cond.class, color.with_alpha(style.color.bad))
 
                 if invalid.class then
                     util_imgui.tooltip(invalid.class)
@@ -250,7 +251,7 @@ function this.draw_conditions(manager, config_key, readonly)
                         invalid.class_config,
                         true,
                         config.lang:tr("misc.text_error"),
-                        color.with_alpha(mod_enum.colors.bad)
+                        color.with_alpha(style.color.bad)
                     )
                     imgui.same_line()
                     imgui.invisible_button("i_button3" .. config_key .. i, { item_size, 0 })
@@ -297,7 +298,7 @@ function this.draw_conditions(manager, config_key, readonly)
             imgui.push_style_color(
                 5,
                 (invalid.class_config or invalid.class_config_value)
-                        and color.with_alpha(mod_enum.colors.bad)
+                        and color.with_alpha(style.color.bad)
                     or 0
             )
             imgui.end_rect(0, 2)
@@ -305,10 +306,10 @@ function this.draw_conditions(manager, config_key, readonly)
 
             imgui.push_style_color(
                 5,
-                invalid.class and color.with_alpha(mod_enum.colors.bad)
+                invalid.class and color.with_alpha(style.color.bad)
                     or ((config.current.mod.bind.condition.highlight_pass_cond and manager:is_cond_triggering(
                         cond_path
-                    )) and color.with_alpha(mod_enum.colors.good))
+                    )) and color.with_alpha(style.color.good))
                     or 0
             )
             imgui.end_rect(0, 2)
@@ -438,18 +439,18 @@ function this.draw_target(manager, config_key)
         imgui.end_group()
         imgui.end_group()
 
-        local col = 0xff493e36
+        local col = style.color.accent_sel_secondary_dark
         if ret == i then
-            col = 0xff7f4a18
+            col = style.color.accent_sel_dark
         end
 
         if highlight then
             if manager:is_rule_overridden(rule_path) then
-                col = 0xff1f6baa
+                col = style.color.good_less
             end
 
             if manager:is_rule_triggering(rule_path) then
-                col = mod_enum.colors.good
+                col = style.color.good
             end
         end
 
@@ -464,7 +465,9 @@ function this.draw_target(manager, config_key)
             dl:add_line(
                 start_pos,
                 end_pos,
-                color.with_alpha(ret == i and 0xffd47b35 or 0xff8a7668),
+                color.with_alpha(
+                    ret == i and style.color.accent_sel or style.color.accent_sel_secondary
+                ),
                 3
             )
         end
@@ -529,7 +532,7 @@ function this.draw_manager_target(manager, rule_path)
         util_imgui.tooltip(invalid.free_value)
     end
 
-    imgui.push_style_color(5, invalid.free_value and color.with_alpha(mod_enum.colors.bad) or 0)
+    imgui.push_style_color(5, invalid.free_value and color.with_alpha(style.color.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
 
@@ -546,7 +549,7 @@ function this.draw_manager_target(manager, rule_path)
         util_imgui.tooltip(invalid.free_value)
     end
 
-    imgui.push_style_color(5, invalid.free_value2 and color.with_alpha(mod_enum.colors.bad) or 0)
+    imgui.push_style_color(5, invalid.free_value2 and color.with_alpha(style.color.bad) or 0)
     imgui.end_rect(0, 2)
     imgui.pop_style_color(1)
 

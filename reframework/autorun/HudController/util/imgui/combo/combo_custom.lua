@@ -1,5 +1,6 @@
 local common = require("HudController.util.imgui.combo.common")
 local filter = require("HudController.util.imgui.filter")
+local style = require("HudController.util.imgui.style")
 
 local this = {}
 
@@ -15,9 +16,9 @@ local function draw_custom_combo(label, popup_id, draw_preview)
         common.draw_combo_background(draw_list, pos, width, frame_height, hovered)
     common.draw_combo_arrow(draw_list, pos, width, frame_height, popup_id, text_col, arrow_fits)
 
-    local preview_min = Vector2f.new(pos.x + common.PREVIEW_PADDING, pos.y)
+    local preview_min = Vector2f.new(pos.x + style.size.frame_padding_x, pos.y)
     local preview_max = Vector2f.new(
-        pos.x + width - common.PREVIEW_PADDING - (arrow_fits and frame_height or 0),
+        pos.x + width - style.size.frame_padding_x - (arrow_fits and frame_height or 0),
         pos.y + frame_height
     )
     if preview_max.x > preview_min.x then
