@@ -12,10 +12,10 @@ setmetatable(this, { __index = multi_select })
 
 ---@return QuestRankCondition
 function this:new()
-    ---@type table<app.QuestDef.EM_REWARD_RANK, string>
+    ---@type table<string, string>
     local values = {}
-    for _, rank in e.iter("app.QuestDef.EM_REWARD_RANK") do
-        values[rank] = rank .. config.lang:tr("misc.text_star")
+    for name, rank in e.iter("app.QuestDef.EM_REWARD_RANK") do
+        values[name] = rank .. config.lang:tr("misc.text_star")
     end
 
     local o = multi_select.new(
@@ -24,7 +24,8 @@ function this:new()
         config.lang.make_placeholder("menu.bind.condition.condition_quest_rank"),
         values,
         function(a, b)
-            return a.key < b.key
+            local enum = e.get("app.QuestDef.EM_REWARD_RANK")
+            return enum[a.key] < enum[b.key]
         end
     )
     setmetatable(o, self)
@@ -42,9 +43,9 @@ function this:update(selected)
     end
 
     local quest_rank = quest_data:getTargetEmDifficulityRank()
-    for rank, _ in pairs(selected) do
-        ---@diagnostic disable-next-line: param-type-mismatch
-        if quest_rank:Contains(tonumber(rank)) then
+    for rank_name, _ in pairs(selected) do
+        local rank_id = e.get("app.QuestDef.EM_REWARD_RANK")[rank_name]
+        if quest_rank:Contains(rank_id) then
             return true
         end
     end

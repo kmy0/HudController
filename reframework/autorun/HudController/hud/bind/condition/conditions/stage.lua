@@ -16,15 +16,15 @@ setmetatable(this, { __index = multi_select })
 
 ---@return StageCondition
 function this:new()
-    ---@type table<app.FieldDef.STAGE, string>
+    ---@type table<string, string>
     local values = {}
-    for _, stage_id in e.iter("app.FieldDef.STAGE") do
+    for stage_name, stage_id in e.iter("app.FieldDef.STAGE") do
         local guid = util_ref.value_type("System.Guid")
         m.getStageNameGuid(stage_id, guid:address())
-        local name = game_lang.get_message_local2(guid)
+        local name_local = game_lang.get_message_local2(guid)
 
-        if name ~= "" then
-            values[stage_id] = game_lang.get_message_local2(guid)
+        if name_local ~= "" then
+            values[stage_name] = game_lang.get_message_local2(guid)
         end
     end
 
@@ -46,7 +46,7 @@ end
 ---@return boolean
 function this:update(selected)
     local stage = s.get("app.MasterFieldManager"):get_CurrentStage()
-    return selected[tostring(stage)]
+    return selected[e.get("app.FieldDef.STAGE")[stage]]
 end
 
 return this

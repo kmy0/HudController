@@ -19,15 +19,15 @@ setmetatable(this, { __index = multi_select })
 
 ---@return QuestTargetCondition
 function this:new()
-    ---@type table<app.EnemyDef.ID, string>
+    ---@type table<string, string>
     local values = {}
-    for _, em_id in e.iter("app.EnemyDef.ID") do
+    for name, em_id in e.iter("app.EnemyDef.ID") do
         if not m.isEmValid(em_id) or not m.isBossID(em_id) then
             goto continue
         end
 
         local name_guid = m.getEnemyNameGuid(em_id)
-        values[em_id] = game_lang.get_message_local2(name_guid)
+        values[name] = game_lang.get_message_local2(name_guid)
 
         ::continue::
     end
@@ -56,9 +56,9 @@ function this:update(selected)
     end
 
     local quest_ems = quest_data:getTargetEmId()
-    for em, _ in pairs(selected) do
-        ---@diagnostic disable-next-line: param-type-mismatch
-        if quest_ems:Contains(tonumber(em)) then
+    for em_name, _ in pairs(selected) do
+        local em_id = e.get("app.EnemyDef.ID")[em_name]
+        if quest_ems:Contains(em_id) then
             return true
         end
     end
