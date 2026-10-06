@@ -658,3 +658,4 @@
 ---| "menu.bind.condition.text_threshold"
 ---| "menu.bind.condition.condition_stamina_threshold"
 ---| "menu.bind.condition.condition_quest"
+---| "menu.bind.condition.condition_weapon_drawn"

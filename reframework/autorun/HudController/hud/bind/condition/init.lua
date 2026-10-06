@@ -40,6 +40,7 @@ local conditions = {
     health_threshold = require("HudController.hud.bind.condition.conditions.health_threshold"),
     stamina_threshold = require("HudController.hud.bind.condition.conditions.stamina_threshold"),
     quest = require("HudController.hud.bind.condition.conditions.quest"),
+    weapon_drawn = require("HudController.hud.bind.condition.conditions.weapon_drawn"),
 }
 
 local mod_enum = mod.enum
