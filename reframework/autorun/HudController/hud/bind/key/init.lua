@@ -108,14 +108,9 @@ local function action_option_hud(bind)
 
     if is_triggered and is_hold then
         local hud_profile = hud.get_current() --[[@as ModProfileConfig]]
-        register_hold(
-            manager_name,
-            key,
-            bind,
-            new_value,
-            util_table.deep_copy(hud_profile[key]),
-            path
-        )
+        local current_value = hud.get_overridden(key) or hud_profile[key]
+
+        register_hold(manager_name, key, bind, new_value, util_table.deep_copy(current_value), path)
     end
 
     util_table.set_nested_value(this.monitor.frame_storage, path, new_value)
@@ -203,12 +198,15 @@ local function action_option_elem(bind)
             return
         end
 
+        local current_value = ctx.elem.overridden_options[opt.key]
+            or util_opt.get_elem_config_value(opt, ctx.elem_config)
+
         register_hold(
             manager_name,
             key,
             bind,
             new_value,
-            util_table.deep_copy(util_opt.get_elem_config_value(opt, ctx.elem_config)),
+            util_table.deep_copy(current_value),
             path,
             function(value)
                 if hud.get_current().key ~= current_hud then
