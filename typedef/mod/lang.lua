@@ -657,3 +657,4 @@
 ---| "menu.bind.condition.condition_health_threshold"
 ---| "menu.bind.condition.text_threshold"
 ---| "menu.bind.condition.condition_stamina_threshold"
+---| "menu.bind.condition.condition_quest"
