@@ -198,7 +198,7 @@ local function range_slider(label, v_lo, v_hi, v_min, v_max, display_format, dis
                 or is_hovered and style.color.background_hover
                 or style.color.background_frame
             ),
-        0,
+        style.size.rounding,
         0
     )
 

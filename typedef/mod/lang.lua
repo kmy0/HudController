@@ -654,3 +654,6 @@
 ---| "menu.bind.condition.condition_hud"
 ---| "menu.bind.key.condition"
 ---| "menu.bind.condition.condition_key"
+---| "menu.bind.condition.condition_health_threshold"
+---| "menu.bind.condition.text_threshold"
+---| "menu.bind.condition.condition_stamina_threshold"

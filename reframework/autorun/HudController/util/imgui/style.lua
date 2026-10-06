@@ -33,6 +33,7 @@ local this = {
         scrollbar_width = 14,
         item_spacing_x = 8,
         separator_thickness = 3,
+        rounding = 2,
     },
 }
 
