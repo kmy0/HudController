@@ -327,6 +327,12 @@ local function draw_all_registered_binds()
         draw_registered_binds(this.managers[mod_enum.bind_key_type.OPTION_USER])
     end
 
+    if not util_table.empty(bind_manager.condition.binds) then
+        any = true
+        util_imgui.separator_text(config.lang:tr("menu.bind.key.condition"))
+        draw_registered_binds(this.managers[mod_enum.bind_key_type.CONDITION])
+    end
+
     if not any then
         imgui.push_font(config.lang.font_header)
         util_imgui.text_info(config.lang:tr("menu.bind.key.tooltip_no_binds"))
