@@ -474,7 +474,7 @@ function hud_hooks.notice()
 
         [opt_key(root, "_skip_auto")] = make_hud_options_hook(function()
             m.hook(
-                "app.ChatManager.pushBackSystem(app.net_packet.cChatBase, System.Boolean, System.Boolean, app.net_session_manager.SESSION_TYPE, System.Int32, System.Boolean, System.Boolean)",
+                "app.ChatManager.onReceiveSystem(app.net_packet.cChatBase, System.Boolean, System.Boolean, app.net_session_manager.SESSION_TYPE, System.Int32, System.Boolean, System.Boolean)",
                 elements.notice.skip_auto_message_pre
             )
         end, function(_)
