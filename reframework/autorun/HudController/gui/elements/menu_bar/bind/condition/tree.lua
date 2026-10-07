@@ -317,7 +317,6 @@ function this.make_tree(path)
         local parent_disabled = disabled
         for i, rule_set in ipairs(sets) do
             local manager = managers[rule_set.type]
-
             if rule_set then
                 local set_path = string.format("%s.sets.int:%s", parent_path, i)
                 ---@type ConditionTreeNode[]
@@ -325,10 +324,10 @@ function this.make_tree(path)
 
                 for rule_index, rule in ipairs(rule_set.rules or {}) do
                     local rule_path = string.format("%s.rules.int:%d", set_path, rule_index)
-                    disabled = disabled
+                    local rule_disabled = parent_disabled
                         or not util_table.any(rule.conditions, function(_, value)
                             return not util_table.empty(value)
-                        end) --[[@as boolean]]
+                        end)
 
                     table.insert(rules, {
                         name = manager:get_rule_name(rule_path, false),
@@ -341,7 +340,7 @@ function this.make_tree(path)
                             rule.sets,
                             rule_path,
                             rule.cond_type_selection,
-                            disabled
+                            rule_disabled
                         ),
                         selected_edit = parent_path == path
                             and rule_set.selection == rule_index
@@ -349,7 +348,7 @@ function this.make_tree(path)
                         tooltip = function()
                             cond_draw.draw_tooltip(manager, rule_path)
                         end,
-                        disabled = disabled,
+                        disabled = rule_disabled,
                         is_dummy = false,
                     })
                 end
