@@ -2,6 +2,8 @@ local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
+local s = require("HudController.util.ref.singletons")
+local timer = require("HudController.util.misc.timer")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
@@ -31,13 +33,21 @@ end
 
 function this.reveal_elements_pre(args)
     if is_reveal() then
+        local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard") --[[@as ShortcutKeyboard]]
         local o = sdk.to_managed_object(args[2]) --[[@as ace.GUIBase]]
         local guiid = o:get_ID()
         local clock = e.get("app.GUIID.ID").UI020009
         local target_icon = e.get("app.GUIID.ID").UI020012
         local slinger = e.get("app.GUIID.ID").UI020017
 
-        if util_table.contains_any({ clock, target_icon, slinger }, guiid) then
+        local t = { clock, target_icon, slinger }
+
+        if shortcut_keyboard.hide then
+            local itembar = e.get("app.GUIID.ID").UI020006
+            table.insert(t, itembar)
+        end
+
+        if util_table.contains_any(t, guiid) then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -138,6 +148,28 @@ function this.prevent_close2_pre(args)
     local button = util_ref.to_int(args[3])
     if button == shortcut_keyboard:get_GUI020600().SLOT_CLOSE_NORMAL_PALLET then
         return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
+
+function this.close_after_use_pre(args)
+    local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+    if not shortcut_keyboard or not shortcut_keyboard.close_after_use then
+        return
+    end
+
+    local GUI020600 = sdk.to_managed_object(args[2]) --[[@as app.GUI020600]]
+    local restore_hide = false
+
+    if not shortcut_keyboard.hide then
+        shortcut_keyboard:set_hide(true)
+        restore_hide = true
+    end
+
+    GUI020600:requestClosePCShortcut()
+    if restore_hide then
+        timer.request_one_timer("ShortcutKeyboard_reveal", 10, function()
+            shortcut_keyboard:set_hide(false)
+        end, "frame")
     end
 end
 

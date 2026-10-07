@@ -504,6 +504,18 @@ function hud_hooks.shortcut_keyboard()
                 nil,
                 elements.shortcut_keyboard.reveal_mantle_post
             )
+            m.hook(
+                "app.GUIManager.lateUpdateApp()",
+                nil,
+                elements.shortcut_keyboard.reveal_elements_flag_post
+            )
+        end),
+
+        [opt_key(root, def.opt.close_after_use)] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUI020600.execute(System.Int32)",
+                elements.shortcut_keyboard.close_after_use_pre
+            )
         end),
 
         [opt_key(root, def.opt.always_visible)] = make_hud_options_hook(function()

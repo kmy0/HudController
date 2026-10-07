@@ -26,6 +26,17 @@ local this = {
                 ctx.elem:set_always_visible(value)
             end,
         },
+        ---@type ShortcutKeyboardBooleanDef
+        close_after_use = {
+            key = "close_after_use",
+            lang_key = "hud_element.entry.box_close_after_use",
+            bindable = true,
+            draw = util_opt.checkbox,
+            format = util_opt.format_checkbox,
+            apply = function(_, ctx, value)
+                ctx.elem:set_close_after_use(value)
+            end,
+        },
     },
 }
 

@@ -145,6 +145,8 @@
 ---| "hud_element.entry.big"
 ---| "hud_element.entry.box_align_left"
 ---| "hud_element.entry.box_always_visible"
+---| "hud_element.entry.box_close_after_use"
+---| "hud_element.entry.tooltip_close_after_use"
 ---| "hud_element.entry.box_appear_open"
 ---| "hud_element.entry.box_cache_messages"
 ---| "hud_element.entry.box_cache_sfx"

@@ -598,6 +598,7 @@
 ---@field setEndTrue fun(self: app.cBowlingUpdater.UpdaterBase)
 
 ---@class app.GUI020600 : app.GUIHudBase
+---@field requestClosePCShortcut fun(self: app.GUI020600)
 ---@field get__CtrlTab_Normal fun(self: app.GUI020600): ace.cGUIInputCtrl_FluentScrollList
 ---@field _IsOpen System.Boolean
 ---@field _Frames System.Array<System.Array<app.GUI020600PartsFrame>>

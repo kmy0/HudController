@@ -12,10 +12,8 @@ return function(elem, elem_config, config_key)
         config.lang:tr("hud_element.entry.category_shortcut_keyboard_behavior")
     )
     util_opt.draw_apply_elem(def.opt.no_hide_elements, ctx)
-    util_imgui.tooltip(
-        config.lang:tr("hud_element.entry.tooltip_keyboard_shortcut_only_one_row"),
-        true
-    )
+    util_opt.draw_apply_elem(def.opt.close_after_use, ctx)
+    util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_close_after_use"), true)
     util_opt.draw_apply_elem(def.opt.always_visible, ctx)
     util_imgui.tooltip(
         config.lang:tr("hud_element.entry.tooltip_keyboard_shortcut_only_one_row"),

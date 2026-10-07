@@ -1,6 +1,6 @@
 ---@class ElementOptionDef<E, C, T>
 ---@field key string
----@field lang_key string
+---@field lang_key TranslationKey
 ---@field bindable boolean
 ---@field draw fun(_: ElementOptionDef<E, C, T>, label: string?, config_key: string): boolean
 ---@field format fun(_: ElementOptionDef<E, C, T>, value: T): string

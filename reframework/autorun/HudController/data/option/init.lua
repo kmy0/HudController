@@ -1,6 +1,6 @@
 ---@class OptionDef<T>
 ---@field key string
----@field config_key string | fun(self: OptionDef<T>, ...): string
+---@field config_key TranslationKey | fun(self: OptionDef<T>, ...): TranslationKey
 ---@field lang_key string
 ---@field bindable boolean
 ---@field combo ComboValues?

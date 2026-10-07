@@ -547,6 +547,8 @@ return {
             box_itembar_slinger_visible = "Do Not Hide Slinger",
             box_itembar_enable_mouse_control = "Enable Mouse Control",
             box_always_visible = "Always Visible",
+            box_close_after_use = "Close After Item Use",
+            tooltip_close_after_use = "Should be used together with Do Not Hide Elements",
             box_appear_open = "Appear Open",
             box_radial_always_expanded = "Radial Always Expanded",
             box_pallet_always_expanded = "Pallet Always Expanded",

@@ -1,6 +1,7 @@
 ---@class (exact) ShortcutKeyboard : HudBase
 ---@field get_config fun(): ShortcutKeyboardConfig
 ---@field no_hide_elements boolean
+---@field close_after_use boolean
 ---@field always_visible boolean
 ---@field GUI020600 app.GUI020600
 ---@field open_timer Timer
@@ -19,6 +20,7 @@
 ---@class (exact) ShortcutKeyboardConfig : HudBaseConfig
 ---@field no_hide_elements boolean
 ---@field always_visible boolean
+---@field close_after_use boolean
 ---@field children {
 --- background_blur: CtrlChildConfig,
 --- tab: ShortcutKeyboardTabConfig,
@@ -34,12 +36,14 @@
 ---@class (exact) ShortcutKeyboardChangedProperties : HudChildChangedProperties
 ---@field no_hide_elements boolean?
 ---@field always_visible boolean?
+---@field close_after_use boolean?
 
 ---@class (exact) ShortcutKeyboardProperties : {[ShortcutKeyboardProperty]: boolean}, HudChildProperties
 ---@field no_hide_elements boolean
 ---@field always_visible boolean
+---@field close_after_use boolean
 
----@alias ShortcutKeyboardProperty HudChildProperty | "no_hide_elements" | "always_visible"
+---@alias ShortcutKeyboardProperty HudChildProperty | "no_hide_elements" | "always_visible" | "close_after_use"
 
 ---@class (exact) ShortcutKeyboardControlArguments
 ---@field background_blur PlayObjectGetterFn[]
@@ -138,6 +142,7 @@ function this:new(args)
     o.properties = util_table.merge(o.properties, {
         no_hide_elements = true,
         always_visible = true,
+        close_after_use = true,
     })
     o.open_timer = timer:new(15, { type = "frame" })
     o.always_visible_delay_timer = timer:new(0.5)
@@ -166,6 +171,7 @@ function this:new(args)
 
     o.no_hide_elements = args.no_hide_elements
     o.always_visible = args.always_visible
+    o.close_after_use = args.close_after_use
     o.is_always_visible = frame_cache.memoize(o.is_always_visible)
     return o
 end
@@ -178,6 +184,11 @@ end
 ---@param val boolean
 function this:set_always_visible(val)
     self.always_visible = val
+end
+
+---@param val boolean
+function this:set_close_after_use(val)
+    self.close_after_use = val
 end
 
 ---@return app.GUI020600
@@ -275,6 +286,7 @@ function this.get_config()
 
     base.no_hide_elements = false
     base.always_visible = false
+    base.close_after_use = false
     children.background_blur = {
         name_key = "background_blur",
         hide = false,
