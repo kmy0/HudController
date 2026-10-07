@@ -126,14 +126,30 @@ local function evaluate(cond_config, base_path, triggered_rules)
             end
 
             if pass then
+                --[[
+                    rules run top to bottom
+                    children have priority over their parent
+                    earlier rules have priority over later rules
+
+                    a
+                    ├─ a1
+                    │  └─ a1a
+                    ├─ a2
+                    b
+                    ├─ b1
+                    ├─ b2
+                    c
+
+                    a1a → a1 → a2 → a → b1 → b2 → b → c
+                ]]
+                if not evaluate(rule, rule_path, triggered_rules) then
+                    return
+                end
+
                 table.insert(
                     triggered_rules,
                     { rule = rule, path = rule_path, type = rule_set.type }
                 )
-
-                if not evaluate(rule, rule_path, triggered_rules) then
-                    return
-                end
             end
         end
     end
@@ -149,7 +165,7 @@ local function get_evaluation_result(triggered_rules)
     ---@type ConditionEvalResult
     local ret = {}
 
-    for i = #triggered_rules, 1, -1 do
+    for i = 1, #triggered_rules do
         local t = triggered_rules[i]
         local key = key_map[t.type]
         local opt_key = t.rule.free_value
