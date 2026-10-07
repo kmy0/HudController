@@ -824,7 +824,7 @@ end
 ---@param draw_fn fun()
 ---@param init_w? number
 ---@param init_h? number
-function this.button_with_popup(label, draw_fn, init_w, init_h)
+function this.button_with_popup_resizable(label, draw_fn, init_w, init_h)
     local popup_id = "##" .. label .. "_popup"
     local pos = imgui.get_cursor_screen_pos()
 
@@ -839,6 +839,23 @@ function this.button_with_popup(label, draw_fn, init_w, init_h)
         init_w,
         init_h
     )
+end
+
+---@param label string
+---@param draw_fn fun()
+function this.button_with_popup(label, draw_fn)
+    local popup_id = "##" .. label .. "_popup"
+    local pos = imgui.get_cursor_screen_pos()
+
+    if imgui.button(label) then
+        imgui.open_popup(popup_id)
+    end
+
+    imgui.set_next_window_pos({ pos.x, pos.y + this.get_frame_height() }, 1)
+    if imgui.begin_popup(popup_id, 4 | 64) then
+        draw_fn()
+        imgui.end_popup()
+    end
 end
 
 ---@return number

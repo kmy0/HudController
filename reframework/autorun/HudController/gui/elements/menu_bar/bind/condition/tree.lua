@@ -394,51 +394,56 @@ function this.draw(root, collapsed)
     ---@type string?
     local ret
 
-    util_imgui.button_with_popup(config.lang:tr("menu.bind.condition.button_tree"), function()
-        util_imgui.even_popup_border(function()
-            local x_size = util_imgui.get_max_button_size(
-                config.lang:tr("menu.bind.condition.button_expand_all"),
-                config.lang:tr("menu.bind.condition.button_collapse_all")
-            )
-
-            if
-                imgui.button(
-                    is_collapsed and config.lang:tr("menu.bind.condition.button_expand_all")
-                        or config.lang:tr("menu.bind.condition.button_collapse_all"),
-                    { x_size, 0 }
+    util_imgui.button_with_popup_resizable(
+        config.lang:tr("menu.bind.condition.button_tree"),
+        function()
+            util_imgui.even_popup_border(function()
+                local x_size = util_imgui.get_max_button_size(
+                    config.lang:tr("menu.bind.condition.button_expand_all"),
+                    config.lang:tr("menu.bind.condition.button_collapse_all")
                 )
-            then
-                is_collapsed = not is_collapsed
 
-                set_all_collapsed(
-                    root,
-                    collapsed,
-                    root.id or root.config_key or "root",
-                    is_collapsed
-                )
-            end
+                if
+                    imgui.button(
+                        is_collapsed and config.lang:tr("menu.bind.condition.button_expand_all")
+                            or config.lang:tr("menu.bind.condition.button_collapse_all"),
+                        { x_size, 0 }
+                    )
+                then
+                    is_collapsed = not is_collapsed
 
-            ---@type ConditionTreeStyle
-            local style = {
-                indent = util_imgui.scale_w_font_size(24),
-                normal_color = color.with_alpha(style.color.accent_sel_secondary),
-                selected_color = color.with_alpha(style.color.accent_sel),
-                triggering_color = color.with_alpha(style.color.good),
-                overridden_color = color.with_alpha(style.color.good_less),
-                invalid_color = color.with_alpha(style.color.bad),
-                line_thickness = 2,
-                node_gap = 2,
-                summaries = {},
-            }
-            summarize(root, style.summaries)
+                    set_all_collapsed(
+                        root,
+                        collapsed,
+                        root.id or root.config_key or "root",
+                        is_collapsed
+                    )
+                end
 
-            imgui.indent(2)
-            local _, _, selected_key =
-                draw_node(root, style, collapsed, root.id or root.config_key or "root")
-            imgui.unindent(2)
-            ret = selected_key
-        end)
-    end, util_imgui.scale_w_font_size(262), util_imgui.scale_w_font_size(262))
+                ---@type ConditionTreeStyle
+                local style = {
+                    indent = util_imgui.scale_w_font_size(24),
+                    normal_color = color.with_alpha(style.color.accent_sel_secondary),
+                    selected_color = color.with_alpha(style.color.accent_sel),
+                    triggering_color = color.with_alpha(style.color.good),
+                    overridden_color = color.with_alpha(style.color.good_less),
+                    invalid_color = color.with_alpha(style.color.bad),
+                    line_thickness = 2,
+                    node_gap = 2,
+                    summaries = {},
+                }
+                summarize(root, style.summaries)
+
+                imgui.indent(2)
+                local _, _, selected_key =
+                    draw_node(root, style, collapsed, root.id or root.config_key or "root")
+                imgui.unindent(2)
+                ret = selected_key
+            end)
+        end,
+        util_imgui.scale_w_font_size(262),
+        util_imgui.scale_w_font_size(262)
+    )
 
     return ret
 end
