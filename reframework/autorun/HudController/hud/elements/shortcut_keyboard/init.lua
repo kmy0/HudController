@@ -228,6 +228,16 @@ function this:is_open()
     return (is_open or self.open_timer:active()) and m.canOpenStartMenu(true)
 end
 
+---@return boolean
+function this:is_open_no_menu_check()
+    local is_open = self:get_GUI020600()._IsOpen
+    if is_open then
+        self.open_timer:restart()
+    end
+
+    return is_open or self.open_timer:active()
+end
+
 ---@param val number
 function this:set_open_timer(val)
     local timer = self:get_GUI020600()._DispTimer

@@ -13,6 +13,13 @@ local function is_reveal()
     return shortcut_keyboard and shortcut_keyboard.no_hide_elements and shortcut_keyboard:is_open()
 end
 
+local function is_reveal_no_menu_check()
+    local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+    return shortcut_keyboard
+        and shortcut_keyboard.no_hide_elements
+        and shortcut_keyboard:is_open_no_menu_check()
+end
+
 function this.reveal_minimap_pre(args)
     if is_reveal() then
         local flow = sdk.to_managed_object(args[2]) --[[@as app.cGUIMapFlowCtrl]]
@@ -45,6 +52,13 @@ function this.reveal_mantle_post(_)
 
         mantle:set_Visible(true)
         mantle:set_ForceInvisible(false)
+    end
+end
+
+function this.reveal_elements_flag_post(_)
+    if is_reveal_no_menu_check() then
+        local flags = s.get("app.GUIManager"):get_AppContinueFlag()
+        flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG").DISABLE_STAT_MENU_OPEN)
     end
 end
 
