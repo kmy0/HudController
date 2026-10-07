@@ -309,7 +309,7 @@ end
 ---@param config MainSettings
 function this.fns.hud_config(config)
     local function f(elem_config)
-        if elem_config.enabled_scale ~= nil then
+        if elem_config.enabled_scale ~= nil or elem_config.scale then
             elem_config.scale = {
                 enabled = elem_config.enabled_scale,
                 x = elem_config.scale.x,
@@ -318,7 +318,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_scale = nil
         end
 
-        if elem_config.enabled_offset ~= nil then
+        if elem_config.enabled_offset ~= nil or elem_config.offset then
             elem_config.offset = {
                 enabled = elem_config.enabled_offset,
                 x = elem_config.offset.x,
@@ -327,7 +327,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_offset = nil
         end
 
-        if elem_config.enabled_rot ~= nil then
+        if elem_config.enabled_rot ~= nil or elem_config.rot then
             elem_config.rot = {
                 enabled = elem_config.enabled_rot,
                 value = elem_config.rot,
@@ -335,7 +335,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_rot = nil
         end
 
-        if elem_config.enabled_color ~= nil then
+        if elem_config.enabled_color ~= nil or elem_config.color then
             elem_config.color = {
                 enabled = elem_config.enabled_color,
                 value = elem_config.color,
@@ -343,7 +343,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_color = nil
         end
 
-        if elem_config.enabled_size_x ~= nil then
+        if elem_config.enabled_size_x ~= nil or elem_config.size_x then
             elem_config.size_x = {
                 enabled = elem_config.enabled_size_x,
                 value = elem_config.size_x,
@@ -351,7 +351,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_size_x = nil
         end
 
-        if elem_config.enabled_size_y ~= nil then
+        if elem_config.enabled_size_y ~= nil or elem_config.size_y then
             elem_config.size_y = {
                 enabled = elem_config.enabled_size_y,
                 value = elem_config.size_y,
@@ -359,7 +359,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_size_y = nil
         end
 
-        if elem_config.enabled_opacity ~= nil then
+        if elem_config.enabled_opacity ~= nil or elem_config.opacity then
             elem_config.opacity = {
                 enabled = elem_config.enabled_opacity,
                 value = elem_config.opacity,
@@ -367,7 +367,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_opacity = nil
         end
 
-        if elem_config.enabled_segment ~= nil then
+        if elem_config.enabled_segment ~= nil or elem_config.segment then
             elem_config.segment = {
                 enabled = elem_config.enabled_segment,
                 value = elem_config.segment,
@@ -375,7 +375,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_segment = nil
         end
 
-        if elem_config.enabled_play_state ~= nil then
+        if elem_config.enabled_play_state ~= nil or elem_config.play_state then
             elem_config.play_state = {
                 enabled = elem_config.enabled_play_state,
                 value = elem_config.play_state,
@@ -383,7 +383,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_play_state = nil
         end
 
-        if elem_config.enabled_color_scale ~= nil then
+        if elem_config.enabled_color_scale ~= nil or elem_config.color_scale then
             elem_config.color_scale = {
                 enabled = elem_config.enabled_color_scale,
                 x = elem_config.color_scale.x,
@@ -411,7 +411,7 @@ function this.fns.hud_config(config)
             end
         end
 
-        if elem_config.enabled_control_point ~= nil then
+        if elem_config.enabled_control_point ~= nil or elem_config.control_point then
             elem_config.control_point = {
                 enabled = elem_config.enabled_control_point,
                 value = elem_config.control_point,
@@ -419,7 +419,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_control_point = nil
         end
 
-        if elem_config.enabled_blend ~= nil then
+        if elem_config.enabled_blend ~= nil or elem_config.blend then
             elem_config.blend = {
                 enabled = elem_config.enabled_blend,
                 value = elem_config.blend,
@@ -427,7 +427,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_blend = nil
         end
 
-        if elem_config.enabled_alpha_channel ~= nil then
+        if elem_config.enabled_alpha_channel ~= nil or elem_config.alpha_channel then
             elem_config.alpha_channel = {
                 enabled = elem_config.enabled_alpha_channel,
                 value = elem_config.alpha_channel,
@@ -440,7 +440,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_ignore_alpha = nil
         end
 
-        if elem_config.enabled_glow_color ~= nil then
+        if elem_config.enabled_glow_color ~= nil or elem_config.glow_color then
             elem_config.glow_color = {
                 enabled = elem_config.enabled_glow_color,
                 value = elem_config.glow_color,
@@ -448,7 +448,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_glow_color = nil
         end
 
-        if elem_config.enabled_font_size ~= nil then
+        if elem_config.enabled_font_size ~= nil or elem_config.font_size then
             elem_config.font_size = {
                 enabled = elem_config.enabled_font_size,
                 value = elem_config.font_size,
@@ -456,7 +456,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_font_size = nil
         end
 
-        if elem_config.enabled_page_alignment ~= nil then
+        if elem_config.enabled_page_alignment ~= nil or elem_config.page_alignment then
             elem_config.page_alignment = {
                 enabled = elem_config.enabled_page_alignment,
                 value = elem_config.page_alignment,
@@ -464,7 +464,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_page_alignment = nil
         end
 
-        if elem_config.enabled_offset_x ~= nil then
+        if elem_config.enabled_offset_x ~= nil or elem_config.offset_x then
             elem_config.offset_x = {
                 enabled = elem_config.enabled_offset_x,
                 value = elem_config.offset_x,
@@ -472,7 +472,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_offset_x = nil
         end
 
-        if elem_config.enabled_clock_offset_x ~= nil then
+        if elem_config.enabled_clock_offset_x ~= nil or elem_config.clock_offset_x then
             elem_config.clock_offset_x = {
                 enabled = elem_config.enabled_clock_offset_x,
                 value = elem_config.clock_offset_x,
@@ -480,7 +480,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_clock_offset_x = nil
         end
 
-        if elem_config.enabled_num_offset_x ~= nil then
+        if elem_config.enabled_num_offset_x ~= nil or elem_config.num_offset_x then
             elem_config.num_offset_x = {
                 enabled = elem_config.enabled_num_offset_x,
                 value = elem_config.num_offset_x,
@@ -488,7 +488,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_num_offset_x = nil
         end
 
-        if elem_config.enabled_box ~= nil then
+        if elem_config.enabled_box ~= nil or elem_config.box then
             elem_config.box = {
                 enabled = elem_config.enabled_box,
                 x = elem_config.box.x,
@@ -499,7 +499,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_box = nil
         end
 
-        if elem_config.enabled_fov ~= nil then
+        if elem_config.enabled_fov ~= nil or elem_config.fov_map then
             elem_config.fov_map = {
                 enabled = elem_config.enabled_fov,
                 value = elem_config.fov_map,
@@ -507,7 +507,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_fov = nil
         end
 
-        if elem_config.enabled_icon_scale ~= nil then
+        if elem_config.enabled_icon_scale ~= nil or elem_config.scale_icon then
             elem_config.scale_icon = {
                 enabled = elem_config.enabled_icon_scale,
                 value = elem_config.scale_icon,
@@ -515,7 +515,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_icon_scale = nil
         end
 
-        if elem_config.enabled_rot_map ~= nil then
+        if elem_config.enabled_rot_map ~= nil or elem_config.rot_map then
             elem_config.rot_map = {
                 enabled = elem_config.enabled_rot_map,
                 value = elem_config.rot_map,
@@ -523,7 +523,7 @@ function this.fns.hud_config(config)
             elem_config.enabled_rot_map = nil
         end
 
-        if elem_config.enabled_angle_map ~= nil then
+        if elem_config.enabled_angle_map ~= nil or elem_config.angle_map then
             elem_config.angle_map = {
                 enabled = elem_config.enabled_angle_map,
                 value = elem_config.angle_map,
