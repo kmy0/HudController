@@ -266,12 +266,13 @@ return {
                 ride_ignore_combat = "Riding = Out of Combat",
                 ride_ignore_combat_tooltip = "While riding on a Seikret, In Combat state won't trigger",
                 text_trigger_duration = "Trigger Duration",
-                --TODO:
+                tooltip_triggering = "Triggering",
+                tooltip_overridden = "Triggering, but overridden",
+                tooltip_invalid = "Invalid",
+                tooltip_selected = "Selected",
+                tooltip_selected_rule = "Selected Rule",
                 tooltip_restore = "Restore the original value when the rule stops triggering",
-                tooltip_add_new_condition = "Rules are evaluated from top to bottom",
-                tooltip_wrong_parent_key = "These element profile rules belong to %s and are currently inactive.\nSwitch back to %s to use them.",
-                tooltip_option_condition_set = "Rules are applied from top to bottom",
-                tooltip_elem_condition_set = "Rules are applied from top to bottom. Within each passing rule, selected profiles are evaluated from right to left.\nThe first enabled profile available for an element is used.",
+                tooltip_bind_condition = "Rules are checked from top to bottom. A rule can have children, like folders in a file explorer. Children are checked after their parent and have priority over it. Earlier rules have priority over later rules. Use the tree or breadcrumbs to navigate the structure. Bind keys set to Repeat override bind conditions while active.",
             },
             condition_option = {
                 name = "Condition Options",

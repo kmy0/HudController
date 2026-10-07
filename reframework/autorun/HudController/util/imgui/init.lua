@@ -63,6 +63,45 @@ function this.tooltip(text, separate, separate_text, col)
     end
 end
 
+---@param text string
+---@param pos Vector2f
+---@param separate_text string? by_default (?)
+---@param col integer?
+function this.tooltip_pos(text, pos, separate_text, col)
+    col = col or style.color.text_tooltip
+
+    separate_text = separate_text or "(?)"
+    imgui.set_cursor_pos(pos)
+    imgui.text_colored(separate_text, color.with_alpha(col))
+
+    if imgui.is_item_hovered() then
+        imgui.set_tooltip(text)
+    end
+end
+
+---@param draw_fn fun()
+---@param pos Vector2f
+---@param separate_text string? by_default (?)
+---@param col integer?
+---@param width integer?
+function this.tooltip_custom_pos(draw_fn, pos, separate_text, col, width)
+    col = col or style.color.text_tooltip
+
+    separate_text = separate_text or "(?)"
+    imgui.set_cursor_pos(pos)
+    imgui.text_colored(separate_text, color.with_alpha(col))
+
+    if imgui.is_item_hovered() then
+        if width then
+            imgui.set_next_window_size({ width, 0 })
+        end
+
+        imgui.begin_tooltip()
+        draw_fn()
+        imgui.end_tooltip()
+    end
+end
+
 ---@param draw_fn fun()
 ---@param separate boolean?
 ---@param separate_text string? by_default (?)
@@ -282,10 +321,12 @@ end
 
 ---@param label string
 ---@param size_object Vector2f|Vector3f|Vector4f|number[]?
-function this.dummy_button(label, size_object)
-    imgui.push_style_color(21, 4282400832)
-    imgui.push_style_color(22, 4282400832)
-    imgui.push_style_color(23, 4282400832)
+---@param col integer?
+function this.dummy_button(label, size_object, col)
+    col = col or 4282400832
+    imgui.push_style_color(21, col)
+    imgui.push_style_color(22, col)
+    imgui.push_style_color(23, col)
     local ret = imgui.button(label, size_object)
     imgui.pop_style_color(3)
     return ret
@@ -890,11 +931,6 @@ function this.get_available_width()
     local cursor_start = imgui.get_cursor_start_pos()
 
     return window_size.x - cursor_pos.x - cursor_start.x - (get_scrollbar_width())
-end
-
----@return number
-function this.get_button_height()
-    return imgui.calc_text_size("A").y + style.size.frame_padding_y * 2
 end
 
 ---@param id string

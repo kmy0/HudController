@@ -9,6 +9,7 @@ local tree = require("HudController.gui.elements.menu_bar.bind.condition.tree")
 local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_menubar = require("HudController.gui.elements.menu_bar.util")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {
@@ -25,6 +26,82 @@ local function any_rules(config_key)
     end)] --[[@as ConditionBindRuleSet]]
 
     return set and not util_table.empty(set.rules)
+end
+
+local function draw_tooltip()
+    imgui.same_line()
+    local width = util_imgui.get_available_width()
+    local text_size = imgui.calc_text_size("(?)")
+    width = width - text_size.x - 4
+
+    if width < 0 then
+        imgui.new_line()
+        return
+    end
+
+    local pos = imgui.get_cursor_pos()
+    pos.x = pos.x + width
+    util_imgui.tooltip_custom_pos(function()
+        util_imgui.even_popup_border(function()
+            local button_size = util_imgui.get_frame_height()
+
+            imgui.begin_group()
+
+            util_imgui.dummy_button(
+                "##bind_cond_tooltip|trigger",
+                { button_size, button_size },
+                style.color.good
+            )
+            imgui.same_line()
+            imgui.text(config.lang:tr("menu.bind.condition.tooltip_triggering"))
+
+            util_imgui.dummy_button(
+                "##bind_cond_tooltip|overridden",
+                { button_size, button_size },
+                style.color.good_less
+            )
+            imgui.same_line()
+            imgui.text(config.lang:tr("menu.bind.condition.tooltip_overridden"))
+
+            util_imgui.dummy_button(
+                "##bind_cond_tooltip|invalid",
+                { button_size, button_size },
+                style.color.bad
+            )
+            imgui.same_line()
+            imgui.text(config.lang:tr("menu.bind.condition.tooltip_invalid"))
+
+            util_imgui.dummy_button(
+                "##bind_cond_tooltip|selected",
+                { button_size, button_size },
+                style.color.accent_sel_dark
+            )
+            imgui.same_line()
+            imgui.text(config.lang:tr("menu.bind.condition.tooltip_selected"))
+
+            imgui.begin_rect()
+            util_imgui.dummy_button(
+                "##bind_cond_tooltip|selected_rule",
+                { button_size, button_size },
+                style.color.transparent
+            )
+            imgui.push_style_color(5, style.color.accent_sel_dark)
+            imgui.end_rect(0, style.size.rounding)
+            imgui.pop_style_color(1)
+            imgui.same_line()
+            imgui.text(config.lang:tr("menu.bind.condition.tooltip_selected_rule"))
+
+            imgui.new_line()
+            imgui.text(
+                util_misc.wrap_text(
+                    config.lang:tr("menu.bind.condition.tooltip_bind_condition"),
+                    util_imgui.scale_w_font_size(60)
+                )
+            )
+
+            imgui.end_group()
+        end)
+    end, pos)
 end
 
 local function draw_condition_bind_menu()
@@ -49,6 +126,8 @@ local function draw_condition_bind_menu()
     imgui.same_line()
     new_path = breadcrumbs.draw(breadcrumbs.make_breadcrumbs(path))
     check_new_path()
+
+    draw_tooltip()
 
     local has_rules = any_rules(path)
     local buttons, button_width = cond_draw.get_buttons()
