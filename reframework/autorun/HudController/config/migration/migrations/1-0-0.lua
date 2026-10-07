@@ -210,8 +210,12 @@ end
 ---@param config MainSettings
 function this.fns.conditions(config)
     if not util_table.empty(config.mod.bind.condition.hud) then
-        config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD] =
+        table.insert(
+            config.mod.bind.condition.sets,
             bind_condition.new_condition_rule_set(mod_enum.bind_cond_type.HUD)
+        )
+
+        table.remove(config.mod.bind.condition.sets[1].rules, 1)
     end
 
     local weapon_array = util_table.sort(
@@ -241,7 +245,7 @@ function this.fns.conditions(config)
             table.insert(conditions, always:new_config())
         end
 
-        table.insert(config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD].rules, rule)
+        table.insert(config.mod.bind.condition.sets[1].rules, rule)
     end
 
     config.mod.bind.condition.hud = nil
