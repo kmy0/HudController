@@ -369,7 +369,7 @@ function hud_hooks.name_other()
 
             return name_other.pl_draw_distance > 0
                 or name_other.pet_draw_distance > 0
-                or util_table.any(name_other.nameplate_type)
+                or not util_table.empty(name_other.nameplate_type)
         end),
     }
 end
@@ -455,7 +455,7 @@ function hud_hooks.notice()
                 return false
             end
 
-            return notice.hide or util_table.any(notice.system_log)
+            return notice.hide or not util_table.empty(notice.system_log)
         end),
 
         [opt_key(root, "_skip_lobby")] = make_hud_options_hook(function()
@@ -469,7 +469,7 @@ function hud_hooks.notice()
                 return false
             end
 
-            return notice.hide or util_table.any(notice.chat_log)
+            return notice.hide or not util_table.empty(notice.chat_log)
         end),
 
         [opt_key(root, "_skip_auto")] = make_hud_options_hook(function()
@@ -483,7 +483,7 @@ function hud_hooks.notice()
                 return false
             end
 
-            return notice.hide or util_table.any(notice.auto_id)
+            return notice.hide or not util_table.empty(notice.auto_id)
         end),
     }
 end

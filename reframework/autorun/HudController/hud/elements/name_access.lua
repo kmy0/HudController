@@ -80,22 +80,22 @@ end
 
 ---@return boolean
 function this:any_gossip()
-    return util_table.any(self.gossip_type)
+    return not util_table.empty(self.gossip_type)
 end
 
 ---@return boolean
 function this:any_npc()
-    return util_table.any(self.npc_type)
+    return not util_table.empty(self.npc_type)
 end
 
 ---@return boolean
 function this:any_panel()
-    return util_table.any(self.panel_type)
+    return not util_table.empty(self.panel_type)
 end
 
 ---@return boolean
 function this:any_enemy()
-    return util_table.any(self.enemy_type)
+    return not util_table.empty(self.enemy_type)
 end
 
 ---@param val number
