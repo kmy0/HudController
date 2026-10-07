@@ -92,7 +92,8 @@ function this.hide_monster_icon_pre(args)
                 local flags = ctx:get_ContinueFlag()
                 local enum = e.get("app.EnemyDef.CONTINUE_FLAG")
                 flags:on(
-                    hud.get_hud_option(hud_def.hide_lock_target) and enum.HIDE_MAP_WITH_DISABLE_PIN
+                    hud.get_hud_option(hud_def.monster_icon) == mod.enum.em_icon.HIDE_ICON_TARGET
+                            and enum.HIDE_MAP_WITH_DISABLE_PIN
                         or enum.HIDE_MAP
                 )
             end
