@@ -4,6 +4,7 @@ local migration_base = require("HudController.util.misc.migration_base")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 local mod_enum = require("HudController.data.mod").enum
+local data_ace = require("HudController.data.ace")
 
 ---@module "HudController.hud.factory"
 local factory = util_misc.lazy_require("HudController.hud.factory")
@@ -15,6 +16,8 @@ local quest_end_timer = util_misc.lazy_require("HudController.hud.elements.quest
 local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
 ---@module "HudController.hud.bind.condition.conditions.always"
 local always = util_misc.lazy_require("HudController.hud.bind.condition.conditions.always")
+---@module "HudController.hud.bind.condition.conditions.weapon"
+local weapon = util_misc.lazy_require("HudController.hud.bind.condition.conditions.weapon")
 
 local this = migration_base.new("1.0.0")
 
@@ -210,6 +213,13 @@ function this.fns.conditions(config)
         config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD] =
             bind_condition.new_condition_rule_set(mod_enum.bind_cond_type.HUD)
     end
+
+    local weapon_array = util_table.sort(
+        util_table.entries(data_ace.map.weaponid_name_to_local_name),
+        function(a, b)
+            return a.value < b.value
+        end
+    )
     for _, b in pairs(config.mod.bind.condition.hud) do
         local rule = bind_condition.new_condition_rule()
         rule.free_value = b.hud_key
@@ -217,12 +227,24 @@ function this.fns.conditions(config)
         rule.target_select = b.combo_hud
         rule.conditions = { util_table.deep_copy(b.conditions) }
 
-        if util_table.empty(rule.conditions[1]) then
-            table.insert(rule.conditions[1], always:new_config())
+        local conditions = rule.conditions[1]
+        for i, cond in pairs(conditions) do
+            if cond.class == "_WEAPON" then
+                local new_cond = weapon:new_config()
+                ---@cast cond MultiSelectConditionConfig
+                new_cond.selection[weapon_array[cond.combo].key] = true
+                conditions[i] = new_cond
+            end
+        end
+
+        if util_table.empty(conditions) then
+            table.insert(conditions, always:new_config())
         end
 
         table.insert(config.mod.bind.condition.sets[mod_enum.bind_cond_type.HUD].rules, rule)
     end
+
+    config.mod.bind.condition.hud = nil
 end
 
 ---@param config MainSettings
