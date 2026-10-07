@@ -824,7 +824,8 @@ end
 ---@param draw_fn fun()
 ---@param init_w? number
 ---@param init_h? number
-function this.button_with_popup_resizable(label, draw_fn, init_w, init_h)
+---@param flags ImGuiWindowFlags?
+function this.button_with_popup_resizable(label, draw_fn, init_w, init_h, flags)
     local popup_id = "##" .. label .. "_popup"
     local pos = imgui.get_cursor_screen_pos()
 
@@ -837,7 +838,8 @@ function this.button_with_popup_resizable(label, draw_fn, init_w, init_h)
         draw_fn,
         Vector2f.new(pos.x, pos.y + this.get_frame_height()),
         init_w,
-        init_h
+        init_h,
+        flags
     )
 end
 

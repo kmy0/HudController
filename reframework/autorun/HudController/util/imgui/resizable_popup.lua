@@ -403,11 +403,12 @@ end
 ---@param pos Vector2f
 ---@param init_w? number
 ---@param init_h? number
+---@param flags ImGuiWindowFlags?
 ---@return boolean
-function this.draw_popup(id, draw_contents, pos, init_w, init_h)
+function this.draw_popup(id, draw_contents, pos, init_w, init_h, flags)
     return this.draw(id, function()
         imgui.set_next_window_pos(pos, 1)
-        return imgui.begin_popup(id)
+        return imgui.begin_popup(id, flags)
     end, imgui.end_popup, draw_contents, init_w, init_h)
 end
 

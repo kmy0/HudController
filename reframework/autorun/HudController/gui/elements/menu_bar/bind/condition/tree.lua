@@ -442,7 +442,8 @@ function this.draw(root, collapsed)
             end)
         end,
         util_imgui.scale_w_font_size(262),
-        util_imgui.scale_w_font_size(262)
+        util_imgui.scale_w_font_size(262),
+        1 << 11
     )
 
     return ret
