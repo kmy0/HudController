@@ -1,11 +1,21 @@
 name: Release
+
 on:
   workflow_dispatch:
+    inputs:
+      publish_to_release_repo:
+        description: "Also publish to HudController-releases"
+        required: false
+        type: boolean
+        default: false
+
 jobs:
   release:
     runs-on: windows-2022
+
     env:
       BUILD_TYPE: Release
+
     steps:
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
@@ -14,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Configure CMake (HudController_util)
-        run: cmake -S ${{ github.workspace }}/deps/HudController_util -B ${{ github.workspace }}/deps/HudController_util/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDEVELOPER_MODE=ON "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+        run: cmake -S ${{ github.workspace }}/deps/HudController_util -B ${{ github.workspace }}/deps/HudController_util/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DDEVELOPER_MODE=ON "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
       - name: Build HudController_util
         run: cmake --build ${{ github.workspace }}/deps/HudController_util/build --config ${{ env.BUILD_TYPE }}
@@ -43,6 +53,7 @@ jobs:
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
           mkdir -p reframework/autorun/HudController/config
+
           cat > reframework/autorun/HudController/config/version.lua << EOF
           return {
               version = "$(git describe --tags --abbrev=0)",
@@ -52,7 +63,17 @@ jobs:
 
           powershell Compress-Archive -Path reframework -DestinationPath "HudController-${RELEASE_VERSION}.zip"
 
-      - name: Create Release
+      - name: Create Release (main repository)
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: "${{ env.RELEASE_VERSION }}"
+          tag: "${{ env.RELEASE_VERSION }}"
+          artifacts: "HudController-*.zip"
+          makeLatest: true
+
+      - name: Create Release (HudController-releases)
+        if: ${{ inputs.publish_to_release_repo }}
         uses: ncipollo/release-action@v1
         with:
           repo: HudController-releases
@@ -61,4 +82,4 @@ jobs:
           name: "${{ env.RELEASE_VERSION }}"
           tag: "${{ env.RELEASE_VERSION }}"
           artifacts: "HudController-*.zip"
-          makeLatest: true
+          makeLatest: false
