@@ -1,6 +1,8 @@
+local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local option_gui = require("HudController.gui.option")
 local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
 local util_gui = require("HudController.gui.util")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
@@ -48,12 +50,13 @@ function this.draw_apply_elem(opt, ctx, label)
         local overridden = ctx.elem.overridden_options[opt.key]
         if overridden ~= nil then
             imgui.same_line()
-            imgui.text(
+            imgui.text_colored(
                 string.format(
                     "(%s %s)",
                     config.lang:tr("misc.text_overridden"),
                     opt:format(overridden)
-                )
+                ),
+                color.with_alpha(style.color.info)
             )
         end
     end

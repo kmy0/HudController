@@ -1,3 +1,4 @@
+local color = require("HudController.util.imgui.color")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
@@ -34,8 +35,9 @@ local function check_overriden(changed, key, opt)
     local val = hud.get_overridden(key)
     if val ~= nil then
         imgui.same_line()
-        imgui.text(
-            string.format("(%s %s)", config.lang:tr("misc.text_overridden"), opt:format(val))
+        imgui.text_colored(
+            string.format("(%s %s)", config.lang:tr("misc.text_overridden"), opt:format(val)),
+            color.with_alpha(style.color.info)
         )
     end
 
