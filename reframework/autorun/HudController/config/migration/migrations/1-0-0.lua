@@ -547,7 +547,7 @@ function this.fns.hud_config(config)
         if minimap then
             local classic_minimap = minimap.children.classic_minimap
             classic_minimap.enabled_classic_minimap = minimap.enabled_classic_minimap
-            classic_minimap.hide_pl_pulse = minimap.pl_icon_pulse.play_state.enabled
+            classic_minimap.hide_pl_pulse = minimap.children.pl_icon_pulse.enabled_play_state
             minimap.front = nil
             minimap.mask = nil
             minimap.pl_icon_pulse = nil
