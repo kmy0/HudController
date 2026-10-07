@@ -258,4 +258,11 @@ function this.stop_camp_damage_post(_)
 end
 --#endregion
 
+function this.hide_em_quest_counter_icon_pre(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
+
 return this

@@ -112,6 +112,14 @@ function option_hooks.hide_monster_icon()
         nil,
         options.em.hide_map_em_navi_points_post
     )
+    m.hook(
+        "app.cGUI3DMapIconModelContoller.setQuestTargetIcon(app.cGUIQuestViewData)",
+        options.em.hide_em_quest_counter_icon_pre
+    )
+    m.hook(
+        "app.cGUIMapEmQuestCounterDummyIconController.setQuestTargetIcon(app.cGUIQuestViewData)",
+        options.em.hide_em_quest_counter_icon_pre
+    )
 end
 
 function option_hooks.hide_small_monsters()
