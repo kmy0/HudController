@@ -173,6 +173,7 @@ local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
 local timer = require("HudController.util.misc.timer")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local frame_counter = require("HudController.util.misc.frame_counter")
 local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
@@ -569,6 +570,16 @@ function this:change_visibility(ctrl, visible, hud_display)
             )
         then
             local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
+            -- when itembar is hidden and start_expanded is enabled, and itembar is revealed when pressing the open button,
+            -- the slider itembar flicker for few frames before it switches to expaned itembar when frame rate is higher than 45
+            -- cba to find proper fix for this
+            -- this only works when hidden is overridden by bind bound to the open button, also cba to deal with this
+            local finished_fn = self.name_key == "SLIDER_ITEM"
+                    and frame_counter.fps > 45
+                    and function()
+                        return self.hide_timer:elapsed() >= 12
+                    end
+                or nil
 
             if root_window then
                 local guiid = util_mod.get_gui_id(ctrl)
@@ -577,7 +588,7 @@ function this:change_visibility(ctrl, visible, hud_display)
                 self.hide_timer:restart()
                 call_queue.queue_func_guiid(
                     guiid,
-                    self:_make_restore_visibility_fn(guiid, root_window)
+                    self:_make_restore_visibility_fn(guiid, root_window, nil, finished_fn)
                 )
 
                 if self.name_key == "MINIMAP" then
@@ -588,7 +599,12 @@ function this:change_visibility(ctrl, visible, hud_display)
                         GUI060010_root:set_ForceInvisible(true)
                         call_queue.queue_func_guiid(
                             guiid,
-                            self:_make_restore_visibility_fn(guiid, root_window, GUI060010_root)
+                            self:_make_restore_visibility_fn(
+                                guiid,
+                                root_window,
+                                GUI060010_root,
+                                finished_fn
+                            )
                         )
                     end
                 end
@@ -933,12 +949,15 @@ end
 ---@param guiid app.GUIID.ID
 ---@param root_window via.gui.Control
 ---@param ctrl via.gui.Control?
-function this:_make_restore_visibility_fn(guiid, root_window, ctrl)
+---@param finished_fn (fun(): boolean)?
+function this:_make_restore_visibility_fn(guiid, root_window, ctrl, finished_fn)
     local function ret()
-        if
+        local finished = (
             root_window:get_PlayFrame() == root_window:get_StateFinishFrame()
             or self.hide_timer:finished()
-        then
+        ) and (finished_fn and finished_fn() or not finished_fn)
+
+        if finished then
             (ctrl and ctrl or root_window):set_ForceInvisible(false)
         else
             call_queue.queue_func_next_guiid(guiid, ret)
