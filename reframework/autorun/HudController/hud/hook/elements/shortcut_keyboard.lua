@@ -1,3 +1,4 @@
+local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
@@ -161,14 +162,19 @@ function this.close_after_use_pre(args)
     local restore_hide = false
 
     if not shortcut_keyboard.hide then
-        shortcut_keyboard:set_hide(true)
+        call_queue.queue_func(shortcut_keyboard.hud_id, function()
+            shortcut_keyboard:set_hide(true)
+        end)
+
         restore_hide = true
     end
 
     GUI020600:requestClosePCShortcut()
     if restore_hide then
         timer.request_one_timer("ShortcutKeyboard_reveal", 10, function()
-            shortcut_keyboard:set_hide(false)
+            call_queue.queue_func(shortcut_keyboard.hud_id, function()
+                shortcut_keyboard:set_hide(false)
+            end)
         end, "frame")
     end
 end
