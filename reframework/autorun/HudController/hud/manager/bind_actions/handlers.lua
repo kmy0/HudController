@@ -20,6 +20,7 @@
 ---@field hud BindActionHud
 
 local ace_misc = require("HudController.util.ace.misc")
+local call_queue = require("HudController.hud.call_queue")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local def = require("HudController.data.option.init")
@@ -137,21 +138,25 @@ local this = {
             local ctx = elements.get_element_ctx(value.ctx_path)
 
             if ctx then
-                local opt = def.elem.get_opt(key)
-                opt:apply(ctx, value.value)
-                ctx.elem.overridden_options[opt.key] = util_table.deep_copy(value.value)
                 local elem = ctx.elem:get_root()
-                local opt_hook_table = hook.hud_option_hooks[elem.name_key]
-                local opt_path = string.format("%s.%s", ctx.config_path, opt.key)
 
-                if opt_hook_table then
-                    local opt_hook = opt_hook_table[opt_path]
-                    if opt_hook and not hook.is_option_mod_hooked[opt_path] then
-                        opt_hook.force_once = true
+                call_queue.queue_func(elem.hud_id, function()
+                    local opt = def.elem.get_opt(key)
+                    opt:apply(ctx, value.value)
+                    ctx.elem.overridden_options[opt.key] = util_table.deep_copy(value.value)
+
+                    local opt_hook_table = hook.hud_option_hooks[elem.name_key]
+                    local opt_path = string.format("%s.%s", ctx.config_path, opt.key)
+
+                    if opt_hook_table then
+                        local opt_hook = opt_hook_table[opt_path]
+                        if opt_hook and not hook.is_option_mod_hooked[opt_path] then
+                            opt_hook.force_once = true
+                        end
                     end
-                end
 
-                hook.hook_hud(elem.hud_id, elem.name_key)
+                    hook.hook_hud(elem.hud_id, elem.name_key)
+                end)
             end
         end,
         notification = function(key, value)
