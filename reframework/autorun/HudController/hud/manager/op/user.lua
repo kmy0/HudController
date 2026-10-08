@@ -81,7 +81,7 @@ function this.verify_options()
             for k, _ in pairs(elem.user_options or {}) do
                 local reg_opt = user_option.bindable[k]
 
-                if reg_opt.module ~= "element" or reg_opt.element ~= hud_name then
+                if reg_opt and (reg_opt.module ~= "element" or reg_opt.element ~= hud_name) then
                     elem.user_options[k] = nil
                 elseif reg_opt then
                     local default_value = user_option.get_default(reg_opt)
