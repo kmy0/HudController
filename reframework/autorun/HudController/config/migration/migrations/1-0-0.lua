@@ -201,7 +201,7 @@ end
 
 ---@param config MainSettings
 function this.fns.conditions(config)
-    if not util_table.empty(config.mod.bind.condition.hud) then
+    if not util_table.empty(config.mod.bind.condition.hud or {}) then
         table.insert(config.mod.bind.condition.sets, {
             type = "HUD",
             rules = {
@@ -225,7 +225,7 @@ function this.fns.conditions(config)
         end
     )
 
-    for _, b in pairs(config.mod.bind.condition.hud) do
+    for _, b in pairs(config.mod.bind.condition.hud or {}) do
         local rule = {
             conditions = { {} },
             sets = {},
