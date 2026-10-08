@@ -211,10 +211,18 @@ end
 ---@param config MainSettings
 function this.fns.conditions(config)
     if not util_table.empty(config.mod.bind.condition.hud) then
-        table.insert(
-            config.mod.bind.condition.sets,
-            bind_condition.new_condition_rule_set(mod_enum.bind_cond_type.HUD)
-        )
+        table.insert(config.mod.bind.condition.sets, {
+            type = "HUD",
+            rules = {
+                {
+                    conditions = { {} },
+                    sets = {},
+                    cond_type_selection = "HUD",
+                    restore = false,
+                },
+            },
+            selection = 1,
+        })
 
         table.remove(config.mod.bind.condition.sets[1].rules, 1)
     end
@@ -225,17 +233,23 @@ function this.fns.conditions(config)
             return a.value < b.value
         end
     )
+
     for _, b in pairs(config.mod.bind.condition.hud) do
-        local rule = bind_condition.new_condition_rule()
+        local rule = {
+            conditions = { {} },
+            sets = {},
+            cond_type_selection = "HUD",
+            restore = false,
+        }
         rule.free_value = b.hud_key
         rule.free_value2 = 0
         rule.target_select = b.combo_hud
-        rule.conditions = { util_table.deep_copy(b.conditions) }
+        rule.conditions = { util_table.deep_copy(b.conditions or {}) }
 
         local conditions = rule.conditions[1]
         for i, cond in pairs(conditions) do
             if cond.class == "_WEAPON" then
-                local new_cond = weapon:new_config()
+                local new_cond = { class = "_WEAPON", combo = 1, negate = false, selected = {} }
                 ---@cast cond MultiSelectConditionConfig
                 new_cond.selection[weapon_array[cond.combo].key] = true
                 conditions[i] = new_cond
@@ -243,7 +257,10 @@ function this.fns.conditions(config)
         end
 
         if util_table.empty(conditions) then
-            table.insert(conditions, always:new_config())
+            table.insert(
+                conditions,
+                { class = "_ALWAYS", combo = 1, negate = false, selected = {} }
+            )
         end
 
         table.insert(config.mod.bind.condition.sets[1].rules, rule)
