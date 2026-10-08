@@ -64,7 +64,7 @@ local bind_option_migration = {
 local function bool_table_to_ordered(t)
     local ret = {}
     local keys = util_table.keys(util_table.filter(t, function(_, value)
-        return value
+        return value == true
     end))
     table.sort(keys)
     for i, key in ipairs(keys) do
@@ -86,6 +86,7 @@ function this.fns.notice(config)
                     "enemy_log",
                     "camp_log",
                     "auto_id",
+                    "log_id",
                 }) do
                     elem[entry] = bool_table_to_ordered(elem[entry])
                 end
