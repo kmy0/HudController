@@ -23,6 +23,8 @@ local util_table = require("HudController.util.misc.table")
 local options = util_misc.lazy_require("HudController.hud.manager.options")
 ---@module "HudController.hud.hook.init"
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
 ---@class ProfileSwitcher
 local this = {
@@ -88,7 +90,8 @@ function this.request_hud_with_default(new_hud, force)
     local profile = {}
     for _, elem in pairs(new_hud.elements) do
         if elem.current_profile ~= elem.default_profile then
-            profile_to[elem.name_key] = elem.profile[tostring(elem.default_profile)]
+            profile_to[elem.name_key] =
+                op.hud_elem_profile.get_elem_profile_no_create(elem, elem.default_profile)
         end
 
         elem.current_profile = elem.default_profile
@@ -144,16 +147,16 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
         end
     end
 
-    for _, element in pairs(new_hud.elements) do
-        local profile_id = get_new_profile(element)
+    for _, elem in pairs(new_hud.elements) do
+        local profile_id = get_new_profile(elem)
         if not profile_id then
-            profile_id = element.default_profile
+            profile_id = elem.default_profile
         end
 
-        local profile_key = tostring(profile_id)
-        changed_profiles[element.name_key] = element.profile[profile_key]
-        active_profiles[element.name_key] = profile_id
-        element.current_profile = profile_id
+        changed_profiles[elem.name_key] =
+            op.hud_elem_profile.get_elem_profile_no_create(elem, profile_id)
+        active_profiles[elem.name_key] = profile_id
+        elem.current_profile = profile_id
     end
 
     this.request_hud({
