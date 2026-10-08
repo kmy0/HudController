@@ -472,6 +472,7 @@
 ---@class app.GUI020001PanelBase : ace.cGUIPartsBase
 ---@field get_Params fun(self: app.GUI020001PanelBase): app.GUI020001PanelParams
 ---@field get_BasePanel fun(self: app.GUI020001PanelBase): via.gui.Panel
+---@field setEdgeStatus fun(self: app.GUI020001PanelBase, val: System.Boolean)
 
 ---@class app.ChatDef.EnemyMessage : app.ChatDef.SystemMessage
 ---@field get_EnemyLogType fun(self: app.ChatDef.EnemyMessage): app.ChatDef.ENEMY_LOG_TYPE

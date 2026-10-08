@@ -16,6 +16,7 @@ return function(elem, elem_config, config_key)
     util_opt.draw_apply_elem(def.opt.npc_draw_distance, ctx)
 
     util_imgui.separator_text(config.lang:tr("hud_element.entry.category_hide"))
+    util_opt.draw_apply_elem(def.opt.hide_edge_icon, ctx)
     generic.combo_hide(
         elem,
         config_key .. ".object_category",

@@ -3,8 +3,15 @@ local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
-
 local this = {}
+
+function this.hide_edge_icon_pre(args)
+    local name_access = common.get_elem_t("NameAccess")
+    if name_access and name_access.hide_edge_icon then
+        local pnl_base = sdk.to_managed_object(args[2]) --[[@as app.GUI020001PanelBase]]
+        pnl_base:setEdgeStatus(false)
+    end
+end
 
 function this.hide_iteractables_post(_)
     local name_access = common.get_elem_t("NameAccess")

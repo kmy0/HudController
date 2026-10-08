@@ -1,5 +1,6 @@
 ---@class (exact) NameAccess : HudBase
 ---@field npc_draw_distance number
+---@field hide_edge_icon boolean
 ---@field GUI020001 app.GUI020001?
 ---@field get_config fun(): NameAccessConfig
 ---@field object_category table<string, integer>
@@ -15,6 +16,7 @@
 ---@field panel_type table<string, integer>
 ---@field enemy_type table<string, integer>
 ---@field npc_draw_distance number
+---@field hide_edge_icon boolean
 
 local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
@@ -45,6 +47,7 @@ function this:new(args)
     o.panel_type = args.panel_type
     o.enemy_type = args.enemy_type
     o.npc_draw_distance = args.npc_draw_distance
+    o.hide_edge_icon = args.hide_edge_icon
     return o
 end
 
@@ -103,6 +106,11 @@ function this:set_npc_draw_distance(val)
     self.npc_draw_distance = val
 end
 
+---@param val boolean
+function this:set_hide_edge_icon(val)
+    self.hide_edge_icon = val
+end
+
 ---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
 function this:get_all_ctrl()
     ---@type {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
@@ -144,6 +152,7 @@ function this.get_config()
     base.panel_type = {}
     base.npc_draw_distance = 0
     base.enemy_type = {}
+    base.hide_edge_icon = false
 
     return base
 end

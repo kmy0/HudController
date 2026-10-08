@@ -541,6 +541,7 @@ return {
             box_hide_pl_icon_pulse = "Hide Player Icon Pulse",
             tooltip_numbers_box = "Scales numbers position to fit inside a box. Disables Offset.",
             box_no_hide = "Do Not Hide",
+            box_hide_edge_icon = "Hide Edge Icons",
             box_hide = "Hide",
             box_itembar_disable_right_stick = "Disable Right Stick / Enable Camera Control",
             box_itembar_ammo_visible = "Do Not Hide Ammo",

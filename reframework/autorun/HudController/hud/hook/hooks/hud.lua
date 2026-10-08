@@ -168,6 +168,9 @@ function hud_hooks.training_room_hud()
 end
 
 function hud_hooks.name_access()
+    local root = elem_def.map[elem_base_def.NameAccess]
+    local def = elem_def.main[mod_enum.hud_type.NAME_ACCESS]
+
     m.hook(
         "app.GUI020001PanelBase.onLateUpdate()",
         util_ref.capture_this,
@@ -175,33 +178,33 @@ function hud_hooks.name_access()
     )
 
     hud_option_hooks[elem_base_def.NameAccess] = {
-        [opt_key(elem_base_def.NameAccess, "_hide_interactables")] = make_hud_options_hook(
-            function()
-                m.hook(
-                    "app.GUIAccessIconControl.lateUpdate()",
-                    util_ref.capture_this,
-                    elements.name_access.hide_iteractables_post
-                )
-            end,
-            function(_)
-                local name_access = common.get_elem_t("NameAccess")
-                if not name_access then
-                    return false
-                end
-
-                if name_access.hide then
-                    return false
-                end
-
-                return util_table.any({
-                    name_access.npc_draw_distance > 0,
-                    name_access:any_panel(),
-                    name_access:any_npc(),
-                    name_access:any_gossip(),
-                    name_access:any_enemy(),
-                })
+        [opt_key(root, "_hide_interactables")] = make_hud_options_hook(function()
+            m.hook(
+                "app.GUIAccessIconControl.lateUpdate()",
+                util_ref.capture_this,
+                elements.name_access.hide_iteractables_post
+            )
+        end, function(_)
+            local name_access = common.get_elem_t("NameAccess")
+            if not name_access then
+                return false
             end
-        ),
+
+            if name_access.hide then
+                return false
+            end
+
+            return util_table.any({
+                name_access.npc_draw_distance > 0,
+                name_access:any_panel(),
+                name_access:any_npc(),
+                name_access:any_gossip(),
+                name_access:any_enemy(),
+            })
+        end),
+        [opt_key(root, def.opt.hide_edge_icon)] = make_hud_options_hook(function()
+            m.hook("app.GUI020001PanelBase.onLateUpdate()", elements.name_access.hide_edge_icon_pre)
+        end),
     }
 end
 
