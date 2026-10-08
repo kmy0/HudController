@@ -12,12 +12,6 @@ local factory = util_misc.lazy_require("HudController.hud.factory")
 local subtitles = util_misc.lazy_require("HudController.hud.elements.subtitles")
 ---@module "HudController.hud.elements.quest_end_timer"
 local quest_end_timer = util_misc.lazy_require("HudController.hud.elements.quest_end_timer")
----@module "HudController.hud.bind.condition.init"
-local bind_condition = util_misc.lazy_require("HudController.hud.bind.condition.init")
----@module "HudController.hud.bind.condition.conditions.always"
-local always = util_misc.lazy_require("HudController.hud.bind.condition.conditions.always")
----@module "HudController.hud.bind.condition.conditions.weapon"
-local weapon = util_misc.lazy_require("HudController.hud.bind.condition.conditions.weapon")
 
 local this = migration_base.new("1.0.0")
 
@@ -161,14 +155,11 @@ end
 function this.fns.binds(config)
     local to_remove =
         { "skip_quest_end_timer", "skip_quest_result", "mute_gossip", "hide_subtitles" }
-    local res = {}
     for _, b in pairs(config.mod.bind.key.option_mod) do
         if util_table.contains_any(to_remove, b.bound_value) then
             b.invalid = true
         end
     end
-
-    config.mod.bind.key.hud = res
 
     for _, b in pairs(config.mod.bind.key.hud) do
         b.bound_value = {
