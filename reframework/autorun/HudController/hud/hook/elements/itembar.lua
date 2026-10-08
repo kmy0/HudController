@@ -37,11 +37,7 @@ function this.open_expanded_itembar_pre(_)
         local flag =
             ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
 
-        if not this.expanded.visible and flag then
-            if GUI020006:get_IsAllSliderMode() then
-                return
-            end
-
+        if (not this.expanded.visible or not GUI020006:get_IsAllSliderMode()) and flag then
             --FIXME: sometimes this throws
             if
                 not util_misc.try(function()
