@@ -671,3 +671,4 @@
 ---| "menu.bind.condition.tooltip_selected"
 ---| "menu.bind.condition.tooltip_selected_rule"
 ---| "menu.bind.condition.tooltip_bind_condition"
+---| "hud_element.entry.var

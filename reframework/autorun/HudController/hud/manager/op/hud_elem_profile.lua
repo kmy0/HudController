@@ -53,7 +53,7 @@ function this.get_elem_profile(root, key)
         new.current_profile = nil
         new.current_profile_gui = nil
         new.profile_key = key
-        new.enabled = false
+        new.profile_enabled = false
         new.default_profile = nil
 
         root.profile[k] = new
@@ -91,7 +91,7 @@ end
 function this.apply_elem_profile(root)
     local current_profile = this.get_elem_profile(root, root.current_profile)
     if
-        current_profile.enabled
+        current_profile.profile_enabled
         and config.current.mod.enable_condition_binds
         and hud_manager.is_profile_selected(root.name_key, root.current_profile)
     then
@@ -99,7 +99,7 @@ function this.apply_elem_profile(root)
     end
 
     local new_profile = this.get_elem_profile(root, root.current_profile_gui)
-    if new_profile.enabled then
+    if new_profile.profile_enabled then
         root.current_profile = root.current_profile_gui
     else
         -- if selected profile is disabled, switch to default profile

@@ -137,7 +137,7 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
                 local profile_key = tostring(profile_id)
                 local profile_config = element.profile[profile_key]
 
-                if profile_config and profile_config.enabled then
+                if profile_config and profile_config.profile_enabled then
                     return profile_id
                 end
             end

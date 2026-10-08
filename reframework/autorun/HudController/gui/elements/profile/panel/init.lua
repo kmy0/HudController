@@ -67,7 +67,7 @@ end
 ---@param indent number?
 local function draw_panel(elem, elem_config, config_key, tree, root_elem, indent)
     if root_elem then
-        util_imgui.begin_disabled(not config:get(string.format("%s.enabled", config_key)))
+        util_imgui.begin_disabled(not config:get(string.format("%s.profile_enabled", config_key)))
     else
         util_imgui.begin_disabled(false)
     end

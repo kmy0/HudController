@@ -57,7 +57,7 @@
 ---@field current_profile ElemProfileIndex
 ---@field current_profile_gui ElemProfileIndex
 ---@field default_profile ElemProfileIndex
----@field enabled boolean
+---@field profile_enabled boolean
 ---@field profile_key integer
 ---@field user_options table<string, any>
 
@@ -1075,7 +1075,7 @@ function this.get_config(hud_id, name_key)
         profile = {},
         current_profile = 0,
         current_profile_gui = 0,
-        enabled = true,
+        profile_enabled = true,
         default_profile = 0,
         profile_key = 0,
         user_options = {},

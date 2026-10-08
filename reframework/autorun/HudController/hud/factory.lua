@@ -145,7 +145,7 @@ function this.merge_profile(target, source)
         "hud_sub_type",
         "current_profile",
         "current_profile_gui",
-        "enabled",
+        "profile_enabled",
         "profile",
         "profile_key",
         "default_profile",

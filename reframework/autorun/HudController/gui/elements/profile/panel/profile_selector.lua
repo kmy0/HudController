@@ -135,7 +135,7 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
     local key = profile_for_show.key
     local profile = op.hud_elem_profile.get_elem_profile_no_create(root, key)
 
-    local is_enabled = profile and profile.enabled
+    local is_enabled = profile and profile.profile_enabled
     if config_mod.hide_disabled_element_profiles and not is_enabled then
         return false
     end
@@ -154,8 +154,8 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
     util_imgui.begin_disabled(profile_for_show.key == mod_enum.elem_profile.DEFAULT)
     if imgui.invisible_button("##enabled_" .. key, { icon_size, icon_size }) then
         profile = op.hud_elem_profile.get_elem_profile(root, key)
-        profile.enabled = not is_enabled
-        is_enabled = profile.enabled
+        profile.profile_enabled = not is_enabled
+        is_enabled = profile.profile_enabled
         changed = true
 
         if key == root.default_profile then
@@ -342,7 +342,7 @@ function this.draw(elem_config, config_key)
                 root = op.hud_elem_profile.import_elem_profile(root)
                 local profile = op.hud_elem_profile.get_elem_profile(root, root.current_profile_gui)
 
-                if profile.enabled then
+                if profile.profile_enabled then
                     op.hud_elem_profile.apply_elem_profile(root)
                 end
             end,
