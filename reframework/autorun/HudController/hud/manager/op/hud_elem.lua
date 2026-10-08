@@ -49,7 +49,7 @@ end
 ---@return boolean
 function this.is_current_profile(elem)
     local root = elem:get_root()
-    local root_config = root:get_current_config()
+    local root_config = root:get_root_config()
     return root_config.current_profile == root_config.current_profile_gui
 end
 

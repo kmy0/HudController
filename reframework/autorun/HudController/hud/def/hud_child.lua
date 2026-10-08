@@ -26,7 +26,7 @@
 ---@field profile nil
 ---@field current_profile nil
 ---@field current_profile_gui nil
----@field enabled nil
+---@field profile_enabled nil
 ---@field default_profile nil
 ---@field profile_key nil
 ---@field override_fade nil
