@@ -550,21 +550,23 @@ function this.fns.hud_config(config)
     end
 
     for _, profile in pairs(config.mod.hud) do
-        for _, elem_config in pairs(profile.elements) do
+        for _, elem_config in pairs(profile.elements or {}) do
             f(elem_config)
         end
     end
 
     for _, profile in pairs(config.mod.hud) do
-        local minimap = profile.elements.MINIMAP
-        if minimap then
-            local classic_minimap = minimap.children.classic_minimap
-            classic_minimap.enabled_classic_minimap = minimap.enabled_classic_minimap
-            classic_minimap.hide_pl_pulse = minimap.children.pl_icon_pulse.enabled_play_state
-            minimap.front = nil
-            minimap.mask = nil
-            minimap.pl_icon_pulse = nil
-            minimap.enabled_classic_minimap = nil
+        if profile.elements then
+            local minimap = profile.elements.MINIMAP
+            if minimap then
+                local classic_minimap = minimap.children.classic_minimap
+                classic_minimap.enabled_classic_minimap = minimap.enabled_classic_minimap
+                classic_minimap.hide_pl_pulse = minimap.children.pl_icon_pulse.enabled_play_state
+                minimap.front = nil
+                minimap.mask = nil
+                minimap.pl_icon_pulse = nil
+                minimap.enabled_classic_minimap = nil
+            end
         end
     end
 end
