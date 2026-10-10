@@ -311,6 +311,7 @@ Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 - Tent Area
 - Minimap State
 - Map Open
+- Item Bar Open
 - Combat State
 - Quest Rank
 - Quest Target

@@ -137,7 +137,7 @@ return {
         enabled = true,
         enable_fade = true,
         enable_notification = true,
-        enable_key_binds = true,
+        enable_key_binds = false,
         enable_condition_binds = false,
         disable_condition_binds_held = false,
         disable_condition_binds_time = 0,

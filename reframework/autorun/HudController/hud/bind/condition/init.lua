@@ -47,6 +47,7 @@ local conditions = {
     map_open = require("HudController.hud.bind.condition.conditions.map_open"),
     stage = require("HudController.hud.bind.condition.conditions.stage"),
     tent_area = require("HudController.hud.bind.condition.conditions.tent_area"),
+    itembar_open = require("HudController.hud.bind.condition.conditions.itembar_open"),
 }
 
 local mod_enum = mod.enum

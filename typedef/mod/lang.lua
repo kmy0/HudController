@@ -673,3 +673,4 @@
 ---| "menu.bind.condition.tooltip_bind_condition"
 ---| "hud_element.entry.var
 ---| "hud_element.entry.box_hide_edge_icon"
+---| "menu.bind.condition.condition_itembar_open"
