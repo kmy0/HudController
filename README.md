@@ -207,12 +207,12 @@ To use a different font, specify its filename in the language JSON file:
 Font has to be located at `\MonsterHunterWilds\reframework\fonts` directory.
 
 ### Bind
-![Bind](docs/images/menu_bar/bind.png)
+![Bind](docs/images/menu_bar/bind/bind.png)
 
 Almost all options of HUD profile, element or general mod settings can be changed through a bind.
 
 #### Key
-![Bind Key](docs/images/menu_bar/key/bind_key.png)
+![Bind Key](docs/images/menu_bar/bind/key/bind_key.png)
 
 Only one HUD profile can be bound to a specific key combination. Multiple options can share the same key combination, as long as they are unique.
 
@@ -225,7 +225,7 @@ Only one HUD profile can be bound to a specific key combination. Multiple option
 - **Condition:** Bind keys used in [**Key Bind**](#condition-rule-conditions-key-bind) condition under [**Bind Condition**](#condition).
 
 ##### Binding
-![Binding](docs/images/menu_bar/key/bind_key_binding.png)
+![Binding](docs/images/menu_bar/bind/key/bind_key_binding.png)
 
 - **Target:** Option to bind.
 - **Trigger:**
@@ -244,12 +244,12 @@ Only one HUD profile can be bound to a specific key combination. Multiple option
 > **Note:** Key binds take priority over [condition binds](#condition). When a key bind uses the **Repeat** trigger, it writes its selected value every frame, overriding values set by [condition binds](#condition). If multiple [condition binds](#condition) rules attempt to set the same option, only the first matching rule is applied.
 
 #### Key Options
-![Key Options](docs/images/menu_bar/key/key_options.png)
+![Key Options](docs/images/menu_bar/bind/key/key_options.png)
 
 - **Buffer:** Sets the time window used to detect key combinations (e.g., `A+B`) before triggering individual keys.
 
 #### Condition
-![Condition](docs/images/menu_bar/condition/condition.png)
+![Condition](docs/images/menu_bar/bind/condition/condition.png)
 
 The Condition window displays condition bind rules in a tree structure, similar to a file explorer. Rules can contain child rules, which are evaluated only if their parent rule passes.
 
@@ -269,10 +269,10 @@ Rules are evaluated from top to bottom. If a parent and its child both pass and 
 - **+:** Adds a new OR group.
 
 ##### Condition Example
-![Condition](docs/images/menu_bar/condition/condition_example.gif)
+![Condition](docs/images/menu_bar/bind/condition/condition_example.gif)
 
 ##### Breadcrumbs
-![Breadcrumbs](docs/images/menu_bar/condition/breadcrumbs.png)
+![Breadcrumbs](docs/images/menu_bar/bind/condition/breadcrumbs.png)
 
 Each rule behaves like a folder in a file explorer. A rule can only be opened if it contains at least one condition. Opened rules can contain child rules.
 
@@ -280,7 +280,7 @@ Each rule behaves like a folder in a file explorer. A rule can only be opened if
 - **Breadcrumbs:** Click a parent rule to return to it.
 
 ##### Tree
-![Tree](docs/images/menu_bar/condition/tree.png)
+![Tree](docs/images/menu_bar/bind/condition/tree.png)
 
 <a id="condition-rule-colors"></a>
 **Colors:**
@@ -323,7 +323,7 @@ Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 - Key Bind
 
 #### Condition options
-![Condition](docs/images/menu_bar/condition/condition_options.png)
+![Condition](docs/images/menu_bar/bind/condition/condition_options.png)
 
 <a id="condition-options-general"></a>
 ##### General
