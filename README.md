@@ -370,7 +370,7 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 - **Display Full Path:** Displays full path to the option instead of just option name.
 
 ### Tools
-![Tools](docs/images/menu_bar/tools.png)
+![Tools](docs/images/menu_bar/tools/tools.png)
 
 - **Block Game input:** Blocks game input while the mod window is open.
 - **Window Opacity:** Adjusts the mod window opacity.
