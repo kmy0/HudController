@@ -69,7 +69,7 @@ local function bool_table_to_ordered(t)
 end
 
 ---@param config MainSettings
-function this.fns.notice(config)
+local function _notice(config)
     for _, profile in pairs(config.mod.hud) do
         for key, elem in pairs(profile.elements or {}) do
             if key == "NOTICE" then
@@ -90,7 +90,7 @@ function this.fns.notice(config)
 end
 
 ---@param config MainSettings
-function this.fns.name_access(config)
+local function _name_access(config)
     for _, profile in pairs(config.mod.hud) do
         for key, elem in pairs(profile.elements or {}) do
             if key == "NAME_ACCESSIBLE" then
@@ -109,7 +109,7 @@ function this.fns.name_access(config)
 end
 
 ---@param config MainSettings
-function this.fns.name_other(config)
+local function _name_other(config)
     for _, profile in pairs(config.mod.hud) do
         for key, elem in pairs(profile.elements or {}) do
             if key == "NAME_OTHER" then
@@ -124,7 +124,25 @@ function this.fns.name_other(config)
 end
 
 ---@param config MainSettings
-function this.fns.subtitles(config)
+local function _quest_end_timer(config)
+    for _, profile in pairs(config.mod.hud) do
+        if profile.skip_quest_end_timer or profile.hide_quest_end_timer then
+            local elem =
+                factory.merge(profile.elements.QUEST_END_TIMER or quest_end_timer.get_config()) --[[@as QuestEndTimerConfig]]
+
+            if profile.skip_quest_end_timer then
+                elem.quest_end_timer = mod_enum.quest_end_timer.SKIP
+            elseif profile.hide_quest_end_timer then
+                elem.quest_end_timer = mod_enum.quest_end_timer.HIDE
+            end
+
+            profile.elements.QUEST_END_TIMER = elem
+        end
+    end
+end
+
+---@param config MainSettings
+local function _subtitles(config)
     for _, profile in pairs(config.mod.hud) do
         if profile.hide_subtitles or profile.mute_gossip then
             local elem = factory.merge(profile.elements.SUBTITLES or subtitles.get_config()) --[[@as SubtitlesConfig]]
@@ -258,24 +276,6 @@ function this.fns.conditions(config)
     end
 
     config.mod.bind.condition.hud = nil
-end
-
----@param config MainSettings
-function this.fns.quest_end_timer(config)
-    for _, profile in pairs(config.mod.hud) do
-        if profile.skip_quest_end_timer or profile.hide_quest_end_timer then
-            local elem =
-                factory.merge(profile.elements.QUEST_END_TIMER or quest_end_timer.get_config()) --[[@as QuestEndTimerConfig]]
-
-            if profile.skip_quest_end_timer then
-                elem.quest_end_timer = mod_enum.quest_end_timer.SKIP
-            elseif profile.hide_quest_end_timer then
-                elem.quest_end_timer = mod_enum.quest_end_timer.HIDE
-            end
-
-            profile.elements.QUEST_END_TIMER = elem
-        end
-    end
 end
 
 ---@param config MainSettings
@@ -569,6 +569,12 @@ function this.fns.hud_config(config)
             end
         end
     end
+
+    _notice(config)
+    _name_access(config)
+    _name_other(config)
+    _quest_end_timer(config)
+    _subtitles(config)
 end
 
 ---@param config MainSettings
