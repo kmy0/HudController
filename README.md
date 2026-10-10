@@ -1,85 +1,72 @@
+<!-- converter_ignore -->
+
 # HudController
 
 HudController lets you customize HUD elements and control almost any HUD or mod setting with key binds or condition-based automation in **Monster Hunter Wilds**.
 
+<!-- /converter_ignore -->
 ## Table of contents
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Profile Panel](#profile-panel)
+- [HUD Options](#hud-options)
+- [Menu Bar](#menu-bar)
+  - [Mod](#mod)
+  - [Language](#language)
+  - [Custom Font](#custom-font)
+  - [Bind](#bind)
+    - [Key](#key)
+    - [Condition](#condition)
+  - [User](#user)
+    - [Scripts](#scripts)
+    - [Conditions](#conditions)
+    - [Game Options](#game-options-1)
+  - [Tools](#tools)
+    - [Config Manager](#config-manager)
+    - [Debug](#debug)
+    - [Grid](#grid)
+    - [Mouse Edit](#mouse-edit)
+- [Element Profiles](#element-profiles)
+- [Elements](#elements)
+  - [Common Settings](#common-settings)
+    - [Element Profile](#element-profile)
+    - [Main Settings](#main-settings)
+  - [Item Bar](#item-bar)
+  - [Ammo/Coatings Bar](#ammocoatings-bar)
+  - [Weapon Information](#weapon-information)
+  - [Name Display: Interactables](#name-display-interactables)
+  - [Name Display: Characters \& Palicos](#name-display-characters--palicos)
+  - [Custom Radial Menu](#custom-radial-menu)
+  - [Damage Numbers](#damage-numbers)
+  - [Melee Weapon Sharpness Gauge](#melee-weapon-sharpness-gauge)
+  - [Objectives](#objectives)
+  - [Health Gauge](#health-gauge)
+  - [Stamina Gauge](#stamina-gauge)
+  - [Chat Notification](#chat-notification)
+  - [Environment Clock](#environment-clock)
+  - [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Minimap](#minimap)
+  - [Quest End Timer](#quest-end-timer)
+  - [Subtitles \& Sound](#subtitles--sound)
+- [Element Reference](#element-reference)
+  - [Subtitles Choice](#subtitles-choice)
+  - [Quest Prepare](#quest-prepare)
+  - [Action Tutorial](#action-tutorial)
+  - [Target Reticle](#target-reticle)
+  - [Menu Button Guide](#menu-button-guide)
+  - [Barrel Bowling Score](#barrel-bowling-score)
+  - [TU3 Debuff](#tu3-debuff)
+  - [TU3 Canvas](#tu3-canvas)
+  - [Chat Log](#chat-log)
+  - [Quest End Timer](#quest-end-timer-1)
+  - [Button Press](#button-press)
 
-- [HudController](#hudcontroller)
-  - [Table of contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Quick start](#quick-start)
-  - [Profile Panel](#profile-panel)
-  - [HUD Options](#hud-options)
-    - [General](#general)
-    - [Player](#player)
-    - [Npc](#npc)
-    - [Monster](#monster)
-    - [Quest](#quest)
-    - [Seikret](#seikret)
-    - [Profile](#profile)
-    - [Fade](#fade)
-    - [Game Options](#game-options)
-  - [Menu Bar](#menu-bar)
-    - [Mod](#mod)
-    - [Language](#language)
-    - [Custom Font](#custom-font)
-    - [Bind](#bind)
-      - [Key](#key)
-        - [Binding](#binding)
-      - [Key Options](#key-options)
-      - [Condition](#condition)
-        - [Condition Example](#condition-example)
-        - [Available Conditions](#available-conditions)
-      - [Condition options](#condition-options)
-    - [User](#user)
-      - [Scripts](#scripts)
-      - [Conditions](#conditions)
-      - [Game Options](#game-options-1)
-    - [Tools](#tools)
-      - [Config Manager](#config-manager)
-      - [Debug](#debug)
-      - [Grid](#grid)
-      - [Mouse Edit](#mouse-edit)
-  - [Element Profiles](#element-profiles)
-  - [Elements](#elements)
-    - [Common Settings](#common-settings)
-      - [Element Profile](#element-profile)
-      - [Main Settings](#main-settings)
-    - [Item Bar](#item-bar)
-    - [Ammo/Coatings Bar](#ammocoatings-bar)
-    - [Weapon Information](#weapon-information)
-    - [Name Display: Interactables](#name-display-interactables)
-    - [Name Display: Characters \& Palicos](#name-display-characters--palicos)
-    - [Custom Radial Menu](#custom-radial-menu)
-    - [Damage Numbers](#damage-numbers)
-    - [Melee Weapon Sharpness Gauge](#melee-weapon-sharpness-gauge)
-    - [Objectives](#objectives)
-    - [Health Gauge](#health-gauge)
-    - [Stamina Gauge](#stamina-gauge)
-    - [Chat Notification](#chat-notification)
-    - [Environment Clock](#environment-clock)
-    - [Keyboard Shortcuts](#keyboard-shortcuts)
-    - [Minimap](#minimap)
-    - [Quest End Timer](#quest-end-timer)
-    - [Subtitles \& Sound](#subtitles--sound)
-  - [Element Reference](#element-reference)
-    - [Subtitles Choice](#subtitles-choice)
-    - [Quest Prepare](#quest-prepare)
-    - [Action Tutorial](#action-tutorial)
-    - [Target Reticle](#target-reticle)
-    - [Menu Button Guide](#menu-button-guide)
-    - [Barrel Bowling Score](#barrel-bowling-score)
-    - [TU3 Debuff](#tu3-debuff)
-    - [TU3 Canvas](#tu3-canvas)
-    - [Chat Log](#chat-log)
-    - [Quest End Timer](#quest-end-timer-1)
-    - [Button Press](#button-press)
-
+<!-- nocolor -->
 ## Installation
 1.  Install [REFramework](https://github.com/praydog/REFramework-nightly/releases).
 2.  Extract the **HudController** archive into your **Monster Hunter Wilds** game
     directory.
-
+<!-- /nocolor -->
 ## Quick start
 ![Quick Start](docs/images/quick_start.gif)
 
@@ -154,7 +141,7 @@ HudController lets you customize HUD elements and control almost any HUD or mod 
 - **Fade In:** Fade in time.
 - **Fade Out:** Fade out time.
 <a id="hud-options-fade-opacity"></a>
-- **Fade Opacity Changes Only** Applies fade only to elements whose opacity differs between two profiles.
+- **Fade Opacity Changes Only:** Applies fade only to elements whose opacity differs between two profiles.
 
 <a id="hud-options-game-options"></a>
 
@@ -179,8 +166,9 @@ Contains game settings added at [**User > Game Options**](#user-game-options).
 ### Language
 ![Langugage](docs/images/menu_bar/language.png)
 
+<!-- nocolor -->
 Contains all language files located in `MonsterHunterWilds\reframework\data\HudController\lang`.
-
+<!-- /nocolor -->
 - **Fallback:** Uses the English message if a message is missing from the selected language file.
 - **Font Size:** Adjusts the text size.
 
@@ -188,11 +176,13 @@ Some text, such as HUD element names, is translated by the game and follows its 
 
 To provide your own translation for other text:
 
+<!-- nocolor -->
 1. Navigate to `MonsterHunterWilds\reframework\data\HudController\lang`.
 2. Copy `en-us.json` and rename the copy.
 3. Translate the strings in the copied file.
 4. Reset the scripts.
 5. Your translation should now appear in the **Language** menu.
+<!-- /nocolor -->
 
 ### Custom Font
 
@@ -203,9 +193,9 @@ To use a different font, specify its filename in the language JSON file:
     "name": "NotoSans-Bold.ttf"
 }
 ```
-
+<!-- nocolor -->
 Font has to be located at `\MonsterHunterWilds\reframework\fonts` directory.
-
+<!-- /nocolor -->
 ### Bind
 ![Bind](docs/images/menu_bar/bind/bind.png)
 
@@ -240,9 +230,9 @@ Only one HUD profile can be bound to a specific key combination. Multiple option
 - **Undo:** Removes the last key.
 - **Clear:** Removes all keys.
 - **Cancel:** Stops the key listener.
-
+<!-- nocolor -->
 > **Note:** Key binds take priority over [condition binds](#condition). When a key bind uses the **Repeat** trigger, it writes its selected value every frame, overriding values set by [condition binds](#condition). If multiple [condition binds](#condition) rules attempt to set the same option, only the first matching rule is applied.
-
+<!-- /nocolor -->
 #### Key Options
 ![Key Options](docs/images/menu_bar/bind/key/key_options.png)
 
@@ -337,15 +327,16 @@ Duration of the trigger for ***Something* Changed** conditions.
 ##### Combat State
 Contains options for the ***Combat State*** condition.
 
-- **Quest = In Combat:** The ***In Combat*** state always triggers during a quest.
-- **Riding = Out of Combat:** The ***In Combat*** state won't trigger while riding, unless it was already triggered.
-- **Out of Combat Delay:** Delays triggering the ***Out of Combat*** state by the specified amount of time.
-- **In Combat Delay:** Delays triggering the ***In Combat*** state by the specified amount of time.
+- **Quest = In Combat:** The **In Combat** state always triggers during a quest.
+- **Riding = Out of Combat:** The **In Combat** state won't trigger while riding, unless it was already triggered.
+- **Out of Combat Delay:** Delays triggering the **Out of Combat** state by the specified amount of time.
+- **In Combat Delay:** Delays triggering the **In Combat** state by the specified amount of time.
 
 ### User
 ![User](docs/images/menu_bar/user/user.png)
 
 <a id="user-scripts"></a>
+<!-- nocolor -->
 
 #### Scripts
 Contains all **.lua** files in `MonsterHunterWilds\reframework\data\HudController\user_scripts` whose names do not start with an underscore (`_`) or contain the word `example`. Example scripts are included in this folder by default. If anything is unclear, feel free to ask.
@@ -353,12 +344,14 @@ Contains all **.lua** files in `MonsterHunterWilds\reframework\data\HudControlle
 After enabling or disabling a script, you must reset the scripts for the changes to take effect. Scripts that require a reset are displayed in *yellow*. Scripts that fail to load are displayed in *red*, with the error message shown in their tooltip.
 
 How is this different from placing scripts in the **autorun** folder? The main difference is that your script selection is saved in the config, and all scripts are loaded only after the mod has fully initialized. Otherwise, it works the same way.
-
+<!-- /nocolor -->
 <a id="user-conditions"></a>
+
+<!-- nocolor -->
 
 #### Conditions
 The same rules apply to conditions, but they use a different folder: `MonsterHunterWilds\reframework\data\HudController\user_conditions`.
-
+<!-- /nocolor -->
 If a condition loads successfully, it appears in the condition dropdown under [**Bind > Condition > Add Condition...**](#condition). Its options, if implemented, appear under [**Bind > Condition Options**](#condition-options).
 
 <a id="user-game-options"></a>
@@ -366,7 +359,7 @@ If a condition loads successfully, it appears in the condition dropdown under [*
 #### Game Options
 ![Game Options](docs/images/menu_bar/user/game_options.png)
 
-Here you can register game options for [**HUD profiles**](#game-options) or individual [elements](#common-settings-game-options). Once registered, these options become available to bind under [Bind > Key](#key) or [Bind > Condition](#condition).
+Here you can register game options for [**HUD profiles**](#game-options) or individual [elements](#common-settings-game-options). Once registered, these options become available to bind under [**Bind > Key**](#key) or [**Bind > Condition**](#condition).
 
 - **Display Full Path:** Displays full path to the option instead of just option name.
 
@@ -378,9 +371,9 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 
 #### Config Manager
 ![Config Manager](docs/images/menu_bar/tools/config_manager/config_manager.png)
-
+<!-- nocolor -->
 > **Note:** Switching config files requires a script reset.
-
+<!-- /nocolor -->
 - **Config File:** Lists available config files.
 - **Backup File:** Lists available backup files.
 - **...:** Opens additional actions for the selected file.
@@ -399,7 +392,7 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 ##### Backup File Actions
 ![Backup File Actions](docs/images/menu_bar/tools/config_manager/backup_file_actions.png)
 
-- **Restore:** Moves the backup to `MonsterHunterWilds\reframework\data\HudController` and makes it available in the **Config File** dropdown.
+- **Restore:** Makes the backup available in the **Config File** dropdown.
 - **Remove:** Moves the backup to the recycle bin.
 
 #### Debug

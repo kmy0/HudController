@@ -1,0 +1,53 @@
+name: Nexus description
+
+on:
+  push:
+    paths:
+      - README.md
+      - .github/scripts/strip_for_nexus.py
+      - .github/scripts/colorize_bbcode.py
+      - .github/workflows/nexus-description.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install converter
+        run: |
+          dotnet tool install -g Converter.MarkdownToBBCodeNM.Tool
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: README to Nexus BBCode
+        run: |
+          python .github/scripts/strip_for_nexus.py README.md \
+            --raw-base "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/" \
+            --toc-spoiler -o README_nexus.md
+          markdown_to_bbcodenm -i README_nexus.md -o nexus_bbcode.txt
+
+      - name: Recolor headings and bold
+        run: |
+          python .github/scripts/colorize_bbcode.py nexus_bbcode.txt \
+            --header-color "#E69138" --bold-color "#04C405" \
+            -o nexus_bbcode_colored.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus-bbcode
+          path: |
+            nexus_bbcode_colored.txt
+            nexus_bbcode.txt
+            README_nexus.md
