@@ -17,8 +17,6 @@
 ---@field disable_quest_intro boolean
 ---@field disable_quest_end_camera boolean
 ---@field disable_quest_end_outro boolean
----@field hide_monster_icon boolean
----@field hide_lock_target boolean
 ---@field monster_ignore_camp boolean
 ---@field hide_small_monsters boolean
 ---@field skip_quest_result boolean

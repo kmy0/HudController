@@ -1,9 +1,11 @@
 -- Disable Hide Monster Icon when map is open
 
+local def = require("HudController.data.option.hud")
 local e = require("HudController.util.game.enum")
 local hook_common = require("HudController.hud.hook.common")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
+local mod = require("HudController.data.mod")
 local util_ref = require("HudController.util.ref.init")
 
 m.hook(
@@ -14,10 +16,10 @@ m.hook(
         local hud_config = hook_common.get_hud()
         if
             hud_config
-            and hud.get_hud_option("hide_monster_icon")
+            and hud.get_hud_option(def.opt.monster_icon) ~= mod.enum.em_icon.DISABLED
             and util_ref.to_int(args[3]) == e.get("app.GUIID.ID").UI060000
         then
-            hud.overwrite_hud_option("hide_monster_icon", false)
+            hud.overwrite_hud_option(def.opt.monster_icon.key, mod.enum.em_icon.DISABLED)
         end
     end
 )
@@ -29,11 +31,11 @@ m.hook(
         local hud_config = hook_common.get_hud()
         if
             hud_config
-            and hud_config.hide_monster_icon
-            and not hud.get_overridden("hide_monster_icon")
+            and hud_config.monster_icon ~= mod.enum.em_icon.DISABLED
+            and hud.get_overridden(def.opt.monster_icon.key)
             and util_ref.to_int(args[3]) == e.get("app.GUIID.ID").UI060000
         then
-            hud.clear_overridden("hide_monster_icon")
+            hud.clear_overridden(def.opt.monster_icon.key)
         end
     end
 )

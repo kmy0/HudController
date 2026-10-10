@@ -1,9 +1,10 @@
-local combo = require("HudController.util.imgui.combo")
+local combo = require("HudController.util.imgui.combo.values")
 local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 local e = require("HudController.util.game.enum")
 local s = require("HudController.util.ref.singletons")
 local set = require("HudController.gui.set")
-local util_gui = require("HudController.gui.util")
+local style = require("HudController.util.imgui.style")
+local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
@@ -58,9 +59,15 @@ function this:update()
 end
 
 function this:draw_options()
-    imgui.push_item_width(util_gui.get_item_size())
-    set:combo("##QuestRankAdd", self:get_config_key_option("combo_add"), self.combo_add.values)
-    imgui.pop_item_width()
+    local window_padding = 3
+    imgui.push_item_width(
+        -util_imgui.get_button_width("Remove") - style.size.item_spacing_x - window_padding
+    )
+    set:combo(
+        "##QuestRankAdd",
+        self:get_additional_options_config_key_option("combo_add"),
+        self.combo_add.values
+    )
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(self.combo_add.values))
@@ -75,13 +82,11 @@ function this:draw_options()
     end
     imgui.end_disabled()
 
-    imgui.push_item_width(util_gui.get_item_size())
     set:combo(
         "##QuestRankRemove",
-        self:get_config_key_option("combo_remove"),
+        self:get_additional_options_config_key_option("combo_remove"),
         self.combo_remove.values
     )
-    imgui.pop_item_width()
 
     imgui.same_line()
     imgui.begin_disabled(util_table.empty(self.combo_remove.values))
@@ -96,6 +101,8 @@ function this:draw_options()
         self:save_config()
     end
     imgui.end_disabled()
+
+    imgui.pop_item_width()
 end
 
 function this:get_selected_option_string()
