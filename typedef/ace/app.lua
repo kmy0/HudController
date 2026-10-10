@@ -48,6 +48,8 @@
 ---@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
 ---@class app.cWeaponGunAmmo : app.cAmmo
+---@class app.Gm100_003 : app.Gm100
+---@class app.Gm100 : app.GimmickBaseApp
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
