@@ -79,7 +79,9 @@ end
 ---@return boolean
 function this.try(try, catch, finally)
     ---@diagnostic disable-next-line: no-unknown
-    local ok, err = pcall(try)
+    local ok, err = xpcall(try, function(e)
+        return debug.traceback(tostring(e), 2)
+    end)
 
     if not ok and catch then
         catch(err)
