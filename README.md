@@ -321,6 +321,7 @@ Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 - HUD
 <a id="condition-rule-conditions-key-bind"></a>
 - Key Bind
+- Infinite Stamina Area
 
 #### Condition options
 ![Condition](docs/images/menu_bar/bind/condition/condition_options.png)

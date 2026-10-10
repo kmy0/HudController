@@ -48,6 +48,9 @@ local conditions = {
     stage = require("HudController.hud.bind.condition.conditions.stage"),
     tent_area = require("HudController.hud.bind.condition.conditions.tent_area"),
     itembar_open = require("HudController.hud.bind.condition.conditions.itembar_open"),
+    infinite_stamina_area = require(
+        "HudController.hud.bind.condition.conditions.infinite_stamina_area"
+    ),
 }
 
 local mod_enum = mod.enum

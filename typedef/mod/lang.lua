@@ -674,3 +674,4 @@
 ---| "hud_element.entry.var
 ---| "hud_element.entry.box_hide_edge_icon"
 ---| "menu.bind.condition.condition_itembar_open"
+---| "menu.bind.condition.condition_infinite_stamina_area"
