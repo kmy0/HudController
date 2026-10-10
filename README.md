@@ -84,14 +84,14 @@ HudController lets you customize HUD elements and control almost any HUD or mod 
 ![Quick Start](docs/images/quick_start.gif)
 
 ## Profile Panel
-![Profile Panel](docs/images/profile_panel.png)
+![Profile Panel](docs/images/profile_panel/profile_panel.png)
 
 - **Profile Selector:** Lists all available HUD profiles.
 - **Element Selector:** Lists all elements that can be edited by the mod.
 - **...:** Opens additional actions for the selected profile or element.
 
 ### Profile Actions
-![Profile Actions](docs/images/profile_actions.png)
+![Profile Actions](docs/images/profile_panel/profile_actions.png)
 
 - **New:** Creates a new profile.
 - **Rename:** Renames the current profile.
@@ -162,10 +162,10 @@ HudController lets you customize HUD elements and control almost any HUD or mod 
 Contains game settings added at [**User > Game Options**](#user-game-options).
 
 ## Menu Bar
-![Menu Bar](docs/images/menu_bar.png)
+![Menu Bar](docs/images/menu_bar/menu_bar.png)
 
 ### Mod
-![Mod](docs/images/mod_options.png)
+![Mod](docs/images/menu_bar/mod_options.png)
 
 - **Enabled:** Enables or disables the mod.
 - **Enable Fade:** Enables profile transition fades.
@@ -177,7 +177,7 @@ Contains game settings added at [**User > Game Options**](#user-game-options).
 - **Disable Condition Binds Held:** Disables condition binds while a HUD key bind is held.
 
 ### Language
-![Langugage](docs/images/language.png)
+![Langugage](docs/images/menu_bar/language.png)
 
 Contains all language files located in `MonsterHunterWilds\reframework\data\HudController\lang`.
 
@@ -207,12 +207,12 @@ To use a different font, specify its filename in the language JSON file:
 Font has to be located at `\MonsterHunterWilds\reframework\fonts` directory.
 
 ### Bind
-![Bind](docs/images/bind.png)
+![Bind](docs/images/menu_bar/bind.png)
 
 Almost all options of HUD profile, element or general mod settings can be changed through a bind.
 
 #### Key
-![Bind Key](docs/images/bind_key.png)
+![Bind Key](docs/images/menu_bar/key/bind_key.png)
 
 Only one HUD profile can be bound to a specific key combination. Multiple options can share the same key combination, as long as they are unique.
 
@@ -225,7 +225,7 @@ Only one HUD profile can be bound to a specific key combination. Multiple option
 - **Condition:** Bind keys used in [**Key Bind**](#condition-rule-conditions-key-bind) condition under [**Bind Condition**](#condition).
 
 ##### Binding
-![Binding](docs/images/bind_key_binding.png)
+![Binding](docs/images/menu_bar/key/bind_key_binding.png)
 
 - **Target:** Option to bind.
 - **Trigger:**
@@ -244,12 +244,12 @@ Only one HUD profile can be bound to a specific key combination. Multiple option
 > **Note:** Key binds take priority over [condition binds](#condition). When a key bind uses the **Repeat** trigger, it writes its selected value every frame, overriding values set by [condition binds](#condition). If multiple [condition binds](#condition) rules attempt to set the same option, only the first matching rule is applied.
 
 #### Key Options
-![Key Options](docs/images/key_options.png)
+![Key Options](docs/images/menu_bar/key/key_options.png)
 
 - **Buffer:** Sets the time window used to detect key combinations (e.g., `A+B`) before triggering individual keys.
 
 #### Condition
-![Condition](docs/images/condition.png)
+![Condition](docs/images/menu_bar/condition/condition.png)
 
 The Condition window displays condition bind rules in a tree structure, similar to a file explorer. Rules can contain child rules, which are evaluated only if their parent rule passes.
 
@@ -269,10 +269,10 @@ Rules are evaluated from top to bottom. If a parent and its child both pass and 
 - **+:** Adds a new OR group.
 
 ##### Condition Example
-![Condition](docs/images/condition_example.gif)
+![Condition](docs/images/menu_bar/condition/condition_example.gif)
 
 ##### Breadcrumbs
-![Breadcrumbs](docs/images/breadcrumbs.png)
+![Breadcrumbs](docs/images/menu_bar/condition/breadcrumbs.png)
 
 Each rule behaves like a folder in a file explorer. A rule can only be opened if it contains at least one condition. Opened rules can contain child rules.
 
@@ -280,7 +280,7 @@ Each rule behaves like a folder in a file explorer. A rule can only be opened if
 - **Breadcrumbs:** Click a parent rule to return to it.
 
 ##### Tree
-![Tree](docs/images/tree.png)
+![Tree](docs/images/menu_bar/condition/tree.png)
 
 <a id="condition-rule-colors"></a>
 **Colors:**
@@ -323,7 +323,7 @@ Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 - Key Bind
 
 #### Condition options
-![Condition](docs/images/condition_options.png)
+![Condition](docs/images/menu_bar/condition/condition_options.png)
 
 <a id="condition-options-general"></a>
 ##### General
@@ -342,7 +342,7 @@ Contains options for the ***Combat State*** condition.
 - **In Combat Delay:** Delays triggering the ***In Combat*** state by the specified amount of time.
 
 ### User
-![User](docs/images/user.png)
+![User](docs/images/menu_bar/user/user.png)
 
 <a id="user-scripts"></a>
 
@@ -363,20 +363,20 @@ If a condition loads successfully, it appears in the condition dropdown under [*
 <a id="user-game-options"></a>
 
 #### Game Options
-![Game Options](docs/images/game_options.png)
+![Game Options](docs/images/menu_bar/user/game_options.png)
 
 Here you can register game options for [**HUD profiles**](#game-options) or individual [elements](#common-settings-game-options). Once registered, these options become available to bind under [Bind > Key](#key) or [Bind > Condition](#condition).
 
 - **Display Full Path:** Displays full path to the option instead of just option name.
 
 ### Tools
-![Tools](docs/images/tools.png)
+![Tools](docs/images/menu_bar/tools.png)
 
 - **Block Game input:** Blocks game input while the mod window is open.
 - **Window Opacity:** Adjusts the mod window opacity.
 
 #### Config Manager
-![Config Manager](docs/images/config_manager.png)
+![Config Manager](docs/images/menu_bar/tools/config_manager/config_manager.png)
 
 > **Note:** Switching config files requires a script reset.
 
@@ -385,7 +385,7 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 - **...:** Opens additional actions for the selected file.
 
 ##### Config File Actions
-![Config File Actions](docs/images/config_file_actions.png)
+![Config File Actions](docs/images/menu_bar/tools/config_manager/config_file_actions.png)
 
 - **New:** Creates an empty config.
 - **Rename:** Renames the current config.
@@ -396,7 +396,7 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 - **Close:** Closes the **Config Manager**.
 
 ##### Backup File Actions
-![Backup File Actions](docs/images/backup_file_actions.png)
+![Backup File Actions](docs/images/menu_bar/tools/config_manager/backup_file_actions.png)
 
 - **Restore:** Moves the backup to `MonsterHunterWilds\reframework\data\HudController` and makes it available in the **Config File** dropdown.
 - **Remove:** Moves the backup to the recycle bin.
@@ -405,14 +405,14 @@ Here you can register game options for [**HUD profiles**](#game-options) or indi
 Contains the tools used to develop the mod. If you have any questions, feel free to ask.
 
 #### Grid
-![Grid](docs/images/grid.gif)
+![Grid](docs/images/menu_bar/tools/grid.gif)
 
 #### Mouse Edit
 Mouse Edit lets you edit basic element options using the mouse.
 
-![Mouse Edit Showcase](docs/images/mouse_edit_showcase.gif)
-![Mouse Edit Binds](docs/images/mouse_edit_binds.png)
-![Mouse Edit](docs/images/mouse_edit.png)
+![Mouse Edit Showcase](docs/images/menu_bar/tools/mouse_edit/mouse_edit_showcase.gif)
+![Mouse Edit Binds](docs/images/menu_bar/tools/mouse_edit/mouse_edit_binds.png)
+![Mouse Edit](docs/images/menu_bar/tools/mouse_edit/mouse_edit.png)
 
 - **Enabled:** Enables Mouse Edit.
 - **Display Element Names:** Displays element names beside their anchors.
@@ -437,12 +437,12 @@ If a bind doesn't trigger any element profiles, all elements revert to their def
 Some elements contain child elements with their own settings, which are not listed here.
 
 ### Common Settings
-![Common Settings](docs/images/common_settings.png)
+![Common Settings](docs/images/elements/common_settings.png)
 
 <a id="common-settings-element-profiles"></a>
 
 #### Element Profile
-![Element Profile Selector](docs/images/element_profiles_selection.png)
+![Element Profile Selector](docs/images/elements/element_profiles/element_profiles_selection.png)
 
 - **Hide Disabled:** Hides disabled profiles.
 - **Circle:** Enables or disables a profile for the element.
@@ -452,7 +452,7 @@ Some elements contain child elements with their own settings, which are not list
 - **...:** Opens additional actions for the selected element profile.
 
 ##### Element Profile Actions
-![Element Profile Actions](docs/images/element_profiles_actions.png)
+![Element Profile Actions](docs/images/elements/element_profiles/element_profiles_actions.png)
 
 - **Import:** Imports settings from JSON in the clipboard.
 - **Export:** Copies the current profile's settings as JSON to the clipboard.
@@ -480,7 +480,7 @@ Disabled unless [**Fade**](#fade) in [**HUD Options**](#hud-options) is enabled.
 Contains game settings added under [**User > Game Options**](#user-game-options).
 
 ### Item Bar
-![Item Bar](docs/images/itembar.png)
+![Item Bar](docs/images/elements/itembar.png)
 
 #### Item Bar Behavior
 
@@ -503,7 +503,7 @@ Contains game settings added under [**User > Game Options**](#user-game-options)
 - **Item Confirm Key:** Pad only. Changes the item confirmation key bind.
 
 ### Ammo/Coatings Bar
-![Ammo/Coatings Bar](docs/images/ammobar.png)
+![Ammo/Coatings Bar](docs/images/elements/ammobar.png)
 
 #### Parts Behavior
 
@@ -512,14 +512,14 @@ Applies to Energy, Special Ammo, and Phials.
 - **Do Not Hide:** Keeps these parts visible while the Item Bar is open.
 
 ### Weapon Information
-![Weapon Information](docs/images/wep_info.png)
+![Weapon Information](docs/images/elements/wep_info.png)
 
 #### Weapon Behavior
 
 - **No Focus:** Prevents the weapon information from changing scale when the Item Bar is open.
 
 ### Name Display: Interactables
-![Name Display: Interactables](docs/images/name_access.png)
+![Name Display: Interactables](docs/images/elements/name_access.png)
 
 #### NPC Behavior
 
@@ -531,7 +531,7 @@ Applies to Energy, Special Ammo, and Phials.
 - **Other Options:** Controls which types of interactables are hidden.
 
 ### Name Display: Characters & Palicos
-![Name Display: Characters & Palicos](docs/images/name_other.png)
+![Name Display: Characters & Palicos](docs/images/elements/name_other.png)
 
 #### Player Behavior
 
@@ -545,7 +545,7 @@ Applies to Energy, Special Ammo, and Phials.
 - **Nameplate Type:** Controls which types of nameplates are hidden.
 
 ### Custom Radial Menu
-![Custom Radial Menu](docs/images/radial.png)
+![Custom Radial Menu](docs/images/elements/radial.png)
 
 #### Radial Behavior
 
@@ -556,7 +556,7 @@ Applies to Energy, Special Ammo, and Phials.
 - **Always Expanded:** Keeps the pallet in its expanded (focused) state.
 
 ### Damage Numbers
-![Damage Numbers](docs/images/damage_numbers.png)
+![Damage Numbers](docs/images/elements/damage_numbers/damage_numbers.png)
 
 [Element profiles](#element-profiles) do not apply to Damage Numbers.
 
@@ -566,7 +566,7 @@ Applies to Energy, Special Ammo, and Phials.
 - **NONE:** Applies to normal (non-critical) damage numbers.
 
 #### Numbers Behavior
-![Numbers Behavior](docs/images/damage_numbers_behavior.png)
+![Numbers Behavior](docs/images/elements/damage_numbers/damage_numbers_behavior.png)
 
 - **Enable Box:** Scales the positions of damage numbers to fit within a specified box, effectively squeezing the screen space into that area.
 - **Preview Box:** Displays the specified box.
@@ -574,7 +574,7 @@ Applies to Energy, Special Ammo, and Phials.
 - **Size:** Adjusts the box's size.
 
 #### Child Elements
-![Child Elements](docs/images/damage_numbers_child_elements.png)
+![Child Elements](docs/images/elements/damage_numbers/damage_numbers_child_elements.png)
 
 Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all damage states.
 - **Color:** Adjusts the element's color.
@@ -582,7 +582,7 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Glow Color:** Adjusts the glow's color.
 
 ### Melee Weapon Sharpness Gauge
-![Melee Weapon Sharpness Gauge](docs/images/sharpness.png)
+![Melee Weapon Sharpness Gauge](docs/images/elements/sharpness.png)
 
 #### State Behavior
 
@@ -591,7 +591,7 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 
 ### Objectives
 #### Child Elements
-![Child Elements](docs/images/objectives_child_elements.png)
+![Child Elements](docs/images/elements/objectives_child_elements.png)
 
 - **Offset X:** Offsets the element horizontally from its original position.
 - **Clock Offset X:** Applies an additional horizontal offset when the quest clock is visible. Requires **Offset X** to be enabled.
@@ -599,7 +599,7 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 
 ### Health Gauge
 #### Child Elements
-![Child Elements](docs/images/health_gauge_child_elements.png)
+![Child Elements](docs/images/elements/health_gauge_child_elements.png)
 
 - **Size Y:** Adjusts the vertical size.
 - **Width Scale:** Scales the gauge line's width.
@@ -607,13 +607,13 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Side Position Scale:** Scales the vertical movement of the line ends.
 
 ### Stamina Gauge
-![Stamina Gauge](docs/images/stamina_gauge.png)
+![Stamina Gauge](docs/images/elements/stamina_gauge/stamina_gauge.png)
 #### Extra Bar Behavior
 
 - **Hide Pulse:** Hides the pulse effect on the stamina extra bar.
 
 #### Child Elements
-![Child Elements](docs/images/stamina_gauge_child_elements.png)
+![Child Elements](docs/images/elements/stamina_gauge/stamina_gauge_child_elements.png)
 
 - **Size Y:** Adjusts the vertical size.
 - **Size X Scale:** Scales the horizontal size.
@@ -621,13 +621,13 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Animation Speed Scale:** Scales the animation speed.
 - **Level Max Scale:** Scales the intensity of the animation.
 
-![Child Elements 2](docs/images/stamina_gauge_child_elements2.png)
+![Child Elements 2](docs/images/elements/stamina_gauge/stamina_gauge_child_elements2.png)
 
 - **Color:** Adjusts the line's color.
 - **Alpha Channel:** Adjusts the line's transparency. Change it to R, G, or B for a solid line.
 
 ### Chat Notification
-![Chat Notification](docs/images/chat_notif.png)
+![Chat Notification](docs/images/elements/chat_notif.png)
 
 #### Tools
 
@@ -641,14 +641,14 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Other Options:** Controls which types of notifications are hidden.
 
 ### Environment Clock
-![Environment Clock](docs/images/environ_clock.png)
+![Environment Clock](docs/images/elements/environ_clock.png)
 
 #### Clock Behavior
 
 - **Hide When Map Visible:** Hides the clock whenever the map is open.
 
 ### Keyboard Shortcuts
-![Keyboard Shortcuts](docs/images/keyboard_shortcuts.png)
+![Keyboard Shortcuts](docs/images/elements/keyboard_shortcuts.png)
 
 #### Keyboard Shortcuts Behavior
 
@@ -657,14 +657,14 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Close After Item Use:** Closes Keyboard Shortcuts immediately after an item is used if it is open. If it is closed, prevents the element from opening, effectively making Keyboard Shortcuts openable only with the F keys. Should be used with **Do Not Hide Elements**.
 
 ### Minimap
-![Minimap](docs/images/minimap.png)
+![Minimap](docs/images/elements/minimap/minimap.png)
 
 #### Map Behavior
 
 - **Default Icon Filter:** Specifies the icon filter to apply automatically when switching to this profile.
 
 #### Classic Minimap
-![Classic Minimap](docs/images/classic_minimap.png)
+![Classic Minimap](docs/images/elements/minimap/classic_minimap.png)
 
 - **Map Scale:** Adjusts the minimap size.
 - **Icon Scale:** Adjusts the icon size.
@@ -673,7 +673,7 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Angle:** Adjusts the minimap's angle.
 
 ### Quest End Timer
-![Quest End Timer](docs/images/quest_end_timer.png)
+![Quest End Timer](docs/images/elements/quest_end_timer.png)
 
 #### Timer Behavior
 
@@ -681,7 +681,7 @@ Contains all damage states, such as SHIELD and WEAK_POINT. ALL applies to all da
 - **Hide Quest End Timer Input:** Hides the input for skipping the timer, making it unskippable.
 
 ### Subtitles & Sound
-![Subtitles & Sound](docs/images/subtitles.png)
+![Subtitles & Sound](docs/images/elements/subtitles.png)
 
 #### Tools
 
@@ -709,34 +709,34 @@ All muted Game Objects and sound IDs appear here.
 
 ## Element Reference
 ### Subtitles Choice
-![Subtitles Choice](docs/images/subtitles_choice.png)
+![Subtitles Choice](docs/images/element_reference/subtitles_choice.png)
 
 ### Quest Prepare
-![Quest Prepare](docs/images/quest_prepare.png)
+![Quest Prepare](docs/images/element_reference/quest_prepare.png)
 
 ### Action Tutorial
-![Action Tutorial](docs/images/action_tutorial.png)
+![Action Tutorial](docs/images/element_reference/action_tutorial.png)
 
 ### Target Reticle
-![Target Reticle](docs/images/target_reticle.png)
+![Target Reticle](docs/images/element_reference/target_reticle.png)
 
 ### Menu Button Guide
-![Menu Button Guide](docs/images/menu_button_guide.png)
+![Menu Button Guide](docs/images/element_reference/menu_button_guide.png)
 
 ### Barrel Bowling Score
-![Barrel Bowling Score](docs/images/barrel_bowling_score.png)
+![Barrel Bowling Score](docs/images/element_reference/barrel_bowling_score.png)
 
 ### TU3 Debuff
-![TU3 Debuff](docs/images/tu3_debuff.png)
+![TU3 Debuff](docs/images/element_reference/tu3_debuff.png)
 
 ### TU3 Canvas
-![TU3 Canvas](docs/images/tu3_canvas.png)
+![TU3 Canvas](docs/images/element_reference/tu3_canvas.png)
 
 ### Chat Log
-![Chat Log](docs/images/chat_log.png)
+![Chat Log](docs/images/element_reference/chat_log.png)
 
 ### Quest End Timer
-![Quest End Timer](docs/images/quest_end_timer_ref.png)
+![Quest End Timer](docs/images/element_reference/quest_end_timer_ref.png)
 
 ### Button Press
-![Button Press](docs/images/button_press.png)
+![Button Press](docs/images/element_reference/button_press.png)
