@@ -50,6 +50,12 @@ end
 function this.is_current_profile(elem)
     local root = elem:get_root()
     local root_config = root:get_root_config()
+
+    --FIXME: 'HudController.data.option.util.draw_apply_elem' threw here once after removing a profile, maybe HudBase wasnt fully initialized after switch?
+    if not root_config then
+        return false
+    end
+
     return root_config.current_profile == root_config.current_profile_gui
 end
 
