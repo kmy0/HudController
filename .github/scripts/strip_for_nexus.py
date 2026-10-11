@@ -12,7 +12,8 @@ What it does (outside of code blocks / inline code):
   * <!-- nocolor --> / <!-- /nocolor --> comments become literal [nocolor] /
     [/nocolor] tags; colorize_bbcode.py leaves bold text between them uncolored
     and removes the tags
-  * with --toc-spoiler: wraps the 'Table of contents' section in <details>
+  * with --toc-spoiler: keeps the 'Table of contents' heading and wraps the list
+    below it in literal [spoiler]...[/spoiler] tags
     so it becomes a spoiler on Nexus
 
 Usage:
@@ -125,28 +126,35 @@ def convert_nocolor(text: str, stats: dict) -> str:
 
 
 TOC_RE = re.compile(
-    r"^#{1,6}[ \t]+(?:table of contents|contents|toc)[ \t]*\r?\n(.*?)(?=^#{1,6}[ \t]|\Z)",
+    r"^(#{1,6}[ \t]+(?:table of contents|contents|toc)[ \t]*\r?\n)(.*?)(?=^#{1,6}[ \t]|\Z)",
     re.M | re.S | re.I,
 )
 
 
-def wrap_toc(text: str, stats: dict) -> str:
-    """Replace the 'Table of contents' heading + its list with a collapsible
-    <details> block (the converter turns <details> into a Nexus [spoiler])."""
+def wrap_toc(text: str, stats: dict, summary: str = None) -> str:
+    """Keep the 'Table of contents' heading where it is and wrap only the list
+    below it in a spoiler. By default this writes literal [spoiler]...[/spoiler]
+    tags (the converter passes literal BBCode through as-is), so nothing but the
+    list is inside. If a summary is given, a <details> block is used instead and
+    the converter writes the summary text as the first line of the spoiler."""
 
     def repl(m):
         stats["toc"] += 1
-        body = m.group(1).strip("\r\n")
-        return (
-            "<details>\n<summary>Table of contents</summary>\n\n"
-            + body
-            + "\n\n</details>\n\n"
-        )
+        heading = m.group(1)
+        body = m.group(2).strip("\r\n")
+        if summary:
+            return (
+                heading
+                + f"\n<details>\n<summary>{summary}</summary>\n\n"
+                + body
+                + "\n\n</details>\n\n"
+            )
+        return heading + "\n[spoiler]\n\n" + body + "\n\n[/spoiler]\n\n"
 
     return TOC_RE.sub(repl, text, count=1)
 
 
-def process(text: str, base: str, toc_spoiler: bool = False):
+def process(text: str, base: str, toc_spoiler: bool = False, toc_summary: str = None):
     stats = {"anchors": 0, "inpage": 0, "images": 0, "toc": 0, "nocolor": 0}
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     protected = []
@@ -162,7 +170,7 @@ def process(text: str, base: str, toc_spoiler: bool = False):
     text = transform(text, base, stats)
     text = convert_nocolor(text, stats)
     if toc_spoiler:
-        text = wrap_toc(text, stats)
+        text = wrap_toc(text, stats, toc_summary)
 
     # Restore (inline code may have been stashed inside nothing else, but loop
     # anyway in case of nesting order)
@@ -184,12 +192,17 @@ def main():
         action="store_true",
         help="wrap the 'Table of contents' section in a collapsible block (becomes a Nexus [spoiler])",
     )
+    ap.add_argument(
+        "--toc-summary",
+        default=None,
+        help="optional: put a text line at the top of the spoiler (default: none, only the list is inside)",
+    )
     ap.add_argument("-o", "--output", help="output file (default: <input>_nexus.md, '-' for stdout)")
     args = ap.parse_args()
 
     src = Path(args.input)
     text = src.read_text(encoding="utf-8")
-    result, stats = process(text, args.raw_base, args.toc_spoiler)
+    result, stats = process(text, args.raw_base, args.toc_spoiler, args.toc_summary)
 
     if args.output == "-":
         sys.stdout.write(result)

@@ -6,6 +6,7 @@ on:
       - README.md
       - .github/scripts/strip_for_nexus.py
       - .github/scripts/colorize_bbcode.py
+      - .github/scripts/fix_quotes.py
       - .github/workflows/nexus-description.yml
   workflow_dispatch:
 
@@ -37,6 +38,9 @@ jobs:
             --raw-base "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/" \
             --toc-spoiler -o README_nexus.md
           markdown_to_bbcodenm -i README_nexus.md -o nexus_bbcode.txt
+
+      - name: Fix empty line in notes
+        run: python .github/scripts/fix_quotes.py nexus_bbcode.txt
 
       - name: Recolor headings and bold
         run: |

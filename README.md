@@ -144,7 +144,6 @@ HudController lets you customize HUD elements and control almost any HUD or mod 
 - **Fade Opacity Changes Only:** Applies fade only to elements whose opacity differs between two profiles.
 
 <a id="hud-options-game-options"></a>
-
 ### Game Options
 Contains game settings added at [**User > Game Options**](#user-game-options).
 
@@ -164,7 +163,7 @@ Contains game settings added at [**User > Game Options**](#user-game-options).
 - **Disable Condition Binds Held:** Disables condition binds while a HUD key bind is held.
 
 ### Language
-![Langugage](docs/images/menu_bar/language.png)
+![Language](docs/images/menu_bar/language.png)
 
 <!-- nocolor -->
 Contains all language files located in `MonsterHunterWilds\reframework\data\HudController\lang`.
@@ -175,7 +174,6 @@ Contains all language files located in `MonsterHunterWilds\reframework\data\HudC
 Some text, such as HUD element names, is translated by the game and follows its language setting.
 
 To provide your own translation for other text:
-
 <!-- nocolor -->
 1. Navigate to `MonsterHunterWilds\reframework\data\HudController\lang`.
 2. Copy `en-us.json` and rename the copy.
@@ -196,6 +194,7 @@ To use a different font, specify its filename in the language JSON file:
 <!-- nocolor -->
 Font has to be located at `\MonsterHunterWilds\reframework\fonts` directory.
 <!-- /nocolor -->
+
 ### Bind
 ![Bind](docs/images/menu_bar/bind/bind.png)
 
@@ -334,7 +333,6 @@ Contains options for the ***Combat State*** condition.
 
 ### User
 ![User](docs/images/menu_bar/user/user.png)
-
 <a id="user-scripts"></a>
 <!-- nocolor -->
 
@@ -346,14 +344,12 @@ After enabling or disabling a script, you must reset the scripts for the changes
 How is this different from placing scripts in the **autorun** folder? The main difference is that your script selection is saved in the config, and all scripts are loaded only after the mod has fully initialized. Otherwise, it works the same way.
 <!-- /nocolor -->
 <a id="user-conditions"></a>
-
 <!-- nocolor -->
 
 #### Conditions
 The same rules apply to conditions, but they use a different folder: `MonsterHunterWilds\reframework\data\HudController\user_conditions`.
 <!-- /nocolor -->
 If a condition loads successfully, it appears in the condition dropdown under [**Bind > Condition > Add Condition...**](#condition). Its options, if implemented, appear under [**Bind > Condition Options**](#condition-options).
-
 <a id="user-game-options"></a>
 
 #### Game Options
@@ -432,7 +428,6 @@ Some elements contain child elements with their own settings, which are not list
 
 ### Common Settings
 ![Common Settings](docs/images/elements/common_settings.png)
-
 <a id="common-settings-element-profiles"></a>
 
 #### Element Profile
@@ -467,7 +462,6 @@ Disabled unless [**Fade**](#fade) in [**HUD Options**](#hud-options) is enabled.
 - **Override Fade Duration:** Enables the **Fade In** and **Fade Out** sliders.
 - **Fade In:** Sets the fade-in duration.
 - **Fade Out:** Sets the fade-out duration.
-
 <a id="common-settings-game-options"></a>
 
 #### Game Options
