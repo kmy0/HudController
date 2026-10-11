@@ -336,6 +336,14 @@ function this.draw(elem_config, config_key)
     imgui.same_line()
     util_imgui.option_button("##elem_profile_settings." .. config_key, {
         {
+            name = config.lang:tr("hud_profile.button_export"),
+            tooltip = config.lang:tr("hud_profile.tooltip_button_export"),
+            callback = function()
+                local profile = op.hud_elem_profile.get_elem_profile(root, root.current_profile_gui)
+                imgui.set_clipboard(json.dump_string(profile))
+            end,
+        },
+        {
             name = config.lang:tr("hud_profile.button_import"),
             tooltip = config.lang:tr("hud_profile.tooltip_button_import"),
             callback = function()
@@ -345,14 +353,6 @@ function this.draw(elem_config, config_key)
                 if profile.profile_enabled then
                     op.hud_elem_profile.apply_elem_profile(root)
                 end
-            end,
-        },
-        {
-            name = config.lang:tr("hud_profile.button_export"),
-            tooltip = config.lang:tr("hud_profile.tooltip_button_export"),
-            callback = function()
-                local profile = op.hud_elem_profile.get_elem_profile(root, root.current_profile_gui)
-                imgui.set_clipboard(json.dump_string(profile))
             end,
         },
     })
