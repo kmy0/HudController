@@ -37,7 +37,7 @@ function this:draw_target(rule_path)
     if not invalid.free_value then
         --fix index after removal/add
 
-        if free_value and free_value ~= rule.free_value then
+        if not free_value or free_value ~= rule.free_value then
             config:set(target_select_key, cd.combo.option_game_bind:get_index(rule.free_value))
         end
     end

@@ -43,7 +43,7 @@ function this:draw_target(rule_path)
     if not invalid.free_value then
         --fix index after removal/add
 
-        if free_value and free_value ~= rule.free_value and registered_opt then
+        if (not free_value or free_value ~= rule.free_value) and registered_opt then
             config:set(target_select_key, cd.combo.option_user_bind:get_index(registered_opt))
         end
     end

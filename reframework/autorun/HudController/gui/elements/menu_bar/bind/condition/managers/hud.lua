@@ -44,8 +44,13 @@ function this:draw_target(rule_path)
             free_value = hud_config.key
         end
 
-        if free_value and free_value ~= rule.free_value then
-            config:set(target_select_key, cd.combo.hud:get_index(rule.free_value))
+        if not free_value or free_value ~= rule.free_value then
+            config:set(
+                target_select_key,
+                util_table.index(config_mod.hud, function(o)
+                    return o.key == rule.free_value
+                end)
+            )
         end
     end
 
