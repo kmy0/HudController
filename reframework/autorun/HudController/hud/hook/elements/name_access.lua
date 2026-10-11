@@ -9,6 +9,11 @@ function this.hide_edge_icon_pre(args)
     local name_access = common.get_elem_t("NameAccess")
     if name_access and name_access.hide_edge_icon then
         local pnl_base = sdk.to_managed_object(args[2]) --[[@as app.GUI020001PanelBase]]
+        if pnl_base:get_IsEdge() then
+            local pin_parts = pnl_base:get_PinParts()
+            pin_parts:setVisible(false)
+        end
+
         pnl_base:setEdgeStatus(false)
     end
 end

@@ -475,6 +475,11 @@
 ---@field get_Params fun(self: app.GUI020001PanelBase): app.GUI020001PanelParams
 ---@field get_BasePanel fun(self: app.GUI020001PanelBase): via.gui.Panel
 ---@field setEdgeStatus fun(self: app.GUI020001PanelBase, val: System.Boolean)
+---@field get_IsEdge fun(self: app.GUI020001PanelBase): System.Boolean
+---@field get_PinParts fun(self: app.GUI020001PanelBase): app.cGUIPinParts
+
+---@class app.cGUIPinParts : via.clr.ManagedObject
+---@field setVisible fun(self: app.cGUIPinParts, val: System.Boolean)
 
 ---@class app.ChatDef.EnemyMessage : app.ChatDef.SystemMessage
 ---@field get_EnemyLogType fun(self: app.ChatDef.EnemyMessage): app.ChatDef.ENEMY_LOG_TYPE
