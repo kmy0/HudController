@@ -286,7 +286,7 @@ local function make_elem_fader(hud_id, ctrls, disable_fade)
                 )
             end,
             free_value = disable_opacity,
-            synchronized = false,
+            synchronized = not fade_opacity,
         })
     end
 
@@ -320,6 +320,7 @@ function this.request_hud(new_hud, force)
     end
 
     this.notify = not this.current_hud or this.current_hud.hud.key ~= new_hud.hud.key
+    local old_requested = this.requested_hud
     this.requested_hud = new_hud
     defaults.play_object:disable_auto_dump()
     defaults.option:disable_auto_dump()
@@ -337,8 +338,12 @@ function this.request_hud(new_hud, force)
     ---@type app.GUIHudDef.TYPE[]
     local no_fade = {}
     for hud_id, ctrls in pairs(all_elements) do
-        local disable_fade =
-            fade_manager.get_elem_fade_disable(this.current_hud, this.requested_hud, hud_id)
+        local disable_fade = fade_manager.get_elem_fade_disable(
+            old_requested or this.current_hud --[[@as ModHud]],
+            this.requested_hud,
+            hud_id
+        )
+
         if disable_fade == fade_manager.disable_type.DISABLE then
             table.insert(no_fade, hud_id)
         else

@@ -94,6 +94,7 @@ local function update_requests()
     end
 
     local same_as_current = not this.force_update
+        and not profile_switcher.requested_hud
         and profile_switcher.current_hud
         and ret.hud
         and ret.hud.key == profile_switcher.current_hud.hud.key

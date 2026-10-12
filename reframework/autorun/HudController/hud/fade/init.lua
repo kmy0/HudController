@@ -16,6 +16,7 @@ local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
 local fader_group = require("HudController.hud.fade.fader_group")
 local play_object = require("HudController.hud.play_object.init")
+local timer = require("HudController.util.misc.timer")
 local util_misc = require("HudController.util.misc.init")
 
 ---@module "HudController.hud.manager.elements"
@@ -153,11 +154,17 @@ function this.make_fader(hud_id, ctrl, target_opacity, duration, optional_args)
             o(f)
         end
 
-        call_queue.queue_func(hud_id, function()
-            for _, c in pairs(ctrl) do
-                this.restore_opacity(hud_id, c)
-            end
-        end)
+        if not f.next then
+            call_queue.queue_func(hud_id, {
+                fn = function()
+                    for _, c in pairs(ctrl) do
+                        this.restore_opacity(hud_id, c)
+                    end
+                end,
+                timer = timer:new(2, { type = "frame", auto_start = true }),
+                execute_on_expire = true,
+            })
+        end
     end
 
     return fader:new(hud_id, ctrl, from, to, duration, optional_args)

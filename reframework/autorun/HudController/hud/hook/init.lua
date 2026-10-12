@@ -12,6 +12,7 @@
 ---@field option table<string, fun()|fun()[]>
 ---@field option_mod table<string, fun()|fun()[]>
 
+local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
@@ -61,6 +62,8 @@ m.hook("app.GUIManager.lateUpdateApp()", nil, function(_)
     for gui_type in pairs(on_render_hooks) do
         elements.update.update_post(gui_type)
     end
+
+    call_queue.consume_expired()
 end)
 
 local function hook_fn(fn)
