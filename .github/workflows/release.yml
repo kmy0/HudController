@@ -13,6 +13,9 @@ jobs:
   release:
     runs-on: windows-2022
 
+    permissions:
+      contents: write
+
     env:
       BUILD_TYPE: Release
 
@@ -70,6 +73,8 @@ jobs:
           name: "${{ env.RELEASE_VERSION }}"
           tag: "${{ env.RELEASE_VERSION }}"
           artifacts: "HudController-*.zip"
+          generateReleaseNotes: true
+          draft: true
           makeLatest: true
 
       - name: Create Release (HudController-releases)
