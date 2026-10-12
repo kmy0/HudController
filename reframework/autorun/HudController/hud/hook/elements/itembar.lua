@@ -126,6 +126,10 @@ function this.expanded_itembar_mouse_control_post(_)
     then
         local all_slider = util_ref.get_this() --[[@as app.GUI020006PartsAllSlider]]
         local current_item = all_slider:getCurrentItem()
+        if not current_item then
+            return
+        end
+
         local current_sel = current_item:get__BaseItem()
 
         if this.expanded.cursor_init then
