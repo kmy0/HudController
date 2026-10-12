@@ -81,8 +81,13 @@ function this:listen_keyboard()
 
     for i = 1, #sorted do
         local index = sorted[i]
+        local name = e.get("ace.ACE_MKB_KEY.INDEX")[index]
 
-        if kb:isOn(index) and not util_table.contains_any(self._bind_base.keys, index) then
+        if
+            name ~= "L_CLICK"
+            and kb:isOn(index)
+            and not util_table.contains_any(self._bind_base.keys, index)
+        then
             table.insert(self._bind_base.keys, index)
             table.insert(btn_names, enum[index])
         end
