@@ -37,7 +37,7 @@ function this:draw_option()
     local values = {}
     local hud_profile = config_mod.hud[config:get("__temp.combo_target")]
     if hud_profile then
-        values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
+        values = hud_profile.profile
     end
 
     util_imgui.begin_disabled(util_table.empty(values))
@@ -50,7 +50,7 @@ function this:draw_option()
             return v.key
         end,
         function(v)
-            return v.name
+            return op.hud_elem_profile.tr_profile(v)
         end
     )
     util_imgui.end_disabled()

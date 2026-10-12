@@ -160,7 +160,7 @@ this.enum.elem_cache = { ---@class ElemCache.*
 }
 ---@enum ElemProfileIndex
 this.enum.elem_profile = { ---@class ElemProfileIndex.*
-    DEFAULT = 0,
+    DEFAULT = 1,
 }
 ---@enum ExpandedItembarControl
 this.enum.expanded_itembar_control = { ---@class ExpandedItembarControl.*

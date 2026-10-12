@@ -265,9 +265,7 @@ local function draw_profile_row(root, profile_for_show, value, config_mod, style
     draw_list:add_text(
         { text_x, text_y },
         text_col,
-        profile_for_show.name == "__placeholder_default"
-                and config.lang:tr("hud_profile.text_default_profile")
-            or profile_for_show.name
+        op.hud_elem_profile.tr_profile(profile_for_show)
     )
     util_imgui.end_disabled()
 

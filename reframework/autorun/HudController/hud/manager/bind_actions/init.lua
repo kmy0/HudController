@@ -29,7 +29,7 @@ function this.merge_requests(key_requests, cond_requests)
             end
 
             cond_requests.hud = key_requests.hud
-        else
+        elseif key_requests.hud.profile[1] ~= 0 then
             table.insert(cond_requests.hud.profile, 1, key_requests.hud.profile[1])
         end
     end

@@ -305,7 +305,7 @@ local function draw_profiles()
     util_imgui.tooltip(config.lang:tr("hud_profile.tooltip_button_sort"))
 
     imgui.same_line()
-    imgui.text_colored(string.format("%s/%s", #profiles - 1, config.max_profile), style.color.info)
+    imgui.text_colored(string.format("%s/%s", #profiles, config.max_profile), style.color.info)
 
     imgui.separator()
 
@@ -338,13 +338,7 @@ local function draw_profiles()
         util_imgui.end_disabled()
 
         imgui.same_line()
-        util_imgui.header(
-            profile.name == "__placeholder_default"
-                    and config.lang:tr("hud_profile.text_default_profile")
-                or profile.name,
-            nil,
-            profile.protected
-        )
+        util_imgui.header(op.hud_elem_profile.tr_profile(profile), nil, profile.protected)
         drag_profile:check_drag_pos(profile.key)
         util_imgui.end_disabled()
 

@@ -81,7 +81,11 @@ function this.get_hud_profile_config(key, name)
         elements = {},
         options = {},
         profile = {
-            { key = 0, name = "__placeholder_default", protected = true },
+            {
+                key = mod.enum.elem_profile.DEFAULT,
+                name = "__placeholder_default",
+                protected = true,
+            },
         },
         user_options = {},
     }

@@ -68,9 +68,7 @@ function this.get_profile_name(key)
     local config_mod = config.current.mod
     for _, p in pairs(config_mod.hud[config_mod.combo.hud].profile) do
         if p.key == key then
-            return p.name == "__placeholder_default"
-                    and config.lang:tr("hud_profile.text_default_profile")
-                or p.name
+            return this.tr_profile(p)
         end
         ---@diagnostic disable-next-line: missing-return
     end
@@ -113,6 +111,13 @@ function this.apply_elem_profile(root)
     end
 
     hud_elements.update_element_profile(new_profile)
+end
+
+---@param profile_for_show HudBaseConfigProfileForShow
+function this.tr_profile(profile_for_show)
+    return profile_for_show.name == "__placeholder_default"
+            and config.lang:tr("hud_profile.text_default_profile")
+        or profile_for_show.name
 end
 
 ---@param hud_config ModProfileConfig

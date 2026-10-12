@@ -1,3 +1,4 @@
+local op = require("HudController.hud.manager.op.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -15,7 +16,7 @@ function this.elem_profiles_to_name(hud_config, bits)
             return value.key == key
         end) --[[@as HudBaseConfigProfileForShow]]
         if profile then
-            table.insert(names, profile.name)
+            table.insert(names, op.hud_elem_profile.tr_profile(profile))
         end
     end
 

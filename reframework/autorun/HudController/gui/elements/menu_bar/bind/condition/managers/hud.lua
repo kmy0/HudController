@@ -87,7 +87,7 @@ function this:draw_option(rule_path)
     end
 
     if hud_profile then
-        values = util_table.slice(hud_profile.profile, 2, #hud_profile.profile)
+        values = hud_profile.profile
     else
         values = {}
     end
@@ -102,7 +102,7 @@ function this:draw_option(rule_path)
             return v.key
         end,
         function(v)
-            return v.name
+            return op.hud_elem_profile.tr_profile(v)
         end
     )
 

@@ -1076,11 +1076,11 @@ function this.get_config(hud_id, name_key)
         hud_type = mod.enum.hud_type.BASE,
         hud_sub_type = mod.enum.hud_sub_type.BASE,
         profile = {},
-        current_profile = 0,
-        current_profile_gui = 0,
+        current_profile = mod.enum.elem_profile.DEFAULT,
+        current_profile_gui = mod.enum.elem_profile.DEFAULT,
         profile_enabled = true,
-        default_profile = 0,
-        profile_key = 0,
+        default_profile = mod.enum.elem_profile.DEFAULT,
+        profile_key = mod.enum.elem_profile.DEFAULT,
         user_options = {},
     }
 end
