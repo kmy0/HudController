@@ -2,12 +2,6 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      publish_to_release_repo:
-        description: "Also publish to HudController-releases"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   release:
@@ -76,15 +70,3 @@ jobs:
           generateReleaseNotes: true
           draft: true
           makeLatest: true
-
-      - name: Create Release (HudController-releases)
-        if: ${{ inputs.publish_to_release_repo }}
-        uses: ncipollo/release-action@v1
-        with:
-          repo: HudController-releases
-          owner: kmy0
-          token: ${{ secrets.RELEASE_REPO_TOKEN }}
-          name: "${{ env.RELEASE_VERSION }}"
-          tag: "${{ env.RELEASE_VERSION }}"
-          artifacts: "HudController-*.zip"
-          makeLatest: false
