@@ -723,3 +723,6 @@
 
 ---@class app.MasterFieldManager : ace.GAElement
 ---@field get_CurrentStage fun(self: app.MasterFieldManager): app.FieldDef.STAGE
+
+---@class app.GimmickManager : ace.GAElementBase
+---@field findGimmick_ID fun(self: app.GimmickManager, id: app.GimmickDef.ID): System.Array<app.GimmickBaseApp>

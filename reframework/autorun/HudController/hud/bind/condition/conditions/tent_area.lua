@@ -1,6 +1,9 @@
 local ace_player = require("HudController.util.ace.player")
 local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
+local e = require("HudController.util.game.enum")
+local frame_cache = require("HudController.util.misc.frame_cache")
+local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 
 ---@class TentAreaCondition : ConditionBase
@@ -9,6 +12,12 @@ local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = condition_base })
+
+---@return System.Array<app.Gm100_003>
+local function get_temp_tents()
+    return s.get("app.GimmickManager")
+        :findGimmick_ID(e.get_noexact("app.GimmickDef.ID").GM100_003_00) --[[@as System.Array<app.Gm100_003>]]
+end
 
 ---@return TentAreaCondition
 function this:new()
@@ -39,7 +48,7 @@ function this:update()
     end
 
     local ret = false
-    local temp_tents = util_game.get_all_components("app.Gm100_003")
+    local temp_tents = get_temp_tents()
     local player_pos = ace_player.get_master_pos()
     local min_dist = 15.0
     util_game.do_something(temp_tents, function(_, _, value)
@@ -60,5 +69,7 @@ function this:update()
 
     return ret
 end
+
+get_temp_tents = frame_cache.memoize(get_temp_tents, { max_frame = 120 })
 
 return this
