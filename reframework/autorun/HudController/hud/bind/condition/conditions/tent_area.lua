@@ -49,23 +49,26 @@ function this:update()
 
     local ret = false
     local temp_tents = get_temp_tents()
-    local player_pos = ace_player.get_master_pos()
-    local min_dist = 15.0
-    util_game.do_something(temp_tents, function(_, _, value)
-        local pos = self.pos_cache[value]
-        if not pos then
-            local go = value:get_GameObject()
-            local transform = go:get_Transform()
-            pos = transform:get_Position()
-            self.pos_cache[value] = pos
-        end
 
-        local vec = player_pos - pos
-        if vec:length() <= min_dist then
-            ret = true
-            return false
-        end
-    end)
+    if temp_tents then
+        local player_pos = ace_player.get_master_pos()
+        local min_dist = 15.0
+        util_game.do_something(temp_tents, function(_, _, value)
+            local pos = self.pos_cache[value]
+            if not pos then
+                local go = value:get_GameObject()
+                local transform = go:get_Transform()
+                pos = transform:get_Position()
+                self.pos_cache[value] = pos
+            end
+
+            local vec = player_pos - pos
+            if vec:length() <= min_dist then
+                ret = true
+                return false
+            end
+        end)
+    end
 
     return ret
 end
