@@ -119,16 +119,16 @@ function this.merge(hud_elem)
     local ret =
         util_table.merge_protected(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
 
+    ret.profile = {}
     for key, profile in pairs(profiles or {}) do
         ---@diagnostic disable-next-line: no-unknown
-        profile[key] = util_table.merge_protected(
+        ret.profile[key] = util_table.merge_protected(
             protected,
             true,
             this.get_config(hud_elem.hud_id) --[[@as HudBaseConfigProfile]],
             profile
         )
     end
-    ret.profile = profiles or {}
 
     return ret
 end
