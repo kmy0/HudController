@@ -120,7 +120,7 @@ function this.get_config()
     base.hud_type = mod.enum.hud_type.WEAPON
     base.no_focus = false
 
-    children.no_focus = { name_key = "__no_focus", { enabled = false, value = "" } }
+    children.no_focus = { name_key = "__no_focus", play_state = { enabled = false, value = "" } }
     children.charge_axe = charge_axe.get_config()
     children.tachi = tachi.get_config()
     children.twin_sword = twin_sword.get_config()
