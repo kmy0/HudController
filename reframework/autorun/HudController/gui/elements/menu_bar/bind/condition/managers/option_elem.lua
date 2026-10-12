@@ -30,7 +30,7 @@ function this:draw_target(rule_path)
     local changed = false
 
     if not config:get(free_value_path) then
-        config:set(free_value_path, def.tree.nodes[1].leaves[1].path)
+        config:set(free_value_path, def.get_first_node().path)
         changed = true
     end
 

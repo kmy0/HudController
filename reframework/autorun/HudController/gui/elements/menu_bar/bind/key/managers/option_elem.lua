@@ -43,8 +43,7 @@ function this:set_default()
     local path = config:get("__temp.combo_target")
 
     if type(path) ~= "string" or not def.get_opt(path) then
-        local node = def.tree.nodes[1].value
-        opt = node.opt[1]
+        opt = def.get_first_node()
         config:set("__temp.combo_target", opt.path)
         path = opt.path
     end

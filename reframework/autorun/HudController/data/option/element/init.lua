@@ -401,6 +401,12 @@ function this.get_opt(path)
     return util_table.get_by_path(this.map, path)
 end
 
+---@return NamedElementOptionDef
+function this.get_first_node()
+    local elem = this.tree.source[1]
+    return elem.opt[1]
+end
+
 ---@return boolean
 function this.init()
     get_elem_option_map()

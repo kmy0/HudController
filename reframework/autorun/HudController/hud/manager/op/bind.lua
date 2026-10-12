@@ -52,7 +52,9 @@ local function check_option_rule(cond_type, rule)
     this.set_condition_error(
         rule,
         "free_value",
-        not lookup(rule.free_value) and fmt_error("misc.text_missing_opt", rule.free_value)
+        not rule.free_value
+            or not lookup(rule.free_value)
+                and fmt_error("misc.text_missing_opt", rule.free_value)
     )
 end
 
