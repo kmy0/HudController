@@ -284,23 +284,12 @@ function this.demote_path(path)
     end
 end
 
----@param current_hud ModHud
----@param force boolean?
 ---@return ConditionEvalResult?
-function this.update(current_hud, force)
+function this.update()
     local ret = this.eval_rules()
 
     if not ret then
         return
-    end
-
-    local same_as_current = current_hud
-        and ret.hud
-        and ret.hud.key == current_hud.hud.key
-        and util_table.equal(ret.hud.profile, current_hud.profile_bits or {})
-
-    if same_as_current and not force then
-        ret.hud = nil
     end
 
     if config.current.mod.enable_condition_binds then

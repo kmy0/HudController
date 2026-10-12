@@ -11,6 +11,7 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
+local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
 local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.manager.elements")
@@ -25,6 +26,8 @@ local options = util_misc.lazy_require("HudController.hud.manager.options")
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
+
+local mod_enum = data.mod.enum
 
 ---@class ProfileSwitcher
 local this = {
@@ -125,7 +128,13 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
     local active_profiles = {}
 
     for _, packed_bits in ipairs(profile_bits) do
-        local unpacked_bits = util_misc.unpack_bits(packed_bits)
+        ---@type integer[]
+        local unpacked_bits
+        if packed_bits == 0 then
+            unpacked_bits = { mod_enum.elem_profile.DEFAULT }
+        else
+            unpacked_bits = util_misc.unpack_bits(packed_bits)
+        end
 
         table.sort(unpacked_bits, function(a, b)
             return profile_order[a] > profile_order[b]
@@ -137,8 +146,8 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
     local function get_new_profile(element)
         for _, trigger_profiles in ipairs(sorted_profile_bits) do
             for _, profile_id in ipairs(trigger_profiles) do
-                local profile_key = tostring(profile_id)
-                local profile_config = element.profile[profile_key]
+                local profile_config =
+                    op.hud_elem_profile.get_elem_profile_no_create(element, profile_id)
 
                 if profile_config and profile_config.profile_enabled then
                     return profile_id

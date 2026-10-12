@@ -85,12 +85,22 @@ local function update_requests()
             bind_condition.eval_rules()
         end
     else
-        cond_requests = bind_condition.update(profile_switcher.current_hud, this.force_update)
+        cond_requests = bind_condition.update()
     end
 
     local ret = bind_actions.merge_requests(key_requests or {}, cond_requests or {})
     if util_table.empty(ret) then
         return
+    end
+
+    local same_as_current = not this.force_update
+        and profile_switcher.current_hud
+        and ret.hud
+        and ret.hud.key == profile_switcher.current_hud.hud.key
+        and util_table.equal(ret.hud.profile, profile_switcher.current_hud.profile_bits or {})
+
+    if same_as_current then
+        ret.hud = nil
     end
 
     return ret

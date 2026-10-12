@@ -5,12 +5,9 @@
 
 local bind_condition = require("HudController.hud.bind.condition.init")
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
 local handlers = require("HudController.hud.manager.bind_actions.handlers")
 local held = require("HudController.hud.manager.bind_actions.held")
 local util_table = require("HudController.util.misc.table")
-
-local mod = data.mod
 
 ---@class BindActionManager
 local this = {
@@ -32,7 +29,7 @@ function this.merge_requests(key_requests, cond_requests)
             end
 
             cond_requests.hud = key_requests.hud
-        elseif key_requests.hud.profile[1] ~= mod.enum.elem_profile.DEFAULT then
+        else
             table.insert(cond_requests.hud.profile, 1, key_requests.hud.profile[1])
         end
     end
