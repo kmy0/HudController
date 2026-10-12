@@ -10,6 +10,8 @@
 ---@field override_fade_in boolean
 ---@field override_fade_out boolean
 
+local call_queue = require("HudController.hud.call_queue")
+local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
 local fader_group = require("HudController.hud.fade.fader_group")
@@ -18,6 +20,8 @@ local util_misc = require("HudController.util.misc.init")
 
 ---@module "HudController.hud.manager.elements"
 local elements = util_misc.lazy_require("HudController.hud.manager.elements")
+
+local ace_map = data.ace.map
 
 ---@class FadeManager
 local this = {
@@ -132,7 +136,7 @@ function this.make_fader(hud_id, ctrl, target_opacity, duration, optional_args)
     for _, c in pairs(ctrl) do
         local _from, _need_restore = get_opacity(c)
         from = math.max(from, _from)
-        need_restore = need_restore or _need_restore
+        need_restore = need_restore or _need_restore or ace_map.hudid_to_can_hide[hud_id]
     end
 
     if need_restore then
@@ -141,6 +145,19 @@ function this.make_fader(hud_id, ctrl, target_opacity, duration, optional_args)
 
     if type(duration) == "table" then
         duration = to > from and duration.fade_in or duration.fade_out
+    end
+
+    local o = optional_args.on_finish
+    optional_args.on_finish = function(f)
+        if o then
+            o(f)
+        end
+
+        call_queue.queue_func(hud_id, function()
+            for _, c in pairs(ctrl) do
+                this.restore_opacity(hud_id, c)
+            end
+        end)
     end
 
     return fader:new(hud_id, ctrl, from, to, duration, optional_args)
