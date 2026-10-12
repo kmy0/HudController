@@ -93,17 +93,6 @@ local function update_requests()
         return
     end
 
-    local same_as_current = not this.force_update
-        and not profile_switcher.requested_hud
-        and profile_switcher.current_hud
-        and ret.hud
-        and ret.hud.key == profile_switcher.current_hud.hud.key
-        and util_table.equal(ret.hud.profile, profile_switcher.current_hud.profile_bits or {})
-
-    if same_as_current then
-        ret.hud = nil
-    end
-
     return ret
 end
 
@@ -158,8 +147,6 @@ function this.update()
     local force_update = this.force_update
     local target = profile_switcher.requested_hud or profile_switcher.current_hud --[[@as ModHud]]
     local requested_profile = requests.hud.profile
-    local profile_matches = not requested_profile
-        or util_table.equal(target.profile_bits, requested_profile)
 
     local requested_index = util_table.index(config_mod.hud, function(hud)
         return hud.key == requests.hud.key
@@ -168,7 +155,14 @@ function this.update()
     if requested_index then
         local requested_hud = config_mod.hud[requested_index]
 
-        if target.hud.key == requested_hud.key and profile_matches and not force_update then
+        local profile_matches = false
+        if requested_profile then
+            profile_matches = util_table.equal(target.profile_bits or {}, requested_profile)
+        else
+            profile_matches = util_table.equal(target.profile_bits or {}, target.hud.profile)
+        end
+
+        if not force_update and target.hud.key == requested_hud.key and profile_matches then
             return
         end
 
@@ -184,7 +178,7 @@ function this.update()
             profile_switcher.request_hud_with_default(requested_hud, force_update)
         end
     elseif requested_profile then
-        if profile_matches and not force_update then
+        if not force_update and util_table.equal(target.profile_bits or {}, requested_profile) then
             return
         end
 
