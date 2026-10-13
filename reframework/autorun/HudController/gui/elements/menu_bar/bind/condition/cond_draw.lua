@@ -190,6 +190,7 @@ function this.draw_conditions(manager, config_key, readonly)
         config.lang:tr("menu.bind.condition.expected_result_values.TRUE"),
         config.lang:tr("menu.bind.condition.expected_result_values.FALSE")
     )
+    --FIXME: no idea where the extra -2 padding comes from
     local item_size = readonly and -1 or -3
     local flags = imgui.TableFlags.SizingFixedFit
 
@@ -269,6 +270,8 @@ function this.draw_conditions(manager, config_key, readonly)
                 local changed = false
                 local key = string.format("%s.int:%s", config_key, i)
                 if cond_class and cond_class:has_custom_options() then
+                    imgui.set_next_item_width(item_size)
+
                     changed = cond_class:draw_options(key) or changed
                 elseif cond_class and cond_class.options then
                     imgui.set_next_item_width(item_size)

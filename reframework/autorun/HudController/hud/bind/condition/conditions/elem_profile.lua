@@ -57,8 +57,9 @@ end
 ---@param config_key string
 ---@return boolean
 function this:draw_options(config_key)
-    local width = util_imgui.get_available_width() / 2 - 5
-    imgui.set_next_item_width(width)
+    local width = imgui.calc_item_width()
+    local half_width = width / 2 - 4
+    imgui.set_next_item_width(half_width)
 
     local config_mod = config.current.mod
     local opt = self:get_option_table(config_key) --[[@as ElemProfileConditionConfig]]
@@ -100,10 +101,10 @@ function this:draw_options(config_key)
     end
 
     imgui.same_line()
-    imgui.set_next_item_width(width)
+    imgui.set_next_item_width(half_width)
     multi_select.draw_options(self, config_key)
 
-    imgui.set_next_item_width(-3)
+    imgui.set_next_item_width(width)
     changed = set:combo_multi_bits_filter(
         "##elem_profile_cond_2|" .. config_key,
         profile_key,

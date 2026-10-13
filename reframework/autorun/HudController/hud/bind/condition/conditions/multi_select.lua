@@ -49,8 +49,6 @@ end
 ---@param config_key string
 ---@return boolean
 function this:draw_options(config_key)
-    imgui.set_next_item_width(-3)
-
     local opt = self:get_option_table(config_key) --[[@as MultiSelectConditionConfig]]
     ---@type boolean[]
     local selection_idx = {}
