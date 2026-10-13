@@ -2,7 +2,9 @@ local ace_em = require("HudController.util.ace.enemy")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
+
 local this = {}
 
 function this.hide_edge_icon_pre(args)
@@ -47,7 +49,18 @@ function this.hide_iteractables_post(_)
                     if name_access.npc_draw_distance > 0 then
                         local game_object = value:get_GameObject()
                         if game_object then
-                            local transform = game_object:get_Transform()
+                            ---@type via.Transform?
+                            local transform
+
+                            -- throws when game object is being destroyed
+                            util_misc.try(function()
+                                transform = game_object:get_Transform()
+                            end)
+
+                            if not transform then
+                                return
+                            end
+
                             local pos = transform:get_Position()
 
                             if not player_pos then
