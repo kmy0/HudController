@@ -51,6 +51,7 @@ local conditions = {
     infinite_stamina_area = require(
         "HudController.hud.bind.condition.conditions.infinite_stamina_area"
     ),
+    elem_profile = require("HudController.hud.bind.condition.conditions.elem_profile"),
 }
 
 local mod_enum = mod.enum

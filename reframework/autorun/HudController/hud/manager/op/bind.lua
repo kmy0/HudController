@@ -269,6 +269,17 @@ function this.mark_hud_invalid(hud_key)
         end
     end
 
+    for cond in this.iter_conditions(config_mod.bind.condition, "_ELEM_PROFILE") do
+        ---@cast cond ElemProfileConditionConfig
+        if cond.combo_key == hud_key then
+            this.set_condition_error(
+                cond,
+                "class_config_value",
+                fmt_error("misc.text_wrong_value", hud_key)
+            )
+        end
+    end
+
     this.evaluate_conditions(config_mod.bind.condition)
 
     for _, b in pairs(bind_manager.hud.binds) do
@@ -315,6 +326,22 @@ function this.mark_hud_profile_invalid(hud_key, profile_key)
                     rule,
                     "free_value2",
                     fmt_error("misc.text_wrong_value", rule.free_value2)
+                )
+            end
+        end
+    end
+
+    for cond in this.iter_conditions(config_mod.bind.condition, "_ELEM_PROFILE") do
+        ---@cast cond ElemProfileConditionConfig
+        if cond.combo_key == hud_key then
+            local bit = cond.profile
+            local unpacked = util_misc.unpack_bits(bit)
+
+            if util_table.contains_any(unpacked, profile_key) then
+                this.set_condition_error(
+                    cond,
+                    "class_config_value",
+                    fmt_error("misc.text_wrong_value", cond.profile)
                 )
             end
         end
