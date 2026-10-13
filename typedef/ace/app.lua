@@ -147,6 +147,7 @@
 
 ---@class app.cHunterContext : app.cGameContext
 ---@field get_TentAreaInfo fun(self: app.cHunterContext): app.cHunterTentAreaInfo
+---@field get_AimType fun(self: app.cHunterContext): app.HunterDef.AIM_TYPE
 
 ---@class app.cHunterTentAreaInfo : via.clr.ManagedObject
 ---@field get_IsInTentArea fun(self: app.cHunterTentAreaInfo): System.Boolean

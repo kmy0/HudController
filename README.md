@@ -315,6 +315,8 @@ Multi select conditions use OR logic. When multiple options are selected, the co
 - Key Bind
 - Infinite Stamina Area
 - Element Profile
+- Aim Type
+- Fading
 
 #### Condition options
 ![Condition](docs/images/menu_bar/bind/condition/condition_options.png)

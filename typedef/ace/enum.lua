@@ -71,6 +71,7 @@
 ---@class app.WeaponDef.KIREAJI_TYPE : System.Enum
 ---@class app.FieldDef.STAGE : System.Enum
 ---@class app.GimmickDef.ID : System.Enum
+---@class app.HunterDef.AIM_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

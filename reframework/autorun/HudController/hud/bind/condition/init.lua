@@ -52,6 +52,8 @@ local conditions = {
         "HudController.hud.bind.condition.conditions.infinite_stamina_area"
     ),
     elem_profile = require("HudController.hud.bind.condition.conditions.elem_profile"),
+    fading = require("HudController.hud.bind.condition.conditions.fading"),
+    aim_type = require("HudController.hud.bind.condition.conditions.aim_type"),
 }
 
 local mod_enum = mod.enum
