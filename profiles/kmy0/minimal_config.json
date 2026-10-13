@@ -2,12 +2,9 @@
     "mod": {
         "bind": {
             "condition": {
-                "cond_type_selection": "HUD",
+                "cond_type_selection": "OPTION_HUD",
                 "condition_options": {
-                    "Quest Rank": {
-                        "combo_add": 2,
-                        "combo_remove": 1
-                    },
+                    "_AIM_TYPE": null,
                     "_ALWAYS": null,
                     "_AMMO_CHANGED": {
                         "duration": 3
@@ -18,6 +15,8 @@
                         "quest_in_combat": false,
                         "ride_ignore_combat": true
                     },
+                    "_ELEM_PROFILE": null,
+                    "_FADE": null,
                     "_GAME_MODE": null,
                     "_HEALTH_CHANGED": {
                         "duration": 3
@@ -58,7 +57,7 @@
                 "highlight_pass_cond": true,
                 "highlight_pass_rule": true,
                 "invalid": false,
-                "path": "mod.bind.condition.sets.int:1.rules.int:2",
+                "path": "mod.bind.condition",
                 "sets": [
                     {
                         "rules": [
@@ -71,10 +70,27 @@
                                             "combo": 1,
                                             "negate": false
                                         }
+                                    ],
+                                    [
+                                        {
+                                            "class": "_ITEMBAR_OPEN",
+                                            "combo": 1,
+                                            "negate": false
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "class": "_AIM_TYPE",
+                                            "combo": 1,
+                                            "negate": false,
+                                            "selection": {
+                                                "SLINGER": true
+                                            }
+                                        }
                                     ]
                                 ],
                                 "free_value": 4,
-                                "free_value2": 0,
+                                "free_value2": 1,
                                 "restore": false,
                                 "sets": null,
                                 "target_select": 1
@@ -91,30 +107,9 @@
                                     ]
                                 ],
                                 "free_value": 4,
-                                "free_value2": 4,
+                                "free_value2": 8,
                                 "restore": false,
-                                "sets": [
-                                    {
-                                        "rules": [
-                                            {
-                                                "cond_type_selection": "HUD",
-                                                "conditions": [
-                                                    null
-                                                ],
-                                                "free_value": "ACTION_TUTORIAL.opt.hide",
-                                                "free_value2": false,
-                                                "free_value3": {
-                                                    "hud_id": 1010,
-                                                    "path": ""
-                                                },
-                                                "restore": false,
-                                                "sets": null
-                                            }
-                                        ],
-                                        "selection": 1,
-                                        "type": "OPTION_ELEM"
-                                    }
-                                ],
+                                "sets": null,
                                 "target_select": 1
                             },
                             {
@@ -135,7 +130,7 @@
                                     ]
                                 ],
                                 "free_value": 4,
-                                "free_value2": 1,
+                                "free_value2": 2,
                                 "restore": false,
                                 "sets": null,
                                 "target_select": 1
@@ -203,62 +198,8 @@
             },
             "key": {
                 "buffer": 2,
-                "condition": [
-                    {
-                        "action_type": "SET",
-                        "device": "KEYBOARD",
-                        "invalid": false,
-                        "keys": [
-                            71
-                        ],
-                        "name": "L_CTRL",
-                        "name_display": "L_CTRL",
-                        "trigger_repeat": true
-                    },
-                    {
-                        "action_type": "SET",
-                        "device": "PAD",
-                        "invalid": false,
-                        "keys": [
-                            256
-                        ],
-                        "name": "L1",
-                        "name_display": "L1",
-                        "trigger_repeat": true
-                    }
-                ],
-                "hud": [
-                    {
-                        "action_type": "SET",
-                        "bound_value": {
-                            "key": 4,
-                            "value": 0
-                        },
-                        "device": "KEYBOARD",
-                        "invalid": false,
-                        "keys": [
-                            71
-                        ],
-                        "name": "L_CTRL",
-                        "name_display": "L_CTRL",
-                        "trigger_repeat": true
-                    },
-                    {
-                        "action_type": "SET",
-                        "bound_value": {
-                            "key": 4,
-                            "value": 0
-                        },
-                        "device": "PAD",
-                        "invalid": false,
-                        "keys": [
-                            256
-                        ],
-                        "name": "L1",
-                        "name_display": "L1",
-                        "trigger_repeat": true
-                    }
-                ],
+                "condition": null,
+                "hud": null,
                 "key_type_selection": 1,
                 "option_elem": null,
                 "option_game": null,
@@ -303,7 +244,7 @@
                 "option_hud": 1,
                 "option_mod": 1
             },
-            "selection": "SHARPNESS",
+            "selection": "CLOCK",
             "user_option": 1
         },
         "disable_condition_binds_held": false,
@@ -380,9 +321,9 @@
                                 "name_key": "text"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -1277,9 +1218,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -1495,9 +1436,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -1542,9 +1483,9 @@
                     },
                     "GUIDE": {
                         "children": null,
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -1702,9 +1643,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -2045,9 +1986,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -2075,7 +2016,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "anim_low_health": {
                                         "hide": true,
@@ -2373,9 +2314,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -2404,7 +2345,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -2421,7 +2362,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "anim_low_health": {
                                         "hide": true,
@@ -2719,9 +2660,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -2750,7 +2691,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -2866,11 +2807,11 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
                         "default_filter": -1,
                         "default_filter_combo": 1,
-                        "default_profile": 0,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -2918,9 +2859,9 @@
                     },
                     "NAME_ACCESSIBLE": {
                         "children": null,
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "enemy_type": {
@@ -2969,9 +2910,9 @@
                     },
                     "NAME_OTHER": {
                         "children": null,
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -3267,9 +3208,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "enemy_log": null,
@@ -3823,9 +3764,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": true,
@@ -3852,7 +3793,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "best_timer": {
                                         "children": {
@@ -4357,9 +4298,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -4387,7 +4328,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -4404,7 +4345,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "best_timer": {
                                         "children": {
@@ -4909,9 +4850,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -4939,7 +4880,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -4998,9 +4939,9 @@
                                 "name_key": "next_line"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -5027,7 +4968,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "anim_max": {
                                         "hide": true,
@@ -5050,9 +4991,9 @@
                                         "name_key": "next_line"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -5080,7 +5021,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -5098,7 +5039,7 @@
                                 "state": -1,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "anim_max": {
                                         "hide": true,
@@ -5121,9 +5062,9 @@
                                         "name_key": "next_line"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -5151,7 +5092,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -5404,9 +5345,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "expanded": false,
@@ -5569,9 +5510,9 @@
                             }
                         },
                         "close_after_use": true,
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -5850,9 +5791,9 @@
                                 "name_key": "text"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -5878,7 +5819,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "bow_icon": {
                                         "hide": false,
@@ -6113,9 +6054,9 @@
                                         "name_key": "text"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -6142,7 +6083,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -6159,7 +6100,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "bow_icon": {
                                         "hide": false,
@@ -6394,9 +6335,9 @@
                                         "name_key": "text"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -6423,7 +6364,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -6578,11 +6519,11 @@
                                         }
                                     }
                                 },
-                                "control": -1,
+                                "control": 0,
                                 "decide_key": "option_disable",
                                 "decide_key_combo": 1,
                                 "disable_right_stick": false,
-                                "enable_mouse_control": true,
+                                "enable_mouse_control": false,
                                 "hide": false,
                                 "name_key": "all_slider",
                                 "offset": {
@@ -6754,9 +6695,9 @@
                                 "name_key": "__slider_part"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -6781,7 +6722,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "akuma_bar": {
                                         "children": null,
@@ -6904,7 +6845,7 @@
                                         "decide_key": "option_disable",
                                         "decide_key_combo": 1,
                                         "disable_right_stick": false,
-                                        "enable_mouse_control": true,
+                                        "enable_mouse_control": false,
                                         "hide": false,
                                         "name_key": "all_slider",
                                         "offset": {
@@ -7076,9 +7017,9 @@
                                         "name_key": "__slider_part"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -7104,7 +7045,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -7122,7 +7063,7 @@
                                 "start_expanded": true,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "akuma_bar": {
                                         "children": null,
@@ -7245,7 +7186,7 @@
                                         "decide_key": "option_disable",
                                         "decide_key_combo": 1,
                                         "disable_right_stick": false,
-                                        "enable_mouse_control": true,
+                                        "enable_mouse_control": false,
                                         "hide": false,
                                         "name_key": "all_slider",
                                         "offset": {
@@ -7417,9 +7358,9 @@
                                         "name_key": "__slider_part"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -7445,7 +7386,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -7506,9 +7447,9 @@
                                 "name_key": "text"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -7533,7 +7474,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "ammo": {
                                         "hide": false,
@@ -7556,9 +7497,9 @@
                                         "name_key": "text"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -7584,7 +7525,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -7601,7 +7542,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "ammo": {
                                         "hide": false,
@@ -7624,9 +7565,9 @@
                                         "name_key": "text"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -7652,7 +7593,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -8025,9 +7966,9 @@
                                 "name_key": "light_start"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -8054,7 +7995,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "background": {
                                         "hide": false,
@@ -8391,9 +8332,9 @@
                                         "name_key": "light_start"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -8421,7 +8362,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -8438,7 +8379,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "background": {
                                         "hide": false,
@@ -8775,9 +8716,9 @@
                                         "name_key": "light_start"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -8805,7 +8746,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -9075,9 +9016,9 @@
                                 "name_key": "background"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 1,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -9150,9 +9091,9 @@
                                 "name_key": "pin"
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -9177,7 +9118,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "background": {
                                         "hide": true,
@@ -9196,9 +9137,9 @@
                                         "name_key": "pin"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": false,
@@ -9224,7 +9165,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -9241,7 +9182,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "background": {
                                         "hide": true,
@@ -9260,9 +9201,9 @@
                                         "name_key": "pin"
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -9288,7 +9229,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -9629,11 +9570,11 @@
                                 "segment_combo": 2
                             },
                             "no_focus": {
-                                "1": {
+                                "name_key": "__no_focus",
+                                "play_state": {
                                     "enabled": false,
                                     "value": ""
-                                },
-                                "name_key": "__no_focus"
+                                }
                             },
                             "rod": {
                                 "children": {
@@ -10122,9 +10063,9 @@
                                 }
                             }
                         },
-                        "current_profile": 0,
-                        "current_profile_gui": 0,
-                        "default_profile": 0,
+                        "current_profile": 2,
+                        "current_profile_gui": 1,
+                        "default_profile": 1,
                         "disable_fade": false,
                         "disable_fade_opacity": false,
                         "hide": false,
@@ -10150,7 +10091,7 @@
                             "fade_out": 0
                         },
                         "profile": {
-                            "1": {
+                            "2": {
                                 "children": {
                                     "charge_axe": {
                                         "children": {
@@ -10455,11 +10396,11 @@
                                         "segment_combo": 2
                                     },
                                     "no_focus": {
-                                        "1": {
+                                        "name_key": "__no_focus",
+                                        "play_state": {
                                             "enabled": false,
                                             "value": ""
-                                        },
-                                        "name_key": "__no_focus"
+                                        }
                                     },
                                     "rod": {
                                         "children": {
@@ -10948,9 +10889,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -10977,7 +10918,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 1,
+                                "profile_key": 2,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -10994,7 +10935,7 @@
                                 "segment_combo": 2,
                                 "user_options": null
                             },
-                            "3": {
+                            "4": {
                                 "children": {
                                     "charge_axe": {
                                         "children": {
@@ -11299,11 +11240,11 @@
                                         "segment_combo": 2
                                     },
                                     "no_focus": {
-                                        "1": {
+                                        "name_key": "__no_focus",
+                                        "play_state": {
                                             "enabled": false,
                                             "value": ""
-                                        },
-                                        "name_key": "__no_focus"
+                                        }
                                     },
                                     "rod": {
                                         "children": {
@@ -11792,9 +11733,9 @@
                                         }
                                     }
                                 },
-                                "current_profile": 0,
-                                "current_profile_gui": 0,
-                                "default_profile": 0,
+                                "current_profile": 1,
+                                "current_profile_gui": 1,
+                                "default_profile": 1,
                                 "disable_fade": false,
                                 "disable_fade_opacity": false,
                                 "hide": true,
@@ -11821,7 +11762,7 @@
                                 },
                                 "profile": null,
                                 "profile_enabled": true,
-                                "profile_key": 3,
+                                "profile_key": 4,
                                 "rot": {
                                     "enabled": false,
                                     "value": 0
@@ -11887,17 +11828,17 @@
                 },
                 "profile": [
                     {
-                        "key": 0,
+                        "key": 1,
                         "name": "__placeholder_default",
                         "protected": true
                     },
                     {
-                        "key": 1,
+                        "key": 2,
                         "name": "NOCOMBAT",
                         "protected": false
                     },
                     {
-                        "key": 3,
+                        "key": 4,
                         "name": "VILLAGE",
                         "protected": false
                     }

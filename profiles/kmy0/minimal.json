@@ -23,9 +23,9 @@
                     "name_key": "text"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -920,9 +920,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -1138,9 +1138,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -1185,9 +1185,9 @@
         },
         "GUIDE": {
             "children": null,
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -1345,9 +1345,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -1688,9 +1688,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -1718,7 +1718,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "anim_low_health": {
                             "hide": true,
@@ -2016,9 +2016,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -2047,7 +2047,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -2064,7 +2064,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "anim_low_health": {
                             "hide": true,
@@ -2362,9 +2362,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -2393,7 +2393,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -2509,11 +2509,11 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
             "default_filter": -1,
             "default_filter_combo": 1,
-            "default_profile": 0,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -2561,9 +2561,9 @@
         },
         "NAME_ACCESSIBLE": {
             "children": null,
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "enemy_type": {
@@ -2612,9 +2612,9 @@
         },
         "NAME_OTHER": {
             "children": null,
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -2910,9 +2910,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "enemy_log": null,
@@ -3466,9 +3466,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": true,
@@ -3495,7 +3495,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "best_timer": {
                             "children": {
@@ -4000,9 +4000,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -4030,7 +4030,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -4047,7 +4047,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "best_timer": {
                             "children": {
@@ -4552,9 +4552,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -4582,7 +4582,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -4641,9 +4641,9 @@
                     "name_key": "next_line"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -4670,7 +4670,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "anim_max": {
                             "hide": true,
@@ -4693,9 +4693,9 @@
                             "name_key": "next_line"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -4723,7 +4723,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -4741,7 +4741,7 @@
                     "state": -1,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "anim_max": {
                             "hide": true,
@@ -4764,9 +4764,9 @@
                             "name_key": "next_line"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -4794,7 +4794,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -5047,9 +5047,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "expanded": false,
@@ -5212,9 +5212,9 @@
                 }
             },
             "close_after_use": true,
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -5493,9 +5493,9 @@
                     "name_key": "text"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -5521,7 +5521,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "bow_icon": {
                             "hide": false,
@@ -5756,9 +5756,9 @@
                             "name_key": "text"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -5785,7 +5785,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -5802,7 +5802,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "bow_icon": {
                             "hide": false,
@@ -6037,9 +6037,9 @@
                             "name_key": "text"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -6066,7 +6066,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -6221,11 +6221,11 @@
                             }
                         }
                     },
-                    "control": -1,
+                    "control": 0,
                     "decide_key": "option_disable",
                     "decide_key_combo": 1,
                     "disable_right_stick": false,
-                    "enable_mouse_control": true,
+                    "enable_mouse_control": false,
                     "hide": false,
                     "name_key": "all_slider",
                     "offset": {
@@ -6397,9 +6397,9 @@
                     "name_key": "__slider_part"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -6424,7 +6424,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "akuma_bar": {
                             "children": null,
@@ -6547,7 +6547,7 @@
                             "decide_key": "option_disable",
                             "decide_key_combo": 1,
                             "disable_right_stick": false,
-                            "enable_mouse_control": true,
+                            "enable_mouse_control": false,
                             "hide": false,
                             "name_key": "all_slider",
                             "offset": {
@@ -6719,9 +6719,9 @@
                             "name_key": "__slider_part"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -6747,7 +6747,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -6765,7 +6765,7 @@
                     "start_expanded": true,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "akuma_bar": {
                             "children": null,
@@ -6888,7 +6888,7 @@
                             "decide_key": "option_disable",
                             "decide_key_combo": 1,
                             "disable_right_stick": false,
-                            "enable_mouse_control": true,
+                            "enable_mouse_control": false,
                             "hide": false,
                             "name_key": "all_slider",
                             "offset": {
@@ -7060,9 +7060,9 @@
                             "name_key": "__slider_part"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -7088,7 +7088,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -7149,9 +7149,9 @@
                     "name_key": "text"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -7176,7 +7176,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "ammo": {
                             "hide": false,
@@ -7199,9 +7199,9 @@
                             "name_key": "text"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -7227,7 +7227,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -7244,7 +7244,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "ammo": {
                             "hide": false,
@@ -7267,9 +7267,9 @@
                             "name_key": "text"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -7295,7 +7295,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -7668,9 +7668,9 @@
                     "name_key": "light_start"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -7697,7 +7697,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "background": {
                             "hide": false,
@@ -8034,9 +8034,9 @@
                             "name_key": "light_start"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -8064,7 +8064,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -8081,7 +8081,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "background": {
                             "hide": false,
@@ -8418,9 +8418,9 @@
                             "name_key": "light_start"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -8448,7 +8448,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -8718,9 +8718,9 @@
                     "name_key": "background"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 1,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -8793,9 +8793,9 @@
                     "name_key": "pin"
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -8820,7 +8820,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "background": {
                             "hide": true,
@@ -8839,9 +8839,9 @@
                             "name_key": "pin"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": false,
@@ -8867,7 +8867,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -8884,7 +8884,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "background": {
                             "hide": true,
@@ -8903,9 +8903,9 @@
                             "name_key": "pin"
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -8931,7 +8931,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -9272,11 +9272,11 @@
                     "segment_combo": 2
                 },
                 "no_focus": {
-                    "1": {
+                    "name_key": "__no_focus",
+                    "play_state": {
                         "enabled": false,
                         "value": ""
-                    },
-                    "name_key": "__no_focus"
+                    }
                 },
                 "rod": {
                     "children": {
@@ -9765,9 +9765,9 @@
                     }
                 }
             },
-            "current_profile": 0,
-            "current_profile_gui": 0,
-            "default_profile": 0,
+            "current_profile": 2,
+            "current_profile_gui": 1,
+            "default_profile": 1,
             "disable_fade": false,
             "disable_fade_opacity": false,
             "hide": false,
@@ -9793,7 +9793,7 @@
                 "fade_out": 0
             },
             "profile": {
-                "1": {
+                "2": {
                     "children": {
                         "charge_axe": {
                             "children": {
@@ -10098,11 +10098,11 @@
                             "segment_combo": 2
                         },
                         "no_focus": {
-                            "1": {
+                            "name_key": "__no_focus",
+                            "play_state": {
                                 "enabled": false,
                                 "value": ""
-                            },
-                            "name_key": "__no_focus"
+                            }
                         },
                         "rod": {
                             "children": {
@@ -10591,9 +10591,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -10620,7 +10620,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 1,
+                    "profile_key": 2,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -10637,7 +10637,7 @@
                     "segment_combo": 2,
                     "user_options": null
                 },
-                "3": {
+                "4": {
                     "children": {
                         "charge_axe": {
                             "children": {
@@ -10942,11 +10942,11 @@
                             "segment_combo": 2
                         },
                         "no_focus": {
-                            "1": {
+                            "name_key": "__no_focus",
+                            "play_state": {
                                 "enabled": false,
                                 "value": ""
-                            },
-                            "name_key": "__no_focus"
+                            }
                         },
                         "rod": {
                             "children": {
@@ -11435,9 +11435,9 @@
                             }
                         }
                     },
-                    "current_profile": 0,
-                    "current_profile_gui": 0,
-                    "default_profile": 0,
+                    "current_profile": 1,
+                    "current_profile_gui": 1,
+                    "default_profile": 1,
                     "disable_fade": false,
                     "disable_fade_opacity": false,
                     "hide": true,
@@ -11464,7 +11464,7 @@
                     },
                     "profile": null,
                     "profile_enabled": true,
-                    "profile_key": 3,
+                    "profile_key": 4,
                     "rot": {
                         "enabled": false,
                         "value": 0
@@ -11530,17 +11530,17 @@
     },
     "profile": [
         {
-            "key": 0,
+            "key": 1,
             "name": "__placeholder_default",
             "protected": true
         },
         {
-            "key": 1,
+            "key": 2,
             "name": "NOCOMBAT",
             "protected": false
         },
         {
-            "key": 3,
+            "key": 4,
             "name": "VILLAGE",
             "protected": false
         }
