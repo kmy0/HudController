@@ -11,7 +11,6 @@
 
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
-local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
 local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.manager.elements")
@@ -26,8 +25,6 @@ local options = util_misc.lazy_require("HudController.hud.manager.options")
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
-
-local mod_enum = data.mod.enum
 
 ---@class ProfileSwitcher
 local this = {

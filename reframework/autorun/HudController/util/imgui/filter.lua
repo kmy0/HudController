@@ -1,5 +1,6 @@
 local input = require("HudController.util.imgui.input")
 local style = require("HudController.util.imgui.style")
+local timer = require("HudController.util.misc.timer")
 local util_imgui = require("HudController.util.imgui.init")
 
 local this = {}
@@ -46,6 +47,9 @@ function this.update(id)
     end
 
     buf, cursor = input.get_input()
+    timer.request_one_timer("release_filter_input", 10, function()
+        this.reset()
+    end, "frame")
 
     if not draw_input and buf ~= "" then
         draw_input = true
