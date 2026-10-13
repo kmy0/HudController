@@ -191,8 +191,15 @@ function this.draw_conditions(manager, config_key, readonly)
         config.lang:tr("menu.bind.condition.expected_result_values.FALSE")
     )
     local item_size = readonly and -1 or -3
+    local flags = imgui.TableFlags.SizingFixedFit
 
-    if imgui.begin_table("conditions_" .. config_key, 3, imgui.TableFlags.SizingFixedFit) then
+    if config.current.mod.bind.condition.highlight_pass_cond then
+        flags = flags | imgui.TableFlags.NoClip
+    end
+
+    if
+        imgui.begin_table("conditions_" .. config_key, 3, flags --[[@as ImGuiTableFlags]])
+    then
         imgui.table_setup_column("##buttons", imgui.ColumnFlags.WidthFixed)
         imgui.table_setup_column("##name", imgui.ColumnFlags.WidthFixed)
         imgui.table_setup_column("##options", imgui.ColumnFlags.WidthStretch)
