@@ -106,6 +106,7 @@ function this.memoize(func, optional_args)
     local key_index = opts.key_index or 1
     local key_as_string = opts.key_as_string
     local key_fn = opts.key_fn
+    local predicate = opts.predicate
 
     local wrapped = {
         clear = function()
@@ -120,10 +121,17 @@ function this.memoize(func, optional_args)
 
             if key_fn then
                 key = key_fn(...)
-            elseif select("#", ...) > 0 then
-                key = select(key_index, ...)
             else
-                key = 1
+                key = select(key_index, ...)
+            end
+
+            if key == nil then
+                if select("#", ...) == 0 then
+                    key = 1
+                else
+                    ---@diagnostic disable-next-line: invisible
+                    key = cache._nil_key
+                end
             end
 
             if key_as_string then
@@ -131,8 +139,7 @@ function this.memoize(func, optional_args)
             end
 
             local cached = frame_cache:get(key)
-
-            if cached ~= nil then
+            if cached ~= nil and (not predicate or predicate(cached, key)) then
                 return cached
             end
 
