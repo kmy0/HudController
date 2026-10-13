@@ -282,6 +282,10 @@ If any rule is invalid, no rules are evaluated.
 
 Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 
+##### Multi Select Condition
+![Multi Select Condition](docs/images/menu_bar/bind/condition/multi_select_condition.png)
+
+
 ##### Available Conditions
 
 - Always
@@ -311,7 +315,7 @@ Tree nodes work like breadcrumbs. Click a node to navigate to its child rules.
 <a id="condition-rule-conditions-key-bind"></a>
 - Key Bind
 - Infinite Stamina Area
-- Element Profile Request
+- Element Profile
 
 #### Condition options
 ![Condition](docs/images/menu_bar/bind/condition/condition_options.png)

@@ -1,9 +1,10 @@
----@class ElemProfileConditionConfig : ConditionConfigBase
+---@class ElemProfileConditionConfig : MultiSelectConditionConfig
 ---@field profile integer
 
 local cd = require("HudController.data.combo")
-local condition_base = require("HudController.hud.def.condition_base")
 local config = require("HudController.config.init")
+local data = require("HudController.data.init")
+local multi_select = require("HudController.hud.bind.condition.conditions.multi_select")
 local set = require("HudController.gui.set")
 local util_imgui = require("HudController.util.imgui.init")
 local util_misc = require("HudController.util.misc.init")
@@ -14,15 +15,17 @@ local profile_switcher = util_misc.lazy_require("HudController.hud.manager.profi
 ---@module "HudController.hud.manager.op.init"
 local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
----@class ElemProfileCondition : ConditionBase
+local ace_map = data.ace.map
+
+---@class ElemProfileCondition : MultiSelectCondition
 local this = {}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
-setmetatable(this, { __index = condition_base })
+setmetatable(this, { __index = multi_select })
 
 ---@return ElemProfileCondition
 function this:new()
-    local o = condition_base.new(
+    local o = multi_select.new(
         self,
         "_ELEM_PROFILE",
         config.lang.make_placeholder("menu.bind.condition.condition_elem_profile"),
@@ -32,6 +35,23 @@ function this:new()
     ---@cast o ElemProfileCondition
 
     return o
+end
+
+---@return { key: string, value: string }[], string[]
+function this:get_sorted()
+    ---@type { key: string, value: string }[]
+    local sorted = util_table.sort(
+        util_table.entries(ace_map.hudid_name_to_local_name),
+        function(a, b)
+            return a.key < b.key
+        end
+    )
+
+    local sorted_values = util_table.transform(sorted, function(value)
+        return value.value
+    end)
+
+    return sorted, sorted_values
 end
 
 ---@param config_key string
@@ -81,7 +101,9 @@ function this:draw_options(config_key)
 
     imgui.same_line()
     imgui.set_next_item_width(width)
+    multi_select.draw_options(self, config_key)
 
+    imgui.set_next_item_width(-3)
     changed = set:combo_multi_bits_filter(
         "##elem_profile_cond_2|" .. config_key,
         profile_key,
@@ -105,8 +127,9 @@ end
 
 ---@param hud_key integer
 ---@param profile_bit integer
+---@param selection table<any, boolean>
 ---@return boolean
-function this:update(hud_key, profile_bit)
+function this:update(hud_key, profile_bit, selection)
     local current = profile_switcher.current_hud
     if not current then
         return false
@@ -116,14 +139,20 @@ function this:update(hud_key, profile_bit)
         return false
     end
 
-    if profile_bit == 0 and #current.profile_bits == 1 and current.profile_bits[1] == 0 then
-        return true
-    end
+    if util_table.empty(selection) then
+        if profile_bit == 0 and #current.profile_bits == 1 and current.profile_bits[1] == 0 then
+            return true
+        end
 
-    local unpacked = util_misc.unpack_bits(profile_bit)
-    for _, bit_a in pairs(current.profile_bits) do
-        for _, bit_b in pairs(unpacked) do
-            if (bit_a & (1 << bit_b)) ~= 0 then
+        for _, bit_a in pairs(current.profile_bits) do
+            if (bit_a & profile_bit) ~= 0 then
+                return true
+            end
+        end
+    else
+        for elem_name, _ in pairs(selection) do
+            local profile = current.profile[elem_name]
+            if profile and (profile & profile_bit) ~= 0 then
                 return true
             end
         end
@@ -133,14 +162,14 @@ function this:update(hud_key, profile_bit)
 end
 
 ---@param options ElemProfileConditionConfig
----@return integer, integer
+---@return integer, integer, table<any, boolean>
 function this:get_update_arg(options)
-    return options.combo_key, options.profile
+    return options.combo_key, options.profile, options.selection
 end
 
 ---@return ElemProfileConditionConfig
 function this:new_config()
-    local ret = condition_base.new_config(self)
+    local ret = multi_select.new_config(self)
     return util_table.merge(ret, {
         profile = 0,
     }) --[[@as ElemProfileConditionConfig]]

@@ -261,7 +261,7 @@ return {
                 condition_quest = "Quest",
                 condition_itembar_open = "Item Bar Open",
                 condition_infinite_stamina_area = "Infinite Stamina Area",
-                condition_elem_profile = "Elem Profile Request",
+                condition_elem_profile = "Elem Profile",
                 text_threshold = "From %s%% To %s%%",
                 out_of_combat_delay = "Out of Combat Delay",
                 in_combat_delay = "In Combat Delay",
