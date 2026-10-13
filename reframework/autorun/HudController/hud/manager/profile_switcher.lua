@@ -163,7 +163,6 @@ function this.request_hud_with_profiles(new_hud, profile_bits, force)
             op.hud_elem_profile.get_elem_profile_no_create(elem, profile_id)
         active_profiles[elem.name_key] = profile_id
         elem.current_profile = profile_id
-        elem.current_profile_gui = profile_id
     end
 
     this.request_hud({
