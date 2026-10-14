@@ -162,14 +162,18 @@ end
 this.is_facility = cache.memoize(this.is_facility)
 this.is_talk = cache.memoize(this.is_talk)
 this.get_flags = cache.memoize(this.get_flags)
-this.get_npc_core = cache.memoize(this.get_npc_core, function(cached_value)
-    ---@cast cached_value app.NpcCharacterCore
-    return not cached_value:get_Started()
-end)
-this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
-    ---@cast cached_value app.CharacterBase
-    return cached_value:get_Valid()
-end)
+this.get_npc_core = cache.memoize(this.get_npc_core, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.NpcCharacterCore
+        return not cached_value:get_Started()
+    end,
+})
+this.get_char_base = cache.memoize(this.get_char_base, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.CharacterBase
+        return cached_value:get_Valid()
+    end,
+})
 
 function this.on_dialogue_update_post(_)
     ---@diagnostic disable-next-line: undefined-field

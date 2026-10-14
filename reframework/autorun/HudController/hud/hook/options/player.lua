@@ -3,12 +3,13 @@ local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
 local util_misc = require("HudController.util.misc.init")
+local hud_def = require("HudController.data.option.hud").opt
 
 local this = {}
 
 function this.hide_danger_line_post(retval)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_danger") then
+    if hud_config and hud.get_hud_option(hud_def.hide_danger) then
         local arr = sdk.to_managed_object(retval) --[[@as System.Array<app.AttackAreaResult>]]
         arr:Clear()
     end
@@ -17,7 +18,7 @@ end
 --#region hide_weapon
 function this.hide_weapon_pre(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_weapon") then
+    if hud_config and hud.get_hud_option(hud_def.hide_weapon) then
         -- weapon cant be drawn otherwise
         ace_player.set_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").WP_ALPHA_ZERO, false)
     end
@@ -25,7 +26,7 @@ end
 
 function this.hide_weapon_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_weapon") then
+    if hud_config and hud.get_hud_option(hud_def.hide_weapon) then
         util_misc.try(function()
             local master_player = ace_player.get_master_char()
 
@@ -52,7 +53,7 @@ end
 
 function this.hide_aggro_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_aggro") then
+    if hud_config and hud.get_hud_option(hud_def.hide_aggro) then
         local state = sdk.to_managed_object(args[3]) --[[@as app.game_message.cEmChangeState]]
         if state:get_StateMsg() == e.get("app.EnemyDef.AI_TARGET_STATE").EM_LEAD then
             return sdk.PreHookResult.SKIP_ORIGINAL

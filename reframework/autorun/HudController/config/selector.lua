@@ -11,7 +11,7 @@
 ---@field sorted_backup string[]
 ---@field default_name string
 ---@field new_name string
----@field combo_file_backup integer
+---@field next_file ConfigFile?
 
 ---@class (exact) ConfigFile
 ---@field display_name string
@@ -47,7 +47,6 @@ function this:new(default_settings, path, ref)
     o.sorted_backup = {}
     o.data_path = o.ref.name
     o.path_backup = util_misc.join_paths_b(o.data_path, "backups")
-    o.combo_file_backup = 1
     return o
 end
 
@@ -64,7 +63,7 @@ function this:get_files(path, no_subfolders)
         local file = files[i]
         if (no_subfolders and not file:find("[/\\].+[/\\]")) or not no_subfolders then
             local name = util_misc.get_file_name(file, false)
-            name = name:match("(.+)_config")
+            name = name:match("(.+)[_.]config")
             if name == "" or name == this.default_name then
                 goto continue
             end
@@ -99,7 +98,7 @@ function this:load()
 
     local loaded_config = json.load_file(self.path) --[[@as SelectorSettings?]]
     if loaded_config then
-        self.current = util_table.merge_t(self.default, loaded_config)
+        self.current = util_table.merge(self.default, loaded_config)
         self.current.combo_file = util_table.index(self.sorted, function(o)
             return self.files[o].file_name == loaded_config.file
         end) --[[@as integer]]
@@ -109,7 +108,7 @@ function this:load()
 end
 
 function this:reload()
-    self.combo_file_backup = 1
+    self.current.combo_file_backup = 1
     self.files_backup = self:get_files(self.path_backup)
     self.sorted_backup = self:sort_files(self.files_backup)
 
@@ -129,14 +128,49 @@ function this:reload()
 end
 
 function this:swap()
-    self.ref.save_timer:abort()
     local file = self.files[self.sorted[self.current.combo_file]]
-    self.current.file = file.file_name
-    self:_swap_config_path(file.file_name)
-    self.ref:load()
+    if file.file_name ~= self.current.file then
+        self.next_file = file
+    else
+        self.next_file = nil
+    end
+
     self:save_no_timer()
 end
 
+---@return string
+function this:get_message()
+    if not self.next_file then
+        return self:get_current_display_name()
+    end
+
+    return string.format(
+        "%s -> %s (%s)",
+        self:get_current_display_name(),
+        self.next_file.display_name,
+        self.ref.lang:tr("selector.text_wait_reset")
+    )
+end
+
+---@return string
+function this:get_current_display_name()
+    for display_name, file in pairs(self.files) do
+        if file.file_name == self.current.file then
+            return display_name
+        end
+        ---@diagnostic disable-next-line: missing-return
+    end
+end
+
+function this:on_reset()
+    if self.next_file then
+        self.current.file = self.next_file.file_name
+        self.next_file = nil
+        self:save_no_timer()
+    end
+end
+
+---@return ConfigFile
 function this:new_file()
     local file = self.files[self.sorted[self.current.combo_file]]
     local new_file = {
@@ -152,11 +186,12 @@ function this:new_file()
     end) --[[@as integer]]
     self:save_no_timer()
     json.dump_file(new_file.path, self.ref.default)
+    return new_file --[[@as ConfigFile]]
 end
 
 ---@param new_name string
 function this:rename_current_file(new_name)
-    if not new_name or new_name == "" or new_name == this.default_name then
+    if not self:is_valid_name(new_name) or new_name == this.default_name then
         return
     end
 
@@ -179,7 +214,6 @@ function this:rename_current_file(new_name)
 
     self.files[old_key] = nil
     self.files[file.display_name] = file
-    self.current.file = file.file_name
     self.sorted = self:sort_files(self.files)
     self.current.combo_file = util_table.index(self.sorted, function(o)
         return o == file.display_name
@@ -191,11 +225,13 @@ end
 function this:delete_current_file()
     local file = self.files[self.sorted[self.current.combo_file]]
     if not util_misc.file_exists(file.path) or hudcontroller_util.remove(file.path) then
+        if file == self.next_file then
+            self.next_file = nil
+        end
+
         self.files[file.display_name] = nil
         self.sorted = self:sort_files(self.files)
         self.current.combo_file = math.max(self.current.combo_file - 1, 1)
-        self.current.file = self.files[self.sorted[self.current.combo_file]].file_name
-        self:swap()
         self:save_no_timer()
         return true
     end
@@ -205,7 +241,7 @@ end
 
 ---@return boolean
 function this:restore_backup()
-    local name = self.sorted_backup[self.combo_file_backup]
+    local name = self.sorted_backup[self.current.combo_file_backup]
     if not name then
         return false
     end
@@ -219,9 +255,9 @@ function this:restore_backup()
     local ret = hudcontroller_util.rename(file.path, util_misc.join_paths(self.ref.name, file_name))
 
     if ret then
-        local combo_index = self.combo_file_backup
+        local combo_index = self.current.combo_file_backup
         self:reload()
-        self.combo_file_backup = math.max(combo_index - 1, 1)
+        self.current.combo_file_backup = math.max(combo_index - 1, 1)
     end
 
     return ret
@@ -229,11 +265,11 @@ end
 
 ---@return boolean
 function this:delete_current_backup()
-    local file = self.files_backup[self.sorted_backup[self.combo_file_backup]]
+    local file = self.files_backup[self.sorted_backup[self.current.combo_file_backup]]
     if not util_misc.file_exists(file.path) or hudcontroller_util.remove(file.path) then
         self.files_backup[file.display_name] = nil
         self.sorted_backup = self:sort_files(self.files_backup)
-        self.combo_file_backup = math.max(self.combo_file_backup - 1, 1)
+        self.current.combo_file_backup = math.max(self.current.combo_file_backup - 1, 1)
         self:save_no_timer()
         return true
     end
@@ -267,6 +303,14 @@ end
 ---@param display_name string
 ---@return string
 function this:get_file_name(display_name)
+    assert(self:is_valid_name(display_name), "Invalid config filename")
+    return display_name .. ".config.json"
+end
+
+---@protected
+---@param display_name string
+---@return string
+function this:_get_file_name_old(display_name)
     return display_name .. "_config.json"
 end
 
@@ -280,12 +324,53 @@ function this:get_name(display_name)
     local ret = display_name
     local i = 1
 
-    while util_misc.file_exists(util_misc.join_paths(self.ref.name, self:get_file_name(ret))) do
+    while
+        util_misc.file_exists(util_misc.join_paths(self.ref.name, self:get_file_name(ret)))
+        or util_misc.file_exists(util_misc.join_paths(self.ref.name, self:_get_file_name_old(ret)))
+    do
         ret = display_name .. i
         i = i + 1
     end
 
     return ret
+end
+
+---@param name string
+---@return boolean
+function this:is_valid_name(name)
+    if type(name) ~= "string" or name == "" then
+        return false
+    end
+
+    if not name:match("^[%w _%.%-]+$") then
+        return false
+    end
+
+    return name ~= "." and name ~= ".."
+end
+
+function this:export()
+    imgui.set_clipboard(json.dump_string(self.ref.current))
+end
+
+function this:import()
+    local file = self.files[self.sorted[self.current.combo_file]]
+    local config_data = json.load_string(imgui.get_clipboard()) --[[@as MainSettings]]
+    json.dump_file(file.path, config_data)
+end
+
+---@return boolean
+function this:try_import()
+    local config_data = json.load_string(imgui.get_clipboard())
+    if not config_data then
+        return false
+    end
+
+    if not config_data.mod then
+        return false
+    end
+
+    return true
 end
 
 return this

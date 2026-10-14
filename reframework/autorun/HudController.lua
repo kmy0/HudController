@@ -1,5 +1,8 @@
-local bind_condition = require("HudController.hud.bind_condition.init")
+local bind_condition = require("HudController.hud.bind.condition.init")
+local bind_manager = require("HudController.hud.bind.key.init")
 local call_queue = require("HudController.hud.call_queue")
+local canvas = require("HudController.hud.canvas.init")
+local combo = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_menu = require("HudController.gui.init")
 local data = require("HudController.data.init")
@@ -9,20 +12,29 @@ local hook = require("HudController.hud.hook.init")
 local hud = require("HudController.hud.init")
 local hud_base = require("HudController.hud.def.hud_base")
 local init_chain = require("HudController.config.init_chain")
+local placeholder = require("HudController.data.placeholder")
 local sorter = require("HudController.gui.elements.sorter")
 local user = require("HudController.hud.user.init")
 local util = require("HudController.util.init")
+local util_mod = require("HudController.util.mod.init")
 local logger = util.misc.logger.g
+local gui_state = require("HudController.gui.state")
+local option = require("HudController.data.option.init")
+local style = require("HudController.util.imgui.style")
 
 local init = init_chain:new(
     "MAIN",
-    config.init,
     data.init,
+    config.init,
+    placeholder.init,
     util.game.bind.init,
     util.ace.scene_fade.init,
     util.ace.porter.init,
+    option.init,
     bind_condition.init,
+    canvas.init,
     user.init,
+    combo.init,
     hud.manager.init,
     hook.init,
     config_menu.init,
@@ -49,6 +61,11 @@ m.requestMapFilter = m.wrap_obj(
 ) --[[@as fun(self: app.cGUIFilteringSortPartsCtrl, control: via.gui.Control?, sel_item: via.gui.SelectItem?, index: System.UInt32)]]
 m.canOpenStartMenu =
     m.wrap(m.get("app.cGUISystemModuleSystemInputOpenController.canOpenStartMenu(System.Boolean)")) --[[@as fun(check_open_item_slider_flag: System.Boolean): System.Boolean]]
+m.enablePlNoHit =
+    m.wrap(m.get("app.GUIFlowGUI050001View.cGUI050001ViewFlowBase.makePlInvincible()")) --[[@as fun()]]
+m.getNpcName = m.wrap(m.get("app.NpcUtil.getNpcName(app.NpcDef.ID)")) --[[@as fun(id: app.NpcDef.ID): System.String]]
+m.getStageNameGuid =
+    m.wrap(m.get("app.GUIUtilApp.MapUtil.getStageFullName(app.FieldDef.STAGE, System.Guid)")) --[[@as fun(stage: app.FieldDef.STAGE, guid_ptr: integer): System.Boolean]]
 
 re.on_draw_ui(function()
     if imgui.button(string.format("%s %s", config.name, config.commit)) and init.ok then
@@ -60,15 +77,15 @@ re.on_draw_ui(function()
         local errors = logger:format_errors()
         if errors then
             imgui.same_line()
-            imgui.text_colored("Error!", data.mod.enum.colors.bad)
+            imgui.text_colored("Error!", style.color.bad)
             util.imgui.tooltip_exclamation(errors)
         elseif not init.ok then
             imgui.same_line()
-            imgui.text_colored("Initializing...", data.mod.enum.colors.info)
+            imgui.text_colored("Initializing...", style.color.info)
         end
     else
         imgui.same_line()
-        imgui.text_colored("Init failed!", data.mod.enum.colors.bad)
+        imgui.text_colored("Init failed!", style.color.bad)
         local errors = logger:get_last_error()
         if errors then
             util.imgui.tooltip_exclamation(errors)
@@ -77,7 +94,7 @@ re.on_draw_ui(function()
 end)
 
 re.on_application_entry("BeginRendering", function()
-    init:init() -- reframework does not like nested re.on_frame
+    init:init()
 end)
 
 re.on_frame(function()
@@ -111,7 +128,28 @@ re.on_frame(function()
         sorter.draw()
     end
 
+    if util_mod.is_draw_canvas() then
+        canvas.draw()
+    end
+
     config.run_save()
+
+    if gui_state.listener then
+        bind_manager.monitor:pause()
+    else
+        gui_state.clear_listener()
+        if bind_manager.monitor:is_pause() then
+            bind_manager.monitor:unpause()
+        end
+    end
+
+    if config_gui.main.is_opened and gui_state.any_input() then
+        util_mod.block_input()
+    else
+        util_mod.release_input()
+    end
+
+    hook.hook_options_mod()
 end)
 
 re.on_config_save(function()
@@ -125,5 +163,6 @@ re.on_script_reset(function()
         hud.clear()
         call_queue.clear()
         hud_base.restore_all_force_invis()
+        config.selector:on_reset()
     end
 end)

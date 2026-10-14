@@ -12,7 +12,7 @@ function this.init()
     if
         util_table.any({
             e.new("ace.ACE_PAD_KEY.BITS", function(key, _)
-                return not util_table.contains({ "HOME", "DECIDE", "CANCEL" }, key)
+                return not util_table.contains_any({ "HOME", "DECIDE", "CANCEL" }, key)
             end),
             e.new("ace.ACE_MKB_KEY.INDEX"),
             e.new("ace.GUIDef.INPUT_DEVICE"),

@@ -1,6 +1,8 @@
 ---@class (exact) ImguiConfigSet
 ---@field ref ConfigBase
 
+local combo = require("HudController.util.imgui.combo.init")
+local range_slider = require("HudController.util.imgui.range_slider")
 local util_imgui = require("HudController.util.imgui.init")
 
 ---@class ImguiConfigSet
@@ -20,9 +22,28 @@ end
 ---@return boolean
 function this:generic_config(name, config_key, func, ...)
     local changed, value
-    changed, value = func(name, self.ref:get(config_key), ...)
+    local current = self.ref:get(config_key)
+    changed, value = func(name, current, ...)
+    -- this is for combo, when current index is nil, its changed automatically to 1, but returned changed flag is still false
+    changed = changed or value ~= current
+
     if changed then
         self.ref:set(config_key, value)
+    end
+    return changed
+end
+
+---@param name string
+---@param config_key_a string
+---@param config_key_b string
+---@param func fun(...): boolean, any, any
+---@return boolean
+function this:generic_config2(name, config_key_a, config_key_b, func, ...)
+    local changed, value_a, value_b =
+        func(name, self.ref:get(config_key_a), self.ref:get(config_key_b), ...)
+    if changed then
+        self.ref:set(config_key_a, value_a)
+        self.ref:set(config_key_b, value_b)
     end
     return changed
 end
@@ -36,7 +57,7 @@ end
 
 ---@param name string
 ---@param config_key string
----@param values  string[]
+---@param values string[]
 ---@return boolean
 function this:combo(name, config_key, values)
     return self:generic_config(name, config_key, imgui.combo, values)
@@ -73,6 +94,7 @@ end
 ---@param name string
 ---@param config_key string
 ---@param enabled_obj boolean?
+---@return boolean
 function this:menu_item(name, config_key, enabled_obj)
     return self:generic_config(name, config_key, util_imgui.menu_item, enabled_obj)
 end
@@ -80,8 +102,343 @@ end
 ---@param name string
 ---@param config_key string
 ---@param flags ImGuiInputTextFlags?
+---@return boolean
 function this:input_text(name, config_key, flags)
     return self:generic_config(name, config_key, imgui.input_text, flags)
+end
+
+---@param name string
+---@param config_key_x string
+---@param config_key_y string
+---@param v_speed number
+---@param v_min number
+---@param v_max number
+---@param display_format string?
+---@return boolean
+function this:drag_float2(name, config_key_x, config_key_y, v_speed, v_min, v_max, display_format)
+    local changed, value = imgui.drag_float2(
+        name,
+        Vector2f.new(self.ref:get(config_key_x), self.ref:get(config_key_y)),
+        v_speed,
+        v_min,
+        v_max,
+        display_format
+    )
+
+    if changed then
+        self.ref:set(config_key_x, value.x)
+        self.ref:set(config_key_y, value.y)
+    end
+
+    return changed
+end
+
+---@param name string
+---@param config_key string
+---@param v_speed number
+---@param v_min number
+---@param v_max number
+---@param display_format? string
+function this:drag_int(name, config_key, v_speed, v_min, v_max, display_format)
+    return self:generic_config(
+        name,
+        config_key,
+        imgui.drag_int,
+        v_speed,
+        v_min,
+        v_max,
+        display_format
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param v_speed number
+---@param v_min number
+---@param v_max number
+---@param display_format? string
+function this:drag_float(name, config_key, v_speed, v_min, v_max, display_format)
+    return self:generic_config(
+        name,
+        config_key,
+        imgui.drag_float,
+        v_speed,
+        v_min,
+        v_max,
+        display_format
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param v_min number
+---@param v_max number
+---@param values string[]
+---@return boolean
+function this:slider_list(name, config_key, v_min, v_max, values)
+    return self:generic_config(name, config_key, util_imgui.slider_list, v_min, v_max, values)
+end
+
+---@param name string
+---@param config_key string
+---@param combo_values ComboValues
+---@return boolean
+function this:combo_filter(name, config_key, combo_values)
+    return self:generic_config(name, config_key, combo.combo_filter.combo_filter, combo_values)
+end
+
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param options string[]
+---@return boolean
+function this:combo_multi(name, config_key, default_preview, options)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_multi.combo_multi,
+        default_preview,
+        options
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param options string[]
+---@return boolean
+function this:combo_multi_filter(name, config_key, default_preview, options)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_multi.combo_multi_filter,
+        default_preview,
+        options
+    )
+end
+
+---@generic T
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param values T[]
+---@param get_key fun(value: T): integer
+---@param get_label fun(value: T): string
+---@return boolean
+function this:combo_multi_bits(name, config_key, default_preview, values, get_key, get_label)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_multi.combo_multi_bits,
+        default_preview,
+        values,
+        get_key,
+        get_label
+    )
+end
+
+---@generic T
+---@param name string
+---@param config_key string
+---@param default_preview string
+---@param values T[]
+---@param get_key fun(value: T, index: integer): integer
+---@param get_label fun(value: T, index: integer): string
+---@return boolean
+function this:combo_multi_bits_filter(name, config_key, default_preview, values, get_key, get_label)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_multi.combo_multi_bits_filter,
+        default_preview,
+        values,
+        get_key,
+        get_label
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param v_min integer
+---@param v_max integer
+---@param decimal_place integer
+---@param default_value? integer
+---@param default_format? string
+---@return boolean
+function this:slider_float_scaled(
+    name,
+    config_key,
+    v_min,
+    v_max,
+    decimal_place,
+    default_value,
+    default_format
+)
+    local mult = 10 ^ decimal_place
+    local value = self.ref:get(config_key) --[[@as integer]]
+    local slider_min = v_min / mult
+    local slider_max = v_max / mult
+
+    if default_value ~= nil then
+        slider_min = (v_min - 1) / mult
+    end
+
+    ---@type number
+    local slider_value
+    if default_value ~= nil and value == default_value then
+        slider_value = slider_min
+    else
+        slider_value = value / mult
+    end
+
+    local display_format = "%." .. decimal_place .. "f"
+    if default_value ~= nil and value == default_value then
+        display_format = default_format or display_format
+    end
+
+    local changed, new_value =
+        imgui.slider_float(name, slider_value, slider_min, slider_max, display_format)
+    if changed then
+        local int_value = math.floor(new_value * mult + 0.5)
+        if default_value ~= nil and int_value == v_min - 1 then
+            int_value = default_value
+        end
+
+        self.ref:set(config_key, int_value)
+    end
+
+    return changed
+end
+
+---@param name string
+---@param config_key string
+---@param v_min integer
+---@param v_max integer
+---@param default_value? integer
+---@param default_format? string
+---@return boolean
+function this:slider_int_default(name, config_key, v_min, v_max, default_value, default_format)
+    local value = self.ref:get(config_key)
+    local slider_min = v_min
+
+    if default_value ~= nil then
+        slider_min = v_min - 1
+
+        if value == default_value then
+            value = slider_min
+        end
+    end
+
+    local display_format = "%d"
+    if default_value ~= nil and value == slider_min then
+        display_format = default_format or display_format
+    end
+
+    local changed, new_value = imgui.slider_int(name, value, slider_min, v_max, display_format)
+
+    if changed then
+        if default_value ~= nil and new_value == slider_min then
+            new_value = default_value
+        end
+
+        self.ref:set(config_key, new_value)
+    end
+
+    return changed
+end
+
+---@param name string
+---@param config_key string
+---@param values string[]
+---@param draw_fn fun(value: string): string?
+---@param display_format (fun(value: string): string)?
+---@param width_offset number?
+function this:combo_popup(name, config_key, values, draw_fn, display_format, width_offset)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_popup.combo_popup,
+        values,
+        draw_fn,
+        display_format,
+        width_offset
+    )
+end
+
+---@param name string
+---@param config_key string
+---@param values string[]
+---@param draw_fn fun(query: string, value: string): string?
+---@param display_format (fun(value: string): string)?
+---@param width_offset number?
+function this:combo_popup_filter(name, config_key, values, draw_fn, display_format, width_offset)
+    return self:generic_config(
+        name,
+        config_key,
+        combo.combo_popup.combo_popup_filter,
+        values,
+        draw_fn,
+        display_format,
+        width_offset
+    )
+end
+
+---@param name string
+---@param config_key_lo string
+---@param config_key_hi string
+---@param v_min integer
+---@param v_max integer
+---@param display_format string?
+---@param display_text string?
+---@return boolean
+function this:range_slider_int(
+    name,
+    config_key_lo,
+    config_key_hi,
+    v_min,
+    v_max,
+    display_format,
+    display_text
+)
+    return self:generic_config2(
+        name,
+        config_key_lo,
+        config_key_hi,
+        range_slider.range_slider_int,
+        v_min,
+        v_max,
+        display_format,
+        display_text
+    )
+end
+
+---@param name string
+---@param config_key_lo string
+---@param config_key_hi string
+---@param v_min number
+---@param v_max number
+---@param display_format string?
+---@param display_text string?
+---@return boolean
+function this:range_slider_float(
+    name,
+    config_key_lo,
+    config_key_hi,
+    v_min,
+    v_max,
+    display_format,
+    display_text
+)
+    return self:generic_config2(
+        name,
+        config_key_lo,
+        config_key_hi,
+        range_slider.range_slider_float,
+        v_min,
+        v_max,
+        display_format,
+        display_text
+    )
 end
 
 return this

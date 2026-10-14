@@ -3,7 +3,7 @@
 ---@field appear_open boolean
 ---@field disable_right_stick boolean
 ---@field enable_mouse_control boolean
----@field control integer
+---@field control ExpandedItembarControl
 ---@field decide_key string
 ---@field slinger_visible boolean
 ---@field ammo_visible boolean
@@ -38,7 +38,7 @@
 ---@field appear_open boolean
 ---@field disable_right_stick boolean
 ---@field enable_mouse_control boolean
----@field control integer
+---@field control ExpandedItembarControl
 ---@field decide_key string
 ---@field slinger_visible boolean
 ---@field ammo_visible boolean
@@ -100,6 +100,7 @@ local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+local mod_enum = require("HudController.data.mod").enum
 
 ---@class ItembarAllSlider
 local this = {}
@@ -260,7 +261,7 @@ function this:new(args, parent)
     setmetatable(o, self)
     ---@cast o ItembarAllSlider
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         control = true,
         decide_key = true,
         appear_open = true,
@@ -304,10 +305,10 @@ function this:new(args, parent)
         o:set_disable_right_stick(args.disable_right_stick)
     end
 
-    if args.control ~= -1 then
+    if args.control ~= mod_enum.expanded_itembar_control.DISABLED then
         o:set_control(args.control)
     else
-        o.control = -1
+        o.control = mod_enum.expanded_itembar_control.DISABLED
     end
 
     o:set_ammo_visible(args.ammo_visible)
@@ -499,8 +500,8 @@ end
 function this:set_appear_open(appear_open)
     if appear_open then
         self:set_play_states(appear_open_states)
-        self.children.color_scale:set_color_scale({ x = 1, y = 1, z = 1 })
-        self.children.text_pnl:set_play_state("HIDDEN")
+        self.children.color_scale:set_color_scale({ enabled = true, x = 1, y = 1, z = 1 })
+        self.children.text_pnl:set_play_state({ enabled = true, value = "HIDDEN" })
     else
         self:reset_play_states(appear_open_states)
         self.children.color_scale:set_color_scale()
@@ -509,12 +510,12 @@ function this:set_appear_open(appear_open)
     self.appear_open = appear_open
 end
 
----@param val integer
+---@param val ExpandedItembarControl
 function this:set_control(val)
     if val ~= -1 then
         self:mark_write("control")
         self.control = val
-    else
+    elseif self.write_properties["control"] then
         self:reset("input")
         self.control = val
         self:mark_idle("control")
@@ -526,7 +527,7 @@ function this:set_decide_key(val)
     if val ~= "option_disable" then
         self:mark_write("decide_key")
         self.decide_key = val
-    else
+    elseif self.write_properties["decide_key"] then
         self:reset("input")
         self.decide_key = val
         self:mark_idle("decide_key")
@@ -539,7 +540,7 @@ function this:set_disable_right_stick(disable_right_stick)
         self.children.right_stick_key:set_hide(true)
         self:mark_write("disable_right_stick")
         self.disable_right_stick = disable_right_stick
-    else
+    elseif self.write_properties["disable_right_stick"] then
         self:reset("input")
         self.disable_right_stick = disable_right_stick
         self.children.right_stick_key:set_hide(false)
@@ -698,7 +699,11 @@ function this:_write(ctrl)
         self:update_all_icons()
     end
 
-    if self.control ~= -1 or self.disable_right_stick or self.decide_key ~= "option_disable" then
+    if
+        self.control ~= mod_enum.expanded_itembar_control.DISABLED
+        or self.disable_right_stick
+        or self.decide_key ~= "option_disable"
+    then
         local device = e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
             :get_LastInputDeviceIgnoreMouseMove()]
         local input = util_table.deep_copy(self.input_default)
@@ -713,11 +718,11 @@ function this:_write(ctrl)
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RS
             end
 
-            if self.control == 0 then
+            if self.control == mod_enum.expanded_itembar_control.DISABLE_DPAD then
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_RIGHT_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
-            elseif self.control == 1 then
+            elseif self.control == mod_enum.expanded_itembar_control.DISABLE_FACE then
                 input.input_bit = input.input_bit
                     | input_ctrl.INPUT_FLAG_UP_DOWN_KEY
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_KEY
@@ -729,7 +734,7 @@ function this:_write(ctrl)
                     | input_ctrl.INPUT_FLAG_LEFT_RIGHT_RIGHT_KEY
             end
 
-            if self.control > -1 then
+            if self.control ~= mod_enum.expanded_itembar_control.DISABLED then
                 for i = 2, #input.buttons do
                     input.buttons[i] = -1
                 end
@@ -749,7 +754,7 @@ end
 
 ---@return boolean
 function this:any()
-    return self.control ~= -1
+    return self.control ~= mod_enum.expanded_itembar_control.DISABLED
         or self.decide_key ~= "option_disable"
         or self.appear_open
         or hud_child.any(self)
@@ -759,7 +764,8 @@ end
 function this:any_gui()
     return util_table.any(self.properties, function(key, _)
         if
-            not util_table.contains({ "control", "appear_open", "decide_key" }, key) and self[key]
+            not util_table.contains_any({ "control", "appear_open", "decide_key" }, key)
+            and self[key]
         then
             return true
         end
@@ -796,7 +802,7 @@ function this.get_config()
     base.ammo_visible = false
     base.slinger_visible = false
     base.disable_right_stick = false
-    base.control = -1
+    base.control = mod_enum.expanded_itembar_control.DISABLED
     base.decide_key = "option_disable"
     base.enable_mouse_control = false
     base.appear_open = false
@@ -805,16 +811,21 @@ function this.get_config()
     children.text = { name_key = "text", hide = false }
     children.background = { name_key = "background", hide = false }
     children.right_stick_key = { name_key = "__right_stick_key", hide = false }
-    children.icon_state = { name_key = "__icon_state", play_state = "" }
-    children.text_num = { name_key = "__text_num", play_state = "" }
-    children.text_pnl = { name_key = "__text_pnl", play_state = "" }
-    children.cursor_state = { name_key = "__cursor_state", play_state = "", hide = false }
-    children.color_scale = { name_key = "__color_scale", color_scale = { x = 1, y = 1, z = 1 } }
+    children.icon_state =
+        { name_key = "__icon_state", play_state = { enabled = false, value = "" } }
+    children.text_num = { name_key = "__text_num", play_state = { enabled = false, value = "" } }
+    children.text_pnl = { name_key = "__text_pnl", play_state = { enabled = false, value = "" } }
+    children.cursor_state =
+        { name_key = "__cursor_state", play_state = { enabled = false, value = "" }, hide = false }
+    children.color_scale =
+        { name_key = "__color_scale", color_scale = { enabled = false, x = 1, y = 1, z = 1 } }
     children.icon_color_scale =
-        { name_key = "__icon_color_scale", color_scale = { x = 1, y = 1, z = 1 } }
-    children.keys_state = { name_key = "__keys_state", play_state = "" }
-    children.ref_icon = { name_key = "__ref_icon", play_state = "" }
-    children.appear_open = { name_key = "__appear_open", play_state = "" }
+        { name_key = "__icon_color_scale", color_scale = { enabled = false, x = 1, y = 1, z = 1 } }
+    children.keys_state =
+        { name_key = "__keys_state", play_state = { enabled = false, value = "" } }
+    children.ref_icon = { name_key = "__ref_icon", play_state = { enabled = false, value = "" } }
+    children.appear_open =
+        { name_key = "__appear_open", play_state = { enabled = false, value = "" } }
 
     return base
 end

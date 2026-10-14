@@ -57,9 +57,9 @@ local control_arguments = {
 ---@param parent HudBase
 ---@return TwinSword
 function this:new(args, parent)
-    local o =
-        hud_child.new(self, args, parent, nil, { valid_guiid = e.get("app.GUIID.ID").UI020033 }
-)
+    local o = hud_child.new(self, args, parent, function(_, _, _, ctrl)
+        return play_object.control.get(ctrl, "PNL_Scale")
+    end, { valid_guiid = e.get("app.GUIID.ID").UI020033 })
     setmetatable(o, self)
     ---@cast o TwinSword
 

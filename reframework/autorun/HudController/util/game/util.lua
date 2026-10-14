@@ -55,6 +55,7 @@ function this.format_guid(guid)
     )
 end
 
+-- dont call this on frame, if you can avoid it
 ---@generic T
 ---@param type `T`?
 ---@return System.Array<T>
@@ -65,6 +66,7 @@ function this.get_all_components(type)
     return this.get_scene():call("findComponents(System.Type)", sdk.typeof(type))
 end
 
+-- dont call this on frame, if you can avoid it
 ---@generic T
 ---@param type `T`
 ---@return T?

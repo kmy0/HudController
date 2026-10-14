@@ -1,320 +1,327 @@
 local ace_misc = require("HudController.util.ace.misc")
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
+local e = require("HudController.util.game.enum")
+local element_def = require("HudController.data.option.element.init")
 local hud = require("HudController.hud.init")
-local state = require("HudController.gui.state")
+local option_gui = require("HudController.gui.option")
+local set = require("HudController.gui.set")
+local style = require("HudController.util.imgui.style")
+local user_option = require("HudController.hud.user.option")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
+local util_misc = require("HudController.util.misc.init")
+local util_opt = require("HudController.data.option.util")
+local util_table = require("HudController.util.misc.table")
 
 local ace_map = data.ace.map
-local set = state.set
 
 local this = {}
-this.separator = gui_util.separator:new({
-    "hide",
-    "enabled_scale",
-    "enabled_offset",
-    "enabled_rot",
-    "enabled_opacity",
-    "enabled_color",
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_segment",
-})
+
+---@param option_key string
+---@param item_config_key string
+---@param callback fun(option_key: string, value: integer)?
+---@param label string?
+---@param add_default boolean?
+---@return boolean
+function this.draw_option(option_key, item_config_key, callback, label, add_default)
+    local option_data = ace_map.option[option_key]
+    label = label or string.format("%s##%s", option_data.name_local, option_data.name)
+    add_default = add_default == nil or add_default
+
+    local name, id = table.unpack(util_misc.split_string(label, "##"))
+    if name == "" then
+        id = label
+    end
+
+    label = "##" .. id
+
+    local values = {}
+    for _, item in ipairs(option_data.items) do
+        table.insert(values, item.name_local)
+    end
+
+    if
+        option_data.type == e.get("app.Option.TYPE").CHOICE
+        and util_table.empty(option_data.items)
+    then
+        values = { config.lang:tr("misc.text_off"), config.lang:tr("misc.text_on") }
+    end
+
+    local default_value = add_default and -1 or 0
+    local default_format = add_default and config.lang:tr("hud.option_disable") or nil
+    local changed = false
+
+    if not util_table.empty(values) then
+        if add_default then
+            table.insert(values, 1, default_format)
+        end
+
+        changed = set:slider_list(
+            label,
+            item_config_key,
+            default_value,
+            #values - (add_default and 2 or 1),
+            values
+        )
+
+        if changed and callback then
+            callback(option_key, config:get(item_config_key))
+        end
+    elseif
+        option_data.type == e.get("app.Option.TYPE").VALUE
+        and option_data.min ~= option_data.max
+    then
+        if option_data.decimal_place == 0 then
+            changed = set:slider_int_default(
+                label,
+                item_config_key,
+                option_data.min,
+                option_data.max,
+                default_value,
+                default_format
+            )
+
+            if changed and callback then
+                callback(option_key, config:get(item_config_key))
+            end
+        else
+            changed = set:slider_float_scaled(
+                label,
+                item_config_key,
+                option_data.min,
+                option_data.max,
+                option_data.decimal_place,
+                default_value,
+                default_format
+            )
+
+            if changed and callback then
+                callback(option_key, config:get(item_config_key))
+            end
+        end
+    else
+        imgui.text_colored(option_data.name_local, style.color.bad)
+    end
+
+    if name ~= "" then
+        util_imgui.set_label(name, -1)
+        util_imgui.tooltip(table.concat(option_data.name_path, " > "))
+    end
+
+    return changed
+end
 
 ---@param option_keys string[]
 ---@param config_key string
----@param callback (fun(option_key: string, option_config_key: string))?
+---@param callback fun(option_key: string, value: integer)
 function this.draw_options(option_keys, config_key, callback)
     for i = 1, #option_keys do
         local key = option_keys[i]
         local option_data = ace_map.option[key]
-        local option_config_key = string.format("%s.%s", config_key, key)
-        local config_value = config:get(option_config_key)
 
-        if
-            set:slider_int(
-                option_data.name_local,
-                option_config_key,
-                -1,
-                #option_data.items - 1,
-                (config_value == -1 and config.lang:tr("hud.option_disable"))
-                    or option_data.items[config_value + 1].name_local
-            ) and callback
-        then
-            callback(key, option_config_key)
+        if not option_data then
+            goto continue
         end
+
+        this.draw_option(key, string.format("%s.%s", config_key, key), callback)
+        ::continue::
     end
 end
 
----@param config_key string
----@param min number
----@param max number
----@param step number
----@return boolean
-function this.draw_step_buttons(config_key, min, max, step)
-    ---@type boolean
-    local changed
-    local size = config.lang.font_size + 6
-
-    if imgui.button("-##button_minus_" .. config_key, { size, size }) then
-        changed = true
-        config:set(config_key, math.max(config:get(config_key) - step, min))
-    end
+---@param elem Notice | NameOther | NameAccess | Subtitles
+---@param item_config_key string
+---@param label string
+---@param entry_key string
+---@param set_fn fun(self: any, key: string, value: integer?)
+---@param is_current_profile boolean
+---@param combo_key string?
+---@param button_label_path string?
+function this.combo_hide(
+    elem,
+    item_config_key,
+    label,
+    entry_key,
+    set_fn,
+    is_current_profile,
+    combo_key,
+    button_label_path
+)
+    local combo = cd.get_profile_combo(
+        combo_key or entry_key,
+        item_config_key,
+        function(item_config_key, key, _)
+            return config:get(item_config_key)[key]
+        end
+    )
+    local combo_index_key = string.format("__temp.%s_combo", item_config_key)
+    button_label_path = button_label_path or "hud_element.entry.button_hide"
+    imgui.set_next_item_width(
+        util_imgui.get_something_with_button_width(config.lang:tr(button_label_path))
+    )
+    util_imgui.begin_disabled(combo:empty())
+    option_gui.draw_combo(nil, item_config_key, "##" .. item_config_key, combo)
 
     imgui.same_line()
+    if imgui.button(util_gui.tr(button_label_path, item_config_key)) then
+        local index = config:get(combo_index_key) or 1
+        local key = combo:get_key(index)
+        local order = 0
 
-    if imgui.button("+##button_plus_" .. config_key, { size, size }) then
-        changed = true
-        config:set(config_key, math.min(config:get(config_key) + step, max))
+        for _, o in
+            pairs(config:get(item_config_key) --[[@as table<string, integer>]])
+        do
+            order = math.max(order, o + 1) --[[@as integer]]
+        end
+
+        if is_current_profile then
+            set_fn(elem, key, order)
+        end
+
+        config:set(string.format("%s.%s", item_config_key, key), order)
+        config:set(combo_index_key, combo:disable_item(key))
     end
 
-    return changed
-end
+    util_imgui.end_disabled()
+    util_imgui.set_label(label, -1)
 
----@param checkbox {config_key: string, label: string}?
----@param sliders {config_key: string, label: string}[]
----@param min number
----@param max number
----@param step number
----@param format string
----@return boolean
-function this.draw_slider_settings(checkbox, sliders, min, max, step, format)
-    local changed = false
+    this.child_window_thing_remove("entries" .. item_config_key, #combo.disabled, function()
+        if imgui.button(util_gui.tr("hud_element.entry.button_remove_all", item_config_key)) then
+            if is_current_profile then
+                ---@diagnostic disable-next-line: no-unknown
+                elem[entry_key] = {}
+            end
 
-    if checkbox then
-        changed = set:checkbox(
-            string.format("%s##%s", checkbox.label, checkbox.config_key),
-            checkbox.config_key
+            combo:enable_all_items()
+            config:set(item_config_key, {})
+            config:set(combo_index_key, 1)
+        end
+
+        local keys = util_table.sort(
+            util_table.entries(config:get(item_config_key) --[[@as table<string, integer>]]),
+            function(a, b)
+                return a.value < b.value
+            end
         )
-        imgui.begin_disabled(not config:get(checkbox.config_key))
-    else
-        imgui.begin_disabled(false)
-    end
 
-    for i = 1, #sliders do
-        local slider = sliders[i]
-        changed = set:slider_float(
-            string.format("%s##%s", slider.label, slider.config_key),
-            slider.config_key,
-            min,
-            max,
-            format
-        ) or changed
+        for i, map in ipairs(keys) do
+            local value = combo:find_disabled(map.key)
 
-        imgui.same_line()
+            if
+                util_imgui.draw_remove_button(
+                    string.format("##%s|%s|%s", item_config_key, i, map.key)
+                )
+            then
+                if is_current_profile then
+                    set_fn(elem, map.key, nil)
+                end
 
-        changed = this.draw_step_buttons(slider.config_key, min, max, step) or changed
-    end
+                config:set(string.format("%s.%s", item_config_key, map.key), nil)
+                config:set(combo_index_key, combo:enable_item(map.key))
+            end
 
-    imgui.end_disabled()
-
-    return changed
+            imgui.same_line()
+            imgui.text(util_misc.split_string(value, "##")[1])
+        end
+    end)
 end
 
----@param checkbox {config_key: string, label: string}?
+---@param id string
+---@param col_count integer
+---@param draw_fn fun()
+function this.table_thing(id, col_count, draw_fn)
+    if
+        imgui.begin_table(
+            id,
+            col_count,
+            imgui.TableFlags.BordersH
+                | imgui.TableFlags.BordersOuterV
+                | imgui.TableFlags.SizingFixedFit
+                | imgui.TableFlags.ScrollY --[[@as ImGuiTableFlags]],
+            Vector2f.new(0, 4 * util_imgui.scale_w_font_size(46))
+        )
+    then
+        draw_fn()
+        imgui.end_table()
+    end
+end
+
+---@param id string
+---@param size integer
+---@param draw_fn fun()
+function this.child_window_thing_remove(id, size, draw_fn)
+    if size > 0 then
+        size = size + 1
+        local item_height = util_imgui.get_frame_height() * size + 4 * math.max(size - 1, 0)
+        local height = math.min(item_height, 4 * util_imgui.scale_w_font_size(46))
+
+        if imgui.begin_child_window(id, { imgui.calc_item_width(), height }, false) then
+            draw_fn()
+        end
+
+        imgui.end_child_window()
+    end
+end
+
+---@param user_options table<string, RegisteredUserOption>
 ---@param config_key string
----@param combo Combo
----@param label string
----@param default_index integer?
----@return {key: any, value: string, index: integer}?
-function this.draw_combo(checkbox, config_key, label, combo, default_index)
-    local changed = false
+function this.draw_user_options(user_options, config_key)
+    local groups = user_option.get_sorted_options(user_options)
 
-    if checkbox then
-        changed = set:checkbox(
-            string.format("%s##%s", checkbox.label, checkbox.config_key),
-            checkbox.config_key
-        )
-        imgui.begin_disabled(not config:get(checkbox.config_key))
-    else
-        imgui.begin_disabled(false)
+    for i, group in ipairs(groups) do
+        for _, opt in ipairs(group) do
+            local item_config_key = string.format("%s.%s", config_key, opt.name)
+            opt:draw(opt.label, item_config_key)
+        end
+
+        if i ~= #groups then
+            imgui.separator()
+        end
     end
-
-    local item_config_key = config_key .. "_combo"
-    if not config:get(item_config_key) then
-        config:set(item_config_key, default_index or 1)
-    end
-
-    if set:combo(label, item_config_key, combo.values) or changed then
-        imgui.end_disabled()
-        local index = config:get(item_config_key)
-        return {
-            key = combo:get_key(index),
-            value = combo:get_value(index),
-            index = index,
-        }
-    end
-
-    imgui.end_disabled()
 end
 
 ---@param elem HudBase
 ---@param elem_config HudBaseConfig
 ---@param config_key string
 function this.draw(elem, elem_config, config_key)
-    this.separator:refresh(elem_config)
+    local opt = element_def.opt
+    local ctx = { elem = elem, elem_config = elem_config, config_key = config_key }
 
-    imgui.begin_disabled(ace_misc.is_item_slider_open())
-    if elem_config.hide ~= nil then
-        if
-            set:checkbox(
-                gui_util.tr("hud_element.entry.box_hide", config_key .. ".hide"),
-                config_key .. ".hide"
-            )
-        then
-            elem:set_hide(elem_config.hide)
-        end
+    util_imgui.begin_disabled(ace_misc.is_item_slider_open())
+    util_opt.draw_apply_elem(opt.hide, ctx)
+    util_imgui.end_disabled()
 
-        this.separator:draw()
-    end
-    imgui.end_disabled()
+    util_imgui.begin_disabled(
+        util_opt.is_elem_available(opt.hide, elem_config)
+            and util_opt.get_elem_config_value(opt.hide, elem_config)
+            and not elem.hide_write
+    )
 
-    imgui.begin_disabled(elem_config.hide ~= nil and elem_config.hide and not elem.hide_write)
-
-    if elem_config.enabled_scale ~= nil then
-        if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_scale",
-                label = gui_util.tr("hud_element.entry.box_enable_scale"),
-            }, {
-                {
-                    config_key = config_key .. ".scale.x",
-                    label = gui_util.tr("hud_element.entry.slider_x"),
-                },
-                {
-                    config_key = config_key .. ".scale.y",
-                    label = gui_util.tr("hud_element.entry.slider_y"),
-                },
-            }, -10.0, 10.0, 0.01, "%.2f")
-        then
-            elem:set_scale(elem_config.enabled_scale and elem_config.scale or nil)
-        end
-
-        this.separator:draw()
-    end
-
-    if elem_config.enabled_offset ~= nil then
-        if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_offset",
-                label = gui_util.tr("hud_element.entry.box_enable_offset"),
-            }, {
-                {
-                    config_key = config_key .. ".offset.x",
-                    label = gui_util.tr("hud_element.entry.slider_x"),
-                },
-                {
-                    config_key = config_key .. ".offset.y",
-                    label = gui_util.tr("hud_element.entry.slider_y"),
-                },
-            }, -4000, 4000, 1, "%.0f")
-        then
-            elem:set_offset(elem_config.enabled_offset and elem_config.offset or nil)
-        end
-
-        this.separator:draw()
-    end
-
-    if elem_config.enabled_rot ~= nil then
-        if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_rot",
-                label = gui_util.tr("hud_element.entry.box_enable_rotation"),
-            }, {
-                {
-                    config_key = config_key .. ".rot",
-                    label = "",
-                },
-            }, 0, 360, 0.1, "%.1f")
-        then
-            elem:set_rot(elem_config.enabled_rot and elem_config.rot or nil)
-        end
-
-        this.separator:draw()
-    end
-
-    if elem_config.enabled_opacity ~= nil then
-        if
-            this.draw_slider_settings({
-                config_key = config_key .. ".enabled_opacity",
-                label = gui_util.tr("hud_element.entry.box_enable_opacity"),
-            }, {
-                {
-                    config_key = config_key .. ".opacity",
-                    label = "",
-                },
-            }, 0, 1, 0.01, "%.2f")
-        then
-            elem:set_opacity(elem_config.enabled_opacity and elem_config.opacity or nil)
-        end
-
-        this.separator:draw()
-    end
-
-    if elem_config.enabled_segment ~= nil then
-        local item_config_key = config_key .. ".segment"
-        local changed_value = this.draw_combo(
-            {
-                config_key = config_key .. ".enabled_segment",
-                label = string.format(
-                    "%s##%s",
-                    gui_util.tr("hud_element.entry.box_enable_segment"),
-                    config_key
-                ),
-            },
-            item_config_key,
-            "##" .. item_config_key,
-            state.combo.segment,
-            state.combo.segment:get_index(nil, config:get(item_config_key))
-        )
-
-        if changed_value then
-            config:set(item_config_key, changed_value.value)
-            elem:set_segment(elem_config.enabled_segment and elem_config.segment or nil)
-        end
-
-        this.separator:draw()
-    end
+    util_opt.draw_apply_elem(opt.scale, ctx)
+    util_opt.draw_apply_elem(opt.offset, ctx)
+    util_opt.draw_apply_elem(opt.rot, ctx)
+    util_opt.draw_apply_elem(opt.opacity, ctx)
+    util_opt.draw_apply_elem(opt.segment, ctx)
 
     if elem.hud_id then
-        imgui.separator()
+        util_imgui.separator_text(config.lang:tr("hud_element.entry.category_profile_fade"))
 
         local current_hud = hud.get_current()
-        ---@cast current_hud HudProfileConfig
+        ---@cast current_hud ModProfileConfig
 
-        imgui.begin_disabled(
-            not config.current.mod.enable_fade
-                or current_hud.fade_in == 0 and current_hud.fade_out == 0
-        )
-        if
-            set:checkbox(
-                gui_util.tr("hud_element.entry.box_disable_fade", config_key .. ".disable_fade"),
-                config_key .. ".disable_fade"
-            )
-        then
-            elem:set_disable_fade(elem_config.disable_fade)
-        end
-        util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade"), true)
+        util_imgui.begin_disabled(not config.current.mod.enable_fade)
+        util_imgui.begin_disabled(not current_hud.fade_opacity)
 
-        imgui.begin_disabled(elem_config.disable_fade or not current_hud.fade_opacity)
-        if
-            set:checkbox(
-                gui_util.tr(
-                    "hud_element.entry.box_disable_fade_opacity",
-                    config_key .. ".disable_fade_opacity"
-                ),
-                config_key .. ".disable_fade_opacity"
-            )
-        then
-            elem:set_disable_fade_opacity(elem_config.disable_fade_opacity)
-        end
+        util_opt.draw_apply_elem(opt.disable_fade_opacity, ctx)
         util_imgui.tooltip(config.lang:tr("hud_element.entry.tooltip_disable_fade_opacity"), true)
-        imgui.end_disabled()
-        imgui.end_disabled()
+
+        util_imgui.end_disabled()
+        util_opt.draw_apply_elem(opt.override_fade, ctx)
+        util_imgui.end_disabled()
     end
 
-    imgui.end_disabled()
+    util_imgui.end_disabled()
 end
 
 return this

@@ -1,7 +1,10 @@
+local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
+local s = require("HudController.util.ref.singletons")
+local timer = require("HudController.util.misc.timer")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
@@ -11,6 +14,13 @@ local this = {}
 local function is_reveal()
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
     return shortcut_keyboard and shortcut_keyboard.no_hide_elements and shortcut_keyboard:is_open()
+end
+
+local function is_reveal_no_menu_check()
+    local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+    return shortcut_keyboard
+        and shortcut_keyboard.no_hide_elements
+        and shortcut_keyboard:is_open_no_menu_check()
 end
 
 function this.reveal_minimap_pre(args)
@@ -24,13 +34,21 @@ end
 
 function this.reveal_elements_pre(args)
     if is_reveal() then
+        local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard") --[[@as ShortcutKeyboard]]
         local o = sdk.to_managed_object(args[2]) --[[@as ace.GUIBase]]
         local guiid = o:get_ID()
         local clock = e.get("app.GUIID.ID").UI020009
         local target_icon = e.get("app.GUIID.ID").UI020012
         local slinger = e.get("app.GUIID.ID").UI020017
 
-        if util_table.contains({ clock, target_icon, slinger }, guiid) then
+        local t = { clock, target_icon, slinger }
+
+        if shortcut_keyboard.hide then
+            local itembar = e.get("app.GUIID.ID").UI020006
+            table.insert(t, itembar)
+        end
+
+        if util_table.contains_any(t, guiid) then
             return sdk.PreHookResult.SKIP_ORIGINAL
         end
     end
@@ -48,6 +66,13 @@ function this.reveal_mantle_post(_)
     end
 end
 
+function this.reveal_elements_flag_post(_)
+    if is_reveal_no_menu_check() then
+        local flags = s.get("app.GUIManager"):get_AppContinueFlag()
+        flags:off(e.get("app.GUIManager.APP_CONTINUE_FLAG").DISABLE_STAT_MENU_OPEN)
+    end
+end
+
 function this.clear_cache_pre(_)
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
     if shortcut_keyboard then
@@ -59,7 +84,7 @@ end
 
 function this.always_visible_post(_)
     local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
-    if not shortcut_keyboard or not shortcut_keyboard:is_always_visible() then
+    if not shortcut_keyboard or not shortcut_keyboard.always_visible then
         return
     end
 
@@ -85,7 +110,7 @@ function this.always_visible_open_post(_)
     then
         shortcut_keyboard:close()
         system_input_ctrl._OpenType = e.get("app.GUI020600.TYPE").EXPAND
-        shortcut_keyboard.always_visible_delay_timer:restart(2)
+        shortcut_keyboard.always_visible_delay_timer:restart({ timeout = 2 })
         return
     end
 
@@ -124,6 +149,33 @@ function this.prevent_close2_pre(args)
     local button = util_ref.to_int(args[3])
     if button == shortcut_keyboard:get_GUI020600().SLOT_CLOSE_NORMAL_PALLET then
         return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
+
+function this.close_after_use_pre(args)
+    local shortcut_keyboard = common.get_elem_t("ShortcutKeyboard")
+    if not shortcut_keyboard or not shortcut_keyboard.close_after_use then
+        return
+    end
+
+    local GUI020600 = sdk.to_managed_object(args[2]) --[[@as app.GUI020600]]
+    local restore_hide = false
+
+    if not shortcut_keyboard.hide then
+        call_queue.queue_func(shortcut_keyboard.hud_id, function()
+            shortcut_keyboard:set_hide(true)
+        end)
+
+        restore_hide = true
+    end
+
+    GUI020600:requestClosePCShortcut()
+    if restore_hide then
+        timer.request_one_timer("ShortcutKeyboard_reveal", 10, function()
+            call_queue.queue_func(shortcut_keyboard.hud_id, function()
+                shortcut_keyboard:set_hide(false)
+            end)
+        end, "frame")
     end
 end
 

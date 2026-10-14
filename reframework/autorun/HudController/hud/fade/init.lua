@@ -1,38 +1,68 @@
 ---@class FadeManager
----@field current_fade {hud_key: integer, type: FadeType}?
----@field faders table<app.GUIHudDef.TYPE, Fader[]>
+---@field faders FaderGroup?
 ---@field to_restore table<app.GUIHudDef.TYPE, boolean>
----@field callback fun()?
+---@field on_finish fun()?
 ---@field step_mod number
 
+---@class FadeDuration
+---@field fade_in number
+---@field fade_out number
+---@field override_fade_in boolean
+---@field override_fade_out boolean
+
+local call_queue = require("HudController.hud.call_queue")
+local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
+local fader_group = require("HudController.hud.fade.fader_group")
 local play_object = require("HudController.hud.play_object.init")
-local util_table = require("HudController.util.misc.table")
+local timer = require("HudController.util.misc.timer")
+local util_misc = require("HudController.util.misc.init")
+
+---@module "HudController.hud.manager.elements"
+local elements = util_misc.lazy_require("HudController.hud.manager.elements")
+
+local ace_map = data.ace.map
 
 ---@class FadeManager
 local this = {
-    faders = {},
     to_restore = {},
     step_mod = 1,
 }
----@enum FadeType
-this.type = {
-    fade_out = 1,
-    fade_in = 2,
-    fade_partial = 3,
-}
 ---@enum FadeDisableType
-this.fade_disable_type = {
+this.disable_type = {
+    NONE = 0,
     DISABLE = 1,
     DISABLE_OPACITY = 2,
 }
 
 ---@param ctrl via.gui.Control
----@return number
+---@return integer opacity
+---@return boolean need_restore
 local function get_opacity(ctrl)
+    --[[
+        FIXME: target opacity comes from the profile, but actual visibility is controlled
+        by the game. an element can be disabled or invisible even when the profile expects
+        it to be visible, which can result in creating a fader that does nothing.
+
+        this is especially noticeable when fade is disabled through element overrides, or
+        when opacity only fade is enabled but there are no elements with modified opacity.
+
+        current visibility cannot be used to reliably skip these faders because there is
+        no way to know whether the game will keep the element hidden or make it visible
+        during the transition.
+    ]]
+    if not ctrl:get_ActualVisible() then
+        return 0, true
+    end
+
+    local gui = ctrl:get_Component()
+    if not gui:get_Enabled() then
+        return 0, true
+    end
+
     local color = ctrl:get_ColorScale()
-    return color.w
+    return color.w, false
 end
 
 ---@param ctrl via.gui.Control
@@ -42,161 +72,31 @@ local function reset_opacity(ctrl)
     ctrl:set_ColorScale(color)
 end
 
----@param hud_config HudProfileConfig
+---@param mod_hud ModHud
 ---@param hud_id app.GUIHudDef.TYPE
----@return integer
-local function get_hud_opacity(hud_config, hud_id)
+---@return HudBaseConfig
+local function get_element_fade_config(mod_hud, hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
-    local hud_elem_config = hud_config.elements[hud_name]
-
-    if hud_elem_config then
-        if hud_elem_config.hide then
-            this.to_restore[hud_id] = true
-            return 0
-        elseif hud_elem_config.enabled_opacity then
-            return hud_elem_config.opacity
-        end
-    end
-
-    return 1
-end
-
----@param hud_config HudProfileConfig
----@param hud_id app.GUIHudDef.TYPE
----@param ctrl via.gui.Control
----@return integer
-local function get_hud_from_opacity_partial(hud_config, hud_id, ctrl)
-    local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
-    local hud_elem_config = hud_config.elements[hud_name]
-
-    if hud_elem_config and hud_elem_config.hide then
-        this.to_restore[hud_id] = true
-        return 0
-    end
-
-    return get_opacity(ctrl)
-end
-
----@param hud_config HudProfileConfig
----@param type FadeType
----@param callback fun()?
----@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
----@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
-local function fade(hud_config, type, callback, fader_disable, fader_callbacks)
-    if this.is_active() then
-        this.step_mod = this.step_mod + 1
-    end
-
-    local elements = play_object.control.get_all_hud_control()
-    this.faders = {}
-    this.current_fade = { hud_key = hud_config.key, type = type }
-    this.callback = callback
-    fader_disable = fader_disable or {}
-    fader_callbacks = fader_callbacks or {}
-
-    for hud_id, ctrls in pairs(elements) do
-        if fader_disable[hud_id] == this.fade_disable_type.DISABLE then
-            goto continue
-        end
-
-        for _, ctrl in pairs(ctrls) do
-            local fader_obj = fader:new(
-                hud_id,
-                get_opacity(ctrl),
-                type == this.type.fade_in and get_hud_opacity(hud_config, hud_id) or 0,
-                type == this.type.fade_in and hud_config.fade_in or hud_config.fade_out,
-                ctrl,
-                fader_callbacks[hud_id]
-            )
-            fader_obj.step = fader_obj.step * this.step_mod
-            util_table.insert_nested_value(this.faders, { hud_id }, fader_obj)
-        end
-
-        ::continue::
-    end
-end
-
----@param hud_config HudProfileConfig
----@param callback fun()?
----@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
----@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
-function this.fade_in(hud_config, callback, fader_disable, fader_callbacks)
-    fade(hud_config, this.type.fade_in, callback, fader_disable, fader_callbacks)
-end
-
----@param hud_config HudProfileConfig
----@param callback fun()?
----@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
----@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
-function this.fade_out(hud_config, callback, fader_disable, fader_callbacks)
-    fade(hud_config, this.type.fade_out, callback, fader_disable, fader_callbacks)
-end
-
----@param from_hud_config HudProfileConfig
----@param to_hud_config HudProfileConfig
----@param callback fun()?
----@param fader_disable table<app.GUIHudDef.TYPE, FadeDisableType>?
----@param fader_callbacks table<app.GUIHudDef.TYPE, fun(fader: Fader)>?
-function this.fade_partial(from_hud_config, to_hud_config, callback, fader_disable, fader_callbacks)
-    if this.is_active() then
-        this.step_mod = this.step_mod + 1
-    end
-
-    local elements = play_object.control.get_all_hud_control()
-    this.faders = {}
-    this.current_fade = { hud_key = to_hud_config.key, type = this.type.fade_partial }
-    this.callback = callback
-    fader_disable = fader_disable or {}
-    fader_callbacks = fader_callbacks or {}
-
-    for hud_id, ctrls in pairs(elements) do
-        if fader_disable[hud_id] == this.fade_disable_type.DISABLE then
-            goto continue
-        end
-
-        for _, ctrl in pairs(ctrls) do
-            local from = get_hud_from_opacity_partial(from_hud_config, hud_id, ctrl)
-            local to = get_hud_opacity(to_hud_config, hud_id)
-            ---@type number
-            local time
-
-            if from == to then
-                goto continue
-            elseif to > from then
-                time = to_hud_config.fade_in
-            else
-                time = from_hud_config.fade_out
-            end
-
-            ---@type Fader?
-            local fader_next
-            if fader_disable[hud_id] == this.fade_disable_type.DISABLE_OPACITY then
-                time = time / 2
-                fader_next = fader:new(hud_id, 0, to, time, ctrl)
-                to = 0
-                fader_next.step = fader_next.step * this.step_mod
-            end
-
-            local fader_obj =
-                fader:new(hud_id, from, to, time, ctrl, fader_callbacks[hud_id], fader_next)
-            fader_obj.step = fader_obj.step * this.step_mod
-            util_table.insert_nested_value(this.faders, { hud_id }, fader_obj)
-            ::continue::
-        end
-        ::continue::
-    end
+    local elem = mod_hud.hud.elements[hud_name]
+    return mod_hud.profile_to[hud_name] or elem and elements.get_element_profile(elem)
 end
 
 function this.abort()
     this.clear(true)
 
     local elements = play_object.control.get_all_hud_control()
-    this.faders = {}
+    this.faders = nil
     this.to_restore = {}
     for _, ctrls in pairs(elements) do
         for _, ctrl in pairs(ctrls) do
             reset_opacity(ctrl)
         end
+    end
+end
+
+function this.abort_active()
+    if this.is_active() then
+        this.abort()
     end
 end
 
@@ -207,60 +107,188 @@ function this.clear(abort)
     end
 
     this.step_mod = 1
-    this.current_fade = nil
-    this.callback = nil
+    this.on_finish = nil
 end
 
----@param type FadeType?
 ---@return boolean
-function this.is_active(type)
-    if not type then
-        return this.current_fade ~= nil
-    end
-
-    if this.current_fade then
-        return this.current_fade.type == type
-    end
-
-    return false
+function this.is_active()
+    return this.faders ~= nil
 end
 
 ---@param hud_id app.GUIHudDef.TYPE
 ---@return boolean
 function this.is_active_element(hud_id)
-    if not this.faders[hud_id] then
-        return false
+    return this.faders ~= nil and this.faders:is_active(hud_id)
+end
+
+---@param hud_id app.GUIHudDef.TYPE
+---@param ctrl via.gui.Control[]
+---@param target_opacity number
+---@param duration number | {fade_in: number, fade_out: number}
+---@param optional_args FaderOptionalArgs?
+---@return Fader
+function this.make_fader(hud_id, ctrl, target_opacity, duration, optional_args)
+    optional_args = optional_args or {}
+
+    local need_restore = false
+    local from = 0
+    local to = target_opacity
+
+    for _, c in pairs(ctrl) do
+        local _from, _need_restore = get_opacity(c)
+        from = math.max(from, _from)
+        need_restore = need_restore or _need_restore or ace_map.hudid_to_can_hide[hud_id]
     end
 
-    return util_table.any(this.faders[hud_id], function(_, f)
-        return not f:is_done_no_next()
-    end)
+    if need_restore then
+        this.to_restore[hud_id] = true
+    end
+
+    if type(duration) == "table" then
+        duration = to > from and duration.fade_in or duration.fade_out
+    end
+
+    local o = optional_args.on_finish
+    optional_args.on_finish = function(f)
+        if o then
+            o(f)
+        end
+
+        if not f.next then
+            call_queue.queue_func(hud_id, {
+                fn = function()
+                    for _, c in pairs(ctrl) do
+                        this.restore_opacity(hud_id, c)
+                    end
+                end,
+                timer = timer:new(2, { type = "frame", auto_start = true }),
+                execute_on_expire = true,
+            })
+        end
+    end
+
+    return fader:new(hud_id, ctrl, from, to, duration, optional_args)
+end
+
+---@param hud_id app.GUIHudDef.TYPE
+---@return Fader?
+function this.get_fader(hud_id)
+    return this.faders and this.faders:get_fader(hud_id)
+end
+
+---@param faders table<app.GUIHudDef.TYPE, Fader>
+---@param on_finish fun()?
+function this.request_fade(faders, on_finish)
+    local is_active = this.is_active()
+    if is_active then
+        this.step_mod = this.step_mod + 1
+    end
+
+    this.faders = fader_group:new(faders)
+    if is_active then
+        this.faders:accelerate(this.step_mod)
+    end
+
+    this.on_finish = on_finish
 end
 
 function this.update()
-    for hud_id, faders in pairs(this.faders) do
-        for i, f in pairs(faders) do
-            if f:update() then
-                faders[i] = nil
-            end
-        end
-
-        if util_table.empty(faders) then
-            this.faders[hud_id] = nil
-        end
+    if this.faders and this.faders:update() then
+        this.faders = nil
     end
 
-    if util_table.empty(this.faders) and this.callback then
-        local f = this.callback
+    if not this.faders and this.on_finish then
+        local f = this.on_finish --[[@as fun()]]
 
-        ---@diagnostic disable-next-line: need-check-nil
         f()
 
         -- if callback was not swapped to new one
-        if f == this.callback then
-            this.callback = nil
+        if f == this.on_finish then
+            this.on_finish = nil
         end
     end
+end
+
+---@param mod_hud ModHud
+---@param hud_id app.GUIHudDef.TYPE
+---@return integer opacity
+function this.get_hud_opacity(mod_hud, hud_id)
+    local elem = get_element_fade_config(mod_hud, hud_id)
+    if elem then
+        if elem.hide then
+            return 0
+        elseif elem.opacity and elem.opacity.enabled then
+            return elem.opacity.value
+        end
+    end
+
+    return 1
+end
+
+---@param a ModHud
+---@param b ModHud
+---@param hud_id app.GUIHudDef.TYPE
+---@return FadeDisableType
+function this.get_elem_fade_disable(a, b, hud_id)
+    local a_elem = get_element_fade_config(a, hud_id)
+    local b_elem = get_element_fade_config(b, hud_id)
+
+    if
+        a.hud.key == b.hud.key
+        and a_elem
+        and b_elem
+        and a_elem.profile_key == b_elem.profile_key
+    then
+        return this.disable_type.DISABLE
+    end
+
+    if (a_elem and a_elem.disable_fade_opacity) or (b_elem and b_elem.disable_fade_opacity) then
+        return this.disable_type.DISABLE_OPACITY
+    end
+
+    return this.disable_type.NONE
+end
+
+---@param hud ModHud
+---@param hud_id app.GUIHudDef.TYPE
+---@return FadeDuration
+function this.get_fade_duration(hud, hud_id)
+    local profile = get_element_fade_config(hud, hud_id)
+    local override = profile and profile.override_fade.enabled or false
+
+    return {
+        fade_in = override and profile.override_fade.fade_in or hud.hud.fade_in,
+        fade_out = override and profile.override_fade.fade_out or hud.hud.fade_out,
+        override_fade_in = override,
+        override_fade_out = override,
+    }
+end
+
+---@param from ModHud
+---@param to ModHud
+---@return boolean
+function this.should_fade(from, to)
+    local all_disabled_a = from.hud.fade_out == 0
+    for _, elem in pairs(from.hud.elements) do
+        local profile = get_element_fade_config(from, elem.hud_id)
+        if profile.override_fade.enabled and profile.override_fade.fade_out > 0 then
+            all_disabled_a = false
+            break
+        end
+    end
+
+    local all_disabled_b = to.hud.fade_in == 0
+    if all_disabled_a then
+        for _, elem in pairs(to.hud.elements) do
+            local profile = get_element_fade_config(to, elem.hud_id)
+            if profile.override_fade.enabled and profile.override_fade.fade_in > 0 then
+                all_disabled_b = false
+                break
+            end
+        end
+    end
+
+    return not all_disabled_a or not all_disabled_b
 end
 
 ---@param hud_id app.GUIHudDef.TYPE

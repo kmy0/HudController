@@ -116,16 +116,13 @@ function this.get_config()
     local base = hud_child.get_config("text_box") --[[@as ChatLogTextBoxConfig]]
     local children = base.children
 
-    base.enabled_opacity = nil
     base.opacity = nil
     children.background = {
         name_key = "background",
         hide = false,
         hud_sub_type = mod.enum.hud_sub_type.SCALE9,
-        enabled_color = false,
-        color = 0,
-        enabled_alpha_channel = false,
-        alpha_channel = "None",
+        color = { enabled = false, value = 0 },
+        alpha_channel = { enabled = false, value = "None" },
     }
     children.new_message = {
         name_key = "new_message",
@@ -134,8 +131,7 @@ function this.get_config()
     children.text = {
         name_key = "text",
         hud_sub_type = mod.enum.hud_sub_type.TEXT,
-        color = 0,
-        enabled_color = false,
+        color = { enabled = false, value = 0 },
     }
 
     return base

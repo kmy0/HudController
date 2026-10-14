@@ -1,20 +1,22 @@
 ---@class (exact) NameAccess : HudBase
 ---@field npc_draw_distance number
+---@field hide_edge_icon boolean
 ---@field GUI020001 app.GUI020001?
 ---@field get_config fun(): NameAccessConfig
----@field object_category table<string, boolean>
----@field gossip_type table<string, boolean>
----@field npc_type table<string, boolean>
----@field panel_type table<string, boolean>
----@field enemy_type table<string, boolean>
+---@field object_category table<string, integer>
+---@field gossip_type table<string, integer>
+---@field npc_type table<string, integer>
+---@field panel_type table<string, integer>
+---@field enemy_type table<string, integer>
 
 ---@class (exact) NameAccessConfig : HudBaseConfig
----@field object_category table<string, boolean>
----@field gossip_type table<string, boolean>
----@field npc_type table<string, boolean>
----@field panel_type table<string, boolean>
----@field enemy_type table<string, boolean>
+---@field object_category table<string, integer>
+---@field gossip_type table<string, integer>
+---@field npc_type table<string, integer>
+---@field panel_type table<string, integer>
+---@field enemy_type table<string, integer>
 ---@field npc_draw_distance number
+---@field hide_edge_icon boolean
 
 local ace_misc = require("HudController.util.ace.misc")
 local data = require("HudController.data.init")
@@ -45,62 +47,68 @@ function this:new(args)
     o.panel_type = args.panel_type
     o.enemy_type = args.enemy_type
     o.npc_draw_distance = args.npc_draw_distance
+    o.hide_edge_icon = args.hide_edge_icon
     return o
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_object_category(name_key, hide)
-    self.object_category[name_key] = hide
+---@param order integer
+function this:set_object_category(name_key, order)
+    self.object_category[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_panel_type(name_key, hide)
-    self.panel_type[name_key] = hide
+---@param order integer
+function this:set_panel_type(name_key, order)
+    self.panel_type[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_gossip_type(name_key, hide)
-    self.gossip_type[name_key] = hide
+---@param order integer
+function this:set_gossip_type(name_key, order)
+    self.gossip_type[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_npc_type(name_key, hide)
-    self.npc_type[name_key] = hide
+---@param order integer
+function this:set_npc_type(name_key, order)
+    self.npc_type[name_key] = order
 end
 
 ---@param name_key string
----@param hide boolean
-function this:set_enemy_type(name_key, hide)
-    self.enemy_type[name_key] = hide
+---@param order integer
+function this:set_enemy_type(name_key, order)
+    self.enemy_type[name_key] = order
 end
 
 ---@return boolean
 function this:any_gossip()
-    return util_table.any(self.gossip_type)
+    return not util_table.empty(self.gossip_type)
 end
 
 ---@return boolean
 function this:any_npc()
-    return util_table.any(self.npc_type)
+    return not util_table.empty(self.npc_type)
 end
 
 ---@return boolean
 function this:any_panel()
-    return util_table.any(self.panel_type)
+    return not util_table.empty(self.panel_type)
 end
 
 ---@return boolean
 function this:any_enemy()
-    return util_table.any(self.enemy_type)
+    return not util_table.empty(self.enemy_type)
 end
 
 ---@param val number
 function this:set_npc_draw_distance(val)
     self.npc_draw_distance = val
+end
+
+---@param val boolean
+function this:set_hide_edge_icon(val)
+    self.hide_edge_icon = val
 end
 
 ---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
@@ -136,34 +144,15 @@ end
 function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").NAME_ACCESSIBLE, "NAME_ACCESSIBLE") --[[@as NameAccessConfig]]
 
-    base.enabled_offset = nil
+    base.offset = nil
     base.hud_type = mod.enum.hud_type.NAME_ACCESS
-    base.object_category = { ALL = false }
+    base.object_category = {}
     base.gossip_type = {}
     base.npc_type = {}
     base.panel_type = {}
     base.npc_draw_distance = 0
-    base.enemy_type = {
-        BOSS = false,
-        ZAKO = false,
-        ANIMAL = false,
-    }
-
-    for name, _ in e.iter("app.GUIAccessIconControl.OBJECT_CATEGORY") do
-        base.object_category[name] = false
-    end
-
-    for name, _ in e.iter("app.GUI020001PanelParams.GOSSIP_TYPE") do
-        base.gossip_type[name] = false
-    end
-
-    for name, _ in e.iter("app.GUI020001PanelParams.NPC_TYPE") do
-        base.npc_type[name] = false
-    end
-
-    for name, _ in e.iter("app.GUI020001PanelParams.PANEL_TYPE") do
-        base.panel_type[name] = false
-    end
+    base.enemy_type = {}
+    base.hide_edge_icon = false
 
     return base
 end

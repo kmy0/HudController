@@ -203,7 +203,7 @@ function this:new(args)
         return play_object.iter_args(ctrl, control_arguments.keys)
     end)
     o.children.background = hud_child:new(args.children.background, o, function(_, _, _, ctrl)
-        return util_table.array_merge_t(
+        return util_table.extend(
             play_object.iter_args(get_icons(ctrl), control_arguments.background_icon),
             play_object.iter_args(ctrl, control_arguments.background)
         )
@@ -272,8 +272,7 @@ function this.get_config()
     children.text = {
         name_key = "text",
         hide = false,
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
+        offset = { enabled = false, x = 0, y = 0 },
     }
     children.center = {
         name_key = "center",
@@ -287,7 +286,8 @@ function this.get_config()
         name_key = "select_base",
         hide = false,
     }
-    children.radial_state = { name_key = "__radial_state", play_state = "" }
+    children.radial_state =
+        { name_key = "__radial_state", play_state = { enabled = false, value = "" } }
     children.craft = hud_child.get_config("craft")
     children.pallet = pallet.get_config()
 

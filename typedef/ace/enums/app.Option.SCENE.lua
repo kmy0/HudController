@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.Option.SCENE : Enum<app.Option.SCENE>
+---@field ALL app.Option.SCENE
+---@field TITLE app.Option.SCENE
+---@field IN_GAME app.Option.SCENE
+---@field ["ALL"] app.Option.SCENE
+---@field ["TITLE"] app.Option.SCENE
+---@field ["IN_GAME"] app.Option.SCENE
+---@field [0] "ALL"
+---@field [1] "TITLE"
+---@field [2] "IN_GAME"

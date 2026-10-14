@@ -1,9 +1,10 @@
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local data = require("HudController.data.init")
-local gui_util = require("HudController.gui.util")
-local hud = require("HudController.hud.init")
+local popup = require("HudController.util.imgui.popup")
 local state = require("HudController.gui.state")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -18,136 +19,180 @@ local this = {
 function this.close()
     this.is_opened = false
     mod.pause = false
-    state.input_action = nil
+    state.input = nil
 end
 
 function this.draw()
     local config_sel = config.selector.current
 
-    imgui.spacing()
+    util_imgui.spacer(0, 1)
     imgui.indent(3)
 
     imgui.begin_child_window("selector_window", { 0, this.window_size }, false, 1 << 3)
     local pos = imgui.get_cursor_pos()
 
-    imgui.push_item_width(gui_util.get_item_size())
-    if set:combo(gui_util.tr("selector.combo_config"), "combo_file", state.combo.config.values) then
-        config.selector:swap()
-        hud.reinit()
-    end
-    imgui.pop_item_width()
+    if imgui.begin_table("selector_table", 3, imgui.TableFlags.SizingFixedFit) then
+        imgui.table_next_row()
+        imgui.table_set_column_index(0)
 
-    imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_new")) then
-        state.input_action = nil
-        config.selector:new_file()
-        state.combo.config:swap(config.selector.sorted)
-    end
-
-    imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_rename")) then
-        local name = state.combo.config:get_value(config_sel.combo_file)
-        state.input_action = name ~= config.selector.default_name and name or ""
-    end
-
-    imgui.begin_disabled(util_table.size(config.selector.files) == 1)
-    imgui.same_line()
-
-    if imgui.button(gui_util.tr("selector.button_remove")) then
-        state.input_action = nil
-        util_imgui.open_popup("config_remove", 62, 30)
-    end
-
-    imgui.end_disabled()
-
-    if
-        util_imgui.popup_yesno(
-            "config_remove",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
-        )
-    then
-        if config.selector:delete_current_file() then
-            state.combo.config:swap(config.selector.sorted)
-            hud.reinit()
+        imgui.push_item_width(util_gui.get_item_size())
+        if set:combo_filter("##selector_combo_config", "combo_file", cd.combo.config) then
+            config.selector:swap()
         end
-    else
-        -- popup position breakes if there is a tooltip before it
-        util_imgui.tooltip(config.lang:tr("selector.tooltip_remove"))
-    end
+        imgui.pop_item_width()
 
-    imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_duplicate")) then
-        state.input_action = nil
-        config.selector:duplicate_current_file()
-        state.combo.config:swap(config.selector.sorted)
-    end
+        imgui.table_set_column_index(1)
 
-    imgui.same_line()
-    if imgui.button(gui_util.tr("selector.button_close")) then
-        state.input_action = nil
-        this.close()
-    end
+        util_imgui.option_button("selector_buttons", {
+            {
+                name = util_gui.tr("selector.button_new"),
+                callback = function()
+                    state.input = nil
+                    config.selector:new_file()
+                    cd.combo.config:swap(config.selector.sorted)
+                end,
+            },
+            {
+                name = util_gui.tr("selector.button_rename"),
+                callback = function()
+                    local name = cd.combo.config:get_value(config_sel.combo_file)
+                    state.input = {
+                        buf = name ~= config.selector.default_name and name or "",
+                        type = "rename_config",
+                    }
+                end,
+            },
+            {
+                name = util_gui.tr("selector.button_remove"),
+                callback = function()
+                    state.input = nil
+                    popup.request({
+                        id = "config_remove",
+                        callback = function()
+                            if config.selector:delete_current_file() then
+                                cd.combo.config:swap(config.selector.sorted)
+                            end
+                        end,
+                        fn = popup.popup_yesno,
+                    })
+                end,
+                disabled = util_table.size(config.selector.files) == 1
+                    or cd.combo.config:get_value(config_sel.combo_file)
+                        == config.selector:get_current_display_name(),
+                tooltip = config.lang:tr("selector.tooltip_remove"),
+            },
+            {
+                name = util_gui.tr("selector.button_export"),
+                callback = function()
+                    config.selector:export()
+                end,
+                tooltip = config.lang:tr("selector.tooltip_button_export"),
+            },
+            {
+                name = util_gui.tr("selector.button_import"),
+                callback = function()
+                    if config.selector:try_import() then
+                        state.input = nil
+                        local new_file = config.selector:new_file()
+                        cd.combo.config:swap(config.selector.sorted)
+                        config.selector.current.combo_file =
+                            util_table.index(cd.combo.config.values, new_file.display_name) --[[@as integer]]
+                        config.selector:import()
+                        config.selector:swap()
+                    end
+                end,
+                tooltip = config.lang:tr("selector.tooltip_button_import"),
+            },
+            {
+                name = util_gui.tr("selector.button_duplicate"),
+                callback = function()
+                    state.input = nil
+                    config.selector:duplicate_current_file()
+                    cd.combo.config:swap(config.selector.sorted)
+                end,
+            },
+            {
+                name = util_gui.tr("selector.button_close"),
+                callback = function()
+                    state.input = nil
+                    this.close()
+                end,
+            },
+        })
 
-    if state.input_action then
-        local changed, _ = state.get_input()
-        if changed then
-            if state.input_action ~= config.selector.sorted[config_sel.combo_file] then
-                config.selector:rename_current_file(state.input_action)
-                state.combo.config:swap(config.selector.sorted)
+        imgui.table_set_column_index(2)
+        imgui.text(config.lang:tr("selector.combo_config"))
+
+        if state.input and state.input.type == "rename_config" then
+            imgui.table_next_row()
+            imgui.table_set_column_index(0)
+            imgui.push_item_width(util_gui.get_item_size())
+            local changed, _ = state.get_input(false)
+            imgui.pop_item_width()
+
+            imgui.table_set_column_index(2)
+            if imgui.button(util_gui.tr("hud.button_cancel", "input")) then
+                state.input = nil
             end
 
-            state.input_action = nil
+            if changed then
+                if state.input ~= config.selector.sorted[config_sel.combo_file] then
+                    config.selector:rename_current_file(state.input.buf)
+                    cd.combo.config:swap(config.selector.sorted)
+                end
+
+                state.input = nil
+            end
         end
+
+        imgui.table_next_row()
+        imgui.table_set_column_index(0)
+
+        imgui.push_item_width(util_gui.get_item_size())
+        set:combo_filter("##selector_combo_backup", "combo_file_backup", cd.combo.config_backup)
+        imgui.pop_item_width()
+
+        imgui.table_set_column_index(1)
+        util_imgui.begin_disabled(cd.combo.config_backup:empty())
+
+        util_imgui.option_button("selector_backup_buttons", {
+            {
+                name = util_gui.tr("selector.button_restore"),
+                callback = function()
+                    state.input = nil
+                    if config.selector:restore_backup() then
+                        cd.combo.config:swap(config.selector.sorted)
+                        cd.combo.config_backup:swap(config.selector.sorted_backup)
+                    end
+                end,
+                tooltip = config.lang:tr("selector.tooltip_restore"),
+            },
+            {
+                name = util_gui.tr("selector.button_remove_backup"),
+                callback = function()
+                    state.input = nil
+                    popup.request({
+                        id = "config_remove_backup",
+                        callback = function()
+                            if config.selector:delete_current_backup() then
+                                cd.combo.config_backup:swap(config.selector.sorted_backup)
+                            end
+                        end,
+                        fn = popup.popup_yesno,
+                    })
+                end,
+                tooltip = config.lang:tr("selector.tooltip_remove_backup"),
+            },
+        })
+
+        imgui.table_set_column_index(2)
+        imgui.text(config.lang:tr("selector.combo_backup"))
+
+        util_imgui.end_disabled()
+        imgui.end_table()
     end
 
-    imgui.push_item_width(gui_util.get_item_size())
-    set:combo(
-        gui_util.tr("selector.combo_backup"),
-        "combo_file_backup",
-        state.combo.config_backup.values
-    )
-    imgui.pop_item_width()
-    imgui.same_line()
-
-    imgui.begin_disabled(state.combo.config_backup:empty())
-
-    if imgui.button(gui_util.tr("selector.button_restore")) then
-        state.input_action = nil
-        if config.selector:restore_backup() then
-            state.combo.config:swap(config.selector.sorted)
-            state.combo.config_backup:swap(config.selector.sorted_backup)
-        end
-    end
-    util_imgui.tooltip(config.lang:tr("selector.tooltip_restore"))
-
-    imgui.same_line()
-
-    if imgui.button(gui_util.tr("selector.button_remove_backup")) then
-        state.input_action = nil
-        util_imgui.open_popup("config_remove_backup", 62, 30)
-    end
-
-    imgui.end_disabled()
-
-    if
-        util_imgui.popup_yesno(
-            "config_remove_backup",
-            config.lang:tr("misc.text_rusure"),
-            config.lang:tr("misc.text_yes"),
-            config.lang:tr("misc.text_no")
-        )
-    then
-        if config.selector:delete_current_backup() then
-            state.combo.config_backup:swap(config.selector.sorted_backup)
-        end
-    else
-        -- popup position breakes if there is a tooltip before it
-        util_imgui.tooltip(config.lang:tr("selector.tooltip_remove_backup"))
-    end
-
-    local spacing = 4
+    local spacing = 6
     local size = imgui.get_cursor_pos().y - pos.y - spacing
     this.window_size = size > 0 and size or this.window_size
 

@@ -4,6 +4,7 @@ local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.elements.init")
 local hud = require("HudController.hud.init")
+local m = require("HudController.util.ref.methods")
 
 local mod = data.mod
 
@@ -51,13 +52,27 @@ function this.get_elem_consume_t(element_type, guiid)
     return ret, guiid
 end
 
----@return HudProfileConfig?
+---@return ModProfileConfig?
 function this.get_hud()
     if not this.is_ok() then
         return
     end
 
     return hud.get_current()
+end
+
+---@param condition fun(args: userdata[]): boolean
+function this.mute_gui_element(condition)
+    m.hook(
+        "app.SoundGUITriggerManagerBase`3"
+            .. "<app.SoundGUITriggerManager,app.GUIID.ID,app.GUIID.ID_Fixed>"
+            .. ".request(System.Int32, System.Int32, System.Int32, System.UInt32, System.Boolean)",
+        function(args)
+            if condition(args) then
+                return sdk.PreHookResult.SKIP_ORIGINAL
+            end
+        end
+    )
 end
 
 return this

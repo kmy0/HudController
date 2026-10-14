@@ -4,6 +4,7 @@
 ---@class (exact) WindowSettings
 ---@field main WindowState
 ---@field debug WindowState
+---@field popup_size table<string, {x: number, y: number}>
 
 ---@class (exact) WindowState
 ---@field pos_x integer
@@ -33,5 +34,6 @@ return {
             size_y = 700,
             is_opened = false,
         },
+        popup_size = {},
     },
 }

@@ -5,21 +5,34 @@
 ---@field initialized boolean
 ---@field is_reset boolean
 ---@field is_title_request boolean
+---@field is_block_input boolean
 
 ---@class (exact) ModMap
----@field options_hud table<string, string>
----@field options_mod table<string, string>
 ---@field slider_grid_ratio string[]
 ---@field slider_expanded_itembar_control string[]
 ---@field slider_sharpness_state string[]
 ---@field combo_item_decide table<string, {value: string, sort: integer}>
 ---@field combo_map_filter_init table<string, integer>
 ---@field combo_map_filter table<string, integer>
+---@field slider_quest_end_timer string[]
 
 ---@class (exact) ModEnum
 ---@field hud_type HudType.*
 ---@field hud_sub_type HudSubType.*
----@field colors GuiColors.*
+---@field canvas CanvasActionEnum.*
+---@field elem_cache ElemCache.*
+---@field elem_profile ElemProfileIndex.*
+---@field expanded_itembar_control ExpandedItembarControl.*
+---@field sharpness_state SharpnessState.*
+---@field quest_end_timer QuestEndTimerSetting.*
+---@field manager_names ModBindManagerType.*
+---@field action_type BindActionType.*
+---@field trigger_type TriggerType.*
+---@field hide_npc HideNpc.*
+---@field em_scar EmScar.*
+---@field em_icon EmIcon.*
+---@field bind_cond_type BindCondType.*
+---@field bind_key_type BindKeyType.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -31,54 +44,21 @@ local this = {
     ---@diagnostic disable-next-line: missing-fields
     enum = {},
     map = {
-        options_hud = {
-            mute_gui = "box_mute_gui",
-            hide_subtitles = "box_hide_subtitles",
-            disable_scoutflies = "box_disable_scoutflies",
-            disable_porter_call = "box_disable_porter_call",
-            hide_porter = "box_hide_porter",
-            hide_handler = "box_hide_handler",
-            hide_danger = "box_hide_danger",
-            disable_area_intro = "box_disable_area_intro",
-            disable_quest_intro = "box_disable_quest_intro",
-            disable_quest_end_camera = "box_disable_quest_end_camera",
-            hide_monster_icon = "box_hide_monster_icon",
-            disable_quest_end_outro = "box_disable_quest_end_outro",
-            skip_quest_end_timer = "box_skip_quest_end_timer",
-            hide_lock_target = "box_hide_lock_target",
-            hide_quest_end_timer = "box_hide_quest_end_timer",
-            hide_no_talk_npc = "box_hide_no_talk_npc",
-            hide_no_facility_npc = "box_hide_no_facility_npc",
-            monster_ignore_camp = "box_monster_ignore_camp",
-            hide_small_monsters = "box_hide_small_monsters",
-            disable_scar = "box_disable_scar",
-            skip_quest_result = "box_skip_quest_result",
-            hide_scar = "box_hide_scar",
-            show_scar = "box_show_scar",
-            disable_porter_tracking = "box_disable_porter_tracking",
-            hide_weapon = "box_hide_weapon",
-            hide_pet = "box_hide_pet",
-            mute_gossip = "box_mute_gossip",
-            hide_aggro = "box_hide_aggro",
-        },
-        options_mod = {
-            enable_fade = "enable_fade",
-            enable_notification = "enable_notification",
-            enable_key_binds = "enable_key_binds",
-            disable_condition_binds_timed = "disable_condition_binds_timed",
-            disable_condition_binds_held = "disable_condition_binds_held",
-            enable_condition_binds = "enable_condition_binds",
-        },
         slider_grid_ratio = {
             "1",
             "2",
             "4",
             "8",
             "16",
+            "32",
         },
         slider_expanded_itembar_control = {
             "expanded_itembar_disable_dpad",
             "expanded_itembar_disable_face",
+        },
+        slider_quest_end_timer = {
+            "box_skip_quest_end_timer",
+            "box_hide_quest_end_timer",
         },
         slider_sharpness_state = {
             "small",
@@ -104,7 +84,7 @@ local this = {
             ["LIST_TRIGGER_RDOWN"] = { value = "R_DOWN", sort = 15 },
             ["LIST_TRIGGER_RUP"] = { value = "R_UP", sort = 16 },
         },
-        combo_map_filter_init = util_table.merge_t(
+        combo_map_filter_init = util_table.merge(
             util_table.deep_copy(ace.map.map_icon_filter_name_guid_to_index),
             { option_disable = -1 }
         ),
@@ -114,6 +94,7 @@ local this = {
     is_reset = false,
     pause = false,
     is_title_request = false,
+    is_block_input = false,
 }
 ---@enum HudType
 this.enum.hud_type = { ---@class HudType.*
@@ -162,11 +143,100 @@ this.enum.hud_sub_type = { ---@class HudSubType.*
     PROGRESS_TEXT = 7,
     PROGRESS_PART = 8,
 }
----@enum GuiColors
-this.enum.colors = { ---@class GuiColors.*
-    bad = 0xff1947ff,
-    good = 0xff47ff59,
-    info = 0xff27f3f5,
+---@enum CanvasActionEnum
+this.enum.canvas = { ---@class CanvasActionEnum.*
+    POS = 1,
+    OPACITY = 2,
+    SCALE = 3,
+    ROT = 4,
+    HIDE = 5,
+    UNDO = 6,
+}
+---@enum ElemCache
+this.enum.elem_cache = { ---@class ElemCache.*
+    DISABLED = 1,
+    FRAME = 2,
+    ONCE = 3,
+}
+---@enum ElemProfileIndex
+this.enum.elem_profile = { ---@class ElemProfileIndex.*
+    DEFAULT = 1,
+}
+---@enum ExpandedItembarControl
+this.enum.expanded_itembar_control = { ---@class ExpandedItembarControl.*
+    DISABLED = -1,
+    DISABLE_DPAD = 0,
+    DISABLE_FACE = 1,
+}
+---@enum SharpnessState
+this.enum.sharpness_state = { ---@class SharpnessState.*
+    DISABLED = -1,
+    SMALL = 0,
+    BIG = 1,
+}
+---@enum QuestEndTimerSetting
+this.enum.quest_end_timer = { ---@class QuestEndTimerSetting.*
+    DISABLED = -1,
+    SKIP = 0,
+    HIDE = 1,
+}
+---@enum ModBindManagerType
+this.enum.manager_names = { ---@class ModBindManagerType.*
+    OPTION_HUD = "option_hud",
+    HUD = "hud",
+    OPTION_MOD = "option_mod",
+    OPTION_GAME = "option_game",
+    OPTION_USER = "option_user",
+}
+---@enum BindActionType
+this.enum.action_type = { ---@class BindActionType.*
+    NONE = "NONE",
+    SET = "SET",
+    SET_HOLD = "SET_HOLD",
+}
+---@enum BindTriggerType
+this.enum.trigger_type = { ---@class TriggerType.*
+    ONCE = "ONCE",
+    REPEAT = "REPEAT",
+}
+---@enum HideNpc
+this.enum.hide_npc = { ---@class HideNpc.*
+    DISABLED = 1,
+    NO_FACILITY = 2,
+    NO_TALK = 3,
+}
+---@enum EmScar
+this.enum.em_scar = { ---@class EmScar.*
+    DISABLED = 1,
+    HIDE = 2,
+    SHOW = 3,
+    DISABLE = 4,
+}
+---@enum EmIcon
+this.enum.em_icon = { ---@class EmIcon.*
+    DISABLED = 1,
+    HIDE_ICON = 2,
+    HIDE_ICON_TARGET = 3,
+}
+---@enum BindCondType
+this.enum.bind_cond_type = { ---@class BindCondType.*
+    HUD = "HUD",
+    OPTION_ELEM = "OPTION_ELEM",
+    OPTION_HUD = "OPTION_HUD",
+    OPTION_MOD = "OPTION_MOD",
+    OPTION_GAME = "OPTION_GAME",
+    OPTION_USER = "OPTION_USER",
+}
+---@enum BindKeyType
+this.enum.bind_key_type = { ---@class BindKeyType.*
+    ALL = 1,
+    HUD = 2,
+    OPTION_ELEM = 3,
+    OPTION_HUD = 4,
+    OPTION_MOD = 5,
+    OPTION_GAME = 6,
+    OPTION_USER = 7,
+    CONDITION = 8,
 }
 
 ---@return boolean

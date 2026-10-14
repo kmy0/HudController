@@ -28,8 +28,8 @@ end
 function this.all_type(ctrl, regex, child_type)
     local ret = {}
 
-    ---@type [via.gui.Control, string[], string, string][]?, string
-    local cached, key = all_cache:get_hashed(false, ctrl, regex, child_type)
+    ---@type [via.gui.Control, string[], string, string][]?
+    local cached = all_cache:get_hashed(ctrl, regex, child_type)
 
     if cached then
         for _, arg in pairs(cached) do
@@ -68,7 +68,7 @@ function this.all_type(ctrl, regex, child_type)
         end
 
         iter(ctrl, { ctrl, {}, "placeholder", child_type })
-        all_cache:set(key, args)
+        all_cache:set_hashed(args, ctrl, regex, child_type)
     end
 
     return ret

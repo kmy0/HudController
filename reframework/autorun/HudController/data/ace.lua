@@ -1,7 +1,10 @@
----@class (exact) AceData
+---@class AceData
 ---@field map AceMap
 
----@class (exact) AceMap
+---@class AdditionalHudToGUIIDName : {[string]: string}
+---@class AddtionalHud : string[]
+
+---@class AceMap
 ---@field hudid_to_guiid table<app.GUIHudDef.TYPE, app.GUIID.ID[]>
 ---@field guiid_to_hudid table<app.GUIID.ID, app.GUIHudDef.TYPE>
 ---@field hudid_name_to_local_name table<string, string>
@@ -9,24 +12,39 @@
 ---@field option table<string, AceOption>
 ---@field hudid_to_can_hide table<app.GUIHudDef.TYPE, boolean>
 ---@field additional_hud string[]
----@field additional_hud_to_guiid_name table<string, string>
----@field hud_tr_flag string
+---@field additional_hud_to_guiid_name AdditionalHudToGUIIDName
 ---@field additional_hud_index integer
----@field no_lang_key table<string, boolean>
 ---@field hudless_to_hud table<string, string>
 ---@field guiid_ignore table<string, boolean>
 ---@field log_id_to_text table<app.ChatDef.LOG_ID, string>
 ---@field auto_id_to_text table<app.Communication.AUTO_ID, string>
 ---@field map_icon_filter_name_guid_to_index table<string, integer>
+---@field subtitles {[string]: {npc: {id: app.NpcDef.ID, name: string}, text: string }}
+---@field literals table<string, string>
+---@field tree_game_options Tree<AceOptionNode, nil>
 
 ---@class (exact) AceOptionItem
 ---@field name_local string
 ---@field id integer
 
 ---@class (exact) AceOption
+---@field name string
 ---@field name_local string
+---@field name_path string[]
 ---@field id app.Option.ID
 ---@field items AceOptionItem[]
+---@field parent string
+---@field decimal_place integer
+---@field category app.Option.CATEGORY
+---@field type app.Option.TYPE
+---@field min number
+---@field max number
+
+---@class (exact) AceOptionNode
+---@field name string
+---@field id_str string
+---@field name_path string[]
+---@field children AceOptionNode[]
 
 ---@class AceData
 local this = {
@@ -37,8 +55,8 @@ local this = {
         hudid_name_to_local_name = {},
         weaponid_name_to_local_name = {},
         option = {},
-        hud_tr_flag = "NEED_TR",
         additional_hud_index = 1000,
+        ---@class AddtionalHud
         additional_hud = {
             "SLINGER_RETICLE",
             "GUN_RETICLE",
@@ -59,6 +77,7 @@ local this = {
             "QUEST_END_TIMER",
             "BUTTON_PRESS",
         },
+        ---@class AdditionalHudToGUIIDName
         additional_hud_to_guiid_name = {
             SLINGER_RETICLE = "UI020000",
             GUN_RETICLE = "UI020019",
@@ -84,7 +103,7 @@ local this = {
         hudless_to_hud = {
             UI020002 = "UI020000", -- focus reticle to slinger reticle
         },
-        no_lang_key = { ALL = true },
+        no_lang_key = {},
         guiid_ignore = {
             UI090901 = true, -- barrels score
             UI020902 = true,
@@ -101,6 +120,9 @@ local this = {
             ["79ca0978-1697-44ef-918f-b5e5e513a2e5"] = 7,
         },
         auto_id_to_text = {},
+        subtitles = {},
+        literals = {},
+        tree_game_options = {},
     },
 }
 

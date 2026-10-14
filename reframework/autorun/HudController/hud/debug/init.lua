@@ -36,6 +36,7 @@ local e = require("HudController.util.game.enum")
 local factory = require("HudController.hud.factory")
 local hud = require("HudController.hud.init")
 local m = require("HudController.util.ref.methods")
+local op = require("HudController.hud.manager.op.init")
 local perf = require("HudController.util.misc.perf")
 local play_object = require("HudController.hud.play_object.init")
 local util_game = require("HudController.util.game.init")
@@ -230,8 +231,8 @@ function this.make_snapshot(keys)
 end
 
 function this.add_all_element_profile()
-    local new_config = hud.operations._new()
-    new_config.name = hud.operations.get_name("All Elements")
+    local new_config = op.hud_profile.new_hud_profile()
+    new_config.name = op.hud_profile.get_name("All Elements")
     new_config.elements = {}
     local key = 1
 
@@ -242,7 +243,7 @@ function this.add_all_element_profile()
         key = key + 1
     end
 
-    hud.operations.new(new_config)
+    op.hud_profile.new(new_config)
 end
 
 function this.perf_test()
@@ -285,7 +286,7 @@ function this.perf_test()
     ---@param measurements number[]
     local function callback(name, stats, measurements)
         this.perf.completed = this.perf.completed + 1
-        this.perf.obj = util_table.remove(this.perf.obj, function(t, i, _)
+        this.perf.obj = util_table.filter_inplace(this.perf.obj, function(t, i, _)
             return t[i] ~= name
         end)
 
@@ -360,7 +361,7 @@ function this.write_all_elements()
     local current_hud = hud.elements.by_hudid
 
     local function write_offset(hudbase)
-        hudbase:set_offset({ x = 999, y = 999 })
+        hudbase:set_offset({ enabled = true, x = 999, y = 999 })
         ---@diagnostic disable-next-line: no-unknown
         for _, child in pairs(hudbase.children) do
             ---@diagnostic disable-next-line: invisible
@@ -377,7 +378,7 @@ end
 ---@return string[]
 function this.filter(keys)
     keys = util_table.filter(keys, function(_, value)
-        return not util_table.contains(this.snapshot, value)
+        return not util_table.contains_any(this.snapshot, value)
     end)
     return util_table.sort(util_table.values(keys))
 end

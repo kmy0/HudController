@@ -6,8 +6,7 @@
 ---@field protected _clamp_offset fun(pos_x: number, pos_y: number, text_x: number, text_y: number): number, number
 
 ---@class (exact) DamageNumbersOffsetConfig
----@field enabled_box boolean
----@field box {x: integer, y: integer, w: integer, h: integer}
+---@field box EnabledBox
 
 local this = {}
 ---@class DamageNumbersOffset
@@ -26,21 +25,21 @@ function this.wrap(o_cls, args)
         end
     end
 
-    if args.enabled_box then
+    if args.box and args.box.enabled then
         o_cls:set_box(args.box)
     end
 end
 
----@param box {x: integer, y: integer, w: integer, h: integer}?
+---@param box EnabledBox?
 function cls:set_box(box)
-    if box then
+    if box and box.enabled then
         self:mark_write("offset")
     else
         self:reset("offset")
         self:mark_idle("offset")
 
         local current_config = self:get_current_config()
-        if current_config.enabled_offset then
+        if current_config.offset and current_config.offset.enabled then
             self.offset = Vector3f.new(current_config.offset.x, current_config.offset.y, 0)
         else
             self.offset = nil

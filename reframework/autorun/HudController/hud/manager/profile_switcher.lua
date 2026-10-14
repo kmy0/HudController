@@ -1,158 +1,363 @@
+---@class (exact) ModHud
+---@field hud ModProfileConfig
+---@field profile table<string, integer>
+---@field profile_bits integer[]
+---@field profile_to table<string, HudBaseConfigProfile>
+
 ---@class ProfileSwitcher
----@field current_hud HudProfileConfig?
----@field requested_hud HudProfileConfig?
+---@field current_hud ModHud?
+---@field requested_hud ModHud?
 ---@field notify boolean
 
 local ace_misc = require("HudController.util.ace.misc")
 local config = require("HudController.config.init")
 local defaults = require("HudController.hud.defaults.init")
+local e = require("HudController.util.game.enum")
 local elements = require("HudController.hud.manager.elements")
 local fade_manager = require("HudController.hud.fade.init")
+local play_object = require("HudController.hud.play_object.init")
 local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
+
 ---@module "HudController.hud.manager.options"
 local options = util_misc.lazy_require("HudController.hud.manager.options")
 ---@module "HudController.hud.hook.init"
 local hook = util_misc.lazy_require("HudController.hud.hook.init")
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
 ---@class ProfileSwitcher
 local this = {
     notify = true,
 }
 
----@param hud_config HudProfileConfig
----@return table<app.GUIHudDef.TYPE, FadeDisableType>
-local function make_disable_fade_args(hud_config)
-    ---@type table<app.GUIHudDef.TYPE, FadeDisableType>
-    local ret = {}
-    for _, elem in pairs(hud_config.elements) do
-        if elem.disable_fade then
-            ret[elem.hud_id] = fade_manager.fade_disable_type.DISABLE
-        elseif elem.disable_fade_opacity then
-            ret[elem.hud_id] = fade_manager.fade_disable_type.DISABLE_OPACITY
-        end
+---@param update_elements boolean?
+local function switch_profile(update_elements)
+    update_elements = update_elements == nil or update_elements
+
+    local hud = this.requested_hud.hud
+    options.clear()
+    hook.hook_options(hud)
+    options.apply_option_many(hud.options)
+    this.current_hud = this.requested_hud
+
+    if update_elements then
+        elements.update_elements(hud.elements)
     end
-    return ret
+
+    defaults.play_object:enable_auto_dump()
+    defaults.option:enable_auto_dump()
+    defaults.play_object:dump_if_keys_changed()
+    defaults.option:dump_if_keys_changed()
 end
 
----@param hud_config HudProfileConfig
----@return table<app.GUIHudDef.TYPE, fun(fader: Fader)>
-local function make_disable_fade_opacity_args(hud_config)
-    ---@type table<app.GUIHudDef.TYPE, fun(fader: Fader)>
-    local ret = {}
-    for _, elem in pairs(hud_config.elements) do
-        if elem.disable_fade_opacity then
-            ret[elem.hud_id] = function(_)
-                elements.add_element(elem)
-            end
-        end
+local function try_add_element(hud_config, hud_id)
+    local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
+    local elem = hud_config.elements[hud_name]
+    if elem then
+        elements.add_element(elem)
+    else
+        elements.remove_element(hud_id)
     end
-    return ret
-end
-
-local function switch_profile()
-    defaults.play_object:with_dump(function()
-        defaults.option:with_dump(function()
-            options.clear()
-            hook.hook_options(this.requested_hud)
-            options.apply_option_many(this.requested_hud.options)
-            elements.update_elements(this.requested_hud.elements)
-            this.current_hud = this.requested_hud
-        end)
-    end)
-end
-
-local function switch_profile_partial()
-    defaults.play_object:with_dump(function()
-        defaults.option:with_dump(function()
-            options.clear()
-            hook.hook_options(this.requested_hud)
-            options.apply_option_many(this.requested_hud.options)
-            elements.update_elements_partial(this.requested_hud.elements)
-            this.current_hud = this.requested_hud
-        end)
-    end)
 end
 
 local function finish()
     if
         this.notify
         and config.current.mod.enable_notification
-        and this.current_hud.show_notification
+        and this.current_hud.hud.show_notification
     then
         ace_misc.send_message(
             string.format(
                 "%s %s",
-                this.current_hud.name,
+                this.current_hud.hud.name,
                 config.lang:tr("misc.text_notification_message")
             )
         )
     end
 
+    elements.cleanup(this.current_hud.hud.elements)
     this.requested_hud = nil
     fade_manager.clear()
 end
 
----@param new_hud HudProfileConfig
+---@param new_hud ModProfileConfig
+---@param force boolean?
+function this.request_hud_with_default(new_hud, force)
+    ---@type table<string, HudBaseConfigProfile>
+    local profile_to = {}
+    ---@type table<string, integer>
+    local profile = {}
+    for _, elem in pairs(new_hud.elements) do
+        if elem.current_profile ~= elem.default_profile then
+            profile_to[elem.name_key] =
+                op.hud_elem_profile.get_elem_profile_no_create(elem, elem.default_profile)
+        end
+
+        elem.current_profile = elem.default_profile
+        elem.current_profile_gui = elem.default_profile
+        profile[elem.name_key] = elem.default_profile
+    end
+
+    this.request_hud({
+        hud = new_hud,
+        profile = profile,
+        profile_to = profile_to,
+        profile_bits = { 0 },
+    }, force)
+end
+
+---@param new_hud ModProfileConfig
+---@param profile_bits integer[]
+---@param force boolean?
+function this.request_hud_with_profiles(new_hud, profile_bits, force)
+    ---@type table<integer, integer>
+    local profile_order = {}
+    for index, profile_config in ipairs(new_hud.profile) do
+        profile_order[profile_config.key] = index
+    end
+
+    ---@type table<string, HudBaseConfigProfile>
+    local changed_profiles = {}
+    ---@type integer[][]
+    local sorted_profile_bits = {}
+    ---@type table<string, integer>
+    local active_profiles = {}
+
+    for _, packed_bits in ipairs(profile_bits) do
+        ---@type integer[]
+        local unpacked_bits
+        if packed_bits == 0 then
+            unpacked_bits = { 0 }
+        else
+            unpacked_bits = util_misc.unpack_bits(packed_bits)
+        end
+
+        table.sort(unpacked_bits, function(a, b)
+            return profile_order[a] > profile_order[b]
+        end)
+
+        table.insert(sorted_profile_bits, unpacked_bits)
+    end
+
+    local function get_new_profile(element)
+        for _, trigger_profiles in ipairs(sorted_profile_bits) do
+            for _, profile_id in ipairs(trigger_profiles) do
+                local profile_config =
+                    op.hud_elem_profile.get_elem_profile_no_create(element, profile_id)
+
+                if profile_config and profile_config.profile_enabled then
+                    return profile_id
+                end
+            end
+        end
+    end
+
+    for _, elem in pairs(new_hud.elements) do
+        local profile_id = get_new_profile(elem)
+        if not profile_id then
+            profile_id = elem.default_profile
+        end
+
+        changed_profiles[elem.name_key] =
+            op.hud_elem_profile.get_elem_profile_no_create(elem, profile_id)
+        active_profiles[elem.name_key] = profile_id
+        elem.current_profile = profile_id
+    end
+
+    this.request_hud({
+        hud = new_hud,
+        profile = active_profiles,
+        profile_to = changed_profiles,
+        profile_bits = profile_bits,
+    }, force)
+end
+
+---@param a ModHud?
+---@param b ModHud?
+---@return boolean
+local function is_same_hud(a, b)
+    return a and b and a.hud.key == b.hud.key and util_table.equal(a.profile, b.profile) or false
+end
+
+---@param new_hud ModHud
+---@return boolean
+local function should_ignore_request(new_hud)
+    if this.requested_hud then
+        return is_same_hud(this.requested_hud, new_hud)
+    end
+
+    return is_same_hud(this.current_hud, new_hud)
+end
+
+---@param new_hud ModHud
+---@return boolean
+local function should_fade(new_hud)
+    if not config.current.mod.enable_fade or not this.current_hud then
+        return false
+    end
+
+    return fade_manager.should_fade(this.current_hud, new_hud)
+end
+
+---@param fader Fader?
+---@param current ModHud
+---@param requested ModHud
+---@return boolean
+local function can_continue_fade_in(fader, current, requested)
+    return fader ~= nil
+        --[[ only continue from the first stage, not an already started second-stage fade in ]]
+        and fader:get_level() == 1
+        --[[ disable opacity fades cannot be continued ]]
+        and not fader.free_value
+        --[[
+            normal full fades can continue while they are fading out
+            partial fades only have one level and fade directly to the target opacity,
+            so free_value2 marks them as a partial fade that can also be continued
+        ]]
+        and (fader:is_fade_out() or fader.free_value2)
+        --[[ only continue when returning to the same profile, e.g. a -> b -> a, not a -> b -> c ]]
+        and is_same_hud(current, requested)
+end
+
+---@param hud_id app.GUIHudDef.TYPE
+---@param ctrls via.gui.Control[]
+---@param disable_fade FadeDisableType
+---@return Fader
+local function make_elem_fader(hud_id, ctrls, disable_fade)
+    local current = this.current_hud --[[@as ModHud]]
+    local requested = this.requested_hud --[[@as ModHud]]
+    local fade_opacity = requested.hud.fade_opacity
+    local disable_opacity = disable_fade == fade_manager.disable_type.DISABLE_OPACITY
+    local current_fade = fade_manager.get_fade_duration(current, hud_id)
+    local requested_fade = fade_manager.get_fade_duration(requested, hud_id)
+    local active_fader = fade_manager.get_fader(hud_id)
+    local can_continue = can_continue_fade_in(active_fader, current, requested)
+
+    if not fade_opacity or disable_opacity then
+        if can_continue then
+            return fade_manager.make_fader(
+                hud_id,
+                ctrls,
+                fade_manager.get_hud_opacity(requested, hud_id),
+                requested_fade.fade_in,
+                {
+                    on_finish = function(_)
+                        try_add_element(requested.hud, hud_id)
+                    end,
+                    synchronized = false,
+                }
+            )
+        end
+
+        ---@type number | {fade_in: number, fade_out: number}
+        local duration = current_fade.fade_out
+        if disable_opacity then
+            duration = {
+                fade_in = requested_fade.override_fade_in and requested_fade.fade_in
+                    or requested_fade.fade_in / 2,
+                fade_out = current_fade.override_fade_out and current_fade.fade_out
+                    or current_fade.fade_out / 2,
+            }
+        end
+
+        return fade_manager.make_fader(hud_id, ctrls, 0, duration, {
+            on_finish = function(s)
+                local fade_in = requested_fade.fade_in
+                if disable_opacity and not requested_fade.override_fade_in then
+                    fade_in = fade_in / 2
+                end
+
+                s.next = fade_manager.make_fader(
+                    hud_id,
+                    ctrls,
+                    fade_manager.get_hud_opacity(requested, hud_id),
+                    fade_in,
+                    {
+                        on_start = function(_)
+                            try_add_element(requested.hud, hud_id)
+                        end,
+                        free_value = disable_opacity,
+                        synchronized = false,
+                    }
+                )
+            end,
+            free_value = disable_opacity,
+            synchronized = not fade_opacity,
+        })
+    end
+
+    return fade_manager.make_fader(hud_id, ctrls, fade_manager.get_hud_opacity(requested, hud_id), {
+        fade_in = requested_fade.fade_in,
+        fade_out = requested_fade.fade_out,
+    }, {
+        on_start = function(_)
+            try_add_element(requested.hud, hud_id)
+        end,
+        free_value2 = fade_opacity,
+        synchronized = false,
+    })
+end
+
+---@param no_fade app.GUIHudDef.TYPE[]
+local function finish_fade_switch(no_fade)
+    for _, hud_id in ipairs(no_fade) do
+        try_add_element(this.requested_hud.hud, hud_id)
+    end
+
+    switch_profile(false)
+    finish()
+end
+
+---@param new_hud ModHud
 ---@param force boolean?
 function this.request_hud(new_hud, force)
-    if
-        not force
-        and this.current_hud
-        and this.current_hud.key == new_hud.key
-        and not fade_manager.is_active(fade_manager.type.fade_out)
-    then
+    if not force and should_ignore_request(new_hud) then
         return
     end
 
-    this.notify = true
+    this.notify = not this.current_hud or this.current_hud.hud.key ~= new_hud.hud.key
+    local old_requested = this.requested_hud
     this.requested_hud = new_hud
+    defaults.play_object:disable_auto_dump()
+    defaults.option:disable_auto_dump()
 
-    if
-        config.current.mod.enable_fade
-        and (new_hud.fade_in > 0 or (this.current_hud and this.current_hud.fade_out > 0))
-    then
-        if
-            fade_manager.is_active(fade_manager.type.fade_out)
-            and fade_manager.current_fade.hud_key == new_hud.key
-        then
-            this.notify = false
-            fade_manager.fade_in(this.current_hud, finish, make_disable_fade_args(this.current_hud))
-        elseif
-            this.current_hud
-            and new_hud.fade_opacity
-            and (not new_hud.fade_opacity_both or this.current_hud.fade_opacity)
-        then
-            local current_hud = this.current_hud
-            ---@cast current_hud HudProfileConfig
-
-            switch_profile_partial()
-            fade_manager.fade_partial(current_hud, new_hud, function()
-                elements.update_elements(this.current_hud.elements)
-                finish()
-            end, make_disable_fade_args(new_hud), make_disable_fade_opacity_args(
-                new_hud
-            ))
-        elseif this.current_hud then
-            if fade_manager.is_active(fade_manager.type.fade_out) then
-                fade_manager.clear()
-            end
-
-            fade_manager.fade_out(this.current_hud, function()
-                switch_profile()
-                fade_manager.fade_in(
-                    this.requested_hud,
-                    finish,
-                    make_disable_fade_args(this.requested_hud)
-                )
-            end, make_disable_fade_args(this.current_hud))
-        else
-            switch_profile()
-            finish()
-        end
-    else
+    if not should_fade(new_hud) then
+        fade_manager.abort_active()
         switch_profile()
         finish()
+        return
     end
+
+    local all_elements = play_object.control.get_all_hud_control()
+    ---@type table<app.GUIHudDef.TYPE, Fader>
+    local faders = {}
+    ---@type app.GUIHudDef.TYPE[]
+    local no_fade = {}
+    for hud_id, ctrls in pairs(all_elements) do
+        local disable_fade = fade_manager.get_elem_fade_disable(
+            old_requested or this.current_hud --[[@as ModHud]],
+            this.requested_hud,
+            hud_id
+        )
+
+        if disable_fade == fade_manager.disable_type.DISABLE then
+            table.insert(no_fade, hud_id)
+        else
+            faders[hud_id] = make_elem_fader(hud_id, ctrls, disable_fade)
+        end
+    end
+
+    if util_table.empty(faders) then
+        fade_manager.abort_active()
+        switch_profile()
+        finish()
+        return
+    end
+
+    fade_manager.request_fade(faders, function()
+        finish_fade_switch(no_fade)
+    end)
 end
 
 function this.clear()

@@ -3,13 +3,16 @@
 ---@field execute_order string[] manager names
 ---@field key_buffer KeyBuffer
 ---@field on_release_callbacks table<string, fun()[]> key_name, cb
+---@field frame_storage table
 ---@field protected _buffer_max integer
 ---@field protected _pause boolean
 ---@field protected _on_release_callbacks string[] key names
----@field protected _all_keys {PAD: table<integer, boolean>, KEYBOARD: table<integer, boolean>}
+---@field protected _all_keys {[BindDevice]: table<integer, boolean>}
+
+---@alias BindDevice "PAD" | "KEYBOARD"
 
 ---@class (exact) KeyBuffer
----@field device string
+---@field device BindDevice
 ---@field keys table<integer, boolean>
 ---@field snapshot table<integer, boolean>
 ---@field frame integer
@@ -18,15 +21,16 @@
 ---@field by_key table<string, Bind>
 ---@field by_name table<string, boolean>
 
+---@class (exact) OrderedBindMap : BindMap
+---@field ordered Bind[]
+
 ---@class (exact) MonitoredManager
 ---@field manager BindManager
----@field held BindMap
+---@field held OrderedBindMap
 ---@field triggered BindMap
 ---@field actions Bind[]
 
 local ace_misc = require("HudController.util.ace.misc")
-local e = require("HudController.util.game.enum")
-local singletons = require("HudController.util.ref.singletons")
 local util_table = require("HudController.util.misc.table")
 
 ---@class BindMonitor
@@ -39,6 +43,7 @@ this.__index = this
 function this:new(...)
     local o = {
         managers = {},
+        frame_storage = {},
         _pause = false,
         _buffer_max = 3,
         key_buffer = {
@@ -72,6 +77,7 @@ function this:add_manager(manager)
         held = {
             by_key = {},
             by_name = {},
+            ordered = {},
         },
         triggered = {
             by_key = {},
@@ -115,7 +121,7 @@ function this:is_held(manager_name, bind)
     end
 
     if bind then
-        return self.managers[manager_name].held.by_key[self:_get_bind_key(bind)] ~= nil
+        return self.managers[manager_name].held.by_key[self:get_bind_key(bind)] ~= nil
     end
 
     return not util_table.empty(self.managers[manager_name].held.by_key)
@@ -134,7 +140,7 @@ function this:is_triggered(manager_name, bind)
     end
 
     if bind then
-        return self.managers[manager_name].triggered.by_key[self:_get_bind_key(bind)] ~= nil
+        return self.managers[manager_name].triggered.by_key[self:get_bind_key(bind)] ~= nil
     end
 
     return not util_table.empty(self.managers[manager_name].triggered.by_key)
@@ -150,17 +156,38 @@ function this:get_held_key_names(manager_name)
     ---@type table<string, boolean>
     local ret = {}
     for _, m in pairs(self.managers) do
-        util_table.merge_t(ret, util_table.keys(m.held.by_name))
+        ret = util_table.merge(ret, m.held.by_name)
     end
 
     return util_table.keys(ret)
 end
 
----@protected
 ---@param bind Bind
 ---@return string
-function this:_get_bind_key(bind)
-    return string.format("%s_%s", bind.name, bind.bound_value)
+function this:get_bind_key(bind)
+    ---@param value any
+    ---@return string
+    local function serialize(value)
+        if type(value) ~= "table" then
+            return tostring(value)
+        end
+
+        local entries = util_table.entries(value)
+        util_table.sort(entries, function(a, b)
+            return tostring(a.key) < tostring(b.key)
+        end)
+
+        ---@type string[]
+        local res = {}
+
+        for _, e in ipairs(entries) do
+            table.insert(res, string.format("%s|%s", e.key, serialize(e.value)))
+        end
+
+        return string.format("{%s}", table.concat(res, ":"))
+    end
+
+    return string.format("%s_%s", bind.name, serialize(bind.bound_value))
 end
 
 ---@param key_name string | string[]
@@ -180,23 +207,23 @@ function this:register_on_release_callback(key_name, callback)
 end
 
 function this:execute_actions()
-    for i = 1, #self.execute_order do
-        local manager_name = self.execute_order[i]
+    for _, manager_name in ipairs(self.execute_order) do
         local actions = self.managers[manager_name].actions
 
-        for j, bind in pairs(actions) do
+        for _, bind in ipairs(actions) do
             bind.action()
-            actions[j] = nil
         end
+
+        self.managers[manager_name].actions = {}
     end
 end
 
 function this:execute_on_release_callbacks()
-    for _, bind_name in pairs(self._on_release_callbacks) do
+    for _, bind_name in ipairs(self._on_release_callbacks) do
         local callbacks = self.on_release_callbacks[bind_name]
 
         if callbacks then
-            for _, cb in pairs(callbacks) do
+            for _, cb in ipairs(callbacks) do
                 cb()
             end
             self.on_release_callbacks[bind_name] = nil
@@ -270,6 +297,7 @@ function this:_clear_held()
     for _, m in pairs(self.managers) do
         m.held.by_key = {}
         m.held.by_name = {}
+        m.held.ordered = {}
     end
 end
 
@@ -280,6 +308,8 @@ function this:_clear_actions()
     end
 end
 
+function this:on_clear() end
+
 ---@protected
 function this:_clear()
     self:_clear_buffer()
@@ -289,6 +319,12 @@ function this:_clear()
     self.on_release_callbacks = {}
     self._on_release_callbacks = {}
     self.key_buffer.snapshot = {}
+    self:on_clear()
+end
+
+---@return boolean
+function this:is_pause()
+    return self._pause
 end
 
 function this:pause()
@@ -329,8 +365,13 @@ end
 
 ---@protected
 function this:_resolve_held_binds()
-    for _, m in pairs(self.managers) do
-        for bind_key, bind in pairs(m.held.by_key) do
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        ---@type {index: integer, bind: Bind}[]
+        local released = {}
+
+        for i, bind in ipairs(m.held.ordered) do
             if
                 bind.device ~= self.key_buffer.device
                 or (
@@ -340,10 +381,26 @@ function this:_resolve_held_binds()
                     end)
                 )
             then
-                table.insert(self._on_release_callbacks, bind.name)
-                m.held.by_key[bind_key] = nil
-                m.held.by_name[bind.name] = nil
+                table.insert(released, {
+                    index = i,
+                    bind = bind,
+                })
             end
+        end
+
+        for i = #released, 1, -1 do
+            local entry = released[i]
+            local bind = entry.bind
+            local bind_key = self:get_bind_key(bind)
+
+            m.held.by_key[bind_key] = nil
+            m.held.by_name[bind.name] = nil
+
+            table.remove(m.held.ordered, entry.index)
+        end
+
+        for _, entry in ipairs(released) do
+            table.insert(self._on_release_callbacks, entry.bind.name)
         end
     end
 end
@@ -352,23 +409,38 @@ end
 function this:_resolve_buffer()
     ---@type table<string, boolean>
     local this_frame = {}
-    self.key_buffer.snapshot = util_table.merge_t(self.key_buffer.snapshot, self.key_buffer.keys)
+    self.key_buffer.snapshot = util_table.merge(self.key_buffer.snapshot, self.key_buffer.keys)
 
-    for _, m in pairs(self.managers) do
-        for _, bind in pairs(m.manager.sorted) do
-            local bind_key = self:_get_bind_key(bind)
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        for _, bind in ipairs(m.manager.sorted) do
+            if bind.invalid then
+                goto continue
+            end
+
+            local bind_key = self:get_bind_key(bind)
+            local is_held = m.held.by_key[bind_key] ~= nil
 
             if
                 bind.device == self.key_buffer.device
-                and not m.held.by_key[bind_key]
                 and (
-                    this_frame[bind.name]
-                    or util_table.all(bind.keys, function(o)
-                        return self.key_buffer.keys[o]
-                    end)
+                    (
+                        not is_held
+                        and (
+                            this_frame[bind.name]
+                            or util_table.all(bind.keys, function(o)
+                                return self.key_buffer.keys[o]
+                            end)
+                        )
+                    ) or is_held and bind.trigger_repeat
                 )
             then
                 table.insert(m.actions, bind)
+
+                if not is_held then
+                    table.insert(m.held.ordered, bind)
+                end
 
                 if not this_frame[bind.name] then
                     for _, key in pairs(bind.keys) do
@@ -382,13 +454,29 @@ function this:_resolve_buffer()
                 m.triggered.by_key[bind_key] = bind
                 m.triggered.by_name[bind.name] = true
             end
+
+            ::continue::
         end
     end
 
     self:_clear_buffer()
 end
 
+function this:_resolve_repeat()
+    for _, manager_name in ipairs(self.execute_order) do
+        local m = self.managers[manager_name]
+
+        for _, bind in ipairs(m.held.ordered) do
+            if bind.trigger_repeat then
+                table.insert(m.actions, bind)
+            end
+        end
+    end
+end
+
 function this:monitor()
+    self.frame_storage = {}
+
     if
         self._pause
         or util_table.all(self.managers, function(o)
@@ -398,9 +486,7 @@ function this:monitor()
         return
     end
 
-    local device = e.get("ace.GUIDef.INPUT_DEVICE")[singletons
-        .get("app.GUIManager")
-        :get_LastInputDeviceIgnoreMouseMove()]
+    local device = ace_misc.get_last_device(self.key_buffer.device)
 
     self:_clear_triggers()
     self:_buffer_keys(device)
@@ -408,6 +494,8 @@ function this:monitor()
     if self:is_held() then
         self:_resolve_held_binds()
     end
+
+    self:_resolve_repeat()
 
     if self.key_buffer.frame == self._buffer_max then
         self:_resolve_buffer()

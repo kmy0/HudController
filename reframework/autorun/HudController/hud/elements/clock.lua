@@ -81,7 +81,7 @@ local control_arguments = {
 ---@return Clock
 function this:new(args)
     local o = hud_base.new(self, args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         hide_map_visible = true,
     })
     setmetatable(o, self)
@@ -133,7 +133,9 @@ end
 
 ---@param hide boolean
 function this:set_hide_map_visible(hide)
-    self:reset("hide_map_visible")
+    if self.write_properties["hide_map_visible"] then
+        self:reset("hide_map_visible")
+    end
 
     if self.hide_map_visible and not hide then
         self:mark_idle("hide_map_visible")

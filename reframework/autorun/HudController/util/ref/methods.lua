@@ -106,6 +106,10 @@ function this.hook(method, pre_cb, post_cb, ignore_jmp_object)
         method_name = method_def:get_name()
     end
 
+    if type(method_def) == "string" then
+        return
+    end
+
     method_name = string.format(
         "%s [%s]",
         method_name,
@@ -157,7 +161,7 @@ end
 
 if is_debug then
     re.on_frame(function()
-        util_table.print(_debug)
+        util_table.pprint(_debug)
         _debug = {}
     end)
 end

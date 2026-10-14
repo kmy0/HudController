@@ -11,6 +11,8 @@
 ---@field device string
 ---@field bound_value any
 ---@field keys integer[]
+---@field trigger_repeat boolean
+---@field invalid boolean?
 
 ---@class (exact) Bind : BindBase
 ---@field action fun()
@@ -104,7 +106,7 @@ end
 
 ---@param bind Bind
 function this:unregister(bind)
-    self.binds = util_table.remove(self.binds, function(_, i, _)
+    self.binds = util_table.filter_inplace(self.binds, function(_, i, _)
         return self.binds[i].name ~= bind.name
     end)
     self.sorted = self:_sort_binds()
@@ -124,6 +126,16 @@ end
 ---@return boolean
 function this:is_valid(bind)
     return not util_table.empty(bind.keys)
+end
+
+---@param a Bind
+---@param b Bind
+function this:compare_bound_value(a, b)
+    if type(a.bound_value) == "table" and type(b.bound_value) == "table" then
+        return util_table.equal(a.bound_value, b.bound_value)
+    end
+
+    return a.bound_value == b.bound_value
 end
 
 ---@protected

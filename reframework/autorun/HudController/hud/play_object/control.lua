@@ -18,6 +18,10 @@ local all_cache = cache:new()
 ---@param chain string[] | string
 ---@return via.gui.Control?
 function this.get(ctrl, chain)
+    if type(chain) == "table" and util_table.empty(chain) then
+        return ctrl
+    end
+
     if not mod.is_reset then
         local id_array = id_cache:get(ctrl, chain)
         if id_array then
@@ -64,7 +68,7 @@ function this.all(ctrl, chain, target, lowercase)
     ---@type via.gui.Control[]
     local ret = {}
     ---@type string[]?, string
-    local cached, key = all_cache:get_hashed(false, ctrl, chain, target, lowercase)
+    local cached = all_cache:get_hashed(ctrl, chain, target, lowercase)
 
     if cached then
         for _, name in pairs(cached) do
@@ -91,7 +95,7 @@ function this.all(ctrl, chain, target, lowercase)
             end
         end)
 
-        all_cache:set(key, names)
+        all_cache:set_hashed(names, ctrl, chain, target, lowercase)
     end
 
     if not util_table.empty(ret) then
@@ -181,7 +185,13 @@ function this.get_hud_control(hud_id)
             goto continue
         end
 
-        table.insert(ret, disp_ctrl._TargetControl)
+        -- reframework\autorun\HudController\hud\elements\weapon\init.lua line 106
+        local ctrl = disp_ctrl._TargetControl
+        if hud_id == e.get("app.GUIHudDef.TYPE").WEAPON then
+            ctrl = this.get_parent(ctrl, "PNL_All", true) or ctrl
+        end
+
+        table.insert(ret, ctrl)
         ::continue::
     end
 

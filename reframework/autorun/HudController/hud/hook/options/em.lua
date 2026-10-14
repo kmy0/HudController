@@ -2,6 +2,8 @@ local ace_em = require("HudController.util.ace.enemy")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
 local hud = require("HudController.hud.init")
+local hud_def = require("HudController.data.option.hud").opt
+local mod = require("HudController.data.mod")
 local s = require("HudController.util.ref.singletons")
 local util_game = require("HudController.util.game.init")
 local util_mod = require("HudController.util.mod.init")
@@ -25,10 +27,26 @@ local function clear_map_navi_lines()
     return false
 end
 
+---@param game_object via.GameObject?
+---@return boolean?
+local function is_hide_enemy_access_paint(game_object)
+    if not game_object then
+        return
+    end
+
+    local char = ace_em.get_char_base(game_object)
+    if not char then
+        return
+    end
+
+    return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
+end
+
 --#region hide_monster_icon
 function this.hide_monster_icon_out_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         local out_frame_target = util_ref.get_this() --[[@as app.cGUI060000OutFrameTarget]]
         local arr = out_frame_target._OutFrameIcons
 
@@ -59,7 +77,7 @@ end
 
 function this.hide_monster_icon_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         if clear_map_navi then
             if clear_map_navi_lines() then
                 clear_map_navi = false
@@ -74,7 +92,8 @@ function this.hide_monster_icon_pre(args)
                 local flags = ctx:get_ContinueFlag()
                 local enum = e.get("app.EnemyDef.CONTINUE_FLAG")
                 flags:on(
-                    hud.get_hud_option("hide_lock_target") and enum.HIDE_MAP_WITH_DISABLE_PIN
+                    hud.get_hud_option(hud_def.monster_icon) == mod.enum.em_icon.HIDE_ICON_TARGET
+                            and enum.HIDE_MAP_WITH_DISABLE_PIN
                         or enum.HIDE_MAP
                 )
             end
@@ -86,7 +105,7 @@ end
 
 function this.skip_monster_select_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         local ctx_holder = sdk.to_managed_object(args[3]) --[[@as app.cEnemyContextHolder]]
         local ctx = ctx_holder:get_Em()
 
@@ -96,10 +115,58 @@ function this.skip_monster_select_pre(args)
     end
 end
 
+function this.hide_em_iteractables_post(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
+        local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
+
+        util_game.do_something(access_control:get_AccessIconInfos(), function(_, _, value)
+            local cat = value:get_ObjectCategory()
+            local cat_name = e.get("app.GUIAccessIconControl.OBJECT_CATEGORY")[cat]
+
+            if cat_name == "ENEMY" and is_hide_enemy_access_paint(value:get_GameObject()) then
+                value:clear()
+            end
+        end)
+    end
+end
+
+function this.disable_scoutflies_em_tracking_pre(args)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
+        local target_access = sdk.to_valuetype(args[3], "app.TARGET_ACCESS_KEY") --[[@as app.TARGET_ACCESS_KEY]]
+        if target_access.Category == e.get("app.TARGET_ACCESS_KEY.CATEGORY").ENEMY then
+            return sdk.PreHookResult.SKIP_ORIGINAL
+        end
+    end
+end
+
+function this.hide_map_em_navi_points_post(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
+        local insman = s.get("app.GuideInsectManager")
+        local ctrl = insman:getMasterEntityNavigationController()
+
+        if not ctrl then
+            return
+        end
+
+        local ctx = ctrl:get_Context()
+        local target_info = ctx.TargetInfo
+        local nav_info = target_info:get_CurrentNavigationTargetInfoGuideInsect()
+        if nav_info then
+            local target_access = nav_info:getTargetAccessKey()
+            if target_access.Category == e.get("app.TARGET_ACCESS_KEY.CATEGORY").ENEMY then
+                return false
+            end
+        end
+    end
+end
+
 --#region fix lock target
 function this.get_near_monsters_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         local pos = sdk.to_valuetype(args[3], "via.vec3") --[[@as via.vec3]]
         local player_pos = Vector3f.new(pos.x, pos.y, pos.z)
         local range = sdk.to_float(args[4])
@@ -116,7 +183,8 @@ function this.get_near_monsters_pre(args)
                     char
                     and ace_em.is_boss(char)
                     and (
-                        not hud.get_hud_option("hide_lock_target")
+                        hud.get_hud_option(hud_def.monster_icon)
+                            ~= mod.enum.em_icon.HIDE_ICON_TARGET
                         or ace_em.is_paintballed_ctx(ctx)
                     )
                 then
@@ -142,14 +210,14 @@ end
 --#region hide_monster_recommend
 function this.hide_monster_recommend_pre(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
 function this.hide_monster_recommend_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_monster_icon") then
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
         local GUI060000Recommend = util_ref.get_this() --[[@as app.cGUI060000Recommend]]
         util_game.do_something(GUI060000Recommend._RecommendSignParts, function(_, _, value)
             value.IsActive = false
@@ -161,7 +229,7 @@ end
 
 function this.hide_small_monsters_pre(args)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("hide_small_monsters") then
+    if hud_config and hud.get_hud_option(hud_def.hide_small_monsters) then
         local beacon_man = sdk.to_managed_object(args[2]) --[[@as app.GUIMapBeaconManager]]
         local beacons = beacon_man:get_EmZakoBeaconContainer()
 
@@ -174,14 +242,14 @@ end
 --#region monster_ignore_camp
 function this.stop_camp_target_pre(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("monster_ignore_camp") then
+    if hud_config and hud.get_hud_option(hud_def.monster_ignore_camp) then
         return sdk.PreHookResult.SKIP_ORIGINAL
     end
 end
 
 function this.stop_camp_damage_post(_)
     local hud_config = common.get_hud()
-    if hud_config and hud.get_hud_option("monster_ignore_camp") then
+    if hud_config and hud.get_hud_option(hud_def.monster_ignore_camp) then
         local gm_break = util_ref.get_this() --[[@as app.mcGimmickBreak]]
         local gm = gm_break:get_OwnerGimmick()
         if util_ref.is_a(gm, "app.Gm100_000") then
@@ -190,5 +258,12 @@ function this.stop_camp_damage_post(_)
     end
 end
 --#endregion
+
+function this.hide_em_quest_counter_icon_pre(_)
+    local hud_config = common.get_hud()
+    if hud_config and hud.get_hud_option(hud_def.monster_icon) ~= mod.enum.em_icon.DISABLED then
+        return sdk.PreHookResult.SKIP_ORIGINAL
+    end
+end
 
 return this

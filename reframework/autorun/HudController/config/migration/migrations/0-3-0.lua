@@ -32,7 +32,6 @@ end
 ---@param config MainSettings
 function this.fns.conditions(config)
     local data_ace = require("HudController.data.ace")
-    local bind_condition = require("HudController.hud.bind_condition.init")
 
     local config_cond = config.mod.bind.condition
     local config_wep = config.mod.bind.weapon
@@ -49,8 +48,13 @@ function this.fns.conditions(config)
     local GAME_MODE_SINGLEPLAYER, GAME_MODE_MULTIPLAYER = 1, 2
 
     local function get_cond_set(hud_key)
-        ---@diagnostic disable-next-line: missing-fields
-        local ret = bind_condition.new_condition_set({ key = hud_key })
+        local ret = {
+            hud_key = hud_key,
+            conditions = {},
+            combo_hud = 1,
+            combo_condition = 1,
+            collapsed = false,
+        }
         ret.combo_hud = util_table.index(config.mod.hud, function(o)
             return o.key == hud_key
         end) --[[@as integer]]
@@ -58,7 +62,7 @@ function this.fns.conditions(config)
     end
 
     local function get_combat_cond(mode, key)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local ret = {}
         local combat_in = config_wep[mode][key].combat_in.hud_key --[[@as integer]]
         local combat_out = config_wep[mode][key].combat_out.hud_key --[[@as integer]]
@@ -93,7 +97,7 @@ function this.fns.conditions(config)
         return ret
     end
 
-    ---@return ConditionSetConfig[]
+    ---@return ConditionBindRuleConfig[]
     local function tag_and_merge(ret, mode, key, class, combo)
         if not config_wep[mode][key] or not config_wep[mode][key].enabled then
             return ret
@@ -107,11 +111,11 @@ function this.fns.conditions(config)
             end
         end
 
-        return util_table.array_merge(ret, res)
+        return util_table.extend(ret, res)
     end
 
     local function get_weapon_cond(mode)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local ret = {}
 
         if not config_wep[mode].GLOBAL then
@@ -124,7 +128,7 @@ function this.fns.conditions(config)
             ret = tag_and_merge(ret, mode, "MELEE", "_WEAPON_TYPE", WEAPON_TYPE_MELEE)
             ret = tag_and_merge(ret, mode, "RANGED", "_WEAPON_TYPE", WEAPON_TYPE_RANGED)
 
-            local weapons = util_table.map_to_array(data_ace.map.weaponid_name_to_local_name)
+            local weapons = util_table.entries(data_ace.map.weaponid_name_to_local_name)
             table.sort(weapons, function(a, b)
                 return a.value < b.value
             end)
@@ -144,21 +148,21 @@ function this.fns.conditions(config)
             end) ~= nil
         end
 
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local shared = util_table.filter_array(singleplayer, function(_, cond_set)
             return contains(multiplayer, cond_set)
         end)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local unique_singleplayer = util_table.filter_array(singleplayer, function(_, cond_set)
             return not contains(multiplayer, cond_set)
         end)
-        ---@type ConditionSetConfig[]
+        ---@type ConditionBindRuleConfig[]
         local unique_multiplayer = util_table.filter_array(multiplayer, function(_, cond_set)
             return not contains(singleplayer, cond_set)
         end)
 
         if util_table.empty(unique_multiplayer) then
-            return util_table.array_merge(shared, unique_singleplayer)
+            return util_table.extend(shared, unique_singleplayer)
         end
 
         for _, cond in pairs(unique_singleplayer) do
@@ -169,7 +173,7 @@ function this.fns.conditions(config)
             table.insert(cond.conditions, { class = "_GAME_MODE", combo = GAME_MODE_MULTIPLAYER })
         end
 
-        return util_table.array_merge(shared, unique_singleplayer, unique_multiplayer)
+        return util_table.extend(shared, unique_singleplayer, unique_multiplayer)
     end
 
     if config_wep.singleplayer_only then

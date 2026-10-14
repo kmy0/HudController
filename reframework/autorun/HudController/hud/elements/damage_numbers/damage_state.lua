@@ -255,8 +255,7 @@ function this.get_config(name_key)
     local children = base.children
 
     base.hud_sub_type = mod.enum.hud_sub_type.DAMAGE_NUMBERS
-    base.box = { x = 0, y = 0, w = 0, h = 0 }
-    base.enabled_box = false
+    base.box = { enabled = false, x = 0, y = 0, w = 0, h = 0 }
 
     children.circle = {
         name_key = "circle",
@@ -265,39 +264,33 @@ function this.get_config(name_key)
     children.horizontal_line = {
         name_key = "horizontal_line",
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
-        enabled_color = false,
-        color = 4294967295,
+        color = { enabled = false, value = 4294967295 },
         hide = false,
     }
     children.text = {
         name_key = "text",
         hide = false,
-        enabled_color = false,
-        color = 4294967295,
+        color = { enabled = false, value = 4294967295 },
         hide_glow = false,
-        enabled_glow_color = false,
-        glow_color = 4294967295,
+        glow_color = { enabled = false, value = 4294967295 },
         hud_sub_type = data.mod.enum.hud_sub_type.TEXT,
     }
     children.wound = {
         name_key = "wound",
         hide = false,
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
-        enabled_color = false,
-        color = 4294967295,
+        color = { enabled = false, value = 4294967295 },
     }
     children.affinity = {
         name_key = "affinity",
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
-        enabled_color = false,
-        color = 4294967295,
+        color = { enabled = false, value = 4294967295 },
         hide = false,
     }
     children.negative_affinity = {
         name_key = "negative_affinity",
         hud_sub_type = data.mod.enum.hud_sub_type.CTRL_CHILD,
-        enabled_color = false,
-        color = 4294967295,
+        color = { enabled = false, value = 4294967295 },
         hide = false,
     }
     children.shield = {

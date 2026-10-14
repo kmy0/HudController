@@ -28,6 +28,14 @@ end
 function this:to_json_key(key)
     local path = m.getPlayObjectFullPath(key)
     local gui = key:get_Component()
+
+    --FIXME: Keyboard Shortcuts > Item > Hide, gui element does not exist on reset sometimes
+    -- returning nil doesnt seem to break anything
+    if not gui then
+        ---@diagnostic disable-next-line: missing-return-value
+        return
+    end
+
     return string.format("%s/%s", gui:ToString(), path)
 end
 

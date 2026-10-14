@@ -1,9 +1,10 @@
 ---@class (exact) ShortcutKeyboard : HudBase
 ---@field get_config fun(): ShortcutKeyboardConfig
 ---@field no_hide_elements boolean
+---@field close_after_use boolean
 ---@field always_visible boolean
 ---@field GUI020600 app.GUI020600
----@field open_timer FrameTimer
+---@field open_timer Timer
 ---@field always_visible_delay_timer Timer
 ---@field children {
 --- background_blur: CtrlChild,
@@ -19,6 +20,7 @@
 ---@class (exact) ShortcutKeyboardConfig : HudBaseConfig
 ---@field no_hide_elements boolean
 ---@field always_visible boolean
+---@field close_after_use boolean
 ---@field children {
 --- background_blur: CtrlChildConfig,
 --- tab: ShortcutKeyboardTabConfig,
@@ -34,12 +36,14 @@
 ---@class (exact) ShortcutKeyboardChangedProperties : HudChildChangedProperties
 ---@field no_hide_elements boolean?
 ---@field always_visible boolean?
+---@field close_after_use boolean?
 
 ---@class (exact) ShortcutKeyboardProperties : {[ShortcutKeyboardProperty]: boolean}, HudChildProperties
 ---@field no_hide_elements boolean
 ---@field always_visible boolean
+---@field close_after_use boolean
 
----@alias ShortcutKeyboardProperty HudChildProperty | "no_hide_elements" | "always_visible"
+---@alias ShortcutKeyboardProperty HudChildProperty | "no_hide_elements" | "always_visible" | "close_after_use"
 
 ---@class (exact) ShortcutKeyboardControlArguments
 ---@field background_blur PlayObjectGetterFn[]
@@ -53,7 +57,6 @@ local ctrl_child = require("HudController.hud.def.ctrl_child")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
-local frame_timer = require("HudController.util.misc.frame_timer")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_child = require("HudController.hud.def.hud_child")
 local item = require("HudController.hud.elements.shortcut_keyboard.item")
@@ -136,11 +139,12 @@ function this:new(args)
     setmetatable(o, self)
     ---@cast o ShortcutKeyboard
 
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         no_hide_elements = true,
         always_visible = true,
+        close_after_use = true,
     })
-    o.open_timer = frame_timer:new(15)
+    o.open_timer = timer:new(15, { type = "frame" })
     o.always_visible_delay_timer = timer:new(0.5)
 
     o.children.background_blur = ctrl_child:new(
@@ -167,6 +171,7 @@ function this:new(args)
 
     o.no_hide_elements = args.no_hide_elements
     o.always_visible = args.always_visible
+    o.close_after_use = args.close_after_use
     o.is_always_visible = frame_cache.memoize(o.is_always_visible)
     return o
 end
@@ -179,6 +184,11 @@ end
 ---@param val boolean
 function this:set_always_visible(val)
     self.always_visible = val
+end
+
+---@param val boolean
+function this:set_close_after_use(val)
+    self.close_after_use = val
 end
 
 ---@return app.GUI020600
@@ -201,7 +211,7 @@ function this:is_always_visible()
         local map_ctrl = s.get("app.GUIManager"):get_MAP3D()
         local flow = map_ctrl._Flow
         if not flow:isOpenRadarMapGUI() then
-            self.always_visible_delay_timer:restart(1)
+            self.always_visible_delay_timer:restart({ timeout = 1 })
             return false
         end
     end
@@ -227,6 +237,16 @@ function this:is_open()
     end
 
     return (is_open or self.open_timer:active()) and m.canOpenStartMenu(true)
+end
+
+---@return boolean
+function this:is_open_no_menu_check()
+    local is_open = self:get_GUI020600()._IsOpen
+    if is_open then
+        self.open_timer:restart()
+    end
+
+    return is_open or self.open_timer:active()
 end
 
 ---@param val number
@@ -266,6 +286,7 @@ function this.get_config()
 
     base.no_hide_elements = false
     base.always_visible = false
+    base.close_after_use = false
     children.background_blur = {
         name_key = "background_blur",
         hide = false,

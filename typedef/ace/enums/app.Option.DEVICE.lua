@@ -1,0 +1,12 @@
+---@meta
+
+---@class (exact) Enum.app.Option.DEVICE : Enum<app.Option.DEVICE>
+---@field ALL app.Option.DEVICE
+---@field GAMEPAD app.Option.DEVICE
+---@field KEYBOARD_MOUSE app.Option.DEVICE
+---@field ["ALL"] app.Option.DEVICE
+---@field ["GAMEPAD"] app.Option.DEVICE
+---@field ["KEYBOARD_MOUSE"] app.Option.DEVICE
+---@field [0] "ALL"
+---@field [1] "GAMEPAD"
+---@field [2] "KEYBOARD_MOUSE"

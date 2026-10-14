@@ -47,7 +47,9 @@
 ---@class app.MissionGuideGUIParts.MissionGuideGUIDef.SmallMissionInfo : via.clr.ManagedObject
 ---@class app.MissionGuideGUIParts.TimePanelData : app.MissionGuideGUIParts.SmallMissionPanelBase
 ---@class app.HunterCharacter.cHunterExtendBase : app.cCharacterExtendBase
----@class app.GUI060010 : app.GUIHudBase
+---@class app.cWeaponGunAmmo : app.cAmmo
+---@class app.Gm100_003 : app.Gm100
+---@class app.Gm100 : app.GimmickBaseApp
 
 ---@class app.ChatManager : ace.GAElement
 ---@field addSystemLog fun(self: app.ChatManager, message: System.String)
@@ -63,7 +65,14 @@
 
 ---@class app.cGUIMapController : via.clr.ManagedObject
 ---@field get_GUIFront fun(self: app.cGUIMapController): app.GUI060000
+---@field get_GUIRadarFront fun(self: app.cGUIMapController): app.GUI060010
 ---@field _Flow app.cGUIMapFlowCtrl
+
+---@class app.GUI060010 : app.GUIHudBase
+---@field get_Radar fun(self: app.GUI060010): app.cGUI060000Radar
+
+---@class app.cGUI060000Radar : ace.cGUIPartsBase
+---@field _PerimeterChangerPanel via.gui.Panel
 
 ---@class app.cGUIHudDisplayManager : via.clr.ManagedObject
 ---@field findDisplayControl fun(self: app.cGUIHudDisplayManager, gui_id: app.GUIID.ID): app.cGUIHudDisplayControl?
@@ -104,6 +113,11 @@
 ---@class app.MissionManager : ace.GAElementBase
 ---@field get_QuestDirector fun(self: app.MissionManager): app.cQuestDirector
 ---@field isFastTravel fun(self: app.MissionManager): System.Boolean
+---@field get_ActiveQuestData fun(self: app.MissionManager): app.cActiveQuestData
+
+---@class app.cActiveQuestData : via.clr.ManagedObject
+---@field getTargetEmId fun(self: app.cActiveQuestData): System.Array<app.EnemyDef.ID>
+---@field getTargetEmDifficulityRank fun(self: app.cActiveQuestData): System.Array<app.QuestDef.EM_REWARD_RANK>
 
 ---@class app.cQuestDirector : via.clr.ManagedObject
 ---@field QuestReturnSkip fun(self: app.cQuestDirector)
@@ -126,6 +140,40 @@
 ---@field get_IsInTent fun(self: app.HunterCharacter): System.Boolean
 ---@field get_IsInLifeArea fun(self: app.HunterCharacter): System.Boolean
 ---@field _HunterContinueFlag ace.cSafeContinueFlagGroup
+---@field get_WeaponHandling fun(self: app.HunterCharacter): app.cHunterWeaponHandlingBase
+---@field get_HunterHealth fun(self: app.HunterCharacter): app.cHunterHealth
+---@field get_HunterStamina fun(self: app.HunterCharacter): app.cHunterStamina
+---@field get_HunterContext fun(self: app.HunterCharacter): app.cHunterContext
+
+---@class app.cHunterContext : app.cGameContext
+---@field get_TentAreaInfo fun(self: app.cHunterContext): app.cHunterTentAreaInfo
+---@field get_AimType fun(self: app.cHunterContext): app.HunterDef.AIM_TYPE
+
+---@class app.cHunterTentAreaInfo : via.clr.ManagedObject
+---@field get_IsInTentArea fun(self: app.cHunterTentAreaInfo): System.Boolean
+
+---@class app.cHunterStamina : via.clr.ManagedObject
+---@field get_Stamina fun(self: app.cHunterStamina): System.Single
+
+---@class app.cHunterHealth : ace.cNonCycleTypeObject
+---@field get_HealthMgr fun(self: app.cHunterHealth): app.cHealthManager
+
+---@class app.cHealthManager : via.clr.ManagedObject
+---@field get_Health fun(self: app.cHealthManager): System.Single
+
+---@class app.cHunterWeaponHandlingBase : via.clr.ManagedObject
+---@field get_Kireaji fun(self: app.cHunterWeaponHandlingBase): app.cWeaponKireaji
+
+---@class app.cWeaponKireaji : via.clr.ManagedObject
+---@field get_CurrentType fun(self: app.cWeaponKireaji): app.WeaponDef.KIREAJI_TYPE
+---@field get_CurrentValue fun(self: app.cWeaponKireaji): System.Int32
+
+---@class app.cHunterWpGunHandling : app.cHunterWeaponHandlingBase
+---@field getCurrentAmmo fun(self: app.cHunterWpGunHandling): app.cWeaponGunAmmo
+---@field get_SelectedShellItem fun(self: app.cHunterWpGunHandling): app.ItemDef.ID
+
+---@class app.cAmmo : via.clr.ManagedObject
+---@field get_LoadedAmmo fun(self: app.cAmmo): System.Int32
 
 ---@class app.mcPorterCommunicator : ace.minicomponent.cOrderedActionBase
 ---@field get_IsRiderWithinRanged fun(self: app.mcPorterCommunicator): System.Boolean
@@ -155,6 +203,13 @@
 
 ---@class app.user_data.OptionData.Data : app.user_data.OptionData.Base
 ---@field get_Items fun(self: app.user_data.OptionData.Data): System.Array<app.user_data.OptionData.Item>
+---@field get_Category fun(self: app.user_data.OptionData.Data): app.Option.CATEGORY
+---@field get_DecimalPlace fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_MinValue fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_MaxValue fun(self: app.user_data.OptionData.Data): System.Int32
+---@field get_ParentOptionID fun(self: app.user_data.OptionData.Data): app.Option.ID
+---@field get_Device fun(self: app.user_data.OptionData.Data): app.Option.DEVICE
+---@field get_Scene fun(self: app.user_data.OptionData.Data): app.Option.SCENE
 
 ---@class app.user_data.OptionData.Base : via.clr.ManagedObject
 ---@field get_MsgTitle fun(self: app.user_data.OptionData.Base): System.Guid
@@ -162,8 +217,19 @@
 ---@class app.cDialogueSubtitleManager.RequestData : via.clr.ManagedObject
 ---@field SubTitleParam app.DialogueDef.SubTitleParam
 
+---@class app.DialogueDef.DialogueSubtitleReqParam : via.clr.ManagedObject
+---@field get_TalkerId fun(self: app.DialogueDef.DialogueSubtitleReqParam): app.NpcDef.ID
+---@field MessageId System.Guid
+---@field TalkerType app.DialogueDef.ACTOR_TYPE
+
 ---@class app.DialogueDef.SubTitleParam : via.clr.ManagedObject
 ---@field DialogueType app.DialogueType.TYPE
+---@field baseParam app.DialogueDef.DialogueSubtitleReqParam
+---@field SubTitleType app.GUI020400.SUBTITLES_CATEGORY
+---@field EndCallBack app.GUI020400.EndCallBack
+
+---@class app.GUI020400.EndCallBack : System.MulticastDelegate
+---@field Invoke fun(self: app.GUI020400.EndCallBack)
 
 ---@class app.GUI020006 : app.GUIHudBase
 ---@field get_IsAllSliderMode fun(self: app.GUI020006): System.Boolean
@@ -409,6 +475,12 @@
 ---@class app.GUI020001PanelBase : ace.cGUIPartsBase
 ---@field get_Params fun(self: app.GUI020001PanelBase): app.GUI020001PanelParams
 ---@field get_BasePanel fun(self: app.GUI020001PanelBase): via.gui.Panel
+---@field setEdgeStatus fun(self: app.GUI020001PanelBase, val: System.Boolean)
+---@field get_IsEdge fun(self: app.GUI020001PanelBase): System.Boolean
+---@field get_PinParts fun(self: app.GUI020001PanelBase): app.cGUIPinParts
+
+---@class app.cGUIPinParts : via.clr.ManagedObject
+---@field setVisible fun(self: app.cGUIPinParts, val: System.Boolean)
 
 ---@class app.ChatDef.EnemyMessage : app.ChatDef.SystemMessage
 ---@field get_EnemyLogType fun(self: app.ChatDef.EnemyMessage): app.ChatDef.ENEMY_LOG_TYPE
@@ -535,6 +607,7 @@
 ---@field setEndTrue fun(self: app.cBowlingUpdater.UpdaterBase)
 
 ---@class app.GUI020600 : app.GUIHudBase
+---@field requestClosePCShortcut fun(self: app.GUI020600)
 ---@field get__CtrlTab_Normal fun(self: app.GUI020600): ace.cGUIInputCtrl_FluentScrollList
 ---@field _IsOpen System.Boolean
 ---@field _Frames System.Array<System.Array<app.GUI020600PartsFrame>>
@@ -574,6 +647,9 @@
 
 ---@class app.DialogueDef.DialogueVoiceParam : via.clr.ManagedObject
 ---@field TalkType app.DialogueType.TYPE
+---@field MessageId System.Guid
+---@field TalkerType app.DialogueDef.ACTOR_TYPE
+---@field get_TalkerId fun(self: app.DialogueDef.DialogueVoiceParam): app.NpcDef.ID
 
 ---@class app.cGUIMapCameraController : via.clr.ManagedObject
 ---@field _GUICameraParam app.cGUICameraParam
@@ -624,3 +700,30 @@
 
 ---@class app.GUI020902 : app.GUIHudBase
 ---@field _PanelPosition via.gui.Panel
+
+---@class app.DialogueManager.cDialogueDataInfo : ace.DialogueManagerBase.cDialogueDataInfoBase
+---@field get_Setting fun(self: app.DialogueManager.cDialogueDataInfo) : app.user_data.DialogueSetting
+
+---@class app.user_data.DialogueSetting : ace.user_data.DialogueSettingBase
+---@field get_BeginNpcId fun(self: app.user_data.DialogueSetting): app.NpcDef.ID
+---@field get_MsgData fun(self: app.user_data.DialogueSetting): app.user_data.DialogueMessage
+
+---@class app.user_data.DialogueMessage : ace.user_data.ExcelUserData
+---@field getValues fun(self: app.user_data.DialogueMessage): System.Array<app.user_data.DialogueMessage.cData>
+
+---@class app.user_data.DialogueMessage.cData : ace.user_data.ExcelUserData.cData
+---@field get_MessageText fun(self: app.user_data.DialogueMessage.cData): System.Guid
+
+---@class app.GameInputManager : ace.GAElementBase
+---@field setPlayerButtonMask fun(self: app.GameInputManager, mask: app.PlayerDef.ButtonMask.USER)
+
+---@class app.GUI030100.DispData : via.clr.ManagedObject
+---@field setup fun(self: app.GUI030100.DispData, some_bool: System.Boolean)
+---@field get_OptionType fun(self: app.GUI030100.DispData): app.Option.TYPE
+---@field getFlags fun(self: app.GUI030100.DispData): app.GUI030100.DISP_DATA_FLAG
+
+---@class app.MasterFieldManager : ace.GAElement
+---@field get_CurrentStage fun(self: app.MasterFieldManager): app.FieldDef.STAGE
+
+---@class app.GimmickManager : ace.GAElementBase
+---@field findGimmick_ID fun(self: app.GimmickManager, id: app.GimmickDef.ID): System.Array<app.GimmickBaseApp>

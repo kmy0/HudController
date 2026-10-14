@@ -16,9 +16,6 @@
 ---@field GUI020018 app.GUI020018?
 
 ---@class (exact) ProgressConfig : HudBaseConfig
----@field options {
---- ELAPSED_TIME_DISP: integer,
---- }
 ---@field children {
 --- clock: ProgressClockConfig,
 --- task: ProgressPartTaskConfig,
@@ -94,11 +91,11 @@ function this:new(args)
         children_sort = function(a, b)
             local t = { "faint", "best_timer", "quest_timer" }
 
-            if util_table.contains(t, a.name_key) then
+            if util_table.contains_any(t, a.name_key) then
                 return false
             end
 
-            if util_table.contains(t, b.name_key) then
+            if util_table.contains_any(t, b.name_key) then
                 return true
             end
             return a.name_key < b.name_key
@@ -173,7 +170,6 @@ function this.get_config()
     local base = hud_base.get_config(e.get("app.GUIHudDef.TYPE").PROGRESS, "PROGRESS") --[[@as ProgressConfig]]
     local children = base.children
     base.hud_type = mod.enum.hud_type.PROGRESS
-    base.options.ELAPSED_TIME_DISP = -1
 
     children.task = part_task.get_config()
     children.name_main = name_main.get_config()

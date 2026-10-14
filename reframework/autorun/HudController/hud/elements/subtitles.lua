@@ -1,11 +1,40 @@
 ---@class Subtitles : HudBase
 ---@field get_config fun(): SubtitlesConfig
 ---@field previous_category string?
+---@field cache_subtitles boolean
+---@field cache_sfx boolean
+---@field cache_sfx_cooldown integer
+---@field subtitles_cache CircularBuffer<CachedSubtitle>
+---@field cache_sfx_pause boolean
+---@field sfx_cache CircularBuffer<CachedSfx>
+---@field game_objects table<string, integer>
+---@field combo_game_object integer
+---@field hide_subtitles table<string, integer>
+---@field hide_npc_id table<string, integer>
+---@field hide_dialogue_type table<string, integer>
+---@field hide_dialogue_actor_type table<string, integer>
+---@field mute_subtitles table<string, integer>
+---@field mute_npc_id table<string, integer>
+---@field mute_dialogue_type table<string, integer>
+---@field mute_dialogue_actor_type table<string, integer>
+---@field mute_sfx table<string, integer>
 ---@field children table<string, HudChild> | {
 --- background: Scale9,
 --- }
 
 ---@class (exact) SubtitlesConfig : HudBaseConfig
+---@field cache_subtitles boolean
+---@field cache_sfx boolean
+---@field cache_sfx_cooldown integer
+---@field hide_subtitles table<string, integer>
+---@field hide_npc_id table<string, integer>
+---@field hide_dialogue_type table<string, integer>
+---@field hide_dialogue_actor_type table<string, integer>
+---@field mute_subtitles table<string, integer>
+---@field mute_npc_id table<string, integer>
+---@field mute_dialogue_type table<string, integer>
+---@field mute_dialogue_actor_type table<string, integer>
+---@field mute_sfx table<string, integer>
 ---@field children table<string, HudChildConfig> | {
 --- background: Scale9Config,
 --- }
@@ -14,6 +43,20 @@
 ---@field group PlayObjectGetterFn[]
 ---@field background PlayObjectGetterFn[]
 
+---@class (exact) CachedSubtitle
+---@field text string
+---@field type string
+---@field npc string
+---@field talker_type string
+---@field cls string
+
+---@class (exact) CachedSfx
+---@field game_object string
+---@field event_id string
+---@field bnk string
+
+local cd = require("HudController.data.combo")
+local circular_buffer = require("HudController.util.misc.circular_buffer")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local frame_cache = require("HudController.util.misc.frame_cache")
@@ -23,6 +66,7 @@ local play_object = require("HudController.hud.play_object.init")
 local s = require("HudController.util.ref.singletons")
 local scale9 = require("HudController.hud.def.scale9")
 local util_mod = require("HudController.util.mod.init")
+local util_table = require("HudController.util.misc.table")
 
 local mod = data.mod
 
@@ -47,7 +91,11 @@ local control_arguments = {
 }
 
 ---@class Subtitles
-local this = {}
+local this = {
+    subtitles_cache = circular_buffer:new(50),
+    sfx_cache = circular_buffer:new(200),
+    game_objects = {},
+}
 ---@diagnostic disable-next-line: inject-field
 this.__index = this
 setmetatable(this, { __index = hud_base })
@@ -58,6 +106,22 @@ function this:new(args)
     local o = hud_base.new(self, args)
     setmetatable(o, self)
     ---@cast o Subtitles
+
+    o.hide_subtitles = args.hide_subtitles
+    o.hide_npc_id = args.hide_npc_id
+    o.hide_dialogue_type = args.hide_dialogue_type
+    o.hide_dialogue_actor_type = args.hide_dialogue_actor_type
+
+    o.mute_subtitles = args.mute_subtitles
+    o.mute_npc_id = args.mute_npc_id
+    o.mute_dialogue_type = args.mute_dialogue_type
+    o.mute_dialogue_actor_type = args.mute_dialogue_actor_type
+    o.mute_sfx = args.mute_sfx
+    o.cache_subtitles = args.cache_subtitles
+    o.cache_sfx = args.cache_sfx
+    o.cache_sfx_pause = false
+    o.cache_sfx_cooldown = args.cache_sfx_cooldown
+    o.combo_game_object = 1
 
     for _, child in pairs(args.children) do
         o.children[child.name_key] = hud_child:new(child, o, function(sel, hudbase, _, ctrl)
@@ -102,6 +166,133 @@ function this:get_scale_panel(hudbase)
     }) --[[@as via.gui.Control]]
 end
 
+---@param val boolean
+function this:set_cache_subtitles(val)
+    self.cache_subtitles = val
+end
+
+---@param val boolean
+function this:set_cache_sfx(val)
+    self.cache_sfx = val
+    this.game_objects = {}
+    cd.combo.sfx_game_object:swap({})
+end
+
+---@param msg CachedSubtitle
+function this:push_back_subtitle(msg)
+    this.subtitles_cache:push_back(msg)
+end
+
+---@param msg CachedSfx
+function this:push_back_sfx(msg)
+    this.sfx_cache:push_back(msg)
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_hide_subtitles(name_key, order)
+    self.hide_subtitles[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_hide_npc_id(name_key, order)
+    self.hide_npc_id[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_hide_dialogue_type(name_key, order)
+    self.hide_dialogue_type[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_hide_dialogue_actor_type(name_key, order)
+    self.hide_dialogue_actor_type[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_mute_subtitles(name_key, order)
+    self.mute_subtitles[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_mute_npc_id(name_key, order)
+    self.mute_npc_id[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_mute_dialogue_type(name_key, order)
+    self.mute_dialogue_type[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_mute_dialogue_actor_type(name_key, order)
+    self.mute_dialogue_actor_type[name_key] = order
+end
+
+---@param name_key string
+---@param order integer?
+function this:set_mute_sfx(name_key, order)
+    self.mute_sfx[name_key] = order
+end
+
+---@param game_object_name string
+function this:add_game_object(game_object_name)
+    if not this.game_objects[game_object_name] then
+        this.game_objects[game_object_name] = util_table.size(this.game_objects)
+        cd.combo.sfx_game_object:swap(
+            util_table.transform_items(this.game_objects, function(_, value)
+                return value
+            end, function(_, key)
+                return key
+            end)
+        )
+    end
+end
+
+---@return boolean
+function this:any_hide()
+    for _, t in pairs({
+        self.hide_subtitles,
+        self.hide_npc_id,
+        self.hide_dialogue_type,
+        self.hide_dialogue_actor_type,
+    }) do
+        if not util_table.empty(t) then
+            return true
+        end
+    end
+
+    return false
+end
+
+---@return boolean
+function this:any_mute()
+    for _, t in pairs({
+        self.mute_subtitles,
+        self.mute_npc_id,
+        self.mute_dialogue_type,
+        self.mute_dialogue_actor_type,
+    }) do
+        if not util_table.empty(t) then
+            return true
+        end
+    end
+
+    return false
+end
+
+---@return boolean
+function this:any_mute_sfx()
+    return not util_table.empty(self.mute_sfx)
+end
+
 ---@param key HudBaseWriteKey
 function this:reset(key)
     if not self.initialized then
@@ -136,6 +327,20 @@ function this.get_config()
         name_key = "background",
         hide = false,
     }
+
+    base.cache_subtitles = false
+    base.cache_sfx = false
+    base.cache_sfx_cooldown = 3
+    base.hide_subtitles = {}
+    base.hide_npc_id = {}
+    base.hide_dialogue_type = {}
+    base.hide_dialogue_actor_type = {}
+
+    base.mute_subtitles = {}
+    base.mute_npc_id = {}
+    base.mute_dialogue_type = {}
+    base.mute_dialogue_actor_type = {}
+    base.mute_sfx = {}
 
     return base
 end

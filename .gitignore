@@ -40,3 +40,4 @@ luac.out
 
 /.vscode/HudController.code-workspace
 bin/
+/.vscode/keybindings.json

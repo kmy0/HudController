@@ -133,9 +133,9 @@ end
 function this:set_timer_visible(timer_visible)
     self.timer_visible = timer_visible
     if self.timer_visible then
-        self.children.timer_state:set_opacity(1.0)
+        self.children.timer_state:set_opacity({ enabled = true, value = 1.0 })
     else
-        self.children.timer_state:set_opacity(nil)
+        self.children.timer_state:set_opacity({ enabled = false, value = 1.0 })
     end
 end
 
@@ -157,9 +157,12 @@ function this.get_config()
     base.always_visible = false
     base.timer_visible = false
 
-    children.mantle_state = { name_key = "__mantle_state", play_state = "" }
-    children.visible_state = { name_key = "__visible_state", play_state = "" }
-    children.timer_state = { name_key = "__timer_state", opacity = 0.0 }
+    children.mantle_state =
+        { name_key = "__mantle_state", play_state = { enabled = false, value = "" } }
+    children.visible_state =
+        { name_key = "__visible_state", play_state = { enabled = false, value = "" } }
+    children.timer_state =
+        { name_key = "__timer_state", opacity = { enabled = false, value = 0.0 } }
 
     return base
 end

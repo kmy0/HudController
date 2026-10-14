@@ -4,11 +4,14 @@
 ---@field sub_window_pos table<string, Vector2f>
 ---@field first_frame boolean
 
+local cd = require("HudController.data.combo")
 local config = require("HudController.config.init")
 local config_set_base = require("HudController.util.imgui.config_set")
 local defaults = require("HudController.hud.defaults.init")
-local gui_util = require("HudController.gui.util")
 local hud_debug = require("HudController.hud.debug.init")
+local mod = require("HudController.data.mod")
+local style = require("HudController.util.imgui.style")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -222,12 +225,12 @@ local function draw_panel_tree(panel, key)
             panel.tree = false
         end
     else
-        imgui.text("   •   " .. name)
+        util_imgui.fake_tree_node(key .. name, name)
         draw_option_window(panel, key)
     end
 
     if panel.draw_name then
-        if not hud_debug.draw_pos(panel, panel.name, 0xFFFFFFFF) then
+        if not hud_debug.draw_pos(panel, panel.name, style.color.text) then
             panel.draw_name = false
         end
     end
@@ -283,20 +286,20 @@ function this.draw()
     local keys
 
     util_imgui.draw_child_window("debug_child_window", function()
-        if imgui.button(gui_util.tr("debug.button_add_profile")) then
+        if imgui.button(util_gui.tr("debug.button_add_profile")) then
             hud_debug.add_all_element_profile()
         end
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("debug.button_write_all")) then
+        if imgui.button(util_gui.tr("debug.button_write_all")) then
             hud_debug.write_all_elements()
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_write_all"))
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("debug.button_clear_default")) then
+        if imgui.button(util_gui.tr("debug.button_clear_default")) then
             defaults.play_object:clear()
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_clear_default"))
@@ -312,36 +315,56 @@ function this.draw()
             string.format("(%s?)", config.lang:tr("misc.text_help"))
         )
 
-        set:checkbox(gui_util.tr("debug.box_show_disabled"), "debug.show_disabled")
-        util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
-        set:checkbox(gui_util.tr("debug.box_disable_cache"), "debug.disable_cache")
-        util_imgui.tooltip(config.lang:tr("debug.tooltip_disable_cache"))
-        set:checkbox(gui_util.tr("debug.box_enable_log"), "debug.is_debug")
+        local drag_width = util_imgui.get_drag_with()
+        local combo_width = util_imgui.get_something_with_any_width(drag_width * 2)
+
+        imgui.set_next_item_width(combo_width)
+        set:combo_filter("##combo_elem_cache", "debug.combo_elem_cache", cd.combo.elem_cache)
+
+        util_imgui.begin_disabled(config_debug.combo_elem_cache ~= mod.enum.elem_cache.FRAME)
+        imgui.set_next_item_width(drag_width)
         imgui.same_line()
-        set:checkbox(gui_util.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
+
+        set:drag_int("##slider_frame", "debug.slider_frame", 0.25, 1, 1024)
+        util_imgui.tooltip(config.lang:tr("debug.slider_frame"))
+
+        imgui.set_next_item_width(drag_width)
+        imgui.same_line()
+
+        set:drag_int("##slider_jitter", "debug.slider_jitter", 0.25, 1, 1024)
+        util_imgui.tooltip(config.lang:tr("debug.slider_jitter"))
+        util_imgui.end_disabled()
+
+        util_imgui.set_label(config.lang:tr("debug.combo_elem_cache"))
+
+        set:checkbox(util_gui.tr("debug.box_show_disabled"), "debug.show_disabled")
+        util_imgui.tooltip(config.lang:tr("debug.tooltip_show_disabled"))
+        set:checkbox(util_gui.tr("debug.box_enable_log"), "debug.is_debug")
+        imgui.same_line()
+        set:checkbox(util_gui.tr("debug.box_filter_known_errors"), "debug.filter_known_errors")
 
         keys = hud_debug.get_keys(not config_debug.show_disabled)
 
-        if imgui.button(gui_util.tr("debug.button_snapshot")) then
+        if imgui.button(util_gui.tr("debug.button_snapshot")) then
             hud_debug.make_snapshot(keys)
         end
         util_imgui.tooltip(config.lang:tr("debug.tooltip_snapshot"))
 
         imgui.same_line()
-        imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
+        util_imgui.begin_disabled(util_table.empty(hud_debug.snapshot))
 
-        set:checkbox(gui_util.tr("debug.box_filter"), "debug.is_filter")
+        set:checkbox(util_gui.tr("debug.box_filter"), "debug.is_filter")
         util_imgui.tooltip(config.lang:tr("debug.tooltip_filter"))
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
-        imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
+        util_imgui.begin_disabled(hud_debug.perf.total ~= hud_debug.perf.completed)
 
-        if imgui.button(gui_util.tr("debug.button_perf_test")) then
+        if imgui.button(util_gui.tr("debug.button_perf_test")) then
             hud_debug.perf_test()
         end
         util_imgui.tooltip(".../reframework/data/HudController/perf_log.txt")
 
-        imgui.end_disabled()
+        util_imgui.end_disabled()
 
         if hud_debug.perf.total ~= hud_debug.perf.completed then
             imgui.same_line()

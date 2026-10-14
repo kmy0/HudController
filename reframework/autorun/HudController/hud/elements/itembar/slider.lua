@@ -266,7 +266,7 @@ function this:new(args, parent)
         return play_object.iter_args(ctrl, control_arguments.cursor)
     end)
     o.children.slider_part = hud_child:new(args.children.slider_part, o, function(_, _, _, ctrl)
-        return util_table.array_merge_t(
+        return util_table.extend(
             { ctrl },
             play_object.iter_args(ctrl, control_arguments.slider_state),
             play_object.iter_args(ctrl, control_arguments.slider_animation)
@@ -340,7 +340,7 @@ function this:_init_slider_appear_open(args)
 
                 if s.play_state then
                     local state = ctrl:get_PlayState()
-                    if util_table.contains({ "FOCUS", "UNFOCUS", "DEFAULT" }, state) then
+                    if util_table.contains_any({ "FOCUS", "UNFOCUS", "DEFAULT" }, state) then
                         ctrl:set_PlayState("SELECT")
                     elseif state == "FOCUS_PLUS_INPUT" then
                         ctrl:set_PlayState("PLUS_INPUT")
@@ -368,7 +368,7 @@ function this:_init_slider_appear_open(args)
 
                 if s.play_state then
                     if
-                        util_table.contains({
+                        util_table.contains_any({
                             "FOCUS",
                             "UNFOCUS",
                             "FOCUS_PLUS_INPUT",
@@ -455,10 +455,14 @@ function this.get_config()
     children.icon_frame = { name_key = "icon_frame", hide = false }
     children.cursor = { name_key = "cursor", hide = false }
     children.slider_part = { name_key = "slider_part", hide = false }
-    children.slider_state = { name_key = "__slider_state", play_state = "" }
-    children.slider_animation = { name_key = "__slider_animation", play_state = "" }
-    children.mantle_state = { name_key = "__mantle_state", play_state = "" }
-    children.cursor_state = { name_key = "__cursor_state", play_state = "" }
+    children.slider_state =
+        { name_key = "__slider_state", play_state = { enabled = false, value = "" } }
+    children.slider_animation =
+        { name_key = "__slider_animation", play_state = { enabled = false, value = "" } }
+    children.mantle_state =
+        { name_key = "__mantle_state", play_state = { enabled = false, value = "" } }
+    children.cursor_state =
+        { name_key = "__cursor_state", play_state = { enabled = false, value = "" } }
 
     return base
 end

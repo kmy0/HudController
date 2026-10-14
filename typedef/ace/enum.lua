@@ -8,6 +8,7 @@
 ---@class via.gui.BlendType : System.Enum
 ---@class via.gui.AlphaChannelType : System.Enum
 ---@class via.gui.PageAlignment : System.Enum
+---@class via.hid.MouseButton : System.Enum
 
 ---@class app.GUIDefApp.DRAW_SEGMENT : via.gui.Segment
 ---@class app.GUIHudDef.TYPE : System.Enum
@@ -60,6 +61,17 @@
 ---@class app.Communication.AUTO_ID : System.Enum
 ---@class app.GUI020600.TYPE : System.Enum
 ---@class app.QuestDef.EM_REWARD_RANK : System.Enum
+---@class app.PlayerDef.ButtonMask.USER : System.Enum
+---@class app.DialogueDef.ACTOR_TYPE : System.Enum
+---@class app.Option.CATEGORY : System.Enum
+---@class app.Option.TYPE : System.Enum
+---@class app.Option.DEVICE : System.Enum
+---@class app.Option.SCENE : System.Enum
+---@class app.GUI030100.DISP_DATA_FLAG : System.Enum
+---@class app.WeaponDef.KIREAJI_TYPE : System.Enum
+---@class app.FieldDef.STAGE : System.Enum
+---@class app.GimmickDef.ID : System.Enum
+---@class app.HunterDef.AIM_TYPE : System.Enum
 
 ---@class ace.GUIDef.BUTTON_SLOT : System.Enum
 ---@class ace.GUIDef.INPUT_DEVICE : System.Enum

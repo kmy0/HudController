@@ -1,31 +1,28 @@
 local ace_em = require("HudController.util.ace.enemy")
 local common = require("HudController.hud.hook.common")
 local e = require("HudController.util.game.enum")
-local hud = require("HudController.hud.init")
 local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 
 local this = {}
 
----@param game_object via.GameObject?
----@return boolean?
-local function is_hide_enemy_access_paint(game_object)
-    if not game_object then
-        return
-    end
+function this.hide_edge_icon_pre(args)
+    local name_access = common.get_elem_t("NameAccess")
+    if name_access and name_access.hide_edge_icon then
+        local pnl_base = sdk.to_managed_object(args[2]) --[[@as app.GUI020001PanelBase]]
+        if pnl_base:get_IsEdge() then
+            local pin_parts = pnl_base:get_PinParts()
+            pin_parts:setVisible(false)
+        end
 
-    local char = ace_em.get_char_base(game_object)
-    if not char then
-        return
+        pnl_base:setEdgeStatus(false)
     end
-
-    return ace_em.is_boss(char) and not ace_em.is_paintballed_char(char)
 end
 
 function this.hide_iteractables_post(_)
     local name_access = common.get_elem_t("NameAccess")
-    local hud_config = common.get_hud()
-    if name_access and (not name_access.hide or hud.get_hud_option("hide_monster_icon")) then
+    if name_access and not name_access.hide then
         local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
         ---@type Vector3f?
         local player_pos
@@ -52,7 +49,18 @@ function this.hide_iteractables_post(_)
                     if name_access.npc_draw_distance > 0 then
                         local game_object = value:get_GameObject()
                         if game_object then
-                            local transform = game_object:get_Transform()
+                            ---@type via.Transform?
+                            local transform
+
+                            -- throws when game object is being destroyed
+                            util_misc.try(function()
+                                transform = game_object:get_Transform()
+                            end)
+
+                            if not transform then
+                                return
+                            end
+
                             local pos = transform:get_Position()
 
                             if not player_pos then
@@ -83,14 +91,6 @@ function this.hide_iteractables_post(_)
                     end
                 elseif
                     cat_name == "ENEMY"
-                    and not name_access.object_category[cat_name]
-                    and hud.get_hud_option("hide_monster_icon")
-                    and is_hide_enemy_access_paint(value:get_GameObject())
-                then
-                    value:clear()
-                    return
-                elseif
-                    cat_name == "ENEMY"
                     and any_enemy
                     and not name_access.object_category[cat_name]
                 then
@@ -117,15 +117,6 @@ function this.hide_iteractables_post(_)
                 if name_access.object_category[cat_name] then
                     value:clear()
                 end
-            end
-        end)
-    elseif hud_config and hud.get_hud_option("hide_monster_icon") then
-        local access_control = util_ref.get_this() --[[@as app.GUIAccessIconControl]]
-        util_game.do_something(access_control:get_AccessIconInfos(), function(_, _, value)
-            local cat = value:get_ObjectCategory()
-            local cat_name = e.get("app.GUIAccessIconControl.OBJECT_CATEGORY")[cat]
-            if cat_name == "ENEMY" and is_hide_enemy_access_paint(value:get_GameObject()) then
-                value:clear()
             end
         end)
     end

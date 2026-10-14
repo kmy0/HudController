@@ -1,0 +1,87 @@
+
+name: Publish to Nexus Mods
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "GitHub release tag (e.g. v1.2.3)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  nexus-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download GitHub Release ZIP
+        id: asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          mkdir -p dist
+
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "HudController-*.zip" \
+            --dir dist
+
+          files=(dist/HudController-*.zip)
+
+          if [ "${#files[@]}" -ne 1 ]; then
+            echo "Expected exactly one HudController ZIP."
+            exit 1
+          fi
+
+          echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Get release version
+        id: meta
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+
+          if [[ ! "$VERSION" =~ ^[a-zA-Z0-9.-]+$ ]]; then
+            echo "Invalid Nexus version: $VERSION"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Get GitHub Release notes
+        id: notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          DELIMITER="$(openssl rand -hex 16)"
+
+          {
+            echo "body<<$DELIMITER"
+            gh release view "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json body --jq .body
+            echo "$DELIMITER"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Nexus Mods
+        uses: Nexus-Mods/upload-action@v1.0.0-beta.10
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ vars.NEXUSMODS_FILE_ID }}
+          mod_id: ${{ vars.NEXUSMODS_MOD_ID }}
+          filename: ${{ steps.asset.outputs.path }}
+          version: ${{ steps.meta.outputs.version }}
+          display_name: "HudController ${{ steps.meta.outputs.version }}"
+          category: main
+          description: "Read mod description and change log"
+          update_mod_version: true
+          changelog: ${{ steps.notes.outputs.body }}

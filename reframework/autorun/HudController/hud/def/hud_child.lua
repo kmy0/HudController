@@ -10,22 +10,27 @@
 ---@field protected _getter_cache via.gui.Control[]
 
 ---@class (exact) HudChildConfig : HudBaseConfig
----@field scale {x:number, y:number}?
----@field offset {x:number, y:number}?
----@field rot number?
----@field opacity number?
----@field segment string?
+---@field scale EnabledVec2?
+---@field offset EnabledVec2?
+---@field segment EnabledString?
+---@field rot EnabledNumber?
+---@field opacity EnabledNumber?
 ---@field hide boolean?
----@field enabled_scale boolean?
----@field enabled_offset boolean?
----@field enabled_rot boolean?
----@field enabled_opacity boolean?
----@field enabled_segment boolean?
+---@field play_state EnabledString?
+---@field color_scale EnabledVec3?
 ---@field key nil
 ---@field hud_id nil
 ---@field hud_type nil
 ---@field hud_sub_type nil
 ---@field gui_thing string? if thing is the only option within child tree node wont be drawn
+---@field profile nil
+---@field current_profile nil
+---@field current_profile_gui nil
+---@field profile_enabled nil
+---@field default_profile nil
+---@field profile_key nil
+---@field override_fade nil
+---@field user_options nil
 
 ---@class (exact) HudChildDefault : HudBaseDefault
 ---@class (excat) HudChildDefaultOverwrite : HudBaseDefaultOverwrite
@@ -41,10 +46,12 @@
 ---@alias HudChildProperty HudBaseProperty
 ---@alias HudChildWriteKey HudBaseWriteKey
 
+local cache = require("HudController.util.misc.cache")
 local config = require("HudController.config.init")
 local frame_cache = require("HudController.util.misc.frame_cache")
 local hud_base = require("HudController.hud.def.hud_base")
 local hud_debug_log = require("HudController.hud.debug.log")
+local mod = require("HudController.data.mod")
 local util_misc = require("HudController.util.misc.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
@@ -67,11 +74,22 @@ function this:new(args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o HudChild
 
-    if not optional_args.no_cache and not config.debug.current.debug.disable_cache then
-        o._ctrl_getter = frame_cache.memoize(
-            o._ctrl_getter,
-            { max_frame = 60, jitter = 120, cache_index = optional_args.cache_index }
-        )
+    local config_debug = config.debug.current.debug
+    if
+        not optional_args.no_cache
+        and config_debug.combo_elem_cache ~= mod.enum.elem_cache.DISABLED
+    then
+        if config_debug.combo_elem_cache == mod.enum.elem_cache.FRAME then
+            o._ctrl_getter = frame_cache.memoize(o._ctrl_getter, {
+                max_frame = config_debug.slider_frame,
+                jitter = config_debug.slider_jitter,
+                key_index = optional_args.cache_index,
+            })
+        elseif config_debug.combo_elem_cache == mod.enum.elem_cache.ONCE then
+            o._ctrl_getter = cache.memoize(o._ctrl_getter, {
+                key_index = optional_args.cache_index,
+            })
+        end
     end
 
     o.ctrl_getter = ctrl_getter or function(_, _, _, ctrl)
@@ -136,7 +154,7 @@ function this:_ctrl_getter(hudbase, gui_id, ctrls)
         end
 
         if type(res) == "table" then
-            util_table.array_merge(ret, res)
+            util_table.extend(ret, res)
         else
             table.insert(ret, res)
         end
@@ -221,7 +239,11 @@ function this:write_child(hudbase, gui_id, ctrl)
     local any = self:any()
     local child_ctrls = {}
     for _, c in pairs(self:_ctrl_getter(hudbase, gui_id, ctrl)) do
-        if not any or (any and self:_write(c)) then
+        -- a node can be in write_nodes purely because a descendant has something to write, not itself.
+        -- in that case any() is false and we skip _write entirely but still pass the ctrl down so children can write to it.
+        -- if any() is true, _write is called and returns false when propagation should stop (e.g. hidden node without hide_write),
+        -- filtering that ctrl out so children won't write to it either.
+        if not any or self:_write(c) then
             table.insert(child_ctrls, c)
         end
     end
@@ -237,17 +259,12 @@ end
 ---@return HudChildConfig
 function this.get_config(name_key)
     return {
-        enabled_offset = false,
-        enabled_rot = false,
-        enabled_scale = false,
-        enabled_opacity = false,
-        enabled_segment = false,
-        segment = "HUD",
+        segment = { enabled = false, value = "HUD" },
         hide = false,
-        scale = { x = 1, y = 1 },
-        offset = { x = 0, y = 0 },
-        rot = 0,
-        opacity = 1,
+        scale = { enabled = false, x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        rot = { enabled = false, value = 0 },
+        opacity = { enabled = false, value = 1 },
         children = {},
         options = {},
         name_key = name_key,

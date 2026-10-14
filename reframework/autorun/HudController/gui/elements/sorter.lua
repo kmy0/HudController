@@ -1,8 +1,8 @@
 local config = require("HudController.config.init")
 local data = require("HudController.data.init")
 local drag_util = require("HudController.gui.drag")
-local gui_util = require("HudController.gui.util")
-local hud = require("HudController.hud.init")
+local op = require("HudController.hud.manager.op.init")
+local util_gui = require("HudController.gui.util")
 local util_imgui = require("HudController.util.imgui.init")
 local util_table = require("HudController.util.misc.table")
 
@@ -57,7 +57,7 @@ function this.draw()
     imgui.indent(2)
 
     util_imgui.draw_child_window("hud_profile_sort_child_window", function()
-        if imgui.button(gui_util.tr("sorter.button_sort")) then
+        if util_imgui.draw_sort_button("hud_profiles_sorter") then
             if reverse_sort then
                 table.sort(hud_names, function(a, b)
                     return a > b
@@ -72,8 +72,8 @@ function this.draw()
 
         imgui.same_line()
 
-        if imgui.button(gui_util.tr("sorter.button_apply")) then
-            hud.operations.sort(hud_names)
+        if imgui.button(util_gui.tr("sorter.button_apply")) then
+            op.hud_profile.sort(hud_names)
             this.close()
             config:save()
         end
@@ -90,7 +90,7 @@ function this.draw()
 
         drag:draw_drag_button(hud_name, hud_name)
         imgui.same_line()
-        util_imgui.dummy_button(hud_name, { -1, 0 })
+        util_imgui.header(hud_name)
 
         drag:check_drag_pos(hud_name)
     end

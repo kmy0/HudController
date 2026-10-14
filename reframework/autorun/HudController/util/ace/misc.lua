@@ -29,6 +29,36 @@ function this.get_kb()
     return s.get("ace.MouseKeyboardManager"):get_MainMouseKeyboard()
 end
 
+---@return via.hid.KeyboardDevice
+function this.get_native_kb()
+    return s.get_native("via.hid.Keyboard"):get_Device()
+end
+
+function this.get_native_mouse()
+    return s.get_native("via.hid.Mouse"):get_Device()
+end
+
+---@param device BindDevice
+---@return BindDevice
+function this.get_last_device(device)
+    local pad = this.get_pad()
+    if pad:get_KeyOn() ~= 0 then
+        return "PAD"
+    end
+
+    local kb = this.get_native_kb()
+    if kb:get_AnyKeyDown() then
+        return "KEYBOARD"
+    end
+
+    local mouse = this.get_native_mouse()
+    if mouse:get_ButtonDown() ~= 0 then
+        return "KEYBOARD"
+    end
+
+    return device
+end
+
 ---@param message string
 function this.send_message(message)
     s.get("app.ChatManager"):addSystemLog(message)
@@ -71,6 +101,8 @@ get_map_component = cache.memoize(get_map_component)
 this.get_hud_manager = cache.memoize(this.get_hud_manager)
 this.get_pad = cache.memoize(this.get_pad)
 this.get_kb = cache.memoize(this.get_kb)
+this.get_native_kb = cache.memoize(this.get_native_kb)
+this.get_native_mouse = cache.memoize(this.get_native_mouse)
 this.get_gui_component = cache.memoize(this.get_gui_component)
 this.is_map_open = frame_cache.memoize(this.is_map_open)
 this.is_item_slider_open = frame_cache.memoize(this.is_item_slider_open)

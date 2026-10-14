@@ -1,10 +1,9 @@
 ---@class (exact) BindListener
 ---@field protected _bind_base BindBase
----@field protected _last_device string
+---@field protected _last_device BindDevice
 
 local ace_misc = require("HudController.util.ace.misc")
 local e = require("HudController.util.game.enum")
-local s = require("HudController.util.ref.singletons")
 local util_misc = require("HudController.util.misc.util")
 local util_table = require("HudController.util.misc.table")
 
@@ -34,7 +33,8 @@ function this:bind_base_ctor(type)
         name = "",
         name_display = "",
         device = type,
-        bound_value = -1,
+        trigger_repeat = false,
+        invalid = false,
     }
 end
 
@@ -81,12 +81,12 @@ function this:listen_keyboard()
 
     for i = 1, #sorted do
         local index = sorted[i]
-        local name = enum[index]
+        local name = e.get("ace.ACE_MKB_KEY.INDEX")[index]
 
         if
-            not name:match("CLICK")
+            name ~= "L_CLICK"
             and kb:isOn(index)
-            and not util_table.contains(self._bind_base.keys, index)
+            and not util_table.contains_any(self._bind_base.keys, index)
         then
             table.insert(self._bind_base.keys, index)
             table.insert(btn_names, enum[index])
@@ -98,6 +98,15 @@ function this:listen_keyboard()
     end)
     self:_concat_key_names(btn_names)
     return self._bind_base
+end
+
+function this:undo()
+    table.remove(self._bind_base.keys, #self._bind_base.keys)
+    if util_table.empty(self._bind_base.keys) then
+        self._bind_base.name_display = ""
+    else
+        self._bind_base.name_display = self._bind_base.name_display:gsub("%s+%+%s*[^+]*$", "")
+    end
 end
 
 ---@return BindBase
@@ -117,7 +126,7 @@ function this:listen_pad()
     local btn_names = {}
     local enum = e.get("ace.ACE_PAD_KEY.BITS")
     for _, bit in pairs(util_misc.extract_bits(btn)) do
-        if enum[bit] and not util_table.contains(self._bind_base.keys, bit) then
+        if enum[bit] and not util_table.contains_any(self._bind_base.keys, bit) then
             table.insert(btn_names, enum[bit])
             table.insert(self._bind_base.keys, bit)
         end
@@ -132,8 +141,7 @@ end
 
 ---@return BindBase
 function this:listen()
-    local device = e.get("ace.GUIDef.INPUT_DEVICE")[s.get("app.GUIManager")
-        :get_LastInputDeviceIgnoreMouseMove()]
+    local device = ace_misc.get_last_device(self._last_device)
     if device == "KEYBOARD" or device == "PAD" then
         self._last_device = device
     end

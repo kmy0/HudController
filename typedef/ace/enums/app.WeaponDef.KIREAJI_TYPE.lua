@@ -1,0 +1,24 @@
+---@meta
+
+---@class (exact) Enum.app.WeaponDef.KIREAJI_TYPE : Enum<app.WeaponDef.KIREAJI_TYPE>
+---@field RED app.WeaponDef.KIREAJI_TYPE
+---@field ORANGE app.WeaponDef.KIREAJI_TYPE
+---@field YELLOW app.WeaponDef.KIREAJI_TYPE
+---@field GREEN app.WeaponDef.KIREAJI_TYPE
+---@field BLUE app.WeaponDef.KIREAJI_TYPE
+---@field WHITE app.WeaponDef.KIREAJI_TYPE
+---@field PURPLE app.WeaponDef.KIREAJI_TYPE
+---@field ["RED"] app.WeaponDef.KIREAJI_TYPE
+---@field ["ORANGE"] app.WeaponDef.KIREAJI_TYPE
+---@field ["YELLOW"] app.WeaponDef.KIREAJI_TYPE
+---@field ["GREEN"] app.WeaponDef.KIREAJI_TYPE
+---@field ["BLUE"] app.WeaponDef.KIREAJI_TYPE
+---@field ["WHITE"] app.WeaponDef.KIREAJI_TYPE
+---@field ["PURPLE"] app.WeaponDef.KIREAJI_TYPE
+---@field [0] "RED"
+---@field [1] "ORANGE"
+---@field [2] "YELLOW"
+---@field [3] "GREEN"
+---@field [4] "BLUE"
+---@field [5] "WHITE"
+---@field [6] "PURPLE"

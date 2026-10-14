@@ -51,7 +51,7 @@ local control_arguments = {
 ---@return SlingerReticleSlinger
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         hide_slinger_empty = true,
     })
     setmetatable(o, self)
@@ -115,7 +115,9 @@ end
 
 ---@param hide boolean
 function this:set_hide_slinger_empty(hide)
-    self:reset("hide_slinger_empty")
+    if self.write_properties["hide_slinger_empty"] then
+        self:reset("hide_slinger_empty")
+    end
 
     if self.hide_slinger_empty and not hide then
         self:mark_idle("hide_slinger_empty")

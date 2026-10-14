@@ -18,19 +18,22 @@
 ---@field root HudBase
 ---@field children table<string, HudChild>
 ---@field write_nodes table<HudBase, integer>
----@field write_properies table<HudBaseProperty, boolean>
+---@field write_properties table<HudBaseProperty, boolean>
 ---@field options table<string, integer>
+---@field overridden_options table<string, any>
 ---@field initialized boolean
 ---@field properties HudBaseProperties
 ---@field gui_ignore boolean? -- if true, do not draw in imgui window
----@field gui_header_children boolean? -- if true, draw chidlren as a header instead of a tree
+---@field gui_header_children boolean? -- if true, draw children as a header instead of a tree
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)?
 ---@field apply_option fun(option_name: string, option_value: integer)
 ---@field get_config fun(hud_id: app.GUIHudDef.TYPE, name_key: string): HudBaseConfig
+---@field get_boolean_config_keys fun(self: HudBase?): string[]
 ---@field restore_all_force_invis fun()
----@field hide_timer FrameTimer
----@field disable_fade boolean?
----@field disable_fade_opacity boolean?
+---@field hide_timer Timer
+---@field _pos_last_frame Vector3f?
+---@field _request_pos boolean?
+---@field _write_children_cache HudChild[]
 
 ---@class (exact) HudBaseConfig
 ---@field name_key string
@@ -38,25 +41,71 @@
 ---@field hud_id app.GUIHudDef.TYPE
 ---@field hud_type HudType
 ---@field hud_sub_type HudSubType
----@field scale {x:number, y:number}
----@field offset {x:number, y:number}
----@field segment string
----@field rot number
----@field opacity number
+---@field scale EnabledVec2?
+---@field offset EnabledVec2?
+---@field segment EnabledString?
+---@field rot EnabledNumber?
+---@field opacity EnabledNumber?
 ---@field hide boolean
----@field play_state string?
----@field color_scale {x:number, y:number, z:number}?
----@field enabled_scale boolean
----@field enabled_offset boolean
----@field enabled_rot boolean
----@field enabled_opacity boolean
----@field enabled_segment boolean
----@field enabled_play_state boolean?
----@field enabled_color_scale boolean?
+---@field play_state EnabledString?
+---@field color_scale EnabledVec3?
 ---@field options table<string, integer>?
 ---@field children table<string, HudChildConfig>?
----@field disable_fade boolean?
 ---@field disable_fade_opacity boolean?
+---@field override_fade EnabledFadeOverride
+---@field profile {[HudProfileKey]: HudBaseConfigProfile}
+---@field current_profile ElemProfileIndex
+---@field current_profile_gui ElemProfileIndex
+---@field default_profile ElemProfileIndex
+---@field profile_enabled boolean
+---@field profile_key integer
+---@field user_options table<string, any>
+
+---@class (exact) EnabledVec2
+---@field enabled boolean
+---@field x number
+---@field y number
+
+---@class (exact) EnabledVec3
+---@field enabled boolean
+---@field x number
+---@field y number
+---@field z number
+
+---@class (exact) EnabledBox
+---@field enabled boolean
+---@field x number
+---@field y number
+---@field w number
+---@field h number
+
+---@class (exact) EnabledFadeOverride
+---@field enabled boolean
+---@field fade_in number
+---@field fade_out number
+
+---@class (exact) EnabledNumber
+---@field enabled boolean
+---@field value number
+
+---@class (exact) EnabledInteger
+---@field enabled boolean
+---@field value integer
+
+---@class (exact) EnabledString
+---@field enabled boolean
+---@field value string
+
+---@class (exact) HudBaseConfigProfile : HudBaseConfig
+---@field profile nil
+---@field current_profile nil
+---@field current_profile_gui nil
+---@field default_profile nil
+
+---@class (exact) HudBaseConfigProfileForShow
+---@field key integer
+---@field name string
+---@field protected boolean
 
 ---@class (exact) HudBaseDefault
 ---@field scale {x:number, y:number}
@@ -103,9 +152,10 @@
 ---@class (exact) HudBaseOptionalArgs
 ---@field default_overwrite HudBaseDefaultOverwrite?
 ---@field gui_ignore boolean? by_default, false - if true, do not draw in imgui window
----@field gui_header_children boolean? by_default, false - if true, draw chidlren as a header instead of a tree
+---@field gui_header_children boolean? by_default, false - if true, draw children as a header instead of a tree
 ---@field children_sort (fun(a: HudChild, b: HudChild): boolean)? children iteration order
 
+---@alias HudProfileKey string
 ---@alias HudBaseProperty "scale" | "offset" | "rot" | "opacity" | "hide" | "play_state" | "color_scale" | "segment"
 ---@alias HudBaseWriteKey HudBaseProperty | "dummy"?
 
@@ -118,15 +168,16 @@ local data = require("HudController.data.init")
 local defaults = require("HudController.hud.defaults.init")
 local e = require("HudController.util.game.enum")
 local fade_manager = require("HudController.hud.fade.init")
-local frame_timer = require("HudController.util.misc.frame_timer")
 local hud_debug_log = require("HudController.hud.debug.log")
 local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
+local timer = require("HudController.util.misc.timer")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
 local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 local util_table = require("HudController.util.misc.table")
+
 ---@module "HudController.hud.init"
 local hud = util_misc.lazy_require("HudController.hud.init")
 
@@ -153,8 +204,9 @@ function this:new(args, parent, optional_args)
         parent = parent,
         children = {},
         options = {},
+        overridden_options = {},
         write_nodes = {},
-        write_properies = {},
+        write_properties = {},
         properties = {
             scale = true,
             offset = true,
@@ -170,42 +222,41 @@ function this:new(args, parent, optional_args)
         gui_ignore = optional_args.gui_ignore,
         gui_header_children = optional_args.gui_header_children,
         children_sort = optional_args.children_sort,
-        hide_timer = frame_timer:new(15),
-        disable_fade = args.disable_fade,
-        disable_fade_opacity = args.disable_fade_opacity,
+        hide_timer = timer:new(15, { type = "frame" }),
+        _write_children_cache = {},
     }
     setmetatable(o, self)
     ---@cast o HudBase
 
-    o._get_component = cache.memoize(o._get_component, nil, { key_index = 2 })
+    o._get_component = cache.memoize(o._get_component, { key_index = 2 })
     o.root = o:get_root()
 
     o:set_hide(args.hide)
-    if args.enabled_scale then
+    if args.scale and args.scale.enabled then
         o:set_scale(args.scale)
     end
 
-    if args.enabled_offset then
+    if args.offset and args.offset.enabled then
         o:set_offset(args.offset)
     end
 
-    if args.enabled_rot then
+    if args.rot and args.rot.enabled then
         o:set_rot(args.rot)
     end
 
-    if args.enabled_opacity then
+    if args.opacity and args.opacity.enabled then
         o:set_opacity(args.opacity)
     end
 
-    if args.enabled_play_state then
+    if args.play_state and args.play_state.enabled then
         o:set_play_state(args.play_state)
     end
 
-    if args.enabled_color_scale then
+    if args.color_scale and args.color_scale.enabled then
         o:set_color_scale(args.color_scale)
     end
 
-    if args.enabled_segment then
+    if args.segment and args.segment.enabled then
         o:set_segment(args.segment)
     end
 
@@ -235,65 +286,65 @@ function this:set_option(option_name, option_value)
     this.apply_option(option_name, option_value)
 end
 
----@param scale {x:number, y:number, z:number}?
+---@param scale EnabledVec3?
 function this:set_color_scale(scale)
-    if scale then
+    if scale and scale.enabled then
         self.color_scale = util_ref.value_type("via.Float4")
         self.color_scale.x = scale.x
         self.color_scale.y = scale.y
         self.color_scale.z = scale.z
         self:mark_write("color_scale")
-    else
+    elseif self.write_properties["color_scale"] then
         self:reset("color_scale")
-        self.color_scale = scale
+        self.color_scale = nil
         self:mark_idle("color_scale")
     end
 end
 
----@param scale {x:number, y:number}?
+---@param scale EnabledVec2?
 function this:set_scale(scale)
-    if scale then
+    if scale and scale.enabled then
         self.scale = Vector3f.new(scale.x, scale.y, 0)
         self:mark_write("scale")
-    else
+    elseif self.write_properties["scale"] then
         self:reset("scale")
-        self.scale = scale
+        self.scale = nil
         self:mark_idle("scale")
     end
 end
 
----@param segment string?
+---@param segment EnabledString?
 function this:set_segment(segment)
-    if segment then
-        self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment]
+    if segment and segment.enabled then
+        self.segment = e.get("app.GUIDefApp.DRAW_SEGMENT")[segment.value]
         self:mark_write("segment")
-    else
+    elseif self.write_properties["segment"] then
         self:reset("segment")
-        self.segment = segment
+        self.segment = nil
         self:mark_idle("segment")
     end
 end
 
----@param offset {x:number, y:number}?
+---@param offset EnabledVec2?
 function this:set_offset(offset)
-    if offset then
+    if offset and offset.enabled then
         self:mark_write("offset")
         self.offset = Vector3f.new(offset.x, offset.y, 0)
-    else
+    elseif self.write_properties["offset"] then
         self:reset("offset")
-        self.offset = offset
+        self.offset = nil
         self:mark_idle("offset")
     end
 end
 
----@param rot number?
+---@param rot EnabledNumber?
 function this:set_rot(rot)
-    if rot then
+    if rot and rot.enabled then
         self:mark_write("rot")
-        self.rot = Vector3f.new(0, 0, rot)
-    else
+        self.rot = Vector3f.new(0, 0, rot.value)
+    elseif self.write_properties["rot"] then
         self:reset("rot")
-        self.rot = rot
+        self.rot = nil
         self:mark_idle("rot")
     end
 end
@@ -301,7 +352,10 @@ end
 ---@param hide boolean
 function this:set_hide(hide)
     self.hide_changed = hide ~= self.hide
-    self:reset("hide")
+
+    if self.hide_changed then
+        self:reset("hide")
+    end
 
     if self.hide and not hide then
         self:mark_idle("hide")
@@ -311,38 +365,28 @@ function this:set_hide(hide)
     self.hide = hide
 end
 
----@param opacity number?
+---@param opacity EnabledNumber?
 function this:set_opacity(opacity)
-    if opacity then
+    if opacity and opacity.enabled then
         self:mark_write("opacity")
-        self.opacity = opacity
-    else
+        self.opacity = opacity.value
+    elseif self.write_properties["opacity"] then
         self:reset("opacity")
-        self.opacity = opacity
+        self.opacity = nil
         self:mark_idle("opacity")
     end
 end
 
----@param play_state string?
+---@param play_state EnabledString?
 function this:set_play_state(play_state)
-    if play_state then
+    if play_state and play_state.enabled then
         self:mark_write("play_state")
-        self.play_state = play_state
-    else
+        self.play_state = play_state.value
+    elseif self.write_properties["play_state"] then
         self:reset("play_state")
-        self.play_state = play_state
+        self.play_state = nil
         self:mark_idle("play_state")
     end
-end
-
----@param val boolean
-function this:set_disable_fade(val)
-    self.disable_fade = val
-end
-
----@param val boolean
-function this:set_disable_fade_opacity(val)
-    self.disable_fade_opacity = val
 end
 
 ---@return string
@@ -352,7 +396,7 @@ function this:whoami()
 
     while parent do
         table.insert(ret, 1, parent.name_key)
-        parent = parent.parent
+        parent = parent.parent --[[@as HudBase]]
     end
 
     return table.concat(ret, ".")
@@ -409,21 +453,21 @@ end
 
 ---@param key HudBaseProperty
 function this:mark_write(key)
-    if self.write_properies[key] then
+    if self.write_properties[key] then
         return
     end
 
-    self.write_properies[key] = true
+    self.write_properties[key] = true
     self:_mark_write()
 end
 
 ---@param key HudBaseProperty
 function this:mark_idle(key)
-    if not self.write_properies[key] then
+    if not self.write_properties[key] then
         return
     end
 
-    self.write_properies[key] = nil
+    self.write_properties[key] = nil
     self:_mark_idle()
 end
 
@@ -433,6 +477,7 @@ function this:_mark_write()
         return
     end
 
+    self.parent._write_children_cache = nil
     if self.parent.write_nodes[self] then
         self.parent.write_nodes[self] = self.parent.write_nodes[self] + 1
     else
@@ -448,6 +493,7 @@ function this:_mark_idle()
         return
     end
 
+    self.parent._write_children_cache = nil
     if self.parent.write_nodes[self] then
         self.parent.write_nodes[self] = self.parent.write_nodes[self] - 1
     end
@@ -525,9 +571,14 @@ function this:change_visibility(ctrl, visible, hud_display)
             local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
 
             if root_window then
+                local guiid = util_mod.get_gui_id(ctrl)
+
                 root_window:set_ForceInvisible(true)
                 self.hide_timer:restart()
-                call_queue.queue_func(self.hud_id, self:_make_restore_visibility_fn(root_window))
+                call_queue.queue_func_guiid(
+                    guiid,
+                    self:_make_restore_visibility_fn(guiid, root_window, nil)
+                )
 
                 if self.name_key == "MINIMAP" then
                     local GUI060010 = util_mod.get_gui_cls("app.GUI060010")
@@ -535,9 +586,9 @@ function this:change_visibility(ctrl, visible, hud_display)
 
                     if GUI060010_root then
                         GUI060010_root:set_ForceInvisible(true)
-                        call_queue.queue_func(
-                            self.hud_id,
-                            self:_make_restore_visibility_fn(root_window, GUI060010_root)
+                        call_queue.queue_func_guiid(
+                            guiid,
+                            self:_make_restore_visibility_fn(guiid, root_window, GUI060010_root)
                         )
                     end
                 end
@@ -597,7 +648,7 @@ function this:get_root()
     local parent = self.parent
     local ret = parent
     while parent do
-        parent = parent.parent
+        parent = parent.parent --[[@as HudBase?]]
         if parent then
             ret = parent
         end
@@ -613,17 +664,12 @@ end
 
 ---@return boolean
 function this:any()
-    return util_table.any(self.properties, function(key, _)
-        if self[key] then
-            return true
-        end
-        return false
-    end)
+    return self._request_pos or next(self.write_properties) ~= nil
 end
 
 ---@return boolean
 function this:any_gui()
-    return self:any()
+    return next(self.write_properties) ~= nil
 end
 
 ---@return HudBaseChangedProperties
@@ -640,11 +686,16 @@ end
 
 ---@return HudChild[]
 function this:get_write_children()
-    local keys = util_table.keys(self.write_nodes)
-    if self.children_sort then
-        return util_table.sort(keys, self.children_sort)
+    if self._write_children_cache then
+        return self._write_children_cache
     end
-    return keys
+
+    self._write_children_cache = util_table.keys(self.write_nodes)
+    if self.children_sort then
+        table.sort(self._write_children_cache, self.children_sort)
+    end
+
+    return self._write_children_cache
 end
 
 ---@param key HudBaseWriteKey
@@ -689,7 +740,7 @@ end
 function this:reset_ctrl(ctrl, key)
     local default = play_object_defaults:get(ctrl)
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {})
+        default = util_table.merge(default, self.default_overwrite or {})
     else
         ---@diagnostic disable-next-line: cast-local-type
         default = self.default_overwrite or {} --[[@as HudBaseDefaultOverwrite]]
@@ -811,6 +862,12 @@ function this:reset_play_states(child_to_play_state)
     end
 end
 
+---@return Vector3f?
+function this:get_global_pos()
+    self._request_pos = true
+    return self._pos_last_frame
+end
+
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
@@ -819,7 +876,7 @@ function this:_write(ctrl)
 
     if self.hide and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:change_visibility(ctrl, not self.hide)
-        if not self.hide_write then
+        if not self.hide_write and not self._request_pos then
             return false
         end
     end
@@ -854,6 +911,12 @@ function this:_write(ctrl)
         ctrl:set_Segment(self.segment)
     end
 
+    if self._request_pos then
+        local pos = ctrl:get_GlobalPosition()
+        self._pos_last_frame = m.getGUIscreenPos(pos)
+        self._request_pos = false
+    end
+
     return true
 end
 
@@ -867,17 +930,21 @@ function this:_set_opacity(ctrl, val)
 end
 
 ---@protected
+---@param guiid app.GUIID.ID
 ---@param root_window via.gui.Control
 ---@param ctrl via.gui.Control?
-function this:_make_restore_visibility_fn(root_window, ctrl)
+---@param finished_fn (fun(): boolean)?
+function this:_make_restore_visibility_fn(guiid, root_window, ctrl, finished_fn)
     local function ret()
-        if
+        local finished = (
             root_window:get_PlayFrame() == root_window:get_StateFinishFrame()
             or self.hide_timer:finished()
-        then
+        ) and (finished_fn and finished_fn() or not finished_fn)
+
+        if finished then
             (ctrl and ctrl or root_window):set_ForceInvisible(false)
         else
-            call_queue.queue_func_next(self.hud_id, ret)
+            call_queue.queue_func_next_guiid(guiid, ret)
         end
     end
 
@@ -924,17 +991,48 @@ function this:do_something_to_children(something)
     end
 end
 
----@return HudBaseConfig
+---@return HudBaseConfigProfile
 function this:get_current_config()
-    local current_hud = hud.get_current() --[[@as HudProfileConfig]]
+    local current_hud = hud.get_current() --[[@as ModProfileConfig]]
     local keys = { self.name_key }
-    local parent = self.parent
 
+    local current_element = current_hud.elements[self.root.name_key]
+    if current_element.current_profile ~= mod.enum.elem_profile.DEFAULT then
+        keys = util_table.extend(keys, { "profile", tostring(current_element.current_profile) })
+    end
+
+    local parent = self.parent
     while parent do
         util_table.insert_front(keys, parent.name_key, "children")
         parent = parent.parent --[[@as HudBase]]
     end
-    return util_table.get_by_key(current_hud.elements, table.concat(keys, "."))
+    return util_table.get_by_path(current_hud.elements, table.concat(keys, "."))
+end
+
+---@return HudBaseConfig
+function this:get_root_config()
+    local current_hud = hud.get_current() --[[@as ModProfileConfig]]
+    return current_hud.elements[self.name_key]
+end
+
+---@return HudProfileKey
+function this:get_profile_key()
+    local current_config = self:get_root_config()
+    return tostring(current_config.current_profile)
+end
+
+---@param _ HudBase?
+---@return string[]
+function this.get_boolean_config_keys(_)
+    return {
+        "scale",
+        "offset",
+        "rot",
+        "opacity",
+        "play_state",
+        "segment",
+        -- "color_scale", -- not exposed
+    }
 end
 
 function this.restore_all_force_invis()
@@ -959,20 +1057,17 @@ end
 ---@param name_key string
 ---@return HudBaseConfig
 function this.get_config(hud_id, name_key)
+    ---@type HudBaseConfig
     return {
-        enabled_offset = false,
-        enabled_rot = false,
-        enabled_scale = false,
-        enabled_opacity = false,
-        enabled_segment = false,
         disable_fade = false,
         disable_fade_opacity = false,
-        segment = "HUD",
+        override_fade = { enabled = false, fade_in = 0, fade_out = 0 },
+        segment = { enabled = false, value = "HUD" },
         hide = false,
-        scale = { x = 1, y = 1 },
-        offset = { x = 0, y = 0 },
-        rot = 0,
-        opacity = 1,
+        scale = { enabled = false, x = 1, y = 1 },
+        offset = { enabled = false, x = 0, y = 0 },
+        rot = { enabled = false, value = 0 },
+        opacity = { enabled = false, value = 1 },
         children = {},
         options = {},
         hud_id = hud_id,
@@ -980,6 +1075,13 @@ function this.get_config(hud_id, name_key)
         key = -1,
         hud_type = mod.enum.hud_type.BASE,
         hud_sub_type = mod.enum.hud_sub_type.BASE,
+        profile = {},
+        current_profile = mod.enum.elem_profile.DEFAULT,
+        current_profile_gui = mod.enum.elem_profile.DEFAULT,
+        profile_enabled = true,
+        default_profile = mod.enum.elem_profile.DEFAULT,
+        profile_key = mod.enum.elem_profile.DEFAULT,
+        user_options = {},
     }
 end
 

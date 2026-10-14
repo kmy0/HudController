@@ -170,10 +170,12 @@ function this.get_char_base(game_object)
     return ret
 end
 
-this.get_char_base = cache.memoize(this.get_char_base, function(cached_value)
-    ---@cast cached_value app.EnemyCharacter
-    return cached_value:get_Valid()
-end)
+this.get_char_base = cache.memoize(this.get_char_base, {
+    predicate = function(cached_value)
+        ---@cast cached_value app.EnemyCharacter
+        return cached_value:get_Valid()
+    end,
+})
 this.get_ctx = cache.memoize(this.get_ctx)
 this.is_boss = cache.memoize(this.is_boss)
 this.get_flags = cache.memoize(this.get_flags)

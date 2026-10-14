@@ -12,12 +12,9 @@
 ---@field properties ProgressPartBaseProperties
 
 ---@class (exact) ProgressPartBaseConfig : HudChildConfig
----@field offset_x number?
----@field enabled_offset_x boolean?
----@field clock_offset_x number?
----@field enabled_clock_offset_x boolean?
----@field enabled_num_offset_x boolean?
----@field num_offset_x number?
+---@field offset_x EnabledNumber?
+---@field clock_offset_x EnabledNumber?
+---@field num_offset_x EnabledNumber?
 ---@field hide nil
 
 ---@class (exact) ProgressPartBaseDefault : HudChildDefault
@@ -60,7 +57,7 @@ setmetatable(this, { __index = hud_child })
 ---@return ProgressPartBase
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = hud_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         offset_x = true,
         clock_offset_x = true,
         num_offset_x = true,
@@ -68,69 +65,69 @@ function this:new(args, parent, ctrl_getter, optional_args)
     setmetatable(o, self)
     ---@cast o ProgressPartBase
 
-    if args.enabled_offset_x then
+    if args.offset_x and args.offset_x.enabled then
         o:set_offset_x(args.offset_x)
     end
 
-    if args.enabled_clock_offset_x then
+    if args.clock_offset_x and args.clock_offset_x.enabled then
         o:set_clock_offset_x(args.clock_offset_x)
     end
 
-    if args.enabled_num_offset_x then
+    if args.num_offset_x and args.num_offset_x.enabled then
         o:set_num_offset_x(args.num_offset_x)
     end
 
     return o
 end
 
----@param offset_x number?
+---@param offset_x EnabledNumber?
 function this:set_offset_x(offset_x)
-    if offset_x then
+    if offset_x and offset_x.enabled then
         self:mark_write("offset_x")
-        self.offset_x = offset_x
-    else
+        self.offset_x = offset_x.value
+    elseif self.write_properties["offset_x"] then
         self:reset("offset")
-        self.offset_x = offset_x
+        self.offset_x = nil
         self.offset = nil
         self:mark_idle("offset_x")
     end
 end
 
----@param clock_offset_x number?
+---@param clock_offset_x EnabledNumber?
 function this:set_clock_offset_x(clock_offset_x)
-    if clock_offset_x then
+    if clock_offset_x and clock_offset_x.enabled then
         self:mark_write("clock_offset_x")
-        self.clock_offset_x = clock_offset_x
-    else
+        self.clock_offset_x = clock_offset_x.value
+    elseif self.write_properties["clock_offset_x"] then
         self:reset("offset")
-        self.clock_offset_x = clock_offset_x
+        self.clock_offset_x = nil
         self.offset = nil
         self:mark_idle("clock_offset_x")
     end
 end
 
----@param num_offset_x number?
+---@param num_offset_x EnabledNumber?
 function this:set_num_offset_x(num_offset_x)
-    if num_offset_x then
+    if num_offset_x and num_offset_x.enabled then
         self:mark_write("num_offset_x")
-        self.num_offset_x = num_offset_x
-    else
+        self.num_offset_x = num_offset_x.value
+    elseif self.write_properties["num_offset_x"] then
         self:reset("offset")
-        self.num_offset_x = num_offset_x
+        self.num_offset_x = nil
         self.offset = nil
         self:mark_idle("num_offset_x")
     end
 end
 
----@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
-function this:_write(ctrl)
+function this:_prepare_offset(ctrl)
     if not ctrl:get_ActualVisible() then
         return false
     end
 
-    if not self:get_current_config().enabled_offset then
+    local offset = self:get_current_config().offset
+    if not offset or not offset.enabled then
         if self.offset_x then
             local vec = ctrl:get_Position()
             vec.x = self.offset_x
@@ -152,6 +149,17 @@ function this:_write(ctrl)
         end
     end
 
+    return true
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return boolean
+function this:_write(ctrl)
+    if not self:_prepare_offset(ctrl) then
+        return false
+    end
+
     return hud_child._write(self, ctrl)
 end
 
@@ -169,17 +177,30 @@ function this:any_gui()
     end)
 end
 
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "enabled_offset_x",
+        "enabled_num_offset_x",
+        "enabled_clock_offset_x",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(hud_child.get_boolean_config_keys(self), t)
+end
+
 ---@param name_key string
 ---@return ProgressPartBaseConfig
 function this.get_config(name_key)
     return {
         name_key = name_key,
-        enabled_offset_x = false,
-        offset_x = 0,
-        enabled_clock_offset_x = false,
-        clock_offset_x = 0,
-        enabled_scale = false,
-        scale = { x = 1, y = 1 },
+        offset_x = { enabled = false, value = 0 },
+        clock_offset_x = { enabled = false, value = 0 },
+        scale = { enabled = false, x = 1, y = 1 },
         children = {},
         hud_sub_type = mod.enum.hud_sub_type.PROGRESS_PART,
     }

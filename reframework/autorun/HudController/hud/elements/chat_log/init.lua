@@ -194,8 +194,7 @@ function this.get_config()
     children.keybind = { name_key = "keybind", hide = false }
     children.button_guide = {
         name_key = "button_guide",
-        enabled_offset = false,
-        offset = { x = 0, y = 0 },
+        offset = { enabled = false, x = 0, y = 0 },
     }
 
     return base

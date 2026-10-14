@@ -15,9 +15,7 @@
 ---@field option_default_path string
 ---@field default_config_path string
 ---
----@field grid_size integer
----@field porter_timeout number
----@field handler_timeout number
+---@field max_profile integer
 
 local config_base = require("HudController.util.misc.config_base")
 local lang = require("HudController.config.lang")
@@ -41,9 +39,7 @@ this.default_config_path = config_path
 this.hud_default_path = util_misc.join_paths(this.name, "default", "hud.json")
 this.option_default_path = util_misc.join_paths(this.name, "default", "option.json")
 
-this.grid_size = 160
-this.porter_timeout = 3
-this.handler_timeout = 5
+this.max_profile = 64
 
 this.gui = config_base:new(
     require("HudController.config.defaults.gui"),
@@ -71,7 +67,7 @@ function this:load()
     local current_version
     if loaded_config then
         current_version = loaded_config.version
-        self.current = util_table.merge_t(self.default, loaded_config)
+        self.current = util_table.merge(self.default, loaded_config)
     else
         current_version = self.commit
         self.current = util_table.deep_copy(self.default)
@@ -93,10 +89,13 @@ function this:get_backup_path()
         self.name,
         "backups",
         string.format(
-            "%s_backup_v%s_%s",
-            os.time(),
+            "%s.v%s.%s.backup.config.json",
+            util_misc.split_string(
+                util_misc.split_string(util_misc.get_file_name(self.path, false), "_")[1],
+                "."
+            )[1],
             self.current.version,
-            util_misc.get_file_name(self.path)
+            util_misc.to_base36(os.time())
         )
     )
 end

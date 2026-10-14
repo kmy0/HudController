@@ -1,0 +1,36 @@
+---@meta
+
+---@class (exact) Enum.app.Option.CATEGORY : Enum<app.Option.CATEGORY>
+---@field GameSettings app.Option.CATEGORY
+---@field Controls app.Option.CATEGORY
+---@field Camera app.Option.CATEGORY
+---@field Display app.Option.CATEGORY
+---@field Audio app.Option.CATEGORY
+---@field Graphics app.Option.CATEGORY
+---@field Accessibility app.Option.CATEGORY
+---@field Interface app.Option.CATEGORY
+---@field Language app.Option.CATEGORY
+---@field Privacy app.Option.CATEGORY
+---@field CPU app.Option.CATEGORY
+---@field ["GameSettings"] app.Option.CATEGORY
+---@field ["Controls"] app.Option.CATEGORY
+---@field ["Camera"] app.Option.CATEGORY
+---@field ["Display"] app.Option.CATEGORY
+---@field ["Audio"] app.Option.CATEGORY
+---@field ["Graphics"] app.Option.CATEGORY
+---@field ["Accessibility"] app.Option.CATEGORY
+---@field ["Interface"] app.Option.CATEGORY
+---@field ["Language"] app.Option.CATEGORY
+---@field ["Privacy"] app.Option.CATEGORY
+---@field ["CPU"] app.Option.CATEGORY
+---@field [0] "GameSettings"
+---@field [1] "Controls"
+---@field [2] "Camera"
+---@field [3] "Display"
+---@field [4] "Audio"
+---@field [5] "Graphics"
+---@field [6] "Accessibility"
+---@field [7] "Interface"
+---@field [8] "Language"
+---@field [9] "Privacy"
+---@field [10] "CPU"

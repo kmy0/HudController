@@ -15,24 +15,72 @@
 ---@field color_fade integer
 ---@field fade_alpha number
 
----@class (exact) ConditionConfigBase
----@field class string
----@field combo integer
+---@class (exact) GameOptionsConfig
+---@field hud table<string, boolean>
+---@field elements table<string, table<string, boolean>>
+---@field display_full_path boolean
+
+---@class (exact) CanvasConfig
+---@field draw boolean
+---@field display_name boolean
+---@field display_value boolean
+---@field color_default integer
+---@field color_hover integer
+---@field color_select integer
+---@field color_outline integer
+---@field anchor {
+--- offset_x: number,
+--- offset_y: number,
+--- radius: integer,
+--- }
+---@field hide_elem_not_present boolean
+---@field hide_elem_disabled boolean
+---@field keybinds {
+--- draw: boolean,
+--- pos_x: number,
+--- pos_y: number,
+--- }
 
 ---@class (exact) ConditionBindOptionsBase
 
----@class (exact) ConditionSetConfig
----@field hud_key integer
----@field conditions ConditionConfigBase[]
----@field combo_hud integer
----@field combo_condition integer
----@field collapsed boolean
+---@class ValidationState
+---@field free_value string?
+---@field free_value2 string?
+---@field class string?
+---@field class_config string?
+---@field class_config_value string?
 
 ---@class (exact) ConditionBindStateConfig
 ---@field condition_options table<string, ConditionBindOptionsBase>
----@field hud ConditionSetConfig[]
----@field switchback boolean
----@field highlight_pass boolean
+---@field sets ConditionBindRuleSet[]
+---@field highlight_pass_rule boolean
+---@field highlight_pass_cond boolean
+---@field cond_type_selection BindCondType
+---@field path string
+---@field invalid boolean
+
+---@class (exact) ConditionBindRuleSet
+---@field type BindCondType
+---@field rules ConditionBindRuleConfig[]
+---@field selection integer
+
+---@class (exact) ConditionBindRuleConfig
+---@field target_select any
+---@field conditions ConditionConfigBase[][]
+---@field sets ConditionBindRuleSet[]
+---@field invalid ValidationState?
+---@field restore boolean
+---@field free_value any
+---@field free_value2 any
+---@field free_value3 any
+---@field cond_type_selection BindCondType
+
+---@class (exact) ConditionConfigBase
+---@field class string
+---@field combo integer
+---@field combo_key any
+---@field negate boolean
+---@field invalid ValidationState?
 
 ---@class (exact) ModSettings
 ---@field enabled boolean
@@ -40,35 +88,38 @@
 ---@field enable_notification boolean
 ---@field enable_key_binds boolean
 ---@field enable_condition_binds boolean
----@field disable_condition_binds_timed boolean
 ---@field disable_condition_binds_held boolean
 ---@field disable_condition_binds_time number
+---@field hide_disabled_element_profiles boolean
+---@field display_active_element_profile_name boolean
+---@field block_input boolean
+---@field window_opacity number
 ---@field user_scripts table<string, boolean>
 ---@field user_conditions table<string, boolean>
----@field hud HudProfileConfig[]
+---@field user_options table<string, any>
+---@field hud ModProfileConfig[]
+---@field game_options GameOptionsConfig
 ---@field bind {
 --- condition: ConditionBindStateConfig,
 --- key: {
 ---     hud: BindBase[],
 ---     option_hud: BindBase[],
 ---     option_mod: BindBase[],
+---     option_game: BindBase[],
+---     option_user: BindBase[],
+---     option_elem: BindBase[],
+---     condition: BindBase[],
 ---     buffer: integer,
+---     key_type_selection: integer,
 ---  },
---- slider: {
----     weapon_bind: integer,
----     key_bind: integer,
----     },
 --- },
 ---@field grid GridConfig
+---@field canvas CanvasConfig
 ---@field combo {
 --- hud: integer,
 --- hud_elem: integer,
---- key_bind: {
----     hud: integer,
----     option_hud: integer,
----     option_mod: integer,
----     action_type: integer,
----     },
+--- game_option: integer,
+--- selection: string,
 --- }
 ---@field lang ModLanguage
 
@@ -86,13 +137,22 @@ return {
         enabled = true,
         enable_fade = true,
         enable_notification = true,
-        enable_key_binds = true,
+        enable_key_binds = false,
         enable_condition_binds = false,
         disable_condition_binds_held = false,
-        disable_condition_binds_timed = false,
-        disable_condition_binds_time = 30,
+        disable_condition_binds_time = 0,
+        hide_disabled_element_profiles = false,
+        display_active_element_profile_name = false,
+        block_input = false,
+        window_opacity = 1,
         user_scripts = {},
         user_conditions = {},
+        user_options = {},
+        game_options = {
+            hud = {},
+            elements = {},
+            display_full_path = true,
+        },
         grid = {
             draw = false,
             color_center = 4278190335,
@@ -101,33 +161,54 @@ return {
             fade_alpha = 0,
             combo_grid_ratio = 3,
         },
+        canvas = {
+            draw = false,
+            display_name = true,
+            display_value = true,
+            color_default = 0xFFFFFFFF,
+            color_hover = 0xffe3dfdd,
+            color_select = 0xffc8b8b0,
+            color_outline = 0xff0000ff,
+            hide_elem_not_present = false,
+            hide_elem_disabled = false,
+            anchor = {
+                offset_x = 0,
+                offset_y = 0,
+                radius = 6,
+            },
+            keybinds = {
+                draw = true,
+                pos_x = 9,
+                pos_y = 364,
+            },
+        },
         bind = {
             key = {
                 hud = {},
                 option_hud = {},
                 option_mod = {},
+                option_game = {},
+                option_user = {},
+                option_elem = {},
+                condition = {},
                 buffer = 2,
+                key_type_selection = 1,
             },
             condition = {
                 condition_options = {},
-                hud = {},
-                switchback = false,
-                highlight_pass = false,
-            },
-            slider = {
-                key_bind = 1,
+                sets = {},
+                highlight_pass_rule = false,
+                highlight_pass_cond = false,
+                cond_type_selection = "HUD",
+                path = "mod.bind.condition",
+                invalid = false,
             },
         },
         hud = {},
         combo = {
             hud = 1,
-            hud_elem = 1,
-            key_bind = {
-                hud = 1,
-                option_hud = 1,
-                option_mod = 1,
-                action_type = 1,
-            },
+            game_option = 1,
+            selection = "NONE",
         },
     },
 }

@@ -13,12 +13,9 @@
 ---@class (exact) TextConfig : CtrlChildConfig
 ---@field hud_sub_type HudSubType
 ---@field hide_glow boolean?
----@field enabled_glow_color boolean?
----@field glow_color integer?
----@field enabled_font_size boolean?
----@field font_size integer?
----@field page_alignment string?
----@field enabled_page_alignment boolean?
+---@field glow_color EnabledInteger?
+---@field font_size EnabledInteger?
+---@field page_alignment EnabledString?
 
 ---@class (exact) TextDefault : CtrlChildDefault
 ---@field hide_glow boolean
@@ -66,7 +63,7 @@ setmetatable(this, { __index = ctrl_child })
 ---@return Text
 function this:new(args, parent, ctrl_getter, optional_args)
     local o = ctrl_child.new(self, args, parent, ctrl_getter, optional_args)
-    o.properties = util_table.merge_t(o.properties, {
+    o.properties = util_table.merge(o.properties, {
         hide_glow = true,
         glow_color = true,
         font_size = true,
@@ -79,35 +76,37 @@ function this:new(args, parent, ctrl_getter, optional_args)
         o:set_hide_glow(args.hide_glow)
     end
 
-    if args.enabled_glow_color then
+    if args.glow_color and args.glow_color.enabled then
         o:set_glow_color(args.glow_color)
     end
 
-    if args.enabled_font_size then
+    if args.font_size and args.font_size.enabled then
         o:set_font_size(args.font_size)
     end
 
-    if args.enabled_page_alignment then
+    if args.page_alignment and args.page_alignment.enabled then
         o:set_page_alignment(args.page_alignment)
     end
     return o
 end
 
----@param page_alignment string?
+---@param page_alignment EnabledString?
 function this:set_page_alignment(page_alignment)
-    if page_alignment then
+    if page_alignment and page_alignment.enabled then
         self:mark_write("page_alignment")
-        self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment]
-    else
+        self.page_alignment = e.get("via.gui.PageAlignment")[page_alignment.value]
+    elseif self.write_properties["page_alignment"] then
         self:reset("page_alignment")
-        self.page_alignment = page_alignment
+        self.page_alignment = nil
         self:mark_idle("page_alignment")
     end
 end
 
 ---@param hide_glow boolean
 function this:set_hide_glow(hide_glow)
-    self:reset("hide_glow")
+    if self.write_properties["hide_glow"] then
+        self:reset("hide_glow")
+    end
 
     if self.hide_glow and not hide_glow then
         self:mark_idle("hide_glow")
@@ -117,29 +116,29 @@ function this:set_hide_glow(hide_glow)
     self.hide_glow = hide_glow
 end
 
----@param color integer?
+---@param color EnabledInteger?
 function this:set_glow_color(color)
-    if color then
+    if color and color.enabled then
         self:mark_write("glow_color")
         self.glow_color = util_ref.value_type("via.Color")
-        self.glow_color.rgba = color
-    else
+        self.glow_color.rgba = color.value
+    elseif self.write_properties["glow_color"] then
         self:reset("glow_color")
-        self.glow_color = color
+        self.glow_color = nil
         self:mark_idle("glow_color")
     end
 end
 
----@param size integer?
+---@param size EnabledInteger?
 function this:set_font_size(size)
-    if size then
+    if size and size.enabled then
         self:mark_write("font_size")
         self.font_size = util_ref.value_type("via.Size")
-        self.font_size.w = size
-        self.font_size.h = size
-    else
+        self.font_size.w = size.value
+        self.font_size.h = size.value
+    elseif self.write_properties["font_size"] then
         self:reset("font_size")
-        self.font_size = size
+        self.font_size = nil
         self:mark_idle("font_size")
     end
 end
@@ -149,7 +148,7 @@ end
 function this:reset_ctrl(obj, key)
     local default = play_object_defaults:get(obj) --[[@as TextDefault]]
     if default then
-        default = util_table.merge_t(default, self.default_overwrite or {}) --[[@as TextDefault]]
+        default = util_table.merge(default, self.default_overwrite or {}) --[[@as TextDefault]]
     else
         default = (self.default_overwrite or {}) --[[@as TextDefault]]
     end
@@ -204,6 +203,23 @@ function this:_write(obj)
     end
 
     return true
+end
+
+---@param self HudBase?
+---@return string[]
+function this.get_boolean_config_keys(self)
+    local t = {
+        "hide_glow",
+        "glow_color",
+        "font_size",
+        "page_alignment",
+    }
+
+    if not self then
+        return t
+    end
+
+    return util_table.merge(ctrl_child.get_boolean_config_keys(self), t)
 end
 
 return this

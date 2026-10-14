@@ -1,4 +1,4 @@
----@class (exact) HudProfileConfig
+---@class (exact) ModProfileConfig
 ---@field name string
 ---@field key integer
 ---@field elements table<string, HudBaseConfig>
@@ -6,10 +6,8 @@
 ---@field mute_gui boolean
 ---@field fade_in number
 ---@field fade_out number
----@field hide_subtitles boolean
 ---@field show_notification boolean
 ---@field fade_opacity boolean
----@field fade_opacity_both boolean
 ---@field disable_scoutflies boolean
 ---@field disable_porter_call boolean
 ---@field hide_porter boolean
@@ -18,29 +16,30 @@
 ---@field disable_area_intro boolean
 ---@field disable_quest_intro boolean
 ---@field disable_quest_end_camera boolean
----@field hide_quest_end_timer boolean
----@field skip_quest_end_timer boolean
 ---@field disable_quest_end_outro boolean
----@field hide_monster_icon boolean
----@field hide_lock_target boolean
----@field hide_no_talk_npc boolean
----@field hide_no_facility_npc boolean
 ---@field monster_ignore_camp boolean
 ---@field hide_small_monsters boolean
----@field disable_scar boolean
 ---@field skip_quest_result boolean
----@field hide_wounds boolean
----@field show_wounds boolean
 ---@field disable_porter_tracking boolean
 ---@field hide_weapon boolean
 ---@field hide_pet boolean
----@field mute_gossip boolean
 ---@field hide_aggro boolean
+---@field hide_porter_timeout integer
+---@field hide_handler_timeout integer
+---@field monster_icon EmIcon
+---@field monster_wound EmScar
+---@field hide_npc HideNpc
+---@field profile HudBaseConfigProfileForShow[]
+---@field user_options table<string, any>
 
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud_elements = require("HudController.hud.elements.init")
+local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.manager.op.init"
+local op = util_misc.lazy_require("HudController.hud.manager.op.init")
 
 local mod = data.mod
 
@@ -48,51 +47,52 @@ local this = {}
 
 ---@param key integer
 ---@param name string
----@return HudProfileConfig
+---@return ModProfileConfig
 function this.get_hud_profile_config(key, name)
-    return {
+    local ret = {
         key = key,
         name = name,
-        elements = {},
-        options = {
-            DAMAGE_DISPLAY = -1,
-            SKILL_EFFECT = -1,
-            TALISMAN_EFFECT = -1,
-        },
         mute_gui = false,
-        fade_in = 0,
-        fade_out = 0,
-        hide_subtitles = false,
-        show_notification = true,
-        fade_opacity = false,
-        fade_opacity_both = false,
-        disable_scoutflies = false,
-        disable_porter_call = false,
-        hide_porter = false,
-        hide_handler = false,
-        hide_danger = false,
         disable_area_intro = false,
+        hide_danger = false,
+        hide_aggro = false,
+        disable_scoutflies = false,
+        hide_weapon = false,
+        hide_handler = false,
+        hide_handler_timeout = 5,
+        hide_pet = false,
+        hide_small_monsters = false,
+        monster_ignore_camp = false,
         disable_quest_intro = false,
         disable_quest_end_camera = false,
-        hide_monster_icon = false,
-        hide_lock_target = false,
         disable_quest_end_outro = false,
-        skip_quest_end_timer = false,
-        hide_quest_end_timer = false,
-        hide_no_talk_npc = false,
-        hide_no_facility_npc = false,
-        monster_ignore_camp = false,
-        hide_small_monsters = false,
-        disable_scar = false,
         skip_quest_result = false,
-        hide_wounds = false,
-        show_wounds = false,
+        disable_porter_call = false,
+        hide_porter = false,
+        hide_porter_timeout = 3,
         disable_porter_tracking = false,
-        hide_weapon = false,
-        hide_pet = false,
-        mute_gossip = false,
-        hide_aggro = false,
+        show_notification = true,
+        hide_npc = mod.enum.hide_npc.DISABLED,
+        monster_wound = mod.enum.em_scar.DISABLED,
+        monster_icon = mod.enum.em_icon.DISABLED,
+        fade_opacity = false,
+        fade_in = 0,
+        fade_out = 0,
+        elements = {},
+        options = {},
+        profile = {
+            {
+                key = mod.enum.elem_profile.DEFAULT,
+                name = "__placeholder_default",
+                protected = true,
+            },
+        },
+        user_options = {},
     }
+    ---@cast ret ModProfileConfig
+
+    op.user.merge_hud_user_options(ret)
+    return ret
 end
 
 ---@param hud_id app.GUIHudDef.TYPE
@@ -100,24 +100,60 @@ end
 function this.get_config(hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local cls = hud_elements[hud_name]
-
+    ---@type HudBaseConfig
+    local ret
     if not cls then
         cls = hud_elements[mod.enum.hud_type.BASE]
-        return cls.get_config(hud_id, hud_name)
+        ret = cls.get_config(hud_id, hud_name)
+    else
+        ret = cls.get_config()
     end
 
-    return cls.get_config()
+    op.user.merge_elem_user_options(ret)
+    return ret
 end
 
 ---@param hud_elem HudBaseConfig
 ---@return HudBaseConfig
 function this.merge(hud_elem)
-    return util_table.merge2_t(
-        { "hud_type", "name_key", "hud_id", "hud_sub_type" },
-        true,
-        this.get_config(hud_elem.hud_id),
-        hud_elem
-    )
+    local protected = { "hud_type", "name_key", "hud_id", "hud_sub_type" }
+    local profiles = hud_elem.profile
+    hud_elem.profile = nil
+
+    local ret =
+        util_table.merge_protected(protected, true, this.get_config(hud_elem.hud_id), hud_elem)
+
+    ret.profile = {}
+    for key, profile in pairs(profiles or {}) do
+        ---@diagnostic disable-next-line: no-unknown
+        ret.profile[key] = util_table.merge_protected(
+            protected,
+            true,
+            this.get_config(hud_elem.hud_id) --[[@as HudBaseConfigProfile]],
+            profile
+        )
+    end
+
+    return ret
+end
+
+---@overload fun(target: HudBaseConfig, source: HudBaseConfig | HudBaseConfigProfile): HudBaseConfig
+---@overload fun(target: HudBaseConfigProfile, source: HudBaseConfig | HudBaseConfigProfile): HudBaseConfigProfile
+function this.merge_profile(target, source)
+    local protected = {
+        "hud_type",
+        "name_key",
+        "hud_id",
+        "hud_sub_type",
+        "current_profile",
+        "current_profile_gui",
+        "profile_enabled",
+        "profile",
+        "profile_key",
+        "default_profile",
+    }
+
+    return util_table.merge_protected(protected, true, target, source)
 end
 
 ---@param elements table<string, HudBaseConfig>
@@ -139,10 +175,10 @@ function this.verify_elements(elements)
     return elements
 end
 
----@param hud_config HudProfileConfig
----@return HudProfileConfig
+---@param hud_config ModProfileConfig
+---@return ModProfileConfig
 function this.verify_hud(hud_config)
-    return util_table.merge2_t(
+    return util_table.merge_protected(
         nil,
         false,
         this.get_hud_profile_config(hud_config.key, hud_config.name),

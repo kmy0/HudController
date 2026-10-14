@@ -75,19 +75,4 @@ function this:init()
     return true
 end
 
-function this:reinit()
-    local config_user = self:get_config()
-    for name, _ in pairs(self.files) do
-        if config_user[name] == nil then
-            if self.loaded[name] or self.failed[name] then
-                config_user[name] = true
-            else
-                config_user[name] = false
-            end
-        end
-    end
-
-    self:_clear_config()
-end
-
 return this

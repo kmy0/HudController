@@ -44,7 +44,7 @@
 ---@field reload PlayObjectGetterFn[]
 ---@field mode_icon1 PlayObjectGetterFn[]
 ---@field mode_icon2 PlayObjectGetterFn[]
----@field bow_seperate PlayObjectGetterFn[]
+---@field bow_separate PlayObjectGetterFn[]
 ---@field bow_icon_active PlayObjectGetterFn[]
 ---@field bow_icon_disable PlayObjectGetterFn[]
 
@@ -181,7 +181,7 @@ local control_arguments = {
             },
         },
     },
-    bow_seperate = {
+    bow_separate = {
         {
             play_object.control.all,
             {
@@ -277,13 +277,10 @@ function this:new(args)
         gui_ignore = true,
     })
     o.children.bow_icon = hud_child:new(args.children.bow_icon, o, function(_, _, _, ctrl)
-        local separators = play_object.iter_args(ctrl, control_arguments.bow_seperate)
+        local separators = play_object.iter_args(ctrl, control_arguments.bow_separate)
         local ret = {}
-        util_table.array_merge_t(
-            ret,
-            play_object.iter_args(separators, control_arguments.bow_icon_active)
-        )
-        util_table.array_merge_t(
+        util_table.extend(ret, play_object.iter_args(separators, control_arguments.bow_icon_active))
+        util_table.extend(
             ret,
             play_object.iter_args(separators, control_arguments.bow_icon_disable)
         )
@@ -302,7 +299,7 @@ end
 ---@param no_hide boolean
 function this:set_no_hide_parts(no_hide)
     if no_hide then
-        self.children.no_hide_parts:set_play_state("dummy")
+        self.children.no_hide_parts:set_play_state({ enabled = true, value = "dummy" })
     else
         self.children.no_hide_parts:set_play_state()
     end
@@ -327,8 +324,10 @@ function this.get_config()
     children.mode_icon1 = hud_child.get_config("mode_icon1")
     children.mode_icon2 = hud_child.get_config("mode_icon2")
     children.bow_icon = { name_key = "bow_icon", hide = false }
-    children.no_hide_parts =
-        { name_key = "__no_hide_parts", enabled_play_state = false, play_state = "" }
+    children.no_hide_parts = {
+        name_key = "__no_hide_parts",
+        play_state = { enabled = true, value = "" },
+    }
     children.bow_phials = bow_phials.get_config()
 
     return base

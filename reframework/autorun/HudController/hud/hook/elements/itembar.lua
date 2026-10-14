@@ -37,11 +37,7 @@ function this.open_expanded_itembar_pre(_)
         local flag =
             ace_player.check_continue_flag(e.get("app.HunterDef.CONTINUE_FLAG").OPEN_ITEM_SLIDER)
 
-        if not this.expanded.visible and flag then
-            if GUI020006:get_IsAllSliderMode() then
-                return
-            end
-
+        if (not this.expanded.visible or not GUI020006:get_IsAllSliderMode()) and flag then
             --FIXME: sometimes this throws
             if
                 not util_misc.try(function()
@@ -130,6 +126,10 @@ function this.expanded_itembar_mouse_control_post(_)
     then
         local all_slider = util_ref.get_this() --[[@as app.GUI020006PartsAllSlider]]
         local current_item = all_slider:getCurrentItem()
+        if not current_item then
+            return
+        end
+
         local current_sel = current_item:get__BaseItem()
 
         if this.expanded.cursor_init then

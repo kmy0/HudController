@@ -39,7 +39,7 @@ function this.iter_args(ctrl, args)
                         string.format(
                             "iter_args failed!\nCtrl: %s\nArguments: %s",
                             control:get_Name(),
-                            util_table.to_string({ table.unpack(arguments, 2) })
+                            util_table.repr({ table.unpack(arguments, 2) })
                         ),
                         hud_debug_log.log_debug_type.CONTROL_GETTER_ITER
                     )
@@ -48,7 +48,7 @@ function this.iter_args(ctrl, args)
             end
 
             if type(res) == "table" then
-                util_table.array_merge_t(ret, res)
+                util_table.extend(ret, res)
             else
                 table.insert(ret, res)
             end

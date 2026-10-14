@@ -1,4 +1,4 @@
-local custom_condition = require("HudController.hud.bind_condition.conditions.custom")
+local custom_condition = require("HudController.hud.bind.condition.conditions.custom")
 local s = require("HudController.util.ref.singletons")
 
 return function()

@@ -1,88 +1,11 @@
----@class Separator
----@field ordered_keys string[]
----@field protected _count integer
----@field protected _start_count integer
-
+local ace = require("HudController.data.ace")
 local config = require("HudController.config.init")
 local util_misc = require("HudController.util.misc.init")
 local util_table = require("HudController.util.misc.table")
 
 local this = {}
-local all_bools = {
-    "enabled_scale",
-    "enabled_offset",
-    "enabled_rot",
-    "enabled_opacity",
-    "enabled_play_state",
-    "enabled_alpha_channel",
-    "enabled_blend",
-    "enabled_color",
-    "enabled_control_point",
-    "enabled_ignore_alpha",
-    "enabled_var0",
-    "enabled_var1",
-    "enabled_var2",
-    "enabled_var3",
-    "enabled_var4",
-    "enabled_size_x",
-    "enabled_size_y",
-    "enabled_segment",
-    "hide_glow",
-    "enabled_glow_color",
-    "enabled_font_size",
-    "enabled_offset_x",
-    "align_left",
-    "enabled_page_alignment",
-    "enabled_num_offset_x",
-    "enabled_clock_offset_x",
-    "enabled_fov",
-    "enabled_icon_scale",
-}
 
----@class Separator
-local Separator = {}
----@diagnostic disable-next-line: inject-field
-Separator.__index = Separator
-
----@param ordered_keys any
----@return Separator
-function Separator:new(ordered_keys)
-    local o = {
-        ordered_keys = ordered_keys,
-        _count = -1,
-        _start_count = -1,
-    }
-    setmetatable(o, self)
-    return o
-end
-
----@param t table<string, any>
-function Separator:refresh(t)
-    self._count = -1
-    for i = 1, #self.ordered_keys do
-        if t[self.ordered_keys[i]] ~= nil then
-            self._count = self._count + 1
-        end
-    end
-    self._start_count = self._count
-end
-
-function Separator:has_separators()
-    return self._count > 0
-end
-
-function Separator:had_separators()
-    return self._start_count > -1
-end
-
-function Separator:draw()
-    if self:has_separators() then
-        imgui.separator()
-        self._count = self._count - 1
-    end
-end
-
----@param key string
+---@param key TranslationKey
 ---@param ... string | integer
 ---@return string
 function this.tr(key, ...)
@@ -116,6 +39,16 @@ function this.tr_int(key)
     end
 
     return msg
+end
+
+---@param hud_id app.GUIHudDef.TYPE?
+---@param name_key string
+function this.tr_elem_name(hud_id, name_key)
+    return hud_id and ace.map.hudid_name_to_local_name[name_key]
+        or (
+            ace.map.weaponid_name_to_local_name[name_key]
+            or this.tr_int("hud_subelement." .. name_key)
+        )
 end
 
 ---@param n string | number
@@ -175,24 +108,20 @@ function this.seconds_to_minutes_string(n, n_format, pad)
     )
 end
 
+---@param elem HudBase
 ---@param elem_config HudBaseConfig | MaterialConfig | Scale9Config
 ---@param thing string?
 ---@return boolean
-function this.is_only_thing(elem_config, thing)
+function this.is_only_thing(elem, elem_config, thing)
     thing = thing or "hide"
 
     if elem_config[thing] == nil then
         return false
     end
 
-    if elem_config.name_key == "text" then
-        util_table.any(all_bools, function(_, value)
-            return elem_config[value] ~= nil
-        end)
-    end
+    local all_bools = elem:get_boolean_config_keys()
     if
-        (elem_config.children and not util_table.empty(elem_config.children))
-        or util_table.any(all_bools, function(_, value)
+        util_table.any(all_bools, function(_, value)
             if value == thing then
                 return false
             end
@@ -210,5 +139,16 @@ function this.get_item_size()
     return step * config.lang.font_size
 end
 
-this.separator = Separator
+---@param val integer | boolean
+---@return string
+function this.format_boolean(val)
+    if val == 0 or val == false then
+        return config.lang:tr("misc.text_off")
+    elseif val == 1 or val == true then
+        return config.lang:tr("misc.text_on")
+    end
+
+    return tostring(val)
+end
+
 return this

@@ -1,17 +1,23 @@
+local ace_misc = require("HudController.util.ace.misc")
+local e = require("HudController.util.game.enum")
+local game_lang = require("HudController.util.game.lang")
+local lang_base = require("HudController.util.misc.lang_base")
+local util_ref = require("HudController.util.ref.init")
+---@class MethodUtil
+local m = require("HudController.util.ref.methods")
+local s = require("HudController.util.ref.singletons")
+local tree = require("HudController.util.imgui.tree")
+local util_game = require("HudController.util.game.init")
+local util_misc = require("HudController.util.misc.init")
+local util_table = require("HudController.util.misc.table")
+
+---@module "HudController.hud.elements.notice"
+local notice = util_misc.lazy_require("HudController.hud.elements.notice")
+
 local this = {
     ace = require("HudController.data.ace"),
     mod = require("HudController.data.mod"),
 }
-
-local ace_misc = require("HudController.util.ace.misc")
-local deprecated = require("HudController.data.deprecated")
-local e = require("HudController.util.game.enum")
-local game_lang = require("HudController.util.game.lang")
----@class MethodUtil
-local m = require("HudController.util.ref.methods")
-local s = require("HudController.util.ref.singletons")
-local util_game = require("HudController.util.game.init")
-local util_table = require("HudController.util.misc.table")
 
 local ace_map = this.ace.map
 
@@ -72,7 +78,8 @@ local function set_additional_hud()
 
         e.get("app.GUIHudDef.TYPE"):add(name, enum)
         ace_map.hudid_to_can_hide[enum] = false
-        ace_map.hudid_name_to_local_name[name] = ace_map.hud_tr_flag
+        ace_map.hudid_name_to_local_name[name] =
+            lang_base.make_placeholder("hud_element.name." .. name)
         ace_map.guiid_to_hudid[guiid] = enum
         util_table.insert_nested_value(ace_map.hudid_to_guiid, { enum }, guiid)
     end
@@ -86,27 +93,233 @@ local function set_additional_hud()
     end
 end
 
+---@param str string
+---@return string
+local function replace_option_placeholder(str)
+    for value in str:gmatch("<.->") do
+        str = str:gsub(
+            value,
+            string.format("<PLACEHOLDER(%s)>", "menu.user.options.placeholder." .. value)
+        )
+    end
+    return str
+end
+
+local function get_option_tree()
+    ---@type table<string, AceOptionNode>
+    local branches = {}
+    for name, option in pairs(ace_map.option) do
+        branches[name] = {
+            name = option.name_local,
+            name_path = {},
+            id_str = option.name,
+            children = {},
+        }
+    end
+
+    ---@type AceOptionNode[]
+    local roots = {}
+    ---@type table<string, AceOptionNode>
+    local category_roots = {}
+
+    for name, option in pairs(ace_map.option) do
+        local branch = branches[name]
+        local parent = branches[option.parent]
+        local parent_option = option.parent and ace_map.option[option.parent]
+
+        if parent and parent_option and parent_option.category == option.category then
+            table.insert(parent.children, branch)
+        else
+            local category = e.get("app.Option.CATEGORY")[option.category]
+            local root = category_roots[category]
+
+            if not root then
+                root = {
+                    name = category,
+                    id_str = category,
+                    name_path = {},
+                    children = {},
+                }
+
+                category_roots[category] = root
+                table.insert(roots, root)
+            end
+
+            table.insert(root.children, branch)
+        end
+    end
+
+    ---@param branches_to_prune AceOptionNode[]
+    local function prune_branches(branches_to_prune)
+        for i = #branches_to_prune, 1, -1 do
+            local branch = branches_to_prune[i]
+            local option = ace_map.option[branch.id_str]
+
+            prune_branches(branch.children)
+
+            if
+                (
+                    option.type == e.get("app.Option.TYPE").HEADLINE
+                    or option.type == e.get("app.Option.TYPE").UI
+                )
+                and util_table.empty(branch.children)
+                and util_table.empty(option.items)
+            then
+                table.remove(branches_to_prune, i)
+            end
+        end
+    end
+
+    ---@param branches AceOptionNode[]
+    ---@param parent_path string[]
+    local function set_namepaths(branches, parent_path)
+        for _, branch in ipairs(branches) do
+            local option = ace_map.option[branch.id_str]
+
+            local name_path = {}
+            for _, part in ipairs(parent_path) do
+                table.insert(name_path, part)
+            end
+
+            table.insert(name_path, branch.name)
+
+            branch.name_path = name_path
+            option.name_path = name_path
+
+            set_namepaths(branch.children, name_path)
+        end
+    end
+
+    ---@param branches AceOptionNode[]
+    local function add_option_entries(branches)
+        for _, branch in ipairs(branches) do
+            local option = ace_map.option[branch.id_str]
+
+            add_option_entries(branch.children)
+
+            if
+                not util_table.empty(branch.children)
+                and (
+                    not util_table.empty(option.items)
+                    or option.type == e.get("app.Option.TYPE").CHOICE
+                    or option.type == e.get("app.Option.TYPE").VALUE
+                )
+            then
+                table.insert(branch.children, 1, {
+                    name = string.format(
+                        "%s %s",
+                        option.name_local,
+                        lang_base.make_placeholder("menu.user.options.text_toggle")
+                    ),
+                    id_str = option.name,
+                    name_path = branch.name_path,
+                    children = {},
+                })
+            end
+        end
+    end
+
+    for i = #roots, 1, -1 do
+        local root = roots[i]
+
+        prune_branches(root.children)
+
+        if #root.children == 0 then
+            table.remove(roots, i)
+        else
+            set_namepaths(root.children, { root.name })
+            add_option_entries(root.children)
+        end
+    end
+
+    ace_map.tree_game_options = tree:new(roots, function(node)
+        return node.children
+    end, {
+        filter_fn = function(node)
+            return node.name
+        end,
+    })
+end
+
 local function get_option_map()
     local lang = game_lang.get_language()
+    local ignore_type = {
+        e.get("app.Option.TYPE").SPEC,
+        e.get("app.Option.TYPE").RESOLUTION,
+        e.get("app.Option.TYPE").DISPLAY,
+    }
+
     for name, id in e.iter("app.Option.ID") do
         local option_data = m.getOptionData(id)
 
-        if not option_data then
+        if not option_data or option_data:get_Category() == -1 then
             goto continue
         end
 
-        ace_map.option[name] = {
+        local scene = option_data:get_Scene()
+        if scene == e.get("app.Option.SCENE").TITLE then
+            goto continue
+        end
+
+        -- app.Option.TYPE is defined here, otherwise in most cases
+        -- it's just 0, no idea why it's done this way
+        local disp_data = util_ref.ctor("app.GUI030100.DispData", true)
+        disp_data:call(".ctor(app.user_data.OptionData.Data)", option_data)
+        disp_data:setup(false)
+
+        local type = disp_data:get_OptionType()
+        if util_table.contains_any(ignore_type, type) then
+            goto continue
+        end
+
+        local opt = {
             id = id,
-            name_local = game_lang.get_message_local(option_data:get_MsgTitle(), lang, true),
+            name = name,
+            name_local = replace_option_placeholder(
+                game_lang.get_message_local2(option_data:get_MsgTitle())
+            ),
+            name_path = {},
             items = {},
+            category = option_data:get_Category(),
+            parent = e.get("app.Option.ID")[option_data:get_ParentOptionID()],
+            decimal_place = option_data:get_DecimalPlace(),
+            min = option_data:get_MinValue(),
+            max = option_data:get_MaxValue(),
+            type = type,
         }
 
+        local device = option_data:get_Device()
+        if device ~= e.get("app.Option.DEVICE").ALL then
+            local device_name = e.get("app.Option.DEVICE")[device]
+
+            opt.name_local = string.format(
+                "%s: %s",
+                string.format("<PLACEHOLDER(%s)>", "menu.user.options.placeholder." .. device_name),
+                opt.name_local
+            )
+        end
+
         util_game.do_something(option_data:get_Items(), function(_, index, value)
-            table.insert(ace_map.option[name].items, {
+            table.insert(opt.items, {
                 index = index,
-                name_local = game_lang.get_message_local(value:get_MsgTitle(), lang, true),
+                name_local = replace_option_placeholder(
+                    game_lang.get_message_local(value:get_MsgTitle(), lang, true)
+                ),
             })
         end)
+
+        --FIXME: seems like the only way to "reliable" way to detect if option is a checkbox/toggle
+        -- toggles dont have any items and have type CHOICE instead of TOGGLE and flags app.GUI030100.DISP_DATA_FLAG.UNDECIDABLE,
+        -- there are few other elements that have type HEADLINE or UI but are actaully CHOICE, because fuck typing things properly or sth
+        if
+            #opt.items == 0
+            and opt.type ~= e.get("app.Option.TYPE").VALUE
+            and disp_data:getFlags() == 0 -- app.GUI030100.DISP_DATA_FLAG.NONE
+        then
+            goto continue
+        end
+
+        ace_map.option[name] = opt
         ::continue::
     end
 end
@@ -148,6 +361,56 @@ local function get_weapon_map()
     for name, id in e.iter("app.WeaponDef.TYPE") do
         ace_map.weaponid_name_to_local_name[name] =
             game_lang.get_message_local(m.getWeaponName(id), lang, true)
+    end
+end
+
+local function get_subtitles_map()
+    local dict = s.get("app.DialogueManager")._DiaDataDict
+    local entries = dict._entries
+
+    util_game.do_something(entries, function(_, _, entry)
+        local dialog_data_info = entry.value
+        if dialog_data_info then
+            local dialog_data = dialog_data_info:get_Setting()
+            local npc_id = dialog_data:get_BeginNpcId()
+
+            if npc_id == -1 then
+                return
+            end
+
+            local msg_data = dialog_data:get_MsgData()
+            local npc_name = m.getNpcName(npc_id)
+
+            util_game.do_something(msg_data:getValues(), function(_, _, value)
+                local guid = value:get_MessageText()
+                local text = util_game.lang.get_message_local2(guid)
+                if text ~= "" then
+                    ace_map.subtitles[util_game.format_guid(guid)] = {
+                        npc = { id = npc_id, name = npc_name },
+                        text = util_game.lang.get_message_local2(guid),
+                    }
+                end
+            end)
+        end
+    end)
+end
+
+local function get_literals()
+    ace_map.literals = { ALL = "ALL" }
+
+    for _, cls_name in pairs(notice.cls_name_array) do
+        local cls_short = notice.get_cls_name_short(cls_name)
+        ace_map.literals[cls_short] = cls_short
+    end
+
+    for field_name, _ in
+        e.iter_many({
+            "app.GUI020400.SUBTITLES_CATEGORY",
+            "app.GUI020020.State",
+            "app.GUI020020.CRITICAL_STATE",
+        })
+    do
+        ace_map.literals[field_name] = field_name
     end
 end
 
@@ -212,6 +475,14 @@ function this.init()
             e.new("app.EnemyDef.AI_TARGET_STATE")
             e.new("app.Communication.AUTO_ID")
             e.new("app.GUI020600.TYPE")
+            e.new("app.PlayerDef.ButtonMask.USER")
+            e.new("app.DialogueDef.ACTOR_TYPE")
+            e.new("app.Option.DEVICE")
+            e.new("app.Option.CATEGORY")
+            e.new("app.Option.TYPE")
+            e.new("app.Option.SCENE")
+            e.new("app.WeaponDef.KIREAJI_TYPE")
+            e.new("app.QuestDef.EM_REWARD_RANK")
         end)
     then
         return false
@@ -221,19 +492,11 @@ function this.init()
     set_additional_hud()
     get_weapon_map()
     get_option_map()
+    get_option_tree()
     get_log_id_text()
+    get_subtitles_map()
+    get_literals()
 
-    for field_name, _ in
-        e.iter_many({
-            "app.GUI020400.SUBTITLES_CATEGORY",
-            "app.GUI020020.State",
-            "app.GUI020020.CRITICAL_STATE",
-        })
-    do
-        ace_map.no_lang_key[field_name] = true
-    end
-
-    deprecated.init()
     return true
 end
 

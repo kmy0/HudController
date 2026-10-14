@@ -79,7 +79,9 @@ end
 ---@return boolean
 function this.try(try, catch, finally)
     ---@diagnostic disable-next-line: no-unknown
-    local ok, err = pcall(try)
+    local ok, err = xpcall(try, function(e)
+        return debug.traceback(tostring(e), 2)
+    end)
 
     if not ok and catch then
         catch(err)
@@ -94,7 +96,7 @@ end
 
 ---@param n number
 ---@param decimals integer
----@return unknown
+---@return number
 function this.round(n, decimals)
     local mult = 10 ^ decimals
     return math.floor(n * mult + 0.5) / mult
@@ -111,6 +113,28 @@ function this.trunc_string(str, max_len)
     end
 
     return str
+end
+
+---@param text string
+---@param max_width number
+---@return string
+function this.trunc_string2(text, max_width)
+    if imgui.calc_text_size(text).x <= max_width then
+        return text
+    end
+
+    local suffix = "..."
+    local suffix_width = imgui.calc_text_size(suffix).x
+
+    while #text > 0 do
+        text = text:sub(1, -2) --[[@as string]]
+
+        if imgui.calc_text_size(text).x + suffix_width <= max_width then
+            return text .. suffix
+        end
+    end
+
+    return suffix
 end
 
 ---@param path string
@@ -206,6 +230,22 @@ function this.wrap_text(text, width)
     return table.concat(lines, "\n")
 end
 
+---@param n number
+---@param min number
+---@param max number
+---@return number
+function this.wrap_number(n, min, max)
+    if n > max then
+        return min
+    end
+
+    if n < min then
+        return max
+    end
+
+    return n
+end
+
 ---@param num integer
 function this.integer_to_hex(num)
     return string.format("0x%x", num)
@@ -247,7 +287,7 @@ function this.with_custom_require(fn)
 
         this.try(function()
             ---@diagnostic disable-next-line: no-unknown
-            ret = original_require("reframework.autorun." .. name)
+            ret = original_require("" .. name)
         end)
 
         if not ret then
@@ -263,6 +303,216 @@ function this.with_custom_require(fn)
     fn()
 
     _G.require = original_require
+end
+
+---@param text string
+---@param pos_x number
+---@param pos_y number
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_text(text, pos_x, pos_y, area_w, area_h)
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local text_size = imgui.calc_text_size(text)
+    local clamped_x = math.max(0, math.min(pos_x, area_w - text_size.x))
+    local clamped_y = math.max(0, math.min(pos_y, area_h - text_size.y))
+    return clamped_x, clamped_y
+end
+
+---@param pos_x number
+---@param pos_y number
+---@param size_w number
+---@param size_h number
+---@param stick number? fraction to keep outside (e.g. 0.5 = half, 0.25 = quarter) by default, 0.5
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_figure(pos_x, pos_y, size_w, size_h, stick, area_w, area_h)
+    stick = stick or 0.5
+
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local margin_w = size_w * stick
+    local margin_h = size_h * stick
+
+    local clamped_x = math.max(-(size_w - margin_w), math.min(pos_x, area_w - margin_w))
+    local clamped_y = math.max(-(size_h - margin_h), math.min(pos_y, area_h - margin_h))
+
+    return clamped_x, clamped_y
+end
+
+---@param pos_x number
+---@param pos_y number
+---@param radius number
+---@param stick number? fraction of diameter still visible (e.g. 0.25 = quarter visible). default 0.5
+---@param area_w number?
+---@param area_h number?
+---@return number, number
+function this.clamp_circle(pos_x, pos_y, radius, stick, area_w, area_h)
+    stick = stick or 0.5
+
+    if not area_w and not area_h then
+        local screen = imgui.get_display_size()
+        area_w = screen.x
+        area_h = screen.y
+    end
+
+    local visible = radius * 2 * stick
+
+    return math.max(visible - radius, math.min(pos_x, area_w - visible + radius)),
+        math.max(visible - radius, math.min(pos_y, area_h - visible + radius))
+end
+
+---@param pos {x: number, y: number}
+---@param size {x: number, y: number}
+---@param point {x: number, y: number}
+---@return boolean
+function this.is_inside_rect(pos, size, point)
+    return point.x >= pos.x
+        and point.x <= pos.x + size.x
+        and point.y >= pos.y
+        and point.y <= pos.y + size.y
+end
+
+---@param center {x: number, y: number}
+---@param radius number
+---@param point {x: number, y: number}
+---@return boolean
+function this.is_inside_circle(center, radius, point)
+    local dx = point.x - center.x
+    local dy = point.y - center.y
+    return dx * dx + dy * dy <= radius * radius
+end
+
+---@return fun(pos: {x: number, y: number}, area_size: {x: number, y: number}, mouse_pos: {x: number, y: number}, trigger: boolean, clamp_to_screen: boolean?): boolean, number, number
+function this.dragable()
+    local trigger_last_frame = false
+    ---@type {x: number, y: number}
+    local o_pos
+    ---@type {x: number, y: number}
+    local o_mouse_pos
+    local drag = false
+
+    return function(pos, area_size, mouse_pos, trigger, clamp_to_screen)
+        if trigger and not trigger_last_frame then
+            o_pos = pos
+            o_mouse_pos = mouse_pos
+            drag = this.is_inside_rect(pos, area_size, mouse_pos)
+        elseif not trigger then
+            drag = false
+        end
+
+        trigger_last_frame = trigger
+        if not drag then
+            return false, pos.x, pos.y
+        end
+
+        local dist_x = o_mouse_pos.x - mouse_pos.x
+        local dist_y = o_mouse_pos.y - mouse_pos.y
+        local ret_x = o_pos.x - dist_x
+        local ret_y = o_pos.y - dist_y
+
+        if clamp_to_screen then
+            ret_x, ret_y = this.clamp_figure(ret_x, ret_y, area_size.x, area_size.y)
+        end
+
+        return true, ret_x, ret_y
+    end
+end
+
+---@param n integer
+---@return string
+function this.to_base36(n)
+    local chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    local result = ""
+    repeat
+        result = chars:sub((n % 36) + 1, (n % 36) + 1) .. result
+        n = math.floor(n / 36)
+    until n == 0
+    return result
+end
+
+---@param n integer
+---@return string
+function this.to_base62(n)
+    local chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    local result = ""
+
+    repeat
+        local r = n % 62
+        result = chars:sub(r + 1, r + 1) .. result
+        n = math.floor(n / 62)
+    until n == 0
+
+    return result
+end
+
+---@param t integer[]
+---@return integer
+function this.pack_bits(t)
+    local bits = 0
+    for _, val in ipairs(t) do
+        bits = bits | (1 << (val - 1))
+    end
+    return bits
+end
+
+---@param bits integer
+---@return integer[]
+function this.unpack_bits(bits)
+    local indexes = {}
+    local i = 1
+
+    while bits ~= 0 do
+        if (bits & 1) ~= 0 then
+            table.insert(indexes, i)
+        end
+
+        bits = bits >> 1
+        i = i + 1
+    end
+
+    return indexes
+end
+
+---@param a any
+---@param b any
+---@return boolean
+function this.eval_type(a, b)
+    local ta = type(a)
+
+    if ta ~= type(b) then
+        return false
+    end
+
+    if ta == "table" then
+        ---@diagnostic disable-next-line: no-unknown
+        for ak, av in pairs(a) do
+            local bv = rawget(b, ak)
+
+            if bv == nil or not this.eval_type(av, bv) then
+                return false
+            end
+        end
+
+        ---@diagnostic disable-next-line: no-unknown
+        for bk in pairs(b) do
+            if rawget(a, bk) == nil then
+                return false
+            end
+        end
+    end
+
+    return true
 end
 
 return this
