@@ -2,7 +2,7 @@
 
 # HudController
 
-HudController lets you customize HUD elements and control almost any HUD or mod setting with key binds or condition-based automation in **Monster Hunter Wilds**.
+HudController lets you customize HUD elements and control almost any HUD, or game setting with key binds or condition-based automation in **Monster Hunter Wilds**.
 
 <!-- /converter_ignore -->
 ## Table of contents
