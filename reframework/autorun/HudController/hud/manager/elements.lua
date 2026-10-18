@@ -159,8 +159,9 @@ function this.cleanup(elements)
         end
     end
 
-    for id, _ in pairs(this.by_hudid) do
+    for id, elem in pairs(this.by_hudid) do
         if not ok_hudid[id] then
+            elem:reset()
             this.by_hudid[id] = nil
         end
     end
