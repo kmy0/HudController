@@ -458,7 +458,11 @@ function hud_hooks.notice()
                 return false
             end
 
-            return notice.hide or not util_table.empty(notice.system_log)
+            return notice.hide
+                or not util_table.empty(notice.system_log)
+                or not util_table.empty(notice.log_id)
+                or not util_table.empty(notice.enemy_log)
+                or not util_table.empty(notice.camp_log)
         end),
 
         [opt_key(root, "_skip_lobby")] = make_hud_options_hook(function()
@@ -472,7 +476,9 @@ function hud_hooks.notice()
                 return false
             end
 
-            return notice.hide or not util_table.empty(notice.chat_log)
+            return notice.hide
+                or not util_table.empty(notice.chat_log)
+                or not util_table.empty(notice.lobby_log)
         end),
 
         [opt_key(root, "_skip_auto")] = make_hud_options_hook(function()
