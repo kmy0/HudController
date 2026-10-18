@@ -33,6 +33,7 @@
 ---@field em_icon EmIcon.*
 ---@field bind_cond_type BindCondType.*
 ---@field bind_key_type BindKeyType.*
+---@field elem_hide_type ElemHideType.*
 
 local ace = require("HudController.data.ace")
 local ace_misc = require("HudController.util.ace.misc")
@@ -237,6 +238,12 @@ this.enum.bind_key_type = { ---@class BindKeyType.*
     OPTION_GAME = 6,
     OPTION_USER = 7,
     CONDITION = 8,
+}
+---@enum ElemHideType
+this.enum.elem_hide_type = { ---@class ElemHideType.*
+    MAIN = 1,
+    SUB = 2,
+    CHILD = 3,
 }
 
 ---@return boolean

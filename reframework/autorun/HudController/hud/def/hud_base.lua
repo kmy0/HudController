@@ -10,7 +10,7 @@
 ---@field color_scale via.Float4?
 ---@field hide boolean?
 ---@field hide_write boolean? write other settings when hidden
----@field hide_changed boolean
+---@field hide_changed table<app.GUIID.ID, boolean>
 ---@field play_state string?
 ---@field segment app.GUIDefApp.DRAW_SEGMENT?
 ---@field default_overwrite HudBaseDefaultOverwrite?
@@ -173,6 +173,7 @@ local m = require("HudController.util.ref.methods")
 local play_object = require("HudController.hud.play_object.init")
 local timer = require("HudController.util.misc.timer")
 local play_object_defaults = require("HudController.hud.defaults.init").play_object
+local frame_cache = require("HudController.util.misc.frame_cache")
 local util_misc = require("HudController.util.misc.init")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
@@ -207,6 +208,7 @@ function this:new(args, parent, optional_args)
         overridden_options = {},
         write_nodes = {},
         write_properties = {},
+        hide_changed = {},
         properties = {
             scale = true,
             offset = true,
@@ -229,6 +231,7 @@ function this:new(args, parent, optional_args)
     ---@cast o HudBase
 
     o._get_component = cache.memoize(o._get_component, { key_index = 2 })
+    o._get_should_hide = frame_cache.memoize(o._get_should_hide)
     o.root = o:get_root()
 
     o:set_hide(args.hide)
@@ -264,7 +267,7 @@ function this:new(args, parent, optional_args)
         o:set_option(option, value)
     end
 
-    o.hide_changed = true
+    o:_mark_hide_changed()
     if
         o.hud_id
         and not o.hide
@@ -351,10 +354,9 @@ end
 
 ---@param hide boolean
 function this:set_hide(hide)
-    self.hide_changed = hide ~= self.hide
-
-    if self.hide_changed then
+    if hide ~= self.hide then
         self:reset("hide")
+        self:_mark_hide_changed()
     end
 
     if self.hide and not hide then
@@ -531,18 +533,14 @@ end
 ---@param visible boolean
 ---@param hud_display string?
 function this:change_visibility(ctrl, visible, hud_display)
-    if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
+    local hide_type = self:_get_hide_type()
+
+    if hide_type == mod.enum.elem_hide_type.MAIN then
+        local guiid = ctrl and util_mod.get_gui_id(ctrl) or -1
         local enum = e.get("app.GUIHudDef.DISPLAY")
 
-        if self.hide_changed then
-            local current_hud_display = ace_misc.get_hud_manager():getHudDisplay(self.hud_id)
-
-            if
-                (visible and current_hud_display ~= enum.HIDDEN)
-                or (not visible and current_hud_display == enum.HIDDEN)
-            then
-                self.hide_changed = false
-            end
+        if self.hide_changed[guiid] and not self:_get_should_hide(visible) then
+            self.hide_changed[guiid] = nil
         end
 
         if not visible then
@@ -558,7 +556,7 @@ function this:change_visibility(ctrl, visible, hud_display)
         -- specific playstates without breaking everything
         if
             ctrl
-            and self.hide_changed
+            and self.hide_changed[guiid]
             -- ignore when game is force revealing item bar or ammo bar
 
             and not (
@@ -568,37 +566,33 @@ function this:change_visibility(ctrl, visible, hud_display)
                 )
             )
         then
-            local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
-
-            if root_window then
-                local guiid = util_mod.get_gui_id(ctrl)
-
-                root_window:set_ForceInvisible(true)
+            if self.name_key == "MINIMAP" then
                 self.hide_timer:restart()
-                call_queue.queue_func_guiid(
-                    guiid,
-                    self:_make_restore_visibility_fn(guiid, root_window, nil)
-                )
-
-                if self.name_key == "MINIMAP" then
-                    local GUI060010 = util_mod.get_gui_cls("app.GUI060010")
-                    local GUI060010_root = util_mod.get_root_window(GUI060010)
-
-                    if GUI060010_root then
-                        GUI060010_root:set_ForceInvisible(true)
-                        call_queue.queue_func_guiid(
-                            guiid,
-                            self:_make_restore_visibility_fn(guiid, root_window, GUI060010_root)
-                        )
-                    end
+            else
+                local root_window = play_object.control.get_parent(ctrl, "RootWindow", true)
+                if root_window then
+                    root_window:set_ForceInvisible(true)
+                    self.hide_timer:restart()
+                    call_queue.queue_func_guiid(
+                        guiid,
+                        self:_make_restore_visibility_fn(guiid, root_window)
+                    )
                 end
             end
         end
+
+        self.hide_changed[guiid] = nil
+    elseif hide_type == mod.enum.elem_hide_type.SUB then
+        local guiid = ctrl and util_mod.get_gui_id(ctrl) or -1
+        if self.hide_changed[guiid] then
+            self.hide_timer:restart()
+            self.hide_changed[guiid] = nil
+        end
+
+        ctrl:set_ForceInvisible(not visible)
     else
         ctrl:set_ForceInvisible(not visible)
     end
-
-    self.hide_changed = false
 end
 
 ---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
@@ -876,7 +870,8 @@ function this:_write(ctrl)
 
     if self.hide and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:change_visibility(ctrl, not self.hide)
-        if not self.hide_write and not self._request_pos then
+
+        if not self.hide_write and not self._request_pos and not self.hide_timer:active() then
             return false
         end
     end
@@ -921,6 +916,54 @@ function this:_write(ctrl)
 end
 
 ---@protected
+function this:_mark_hide_changed()
+    local hide_type = self:_get_hide_type()
+    if hide_type == mod.enum.elem_hide_type.CHILD then
+        return
+    end
+
+    local hud_id = self.hud_id
+    if hide_type == mod.enum.elem_hide_type.SUB then
+        local root = self:get_root()
+        hud_id = root.hud_id
+    end
+
+    for _, guiid in pairs(ace_map.hudid_to_guiid[hud_id]) do
+        self.hide_changed[guiid] = true
+    end
+
+    timer.request_one_timer("reset_hide_changed", 15, function()
+        self.hide_changed = {}
+    end, "frame")
+end
+
+---@protected
+---@return ElemHideType
+function this:_get_hide_type()
+    if self.hud_id and ace_map.hudid_to_can_hide[self.hud_id] then
+        return mod.enum.elem_hide_type.MAIN
+    end
+
+    local root = self:get_root()
+    if root.hud_id == e.get("app.GUIHudDef.TYPE").WEAPON then
+        return mod.enum.elem_hide_type.SUB
+    end
+
+    return mod.enum.elem_hide_type.CHILD
+end
+
+---@protected
+---@param visible boolean
+---@return boolean
+function this:_get_should_hide(visible)
+    local current_hud_display = ace_misc.get_hud_manager():getHudDisplay(self.hud_id)
+    local enum = e.get("app.GUIHudDef.DISPLAY")
+
+    return (visible and current_hud_display == enum.HIDDEN)
+        or (not visible and current_hud_display ~= enum.HIDDEN)
+end
+
+---@protected
 ---@param ctrl via.gui.Control
 ---@param val number
 function this:_set_opacity(ctrl, val)
@@ -932,17 +975,21 @@ end
 ---@protected
 ---@param guiid app.GUIID.ID
 ---@param root_window via.gui.Control
----@param ctrl via.gui.Control?
----@param finished_fn (fun(): boolean)?
-function this:_make_restore_visibility_fn(guiid, root_window, ctrl, finished_fn)
+function this:_make_restore_visibility_fn(guiid, root_window)
+    local started = false
+
     local function ret()
+        started = started or root_window:get_StateFinishFrame() > 0
+        local play_frame = root_window:get_PlayFrame()
+        local finish_frame = root_window:get_StateFinishFrame()
         local finished = (
-            root_window:get_PlayFrame() == root_window:get_StateFinishFrame()
+            started and play_frame == finish_frame
+            or started and finish_frame < 0
             or self.hide_timer:finished()
-        ) and (finished_fn and finished_fn() or not finished_fn)
+        )
 
         if finished then
-            (ctrl and ctrl or root_window):set_ForceInvisible(false)
+            root_window:set_ForceInvisible(false)
         else
             call_queue.queue_func_next_guiid(guiid, ret)
         end
