@@ -150,12 +150,12 @@ local this = {
 
                     if opt_hook_table then
                         local opt_hook = opt_hook_table[opt_path]
-                        if opt_hook and not hook.is_option_mod_hooked[opt_path] then
+                        if opt_hook and not hook.is_hud_option_hooked[opt_path] then
                             opt_hook.force_once = true
                         end
                     end
 
-                    hook.hook_hud(elem.hud_id, elem.name_key)
+                    hook.hook_hud_options(elem.name_key)
                 end)
             end
         end,

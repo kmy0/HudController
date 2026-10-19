@@ -39,16 +39,18 @@ function this.get_element_ctx(path)
 
     local ctx = hudbase
     local ctx_config = root_config
+    local config_path = hudbase.name_key
     if path.path ~= "" then
         ctx = util_table.get_by_path(hudbase, path.path) --[[@as HudBase]]
         ctx_config = util_table.get_by_path(root_config, path.path)
+        config_path = string.format("%s.%s", config_path, path.path)
     end
 
     return {
         elem = ctx,
         elem_config = ctx_config,
         config_key = config_key,
-        config_path = string.format("%s.%s", hudbase.name_key, path.path),
+        config_path = config_path,
     }
 end
 
