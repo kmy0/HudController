@@ -932,9 +932,17 @@ function this:_mark_hide_changed()
         self.hide_changed[guiid] = true
     end
 
-    timer.request_one_timer("reset_hide_changed", 15, function()
-        self.hide_changed = {}
-    end, "frame")
+    local function reset_hide_changed()
+        timer.request_one_timer("reset_hide_changed", 15, function()
+            if not fade_manager.is_active_element(hud_id) then
+                self.hide_changed = {}
+            else
+                reset_hide_changed()
+            end
+        end, "frame")
+    end
+
+    reset_hide_changed()
 end
 
 ---@protected
