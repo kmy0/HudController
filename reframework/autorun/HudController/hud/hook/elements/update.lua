@@ -3,6 +3,7 @@ local call_queue = require("HudController.hud.call_queue")
 local common = require("HudController.hud.hook.common")
 local data = require("HudController.data.init")
 local hud = require("HudController.hud.init")
+local timer = require("HudController.util.misc.timer")
 local util_mod = require("HudController.util.mod.init")
 local util_ref = require("HudController.util.ref.init")
 
@@ -61,6 +62,10 @@ end
 --#region damage_numbers
 function this.update_damage_numbers_static_pre(args)
     dmg_static = util_ref.to_bool(args[9])
+    --FIXME: fixed/static dmg numbers are no longer active on the same frame they are requested???
+    timer.request_one_timer("reset_dmg_static", 2, function()
+        dmg_static = false
+    end, "frame")
 end
 
 function this.update_damage_numbers_post(_)
@@ -76,8 +81,6 @@ function this.update_damage_numbers_post(_)
 
         dmg:write_dmg(GUI020020, guiid)
     end
-
-    dmg_static = false
 end
 --#endregion
 
