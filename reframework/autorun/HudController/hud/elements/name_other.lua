@@ -3,15 +3,20 @@
 ---@field nameplate_type table<string, integer>
 ---@field pl_draw_distance number
 ---@field pet_draw_distance number
+---@field GUI020016 app.GUI020016?
 
 ---@class (exact) NameOtherConfig : HudBaseConfig
 ---@field nameplate_type table<string, integer>
 ---@field pl_draw_distance number
 ---@field pet_draw_distance number
 
+local cache = require("HudController.util.misc.cache")
 local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local hud_base = require("HudController.hud.def.hud_base")
+local play_object = require("HudController.hud.play_object.init")
+local util_game = require("HudController.util.game.init")
+local util_mod = require("HudController.util.mod.init")
 
 local mod = data.mod
 
@@ -31,6 +36,7 @@ function this:new(args)
     o.nameplate_type = args.nameplate_type
     o.pl_draw_distance = args.pl_draw_distance
     o.pet_draw_distance = args.pet_draw_distance
+    o.get_all_ctrl = cache.memoize(o.get_all_ctrl)
     return o
 end
 
@@ -48,6 +54,63 @@ end
 ---@param order integer
 function this:set_nameplate_type(name_key, order)
     self.nameplate_type[name_key] = order
+end
+
+---@return {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
+function this:get_all_ctrl()
+    ---@type {ctrl: via.gui.Control, hud_base: app.GUIHudBase, gui_id: app.GUIID.ID}[]
+    local ret = {}
+    local hudbase = util_mod.get_gui_cls("app.GUI020016")
+
+    if hudbase then
+        local gui_id = hudbase:get_ID()
+        local root = util_mod.get_root_window(hudbase)
+        local pnls = play_object.control.all(root, {}, "PNL_All", true) --[=[@as via.gui.Control[]]=]
+
+        for _, pnl in pairs(pnls) do
+            table.insert(ret, {
+                ctrl = play_object.control.get(pnl, {
+                    "PNL_Scale",
+                    "PNL_Pat00",
+                    "PNL_NamePos",
+                    "PNL_NameDisplay",
+                }),
+                hud_base = hudbase,
+                gui_id = gui_id,
+            })
+        end
+    end
+
+    return ret
+end
+
+---@return app.GUI020016
+function this:get_GUI020016()
+    if not self.GUI020016 then
+        self.GUI020016 = util_mod.get_gui_cls("app.GUI020016") --[[@as app.GUI020016]]
+    end
+
+    return self.GUI020016
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return boolean
+function this:_write(ctrl)
+    local ret = hud_base._write(self, ctrl)
+    if ret and self:any() then
+        local GUI020016 = self:get_GUI020016()
+        local arr = GUI020016._NameInfoList
+
+        if arr then
+            util_game.do_something(arr, function(_, _, value)
+                ---@diagnostic disable-next-line: invisible
+                hud_base._write(self, value:get__PanelDisplay())
+            end)
+        end
+    end
+
+    return ret
 end
 
 ---@return NameOtherConfig

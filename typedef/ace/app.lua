@@ -340,6 +340,7 @@
 
 ---@class app.GUI020016PartsBase : app.cGUIPartsBaseApp
 ---@field get_Type fun(self: app.GUI020016PartsBase): app.cGUIMemberPartsDef.MemberType
+---@field get__PanelDisplay fun(self: app.GUI020016PartsBase): via.gui.Control
 
 ---@class app.GUI020007 : app.GUIHudBase
 ---@field SLOT_UP ace.GUIDef.BUTTON_SLOT
@@ -727,3 +728,6 @@
 
 ---@class app.GimmickManager : ace.GAElementBase
 ---@field findGimmick_ID fun(self: app.GimmickManager, id: app.GimmickDef.ID): System.Array<app.GimmickBaseApp>
+
+---@class app.GUI020016 : app.GUIHudBase
+---@field _NameInfoList System.Array<app.GUI020016PartsBase>
