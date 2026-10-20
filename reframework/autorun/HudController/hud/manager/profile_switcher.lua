@@ -55,7 +55,7 @@ local function try_add_element(hud_config, hud_id)
     local hud_name = e.get("app.GUIHudDef.TYPE")[hud_id]
     local elem = hud_config.elements[hud_name]
     if elem then
-        elements.add_element(elem)
+        elements.update_element(elem)
     else
         elements.remove_element(hud_id)
     end
