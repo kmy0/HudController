@@ -191,6 +191,15 @@ function this.get_hud_control(hud_id)
             ctrl = this.get_parent(ctrl, "PNL_All", true) or ctrl
         end
 
+        --FIXME: name_other and name_access have a lot of elements that are written to invidualy
+        -- its simpler to just fade the root and ignore their opacity settings, i dont think its worth the hassle
+        if
+            hud_id == e.get("app.GUIHudDef.TYPE").NAME_OTHER
+            or hud_id == e.get("app.GUIHudDef.TYPE").NAME_ACCESSIBLE
+        then
+            ctrl = this.get_parent(ctrl, "RootWindow", true) or ctrl
+        end
+
         table.insert(ret, ctrl)
         ::continue::
     end
