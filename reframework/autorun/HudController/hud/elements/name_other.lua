@@ -17,6 +17,7 @@ local hud_base = require("HudController.hud.def.hud_base")
 local play_object = require("HudController.hud.play_object.init")
 local util_game = require("HudController.util.game.init")
 local util_mod = require("HudController.util.mod.init")
+local play_object_defaults = require("HudController.hud.defaults.init").play_object
 
 local mod = data.mod
 
@@ -97,15 +98,19 @@ end
 ---@param ctrl via.gui.Control
 ---@return boolean
 function this:_write(ctrl)
-    local ret = hud_base._write(self, ctrl)
+    play_object_defaults:check(ctrl)
+
+    local ret = self:_write_hide(ctrl)
     if ret and self:any() then
         local GUI020016 = self:get_GUI020016()
         local arr = GUI020016._NameInfoList
 
         if arr then
             util_game.do_something(arr, function(_, _, value)
-                ---@diagnostic disable-next-line: invisible
-                hud_base._write(self, value:get__PanelDisplay())
+                local pnl = value:get__PanelDisplay()
+                play_object_defaults:check(pnl)
+
+                self:_write_other(pnl)
             end)
         end
     end

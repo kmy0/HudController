@@ -865,9 +865,7 @@ end
 ---@protected
 ---@param ctrl via.gui.Control
 ---@return boolean
-function this:_write(ctrl)
-    play_object_defaults:check(ctrl)
-
+function this:_write_hide(ctrl)
     if self.hide and (not self.hud_id or not fade_manager.is_active_element(self.hud_id)) then
         self:change_visibility(ctrl, not self.hide)
 
@@ -876,6 +874,12 @@ function this:_write(ctrl)
         end
     end
 
+    return true
+end
+
+---@protected
+---@param ctrl via.gui.Control
+function this:_write_other(ctrl)
     if self.offset then
         ctrl:set_Position(self.offset)
     end
@@ -911,6 +915,19 @@ function this:_write(ctrl)
         self._pos_last_frame = m.getGUIscreenPos(pos)
         self._request_pos = false
     end
+end
+
+---@protected
+---@param ctrl via.gui.Control
+---@return boolean
+function this:_write(ctrl)
+    play_object_defaults:check(ctrl)
+
+    if not self:_write_hide(ctrl) then
+        return false
+    end
+
+    self:_write_other(ctrl)
 
     return true
 end
