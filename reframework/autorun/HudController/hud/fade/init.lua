@@ -11,7 +11,6 @@
 ---@field override_fade_out boolean
 
 local call_queue = require("HudController.hud.call_queue")
-local data = require("HudController.data.init")
 local e = require("HudController.util.game.enum")
 local fader = require("HudController.hud.fade.fader")
 local fader_group = require("HudController.hud.fade.fader_group")
@@ -21,8 +20,6 @@ local util_misc = require("HudController.util.misc.init")
 
 ---@module "HudController.hud.manager.elements"
 local elements = util_misc.lazy_require("HudController.hud.manager.elements")
-
-local ace_map = data.ace.map
 
 ---@class FadeManager
 local this = {
@@ -38,7 +35,6 @@ this.disable_type = {
 
 ---@param ctrl via.gui.Control
 ---@return integer opacity
----@return boolean need_restore
 local function get_opacity(ctrl)
     --[[
         FIXME: target opacity comes from the profile, but actual visibility is controlled
@@ -53,16 +49,16 @@ local function get_opacity(ctrl)
         during the transition.
     ]]
     if not ctrl:get_ActualVisible() then
-        return 0, true
+        return 0
     end
 
     local gui = ctrl:get_Component()
     if not gui:get_Enabled() then
-        return 0, true
+        return 0
     end
 
     local color = ctrl:get_ColorScale()
-    return color.w, false
+    return color.w
 end
 
 ---@param ctrl via.gui.Control
@@ -130,19 +126,15 @@ end
 function this.make_fader(hud_id, ctrl, target_opacity, duration, optional_args)
     optional_args = optional_args or {}
 
-    local need_restore = false
     local from = 0
     local to = target_opacity
 
     for _, c in pairs(ctrl) do
-        local _from, _need_restore = get_opacity(c)
+        local _from = get_opacity(c)
         from = math.max(from, _from)
-        need_restore = need_restore or _need_restore or ace_map.hudid_to_can_hide[hud_id]
     end
 
-    if need_restore then
-        this.to_restore[hud_id] = true
-    end
+    this.to_restore[hud_id] = true
 
     if type(duration) == "table" then
         duration = to > from and duration.fade_in or duration.fade_out
