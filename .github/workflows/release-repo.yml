@@ -59,7 +59,7 @@ jobs:
           }
           EOF
 
-          powershell Compress-Archive -Path reframework -DestinationPath "HudController-${RELEASE_VERSION}.zip"
+          7z a -tzip "HudController-${RELEASE_VERSION}.zip" reframework
 
       - name: Create Release (HudController-releases)
         uses: ncipollo/release-action@v1
