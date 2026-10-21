@@ -27,10 +27,11 @@ jobs:
         run: cmake --build ${{ github.workspace }}/deps/HudController_util/build --config ${{ env.BUILD_TYPE }}
 
       - name: Copy HudController_util DLL
+        shell: bash
         run: |
           mkdir -p reframework/plugins
-          dir deps\\HudController_util\\bin\\*.dll
-          copy deps\\HudController_util\\bin\\*.dll reframework\\plugins\\
+          ls deps/HudController_util/bin/*.dll
+          cp deps/HudController_util/bin/*.dll reframework/plugins/
 
       - name: Generate version + package
         shell: bash
@@ -53,7 +54,7 @@ jobs:
 
           cat > reframework/autorun/HudController/config/version.lua << EOF
           return {
-              version = "$(git describe --tags --abbrev=0)",
+              version = "$(git describe --tags --abbrev=0 2>/dev/null || echo "$BASE_VERSION")",
               commit = "$COMMIT_VERSION",
           }
           EOF
