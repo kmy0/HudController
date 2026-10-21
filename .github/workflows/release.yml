@@ -3,15 +3,12 @@ name: Release
 on:
   workflow_dispatch:
 
+env:
+  BUILD_TYPE: Release
+
 jobs:
-  release:
+  build:
     runs-on: windows-2022
-
-    permissions:
-      contents: write
-
-    env:
-      BUILD_TYPE: Release
 
     steps:
       - name: Checkout (with submodules)
@@ -26,14 +23,34 @@ jobs:
       - name: Build HudController_util
         run: cmake --build ${{ github.workspace }}/deps/HudController_util/build --config ${{ env.BUILD_TYPE }}
 
-      - name: Copy HudController_util DLL
-        run: |
-          mkdir -p reframework/plugins
-          dir deps\\HudController_util\\bin\\*.dll
-          copy deps\\HudController_util\\bin\\*.dll reframework\\plugins\\
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: hudcontroller-dll
+          path: deps/HudController_util/bin/*.dll
+          if-no-files-found: error
 
-      - name: Generate version + package
-        shell: bash
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Download DLL
+        uses: actions/download-artifact@v4
+        with:
+          name: hudcontroller-dll
+          path: dll
+
+      - name: Generate version + package (native Linux zip)
         run: |
           BASE_VERSION=$(git describe --tags --always)
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
@@ -47,18 +64,26 @@ jobs:
             COMMIT_VERSION="$BASE_VERSION"
           fi
 
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
 
-          mkdir -p reframework/autorun/HudController/config
+          mkdir -p reframework/plugins reframework/autorun/HudController/config
+          cp dll/*.dll reframework/plugins/
 
-          cat > reframework/autorun/HudController/config/version.lua << EOF
+          cat > reframework/autorun/HudController/config/version.lua << EOT
           return {
-              version = "$(git describe --tags --abbrev=0)",
+              version = "$(git describe --tags --abbrev=0 2>/dev/null || echo "$BASE_VERSION")",
               commit = "$COMMIT_VERSION",
           }
-          EOF
+          EOT
 
-          powershell Compress-Archive -Path reframework -DestinationPath "HudController-${RELEASE_VERSION}.zip"
+          zip -r -X "HudController-${RELEASE_VERSION}.zip" reframework
+
+          echo "--- zip contents ---"
+          unzip -Z1 "HudController-${RELEASE_VERSION}.zip"
+          if unzip -Z1 "HudController-${RELEASE_VERSION}.zip" | grep -q '\\'; then
+            echo "ERROR: backslash in zip entry names" >&2
+            exit 1
+          fi
 
       - name: Create Release (main repository)
         uses: ncipollo/release-action@v1
