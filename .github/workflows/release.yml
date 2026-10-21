@@ -59,7 +59,23 @@ jobs:
           }
           EOF
 
-          7z a -tzip "HudController-${RELEASE_VERSION}.zip" reframework
+          python - "HudController-${RELEASE_VERSION}.zip" << 'PY'
+          import sys, zipfile
+          from pathlib import Path
+
+          out = sys.argv[1]
+          with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+              for p in sorted(Path("reframework").rglob("*")):
+                  if p.is_file():
+                      z.write(p, p.as_posix())
+
+          names = zipfile.ZipFile(out).namelist()
+          for n in names:
+              print(n)
+          bad = [n for n in names if "\\" in n]
+          if bad:
+              sys.exit("Backslash in zip entries: %s" % bad)
+          PY
 
       - name: Create Release (main repository)
         uses: ncipollo/release-action@v1
